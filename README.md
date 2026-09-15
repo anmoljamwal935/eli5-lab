@@ -1,6 +1,12 @@
 # ELI5 Visual Lab 🔬
 
-> **Complex Systems, Explained Visually.** Interactive visual mental models breaking down frontier AI benchmarks, monetary mechanics, high-voltage electrical physics, and macroeconomics. 100% client-side, zero backend required, deployable to Vercel in seconds.
+[![Production Site](https://img.shields.io/badge/Vercel-Live%20Site-black?style=flat-square&logo=vercel)](https://eli5-seven-mu.vercel.app)
+[![Explainers](https://img.shields.io/badge/Explainers-9%20Interactive%20Models-6366f1?style=flat-square)](https://eli5-seven-mu.vercel.app)
+[![Architecture](https://img.shields.io/badge/Architecture-100%25%20Serverless%20Static-10b981?style=flat-square)](https://eli5-seven-mu.vercel.app)
+
+> **Live Website:** [https://eli5-seven-mu.vercel.app](https://eli5-seven-mu.vercel.app)
+
+**Complex Systems, Explained Visually.** Interactive visual mental models breaking down frontier AI benchmarks, monetary mechanics, high-voltage electrical physics, and macroeconomics. 100% client-side, zero backend required, deployed to Vercel in seconds.
 
 ---
 
