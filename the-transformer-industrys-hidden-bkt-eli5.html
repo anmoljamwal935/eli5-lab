@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="source-title" content="The Transformer Industry's Hidden BKT. A solid bet to ride for the next decade.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231469d9'/%3E%3Cpath d='M8 10h16M8 16h16M8 22h16' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+<title>Transformer Economics — an ELI5 field note</title>
+<style>
+:root{
+  --ink:#111214;--paper:#f3f2ee;--white:#fff;--muted:#686a6f;
+  --line:rgba(17,18,20,.16);--blue:#1469d9;--blue-dark:#0a3980;
+  --dark:#0d0f12;--dark-line:rgba(255,255,255,.18);--dark-muted:#a5a8af;
+  --ease-out:cubic-bezier(.23,1,.32,1);--max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit}
+.mast{position:fixed;z-index:20;inset:0 0 auto;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,54px);color:#fff;background:rgba(13,15,18,.84);backdrop-filter:saturate(180%) blur(20px);font-size:11px;letter-spacing:.13em;text-transform:uppercase}
+.mast strong{font-weight:650}.progress-track{position:absolute;left:0;bottom:0;width:100%;height:2px;background:rgba(255,255,255,.12)}.progress{height:100%;width:0;background:#fff;transform-origin:left}
+.hero{min-height:100svh;background:var(--dark);color:#fff;display:grid;align-items:center;padding:clamp(100px,12vw,160px) clamp(22px,6vw,88px) 58px;overflow:hidden}.hero-inner{width:min(var(--max),100%);margin:auto;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(360px,.96fr);gap:clamp(40px,7vw,100px);align-items:center}.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#8dbdf8;margin-bottom:24px}.hero h1{font-size:clamp(3.6rem,8.7vw,8.4rem);font-weight:280;line-height:.84;letter-spacing:-.065em;text-transform:uppercase;margin:0;max-width:760px}.hero h1 span{display:block;color:#8dbdf8}.hero-copy{font-size:clamp(1.1rem,1.8vw,1.42rem);line-height:1.42;color:#c9ccd2;max-width:640px;margin:32px 0 0}.hero-figure svg{width:100%;height:auto;display:block}.source-rail{grid-column:1/-1;border-top:1px solid var(--dark-line);margin-top:34px;padding-top:22px;display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:24px}.source-rail div{min-width:0}.source-rail b{display:block;font-size:clamp(1.35rem,2.2vw,2rem);font-weight:450;letter-spacing:-.04em}.source-rail small{color:var(--dark-muted);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}.source-rail .source-note b{font-size:.84rem;line-height:1.4;letter-spacing:0;font-weight:500;color:#fff}.source-rail .source-note small{display:block;margin-bottom:7px}
+.scene{padding:clamp(84px,11vw,150px) clamp(22px,6vw,88px);background:var(--paper)}.scene.dark{background:var(--dark);color:#fff}.scene.white{background:var(--white)}.scene.blue{background:var(--blue);color:#fff}.scene-inner{width:min(var(--max),100%);margin:auto;display:grid;grid-template-columns:minmax(210px,.34fr) minmax(0,.66fr);gap:clamp(42px,8vw,120px);align-items:start}.chapter{position:sticky;top:96px}.chapter-no{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);border-bottom:1px solid currentColor;padding-bottom:10px;display:inline-block}.dark .chapter-no,.blue .chapter-no{color:#8dbdf8}.chapter h2{font-size:clamp(2.5rem,5.4vw,5.4rem);font-weight:320;line-height:.94;letter-spacing:-.052em;margin:24px 0 20px;text-wrap:balance}.chapter p{color:var(--muted);font-size:1rem;max-width:360px;margin:0}.dark .chapter p{color:var(--dark-muted)}.blue .chapter p{color:rgba(255,255,255,.76)}.stage{min-width:0}.stage svg{display:block;width:100%;height:auto}.fine{font-size:.77rem;color:var(--muted);margin-top:18px}.dark .fine,.blue .fine{color:var(--dark-muted)}
+.big-stat{font-size:clamp(4.4rem,10vw,9rem);font-weight:260;line-height:.8;letter-spacing:-.07em}.big-stat sup{font-size:.18em;letter-spacing:.03em;font-weight:600;text-transform:uppercase;vertical-align:top;margin-left:8px}.stat-caption{font-size:.8rem;letter-spacing:.11em;text-transform:uppercase;margin-top:15px}.signal-grid{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line);margin-top:44px}.signal{padding:26px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-height:160px}.signal b{display:block;font-size:1.45rem;font-weight:500;letter-spacing:-.03em}.signal span{display:block;color:var(--muted);margin-top:9px;font-size:.93rem}.dark .signal-grid{border-color:var(--dark-line)}.dark .signal{border-color:var(--dark-line)}.dark .signal span{color:var(--dark-muted)}
+.switcher{display:inline-flex;border:1px solid var(--line);padding:3px;margin-bottom:34px}.switcher button{min-height:44px;border:0;background:transparent;color:var(--muted);padding:0 18px;cursor:pointer;transition:background 180ms var(--ease-out),color 180ms var(--ease-out),transform 120ms var(--ease-out)}.switcher button:active{transform:scale(.97)}.switcher button.active{background:var(--ink);color:#fff}.load-renewable{display:none}.renewable .load-steady{display:none}.renewable .load-renewable{display:block}
+.value-chain{border-top:1px solid var(--line)}.value-row{display:grid;grid-template-columns:180px 1fr 74px;gap:18px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}.value-row label{font-size:.86rem}.bar-track{height:10px;background:#deddd8;position:relative}.bar{height:100%;width:var(--w);background:#8a8c91}.value-row.premium .bar{background:var(--blue)}.value-row strong{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}.value-row.premium label,.value-row.premium strong{color:var(--blue)}
+.equation{display:grid;grid-template-columns:1fr 70px 1fr 70px 1fr;align-items:center;margin:54px 0 0}.term{border-top:1px solid rgba(255,255,255,.45);padding-top:20px;min-height:190px}.term b{display:block;font-size:clamp(2.2rem,4.4vw,4.3rem);font-weight:300;letter-spacing:-.05em;line-height:.95}.term span{display:block;margin-top:16px;color:rgba(255,255,255,.7);font-size:.9rem}.operator{text-align:center;font-size:2.5rem;font-weight:250}.analogy{margin-top:70px;border-top:1px solid rgba(255,255,255,.45);padding-top:28px;display:grid;grid-template-columns:1fr 54px 1fr;gap:20px;align-items:center}.analogy h3{font-weight:400;font-size:1.6rem;margin:0 0 18px}.analogy ul{list-style:none;padding:0;margin:0;color:rgba(255,255,255,.76)}.analogy li{padding:7px 0;border-bottom:1px solid rgba(255,255,255,.16)}.analogy .arrow{text-align:center;font-size:2.2rem}
+.engines{display:grid;grid-template-columns:1fr 1px 1fr;gap:46px;align-items:stretch}.engine-rule{background:var(--line)}.engine .engine-label{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--blue)}.engine h3{font-size:clamp(2.3rem,4.5vw,4.6rem);line-height:.92;letter-spacing:-.055em;font-weight:320;margin:18px 0 32px}.engine dl{margin:0}.engine dl div{display:flex;justify-content:space-between;gap:20px;padding:14px 0;border-top:1px solid var(--line)}.engine dt{color:var(--muted)}.engine dd{margin:0;text-align:right;font-weight:600}.roce-result{grid-column:1/-1;margin-top:70px;background:var(--ink);color:#fff;padding:clamp(28px,5vw,58px);display:flex;align-items:end;justify-content:space-between;gap:30px}.roce-result span{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#a5a8af}.roce-result strong{display:block;font-size:clamp(3.4rem,8vw,7.5rem);font-weight:270;line-height:.85;letter-spacing:-.07em}.roce-result p{max-width:350px;color:#c5c7cb;margin:0}
+.risk-list{counter-reset:risk;border-top:1px solid var(--dark-line)}.risk{counter-increment:risk;display:grid;grid-template-columns:64px minmax(180px,.52fr) minmax(220px,.48fr);gap:28px;padding:27px 0;border-bottom:1px solid var(--dark-line);align-items:start}.risk:before{content:"0" counter(risk);color:#8dbdf8;font-size:.78rem;letter-spacing:.13em}.risk b{font-size:1.25rem;font-weight:500;letter-spacing:-.02em}.risk p{margin:0;color:var(--dark-muted);font-size:.94rem}.caveat{margin-top:42px;padding-top:22px;border-top:3px solid #8dbdf8;color:#d0d2d7;max-width:740px}.caveat strong{color:#fff}
+.checks{counter-reset:check;border-top:1px solid var(--line)}.check{counter-increment:check;display:grid;grid-template-columns:90px .45fr .55fr;gap:32px;padding:31px 0;border-bottom:1px solid var(--line);align-items:start}.check:before{content:"0" counter(check);font-size:2.2rem;font-weight:300;color:var(--blue);line-height:1}.check b{font-size:1.2rem;font-weight:550}.check span{color:var(--muted)}
+.closing{background:#fff;padding:clamp(80px,10vw,140px) clamp(22px,6vw,88px)}.closing-inner{width:min(var(--max),100%);margin:auto;border-top:1px solid var(--line);padding-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:80px}.closing blockquote{font-size:clamp(2rem,4vw,4rem);font-weight:320;line-height:1.06;letter-spacing:-.04em;margin:0}.closing-meta{align-self:end;color:var(--muted);font-size:.85rem}.closing-meta a{color:var(--blue);text-decoration:none}.closing-meta a:hover{text-decoration:underline}
+.reveal{opacity:1;transform:none}
+@media(max-width:820px){.hero-inner,.scene-inner{grid-template-columns:1fr}.hero{min-height:auto}.hero-figure{max-width:620px}.source-rail{grid-template-columns:repeat(3,1fr)}.source-note{grid-column:1/-1}.chapter{position:static}.chapter p{max-width:620px}.equation{grid-template-columns:1fr}.operator{padding:14px 0}.term{min-height:0}.analogy{grid-template-columns:1fr}.analogy .arrow{transform:rotate(90deg)}.engines{grid-template-columns:1fr}.engine-rule{height:1px}.risk,.check{grid-template-columns:56px 1fr}.risk p,.check span{grid-column:2}.closing-inner{grid-template-columns:1fr;gap:48px}}
+@media(max-width:560px){body{font-size:16px}.mast{padding:0 16px}.mast .right{display:none}.hero{padding-left:18px;padding-right:18px}.hero h1{font-size:clamp(3.4rem,19vw,5.8rem)}.source-rail{grid-template-columns:1fr 1fr}.scene{padding-left:18px;padding-right:18px}.signal-grid{grid-template-columns:1fr}.value-row{grid-template-columns:118px 1fr 62px;gap:10px}.value-row label{font-size:.76rem}.engines{gap:34px}.roce-result{display:block}.roce-result p{margin-top:24px}.closing{padding-left:18px;padding-right:18px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="mast"><strong>Field note / transformer economics</strong><span class="right">Source-aware ELI5 · 09 scenes</span><div class="progress-track"><div class="progress" id="progress"></div></div></header>
+
+<main>
+<section class="hero">
+<div class="hero-inner">
+<div>
+<div class="kicker">Shilchar Technologies · article thesis visualised</div>
+<h1>The <span>hidden</span> economics</h1>
+<p class="hero-copy">The essay's argument in one line: custom renewable transformers may earn premium margins while a focused factory turns capital faster.</p>
+</div>
+<div class="hero-figure" aria-hidden="true">
+<svg viewBox="0 0 560 640">
+<g fill="none" stroke="#6fa9ed" stroke-width="2">
+<rect x="124" y="146" width="312" height="344"/><rect x="164" y="192" width="92" height="230"/><rect x="304" y="192" width="92" height="230"/>
+<path d="M184 214q52 16 0 32q52 16 0 32q52 16 0 32q52 16 0 32q52 16 0 32"/>
+<path d="M324 214q52 16 0 32q52 16 0 32q52 16 0 32q52 16 0 32q52 16 0 32"/>
+<path d="M280 130V506M102 168H458M102 470H458" stroke-dasharray="7 8" opacity=".45"/>
+<path d="M80 110H480M80 526H480" opacity=".25"/>
+<circle cx="280" cy="130" r="7" fill="#6fa9ed"/><circle cx="280" cy="506" r="7" fill="#6fa9ed"/>
+</g>
+<g fill="#fff" font-size="13" letter-spacing="1.7"><text x="124" y="120">PRIMARY</text><text x="355" y="120">SECONDARY</text><text x="124" y="520">MAGNETIC CORE / WINDINGS / COOLING</text></g>
+<path d="M42 316H112M448 316H518" stroke="#fff" stroke-width="3"/><path d="M96 305L113 316L96 327M502 305L519 316L502 327" fill="none" stroke="#fff" stroke-width="3"/>
+<text x="280" y="585" fill="#fff" font-size="44" font-weight="280" text-anchor="middle">VOLTAGE, ADAPTED.</text>
+</svg>
+</div>
+<div class="source-rail">
+<div class="source-note"><small>Reading rule</small><b>Figures are the author's claims unless independently verified elsewhere.</b></div>
+<div><b>≈60%</b><small>renewable revenue</small></div><div><b>≈50%</b><small>export mix</small></div><div><b>23.6×</b><small>stated P/E</small></div>
+</div>
+</div>
+</section>
+
+<section class="scene white reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">01 / Demand</span><h2>The wave is real. The winner is not obvious.</h2><p>The theme creates demand. It does not tell us which layer keeps the economics.</p></div>
+<div class="stage">
+<div class="big-stat">200<span style="color:var(--blue)">→500</span><sup>GW by 2030</sup></div>
+<div class="stat-caption">India renewable-capacity claim in the article</div>
+<div class="signal-grid">
+<div class="signal"><b>Domestic demand</b><span>Higher electricity use as the economy grows.</span></div>
+<div class="signal"><b>AI datacentres</b><span>Computation turns electricity into infrastructure.</span></div>
+<div class="signal"><b>Energy transition</b><span>Solar and wind connect new generation to the grid.</span></div>
+<div class="signal"><b>Aging grids</b><span>Europe and America need replacement equipment.</span></div>
+</div>
+<p class="fine">Source framing: 20–25% annual renewable-capacity growth over the prior decade; approximately 15–16% CAGR toward 2030.</p>
+</div>
+</div>
+</section>
+
+<section class="scene dark reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">02 / Product</span><h2>Electricity needs the right pressure.</h2><p>The water analogy is imperfect, but useful: voltage behaves like pressure and current like flow.</p></div>
+<div class="stage">
+<svg viewBox="0 0 820 560" role="img" aria-label="Water pressure mapped to transformer voltage">
+<defs><marker id="arrowWhite" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#fff"/></marker></defs>
+<text x="60" y="58" fill="#8dbdf8" font-size="14" letter-spacing="2">THE FAMILIAR THING</text>
+<path d="M70 162H270" stroke="#6fa9ed" stroke-width="60"/><path d="M356 162H500" stroke="#6fa9ed" stroke-width="24"/><path d="M270 132L356 150V174L270 192Z" fill="#fff"/>
+<text x="70" y="240" fill="#fff" font-size="30" font-weight="300">Wide pipe → narrow pipe</text><text x="70" y="273" fill="#a5a8af" font-size="18">The pressure changes so the flow can travel.</text>
+<path d="M70 335H750" stroke="rgba(255,255,255,.2)"/>
+<text x="60" y="392" fill="#8dbdf8" font-size="14" letter-spacing="2">THE REAL THING</text>
+<g fill="none" stroke="#6fa9ed" stroke-width="7"><path d="M100 438q34 18 0 36q34 18 0 36"/><path d="M310 438q34 18 0 36q34 18 0 36"/></g><rect x="213" y="420" width="54" height="110" fill="none" stroke="#fff" stroke-width="3"/><path d="M360 475H720" stroke="#fff" stroke-width="3" marker-end="url(#arrowWhite)"/>
+<text x="390" y="446" fill="#fff" font-size="27" font-weight="300">Windings + magnetic core</text><text x="390" y="505" fill="#a5a8af" font-size="18">Step voltage up or down. Keep AC moving.</text>
+</svg>
+<div class="caveat"><strong>Where the analogy breaks:</strong> electricity is not water. The mapping only explains why different parts of a network need different voltage levels.</div>
+</div>
+</div>
+</section>
+
+<section class="scene reveal" id="loadScene">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">03 / Duty cycle</span><h2>Renewables make the ride rougher.</h2><p>Solar and wind fluctuate. Inverters add distortions. Local heat, humidity and salt change the engineering problem.</p></div>
+<div class="stage">
+<div class="switcher" role="group" aria-label="Compare power loads"><button class="active" data-load="steady">Steady thermal load</button><button data-load="renewable">Variable renewable load</button></div>
+<div class="load-steady">
+<svg viewBox="0 0 820 430" role="img" aria-label="Steady thermal load">
+<path d="M50 340H780M50 60V340" stroke="#b8b7b1" stroke-width="2"/>
+<path d="M65 205C180 203 280 208 395 204S610 205 760 204" fill="none" stroke="#1469d9" stroke-width="10"/>
+<text x="64" y="40" fill="#686a6f" font-size="14">LOAD</text><text x="720" y="374" fill="#686a6f" font-size="14">TIME</text>
+<text x="64" y="405" fill="#111214" font-size="25" font-weight="400">Predictable input → standard thermal assumptions</text>
+</svg>
+</div>
+<div class="load-renewable">
+<svg viewBox="0 0 820 430" role="img" aria-label="Variable renewable load">
+<path d="M50 340H780M50 60V340" stroke="#b8b7b1" stroke-width="2"/>
+<path d="M65 315L112 286L157 95L206 250L258 78L309 322L358 211L408 64L462 281L518 157L571 326L625 105L691 239L758 130" fill="none" stroke="#1469d9" stroke-width="10" stroke-linejoin="miter"/>
+<text x="64" y="40" fill="#686a6f" font-size="14">LOAD</text><text x="720" y="374" fill="#686a6f" font-size="14">TIME</text>
+<text x="64" y="405" fill="#111214" font-size="25" font-weight="400">Harmonics + heat + cycling → project-specific design</text>
+</svg>
+</div>
+<p class="fine">Article example: a Rajasthan solar farm may face 48°C ambient heat; coastal Tamil Nadu adds humidity and salt spray.</p>
+</div>
+</div>
+</section>
+
+<section class="scene dark reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">04 / Moat claim</span><h2>The parts are purchasable. Integration is not.</h2><p>The essay locates value in making every component work together under a project's exact losses, heat and reliability requirements.</p></div>
+<div class="stage">
+<svg viewBox="0 0 820 590" role="img" aria-label="Commodity parts become a reliable transformer through engineering integration">
+<defs><marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#6fa9ed"/></marker></defs>
+<g fill="#fff" font-size="21"><text x="42" y="92">CRGO steel</text><text x="42" y="172">Copper</text><text x="42" y="252">Oil + cooling</text><text x="42" y="332">Insulation</text><text x="42" y="412">Tap changers</text></g>
+<g stroke="rgba(255,255,255,.25)"><path d="M42 111H220M42 191H220M42 271H220M42 351H220M42 431H220"/></g>
+<g stroke="#6fa9ed" stroke-width="3" marker-end="url(#arrowBlue)"><path d="M225 101L345 221"/><path d="M225 181L345 238"/><path d="M225 261L345 255"/><path d="M225 341L345 272"/><path d="M225 421L345 289"/></g>
+<rect x="350" y="160" width="230" height="190" fill="none" stroke="#fff" stroke-width="2"/><text x="465" y="222" fill="#8dbdf8" font-size="15" letter-spacing="2" text-anchor="middle">INTEGRATION</text><text x="465" y="265" fill="#fff" font-size="30" font-weight="300" text-anchor="middle">Engineering</text><text x="465" y="301" fill="#a5a8af" font-size="16" text-anchor="middle">geometry · windings · thermal design</text>
+<path d="M585 255H690" stroke="#6fa9ed" stroke-width="3" marker-end="url(#arrowBlue)"/>
+<text x="698" y="224" fill="#8dbdf8" font-size="15" letter-spacing="2">OUTCOME</text><text x="698" y="264" fill="#fff" font-size="22">Low losses</text><text x="698" y="295" fill="#fff" font-size="22">Reliability</text><text x="698" y="326" fill="#fff" font-size="22">Approval</text>
+<path d="M42 500H780" stroke="rgba(255,255,255,.2)"/><text x="42" y="546" fill="#fff" font-size="25" font-weight="300">Field history + certifications + customer trust = the proposed gate.</text>
+</svg>
+<p class="fine">This is the author's moat hypothesis. Evidence to seek: repeat orders, warranty failures, loss penalties, qualification time and customer retention.</p>
+</div>
+</div>
+</section>
+
+<section class="scene white reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">05 / Value chain</span><h2>Profit pools are uneven.</h2><p>The layer responsible for performance can keep more value than the layers selling commodity inputs or executing projects.</p></div>
+<div class="stage">
+<div class="value-chain" aria-label="Article-created margin comparison">
+<div class="value-row"><label>Raw materials</label><div class="bar-track"><div class="bar" style="--w:38%"></div></div><strong>8–12%</strong></div>
+<div class="value-row"><label>Components</label><div class="bar-track"><div class="bar" style="--w:48%"></div></div><strong>10–15%</strong></div>
+<div class="value-row"><label>Standard OEM</label><div class="bar-track"><div class="bar" style="--w:64%"></div></div><strong>15–20%</strong></div>
+<div class="value-row premium"><label>Premium OEM</label><div class="bar-track"><div class="bar" style="--w:96%"></div></div><strong>20–30%+</strong></div>
+<div class="value-row"><label>EPC contractor</label><div class="bar-track"><div class="bar" style="--w:35%"></div></div><strong>7–11%</strong></div>
+</div>
+<p class="fine">These are article-created ranges, not independently checked industry benchmarks. The periods and methodology are not supplied.</p>
+</div>
+</div>
+</section>
+
+<section class="scene blue reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">06 / ROCE</span><h2>Two engines create the return.</h2><p>High ROCE is not magic. It can be decomposed into profit per sale and sales produced per rupee of capital.</p></div>
+<div class="stage">
+<div class="equation">
+<div class="term"><b>Margin</b><span>Operating profit earned on each sale.</span></div><div class="operator">×</div>
+<div class="term"><b>Asset turns</b><span>Revenue produced by each rupee tied up.</span></div><div class="operator">=</div>
+<div class="term"><b>ROCE</b><span>Return on the capital employed.</span></div>
+</div>
+<div class="analogy">
+<div><h3>The restaurant</h3><ul><li>Profit per meal</li><li>Meals served per kitchen</li><li>Return on the kitchen</li></ul></div><div class="arrow">→</div><div><h3>The factory</h3><ul><li>EBIT margin</li><li>Sales per capital employed</li><li>ROCE</li></ul></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="scene reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">07 / Shilchar claim</span><h2>Premium product. Faster factory.</h2><p>The author's thesis needs both engines to persist after competition rises and new capacity enters the denominator.</p></div>
+<div class="stage engines">
+<div class="engine"><span class="engine-label">Engine A / pricing</span><h3>Margin</h3><dl><div><dt>Exports</dt><dd>≈50% mix</dd></div><div><dt>Renewable designs</dt><dd>custom</dd></div><div><dt>Failure cost</dt><dd>premium</dd></div><div><dt>Certifications</dt><dd>slow gate</dd></div></dl></div>
+<div class="engine-rule"></div>
+<div class="engine"><span class="engine-label">Engine B / velocity</span><h3>Turns</h3><dl><div><dt>Receivables</dt><dd>45–90d est.</dd></div><div><dt>Build cycles</dt><dd>shorter</dd></div><div><dt>Work in progress</dt><dd>lower</dd></div><div><dt>Plant</dt><dd>lighter</dd></div></dl></div>
+<div class="roce-result"><div><span>Embedded comparison</span><strong>35–45%+</strong></div><p>Shilchar ROCE shown in the author's comparison, versus 12–20% for a typical transformer OEM.</p></div>
+</div>
+</div>
+</section>
+
+<section class="scene dark reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">08 / Gotchas</span><h2>A clean story is not finished proof.</h2><p>The article supplies a hypothesis. It does not remove cycle, execution, governance or valuation risk.</p></div>
+<div class="stage">
+<div class="risk-list">
+<div class="risk"><b>Margins can normalise.</b><p>Scarcity, exports, utilisation and raw-material conditions can flatter current economics.</p></div>
+<div class="risk"><b>New capacity can dilute returns.</b><p>Nearly doubled capacity must fill quickly and earn attractive incremental ROCE.</p></div>
+<div class="risk"><b>A moat needs behaviour.</b><p>Approvals matter only if they produce repeat orders, low failures and sustained pricing.</p></div>
+<div class="risk"><b>Management claims need primary evidence.</b><p>Selected quotations and author interpretation are not a substitute for filings and delivery history.</p></div>
+<div class="risk"><b>Price expires.</b><p>The stated P/E of 23.6 was a snapshot from 8 February 2026.</p></div>
+</div>
+<div class="caveat"><strong>Unreconciled source figures:</strong> the headline says recent ROCE/ROE exceeded 50%; an embedded comparison shows 35–45%+ ROCE. The source does not explain the period or normalisation difference.</div>
+</div>
+</div>
+</section>
+
+<section class="scene white reveal">
+<div class="scene-inner">
+<div class="chapter"><span class="chapter-no">09 / Use it</span><h2>Turn the story into a checklist.</h2><p>Investigate the two engines. Then write down what would break them.</p></div>
+<div class="stage checks">
+<div class="check"><b>Segment truth</b><span>Verify renewables, exports, customer mix and concentration from current filings.</span></div>
+<div class="check"><b>Moat evidence</b><span>Check approvals, field history, failures, guarantees, repeat orders and qualification times.</span></div>
+<div class="check"><b>Cash clocks</b><span>Measure receivable days, inventory days, WIP and cash conversion—do not infer them from mix alone.</span></div>
+<div class="check"><b>Expansion return</b><span>Track utilisation, funding and incremental ROCE after new capacity begins producing.</span></div>
+<div class="check"><b>Current price</b><span>Recompute valuation using today's filings and market price.</span></div>
+<div class="check"><b>Thesis breakers</b><span>Name the margin, execution, debt, customer and capital-turn events that would disconfirm the thesis.</span></div>
+</div>
+</div>
+</section>
+
+<section class="closing">
+<div class="closing-inner">
+<blockquote>High ROCE needs a valuable product <em>and</em> fast-moving capital. Both must survive verification.</blockquote>
+<div class="closing-meta"><p><strong>Source:</strong> Vaibhav Tambade, 8 February 2026.</p><p><a href="https://substack.com/home/post/p-187268637" target="_blank" rel="noopener noreferrer">Read the original Substack source ↗</a></p><p>Single-source summary. No independent fact-checking. Educational only; not investment advice.</p><p><a href="file:///Users/anmoljamwal/Desktop/antifragile-thinking-wiki/raw/articles/the-transformer-industrys-hidden-bkt.md">Read the verbatim extract</a> · <a href="file:///Users/anmoljamwal/Desktop/antifragile-thinking-wiki/queries/the-transformer-industrys-hidden-bkt-study-notes.md">Open study notes</a></p></div>
+</div>
+</section>
+</main>
+
+<script>
+const scene=document.getElementById('loadScene');
+document.querySelectorAll('[data-load]').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('[data-load]').forEach(b=>b.classList.remove('active'));
+  button.classList.add('active');
+  scene.classList.toggle('renewable',button.dataset.load==='renewable');
+}));
+const progress=document.getElementById('progress');
+const updateProgress=()=>{const d=document.documentElement;const max=d.scrollHeight-innerHeight;progress.style.width=(max?Math.min(100,scrollY/max*100):0)+'%'};
+addEventListener('scroll',updateProgress,{passive:true});updateProgress();
+</script>
+</body>
+</html>

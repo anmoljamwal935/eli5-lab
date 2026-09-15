@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How a Lithium-Ion Battery Works — ELI5</title>
+<style>
+  :root{
+    --bg-light:#f5f5f7;
+    --bg-dark:#000000;
+    --card-dark:#161617;
+    --ink:#1d1d1f;
+    --ink-soft:rgba(0,0,0,.62);
+    --paper:#ffffff;
+    --paper-soft:rgba(255,255,255,.62);
+    --electron:#0a84ff;
+    --electron-deep:#0066cc;
+    --ion:#0d9d5c;
+    --ion-soft:rgba(13,157,92,.14);
+    --e-soft:rgba(10,132,255,.14);
+    --danger:#d70015;
+    --amber:#ff9f0a;
+    --line-light:rgba(0,0,0,.1);
+    --line-dark:rgba(255,255,255,.14);
+    --shadow:rgba(0,0,0,.22) 3px 5px 30px 0px;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg-dark);color:var(--paper);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  /* ---- nav : Apple translucent glass ---- */
+  nav{position:sticky;top:0;z-index:50;height:52px;display:flex;align-items:center;
+    background:rgba(0,0,0,.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+  nav .inner{width:100%;max-width:980px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:18px}
+  nav .brand{color:#fff;font-size:13px;font-weight:600;letter-spacing:-.12px;white-space:nowrap}
+  nav .brand span{color:var(--electron)}
+  nav a.lnk{color:rgba(255,255,255,.75);text-decoration:none;font-size:12px;letter-spacing:-.12px;white-space:nowrap}
+  nav a.lnk:hover{color:#fff;text-decoration:underline}
+  nav .spacer{flex:1}
+  @media(max-width:760px){nav a.lnk{display:none}}
+  /* ---- panels ---- */
+  .panel{padding:104px 24px 112px}
+  .panel.dark{background:var(--bg-dark);color:var(--paper)}
+  .panel.light{background:var(--bg-light);color:var(--ink)}
+  .wrap{max-width:980px;margin:0 auto}
+  .eyebrow{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
+  .dark .eyebrow{color:var(--electron)}
+  .light .eyebrow{color:var(--electron-deep)}
+  h1{font-size:56px;line-height:1.07;letter-spacing:-.28px;font-weight:600;max-width:16ch}
+  h2{font-size:40px;line-height:1.1;letter-spacing:-.2px;font-weight:600;max-width:22ch}
+  .lede{font-size:21px;line-height:1.4;letter-spacing:.2px;margin-top:20px;max-width:44ch}
+  .dark .lede{color:var(--paper-soft)}
+  .light .lede{color:var(--ink-soft)}
+  .body{font-size:17px;line-height:1.5;letter-spacing:-.374px;margin-top:22px;max-width:56ch}
+  .dark .body{color:rgba(255,255,255,.82)}
+  .light .body{color:rgba(0,0,0,.78)}
+  .body b{font-weight:600}
+  .dark .body b{color:#fff}
+  .diagram{margin-top:44px}
+  .diagram svg{width:100%;height:auto;display:block}
+  svg text{font-family:var(--sans)}
+  /* ---- legend ---- */
+  .legend{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:26px;font-size:14px;letter-spacing:-.22px}
+  .dark .legend{color:var(--paper-soft)}
+  .light .legend{color:var(--ink-soft)}
+  .legend .item{display:flex;align-items:center;gap:9px}
+  .dot{width:16px;height:16px;border-radius:50%;flex:none}
+  .dot.e{background:var(--electron)}
+  .dot.li{background:var(--ion)}
+  .swatch{width:26px;height:10px;border-radius:5px;flex:none}
+  /* ---- cards / grids ---- */
+  .duo,.trio{display:grid;gap:22px;margin-top:44px}
+  .duo{grid-template-columns:1fr 1fr}
+  .trio{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:700px){.duo,.trio{grid-template-columns:1fr}}
+  .card{border-radius:12px;padding:26px 24px 24px}
+  .dark .card{background:var(--card-dark)}
+  .light .card{background:#fff;box-shadow:var(--shadow)}
+  .card svg{width:100%;height:auto;display:block}
+  .card h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:18px 0 8px}
+  .card p{font-size:14px;line-height:1.45;letter-spacing:-.22px}
+  .dark .card p{color:var(--paper-soft)}
+  .light .card p{color:var(--ink-soft)}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:5px 12px;border-radius:980px;margin-bottom:14px}
+  .tag.bad{background:rgba(215,0,21,.14);color:#ff6961}
+  .light .tag.bad{color:var(--danger)}
+  .tag.good{background:var(--ion-soft);color:#4ade80}
+  .light .tag.good{color:#0a7a46}
+  /* ---- mapping rows ---- */
+  .map{margin-top:44px;display:flex;flex-direction:column;gap:16px}
+  .map .row{display:grid;grid-template-columns:1fr 64px 1.35fr;align-items:stretch;gap:0}
+  @media(max-width:700px){.map .row{grid-template-columns:1fr;gap:8px}.map .arr{transform:rotate(90deg);justify-self:center;padding:0}}
+  .pill{border-radius:12px;padding:20px 22px;font-size:16px;letter-spacing:-.2px;line-height:1.35}
+  .pill small{display:block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:6px}
+  .pill.water{background:#e9e9ee;color:var(--ink)}
+  .pill.real{background:#fff;box-shadow:var(--shadow);border-left:6px solid var(--ink)}
+  .pill.real.li{border-color:var(--ion)}
+  .pill.real.el{border-color:var(--electron)}
+  .map .arr{display:flex;align-items:center;justify-content:center;color:var(--electron-deep);
+    font-size:28px;font-weight:600}
+  /* ---- lab controls ---- */
+  .lab{margin-top:44px;background:var(--card-dark);border:1px solid var(--line-dark);border-radius:12px;
+    padding:28px 28px 30px}
+  .lab svg{width:100%;height:auto;display:block}
+  .controls{display:flex;flex-direction:column;gap:20px;margin-top:24px;padding-top:24px;
+    border-top:1px solid var(--line-dark)}
+  .seg{display:flex;background:rgba(255,255,255,.08);border-radius:980px;padding:4px;width:max-content;max-width:100%}
+  .seg button{border:0;background:transparent;color:rgba(255,255,255,.65);font-family:var(--sans);
+    font-size:15px;font-weight:600;letter-spacing:-.2px;padding:10px 26px;border-radius:980px;cursor:pointer;min-height:44px}
+  .seg button[aria-pressed="true"]{background:var(--electron);color:#fff}
+  .seg button:focus-visible{outline:2px solid var(--electron);outline-offset:2px}
+  .slider-row{display:grid;grid-template-columns:1fr auto;gap:6px 18px;align-items:center}
+  .slider-row label{font-size:14px;color:var(--paper-soft);letter-spacing:-.22px}
+  .readout{font-family:var(--mono);font-size:15px;color:#fff;text-align:right}
+  .readout .v{color:var(--amber);font-weight:700}
+  input[type="range"]{grid-column:1/-1;width:100%;appearance:none;-webkit-appearance:none;height:6px;border-radius:3px;
+    background:linear-gradient(90deg,var(--electron) var(--fill,62%),rgba(255,255,255,.18) var(--fill,62%));cursor:pointer}
+  input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;
+    background:#fff;border:none;box-shadow:0 1px 6px rgba(0,0,0,.5)}
+  input[type="range"]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:none}
+  .status{font-size:15px;line-height:1.5;letter-spacing:-.2px;color:rgba(255,255,255,.85);
+    background:rgba(255,255,255,.05);border-radius:8px;padding:14px 18px}
+  .status b{color:#fff}
+  /* ---- footer ---- */
+  footer{background:#000;color:rgba(255,255,255,.5);padding:44px 24px 60px;font-size:12px;letter-spacing:-.12px}
+  footer .wrap{display:flex;flex-direction:column;gap:8px}
+  @media(max-width:700px){h1{font-size:40px}h2{font-size:30px}.panel{padding:72px 18px 80px}}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<nav><div class="inner">
+  <div class="brand">How a <span>Li-ion</span> battery works</div>
+  <div class="spacer"></div>
+  <a class="lnk" href="#problem">Problem</a>
+  <a class="lnk" href="#analogy">Analogy</a>
+  <a class="lnk" href="#inside">Inside</a>
+  <a class="lnk" href="#loop">The loop</a>
+  <a class="lnk" href="#gotcha">Gotchas</a>
+</div></nav>
+
+<!-- 1 · TITLE -->
+<section class="panel dark" id="top">
+  <div class="wrap">
+    <div class="eyebrow">ELI5 · energy</div>
+    <h1>How a lithium-ion battery works</h1>
+    <p class="lede">A rechargeable chemical pump: it shuttles lithium ions around inside so electrons march around outside.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 800 340" role="img" aria-label="A battery cell with electrons flowing through a wire around the outside and lithium ions stored inside">
+        <!-- wire -->
+        <path d="M316 168 V86 H484 V168" fill="none" stroke="#0a84ff" stroke-width="6"/>
+        <!-- glow behind bulb -->
+        <circle cx="400" cy="86" r="46" fill="#ff9f0a" opacity="0.22"/>
+        <!-- bulb -->
+        <circle cx="400" cy="86" r="28" fill="#101012" stroke="#ff9f0a" stroke-width="4"/>
+        <path d="M392 96 L398 84 L404 94 L410 78" fill="none" stroke="#ff9f0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <g stroke="#ff9f0a" stroke-width="3" stroke-linecap="round" opacity="0.9">
+          <line x1="400" y1="40" x2="400" y2="50"/>
+          <line x1="367" y1="53" x2="374" y2="61"/>
+          <line x1="433" y1="53" x2="426" y2="61"/>
+        </g>
+        <!-- electron dots on wire -->
+        <circle cx="316" cy="126" r="10" fill="#0a84ff"/>
+        <circle cx="352" cy="86" r="10" fill="#0a84ff"/>
+        <circle cx="448" cy="86" r="10" fill="#0a84ff"/>
+        <circle cx="484" cy="126" r="10" fill="#0a84ff"/>
+        <!-- tabs -->
+        <rect x="290" y="138" width="52" height="34" rx="4" fill="#8e8e93"/>
+        <rect x="458" y="138" width="52" height="34" rx="4" fill="#8e8e93"/>
+        <!-- cell body -->
+        <rect x="220" y="168" width="360" height="140" rx="28" fill="#1c1c1e" stroke="#48484a" stroke-width="2"/>
+        <rect x="244" y="192" width="126" height="92" rx="14" fill="#3a3a3c"/>
+        <rect x="430" y="192" width="126" height="92" rx="14" fill="#7a6430"/>
+        <line x1="400" y1="192" x2="400" y2="284" stroke="#ffffff" stroke-width="3" stroke-dasharray="7 7" opacity="0.85"/>
+        <!-- ions parked left (charged) -->
+        <g fill="#0d9d5c">
+          <circle cx="278" cy="214" r="14"/><circle cx="330" cy="210" r="14"/>
+          <circle cx="304" cy="242" r="14"/><circle cx="348" cy="252" r="14"/>
+          <circle cx="272" cy="264" r="14"/>
+        </g>
+        <g fill="#ffffff" font-size="11" font-weight="700" text-anchor="middle">
+          <text x="278" y="218">Li+</text><text x="330" y="214">Li+</text>
+          <text x="304" y="246">Li+</text><text x="348" y="256">Li+</text>
+          <text x="272" y="268">Li+</text>
+        </g>
+        <!-- polarity -->
+        <text x="256" y="152" fill="#ffffff" font-size="22" font-weight="600" text-anchor="middle">−</text>
+        <text x="544" y="152" fill="#ffffff" font-size="22" font-weight="600" text-anchor="middle">+</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <div class="item"><span class="dot e"></span>electrons — travel the outside wire</div>
+      <div class="item"><span class="dot li"></span>lithium ions — travel inside the cell</div>
+    </div>
+    <p class="body">Two kinds of traffic, two separate roads. <b>Blue electrons</b> can only go around the outside, through your gadget. <b>Green ions</b> can only move inside. The trick of the battery is linking them.</p>
+  </div>
+</section>
+
+<!-- 2 · PROBLEM -->
+<section class="panel light" id="problem">
+  <div class="wrap">
+    <div class="eyebrow">01 · The problem</div>
+    <h2>No outlet, no power?</h2>
+    <div class="duo">
+      <div class="card">
+        <svg viewBox="0 0 380 300" role="img" aria-label="Phone plugged into a wall, screen lit, electrons flowing">
+          <text x="190" y="42" font-size="14" font-weight="700" letter-spacing="3" fill="#0a7a46" text-anchor="middle">WALL POWER</text>
+          <line x1="44" y1="70" x2="44" y2="250" stroke="#1d1d1f" stroke-width="6" stroke-linecap="round"/>
+          <rect x="44" y="140" width="30" height="62" rx="7" fill="#1d1d1f"/>
+          <rect x="74" y="152" width="42" height="38" rx="6" fill="#8e8e93"/>
+          <path d="M116 171 H196" stroke="#0a84ff" stroke-width="6"/>
+          <g fill="#0a84ff"><circle cx="136" cy="171" r="8"/><circle cx="164" cy="171" r="8"/></g>
+          <rect x="196" y="76" width="128" height="208" rx="18" fill="#1d1d1f"/>
+          <rect x="210" y="106" width="100" height="124" rx="9" fill="#0a84ff"/>
+          <polygon points="268,116 238,162 253,162 244,212 274,156 258,156" fill="#ffffff"/>
+          <text x="260" y="262" font-size="13" fill="rgba(255,255,255,.75)" text-anchor="middle">endless flow…</text>
+        </svg>
+        <h3>Plugged in: alive</h3>
+        <p>The wall pushes an endless stream of electrons through the phone. But the phone is chained to the wall.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 380 300" role="img" aria-label="Unplugged phone with empty battery, no flow">
+          <text x="190" y="42" font-size="14" font-weight="700" letter-spacing="3" fill="#d70015" text-anchor="middle">UNPLUGGED</text>
+          <rect x="131" y="76" width="128" height="208" rx="18" fill="#1d1d1f"/>
+          <rect x="145" y="106" width="100" height="124" rx="9" fill="#2c2c2e"/>
+          <rect x="163" y="140" width="56" height="30" rx="6" fill="none" stroke="#ff6961" stroke-width="4"/>
+          <rect x="219" y="149" width="8" height="12" rx="2" fill="#ff6961"/>
+          <text x="195" y="200" font-size="13" fill="rgba(255,255,255,.75)" text-anchor="middle">0% — no push</text>
+          <path d="M131 171 H92" stroke="#c7c7cc" stroke-width="6"/>
+          <g stroke="#d70015" stroke-width="5" stroke-linecap="round">
+            <line x1="66" y1="159" x2="86" y2="183"/><line x1="86" y1="159" x2="66" y2="183"/>
+          </g>
+          <g fill="#c7c7cc"><circle cx="106" cy="171" r="7"/></g>
+          <text x="195" y="262" font-size="13" fill="rgba(255,255,255,.75)" text-anchor="middle">…but chained</text>
+        </svg>
+        <h3>Cut loose: dead</h3>
+        <p>Pull the plug and the push disappears. A battery is bottled push — chemistry that travels with you.</p>
+      </div>
+    </div>
+    <p class="body">Gadgets run on <b>flowing electrons</b> (current). The wall socket is an endless but immobile pump. A battery packs a smaller pump into your pocket.</p>
+  </div>
+</section>
+
+<!-- 3 · ANALOGY -->
+<section class="panel light" id="analogy">
+  <div class="wrap">
+    <div class="eyebrow">02 · The analogy</div>
+    <h2>Two tanks and a wheel</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 800 400" role="img" aria-label="High water tank draining through a wheel into a low tank, with a pump lifting water back up">
+        <!-- return pipe (behind everything) -->
+        <path d="M600 340 V362 H130 V150 H80" fill="none" stroke="#1d1d1f" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M600 340 V362 H130 V150 H80" fill="none" stroke="#0a84ff" stroke-width="5" stroke-linejoin="round"/>
+        <!-- down pipe -->
+        <path d="M280 140 H330 V280 H354" fill="none" stroke="#1d1d1f" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M280 140 H330 V280 H354" fill="none" stroke="#0a84ff" stroke-width="5" stroke-linejoin="round"/>
+        <!-- outlet pipe into low tank -->
+        <path d="M444 280 H516" fill="none" stroke="#1d1d1f" stroke-width="10"/>
+        <path d="M444 280 H516" fill="none" stroke="#0a84ff" stroke-width="5"/>
+        <!-- flow chevrons -->
+        <polygon points="330,224 319,206 341,206" fill="#1d1d1f"/>
+        <polygon points="130,194 119,210 141,210" fill="#1d1d1f"/>
+        <!-- tanks -->
+        <rect x="80" y="60" width="200" height="120" rx="10" fill="#ffffff" stroke="#1d1d1f" stroke-width="3"/>
+        <rect x="89" y="112" width="182" height="59" fill="#0a84ff" opacity="0.75"/>
+        <rect x="520" y="220" width="200" height="120" rx="10" fill="#ffffff" stroke="#1d1d1f" stroke-width="3"/>
+        <rect x="529" y="302" width="182" height="29" fill="#0a84ff" opacity="0.75"/>
+        <text x="180" y="44" font-size="14" font-weight="700" letter-spacing="3" fill="#1d1d1f" text-anchor="middle">HIGH TANK</text>
+        <text x="620" y="204" font-size="14" font-weight="700" letter-spacing="3" fill="#1d1d1f" text-anchor="middle">LOW TANK</text>
+        <!-- wheel -->
+        <circle cx="400" cy="280" r="44" fill="#ffffff" stroke="#1d1d1f" stroke-width="4"/>
+        <g stroke="#1d1d1f" stroke-width="4" stroke-linecap="round">
+          <line x1="400" y1="280" x2="436" y2="280"/><line x1="400" y1="280" x2="364" y2="280"/>
+          <line x1="400" y1="280" x2="418" y2="249"/><line x1="400" y1="280" x2="382" y2="311"/>
+          <line x1="400" y1="280" x2="418" y2="311"/><line x1="400" y1="280" x2="382" y2="249"/>
+        </g>
+        <circle cx="400" cy="280" r="8" fill="#1d1d1f"/>
+        <path d="M448 252 A56 56 0 0 1 448 308" fill="none" stroke="#1d1d1f" stroke-width="3"/>
+        <polygon points="448,308 458,300 450,295" fill="#1d1d1f"/>
+        <text x="430" y="192" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">falling water spins the wheel</text>
+        <!-- pump -->
+        <circle cx="130" cy="250" r="24" fill="#ff9f0a" stroke="#1d1d1f" stroke-width="3"/>
+        <text x="130" y="257" font-size="18" font-weight="700" fill="#1d1d1f" text-anchor="middle">P</text>
+        <text x="162" y="256" font-size="14" font-weight="600" fill="#1d1d1f">pump lifts it back up</text>
+      </svg>
+    </div>
+    <p class="body">Water falls from the high tank, spins the wheel, collects below. The pump lifts it back up to run again. A battery does exactly this — with <b>ions</b> instead of water.</p>
+  </div>
+</section>
+
+<!-- 4 · MAPPING -->
+<section class="panel light" id="mapping" style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow">03 · Cash it out</div>
+    <h2>Water maps to battery</h2>
+    <div class="map">
+      <div class="row">
+        <div class="pill water"><small>Analogy</small>High tank, full of water</div>
+        <div class="arr">→</div>
+        <div class="pill real li"><small>Battery part</small><b>Anode</b> (graphite) stuffed with lithium — the full side</div>
+      </div>
+      <div class="row">
+        <div class="pill water"><small>Analogy</small>Height gap between the tanks</div>
+        <div class="arr">→</div>
+        <div class="pill real"><small>Battery part</small><b>Voltage</b>, about 4 volts — the electrical height gap</div>
+      </div>
+      <div class="row">
+        <div class="pill water"><small>Analogy</small>Falling water spins the wheel</div>
+        <div class="arr">→</div>
+        <div class="pill real el"><small>Battery part</small><b>Electrons</b> flow through your phone and power it</div>
+      </div>
+      <div class="row">
+        <div class="pill water"><small>Analogy</small>Pump lifts water back uphill</div>
+        <div class="arr">→</div>
+        <div class="pill real el"><small>Battery part</small><b>Charger</b> shoves everything back — refills the top tank</div>
+      </div>
+    </div>
+    <p class="body">Learn these four pairs and the whole machine clicks. One honest crack in the analogy: water is one thing, but the battery splits the flow in two — <b>ions inside, electrons outside</b>.</p>
+  </div>
+</section>
+
+<!-- 5 · ANATOMY -->
+<section class="panel dark" id="inside">
+  <div class="wrap">
+    <div class="eyebrow">04 · The mechanism</div>
+    <h2>Inside the cell: two roads</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 800 400" role="img" aria-label="Layered cross-section: copper, graphite anode, separator, cathode, aluminum, with lithium ions and one blocked electron">
+        <!-- tabs -->
+        <rect x="50" y="74" width="30" height="16" fill="#b87333"/>
+        <rect x="50" y="274" width="30" height="16" fill="#b9b9c2"/>
+        <text x="65" y="64" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">−</text>
+        <text x="65" y="312" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">+</text>
+        <!-- layers -->
+        <rect x="80" y="70" width="360" height="24" fill="#b87333"/>
+        <rect x="80" y="94" width="360" height="76" fill="#3a3a3c"/>
+        <rect x="80" y="170" width="360" height="24" fill="#0a84ff" opacity="0.10"/>
+        <rect x="80" y="194" width="360" height="76" fill="#7a6430"/>
+        <rect x="80" y="270" width="360" height="24" fill="#b9b9c2"/>
+        <!-- graphite sheets -->
+        <g stroke="#5c5c60" stroke-width="2">
+          <line x1="90" y1="108" x2="430" y2="108"/><line x1="90" y1="124" x2="430" y2="124"/>
+          <line x1="90" y1="140" x2="430" y2="140"/><line x1="90" y1="156" x2="430" y2="156"/>
+        </g>
+        <!-- separator dashes -->
+        <line x1="80" y1="170" x2="440" y2="170" stroke="#ffffff" stroke-width="2" stroke-dasharray="8 7" opacity="0.8"/>
+        <line x1="80" y1="194" x2="440" y2="194" stroke="#ffffff" stroke-width="2" stroke-dasharray="8 7" opacity="0.8"/>
+        <!-- cathode lattice -->
+        <g fill="#e3d3a3" opacity="0.8">
+          <circle cx="110" cy="212" r="3"/><circle cx="150" cy="212" r="3"/><circle cx="190" cy="212" r="3"/><circle cx="230" cy="212" r="3"/><circle cx="270" cy="212" r="3"/><circle cx="310" cy="212" r="3"/><circle cx="350" cy="212" r="3"/><circle cx="390" cy="212" r="3"/>
+          <circle cx="110" cy="236" r="3"/><circle cx="150" cy="236" r="3"/><circle cx="190" cy="236" r="3"/><circle cx="230" cy="236" r="3"/><circle cx="270" cy="236" r="3"/><circle cx="310" cy="236" r="3"/><circle cx="350" cy="236" r="3"/><circle cx="390" cy="236" r="3"/>
+          <circle cx="110" cy="258" r="3"/><circle cx="150" cy="258" r="3"/><circle cx="190" cy="258" r="3"/><circle cx="230" cy="258" r="3"/><circle cx="270" cy="258" r="3"/><circle cx="310" cy="258" r="3"/><circle cx="350" cy="258" r="3"/><circle cx="390" cy="258" r="3"/>
+        </g>
+        <!-- ions parked in anode + one crossing -->
+        <g fill="#0d9d5c">
+          <circle cx="150" cy="116" r="13"/><circle cx="262" cy="132" r="13"/><circle cx="368" cy="116" r="13"/>
+          <circle cx="206" cy="150" r="13"/><circle cx="322" cy="150" r="13"/>
+          <circle cx="300" cy="182" r="13"/>
+        </g>
+        <g fill="#ffffff" font-size="11" font-weight="700" text-anchor="middle">
+          <text x="150" y="120">Li+</text><text x="262" y="136">Li+</text><text x="368" y="120">Li+</text>
+          <text x="206" y="154">Li+</text><text x="322" y="154">Li+</text>
+          <text x="300" y="186">Li+</text>
+        </g>
+        <!-- blocked electron -->
+        <circle cx="140" cy="182" r="12" fill="#0a84ff"/>
+        <circle cx="140" cy="182" r="18" fill="none" stroke="#ff6961" stroke-width="4"/>
+        <line x1="127" y1="195" x2="153" y2="169" stroke="#ff6961" stroke-width="4" stroke-linecap="round"/>
+        <!-- leaders + gutter labels -->
+        <g stroke="rgba(255,255,255,.4)" stroke-width="2">
+          <line x1="440" y1="82" x2="464" y2="82"/><line x1="440" y1="132" x2="464" y2="132"/>
+          <line x1="440" y1="182" x2="464" y2="182"/><line x1="440" y1="232" x2="464" y2="232"/>
+          <line x1="440" y1="282" x2="464" y2="282"/>
+        </g>
+        <g fill="#ffffff" font-size="15">
+          <text x="472" y="87">Copper foil — gathers electrons</text>
+          <text x="472" y="137">Graphite anode (−) — lithium's garage</text>
+          <text x="472" y="187">Separator — ions in, electrons out</text>
+          <text x="472" y="237">Cathode (+) — lithium's other home</text>
+          <text x="472" y="287">Aluminum foil — gathers electrons</text>
+        </g>
+        <text x="260" y="336" font-size="14" fill="rgba(255,255,255,.6)" text-anchor="middle">everything soaked in salty liquid: the electrolyte</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <div class="item"><span class="dot li"></span>lithium ions slip through the separator</div>
+      <div class="item"><span class="dot e"></span>electrons are blocked — they must go around</div>
+    </div>
+    <p class="body">Five thin layers, thinner than paper. The separator is the bouncer: tiny ions pass, electrons don't. That forced detour <b>is</b> the electric current.</p>
+  </div>
+</section>
+
+<!-- 6 · INTERACTIVE LOOP -->
+<section class="panel dark" id="loop" style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow">05 · The mechanism, live</div>
+    <h2>One loop, two directions</h2>
+    <div class="lab">
+      <svg viewBox="0 0 800 410" role="img" aria-label="Interactive cell: ions move inside between electrodes while electrons loop around the outside wire">
+        <!-- channel wash -->
+        <rect x="250" y="210" width="300" height="140" fill="#0a84ff" opacity="0.06"/>
+        <!-- electrode blocks -->
+        <rect x="80" y="210" width="170" height="140" rx="12" fill="#3a3a3c"/>
+        <rect x="550" y="210" width="170" height="140" rx="12" fill="#7a6430"/>
+        <g stroke="#5c5c60" stroke-width="2">
+          <line x1="92" y1="242" x2="238" y2="242"/><line x1="92" y1="272" x2="238" y2="272"/>
+          <line x1="92" y1="302" x2="238" y2="302"/><line x1="92" y1="330" x2="238" y2="330"/>
+        </g>
+        <g fill="#e3d3a3" opacity="0.8">
+          <circle cx="572" cy="236" r="3.5"/><circle cx="602" cy="236" r="3.5"/><circle cx="632" cy="236" r="3.5"/><circle cx="662" cy="236" r="3.5"/><circle cx="692" cy="236" r="3.5"/>
+          <circle cx="572" cy="266" r="3.5"/><circle cx="602" cy="266" r="3.5"/><circle cx="632" cy="266" r="3.5"/><circle cx="662" cy="266" r="3.5"/><circle cx="692" cy="266" r="3.5"/>
+          <circle cx="572" cy="296" r="3.5"/><circle cx="602" cy="296" r="3.5"/><circle cx="632" cy="296" r="3.5"/><circle cx="662" cy="296" r="3.5"/><circle cx="692" cy="296" r="3.5"/>
+          <circle cx="572" cy="326" r="3.5"/><circle cx="602" cy="326" r="3.5"/><circle cx="632" cy="326" r="3.5"/><circle cx="662" cy="326" r="3.5"/><circle cx="692" cy="326" r="3.5"/>
+        </g>
+        <line x1="400" y1="210" x2="400" y2="350" stroke="#ffffff" stroke-width="3" stroke-dasharray="8 7" opacity="0.8"/>
+        <!-- tabs -->
+        <rect x="152" y="170" width="26" height="44" fill="#b87333"/>
+        <rect x="622" y="170" width="26" height="44" fill="#b9b9c2"/>
+        <!-- wire -->
+        <path id="wirePath" d="M165 172 V120 H635 V172" fill="none" stroke="#0a84ff" stroke-width="6"/>
+        <!-- electrons (JS positioned, behind the load box) -->
+        <g id="electrons" fill="#0a84ff" stroke="rgba(255,255,255,.65)" stroke-width="1.5">
+          <circle class="e" r="10"/><circle class="e" r="10"/><circle class="e" r="10"/>
+          <circle class="e" r="10"/><circle class="e" r="10"/><circle class="e" r="10"/>
+        </g>
+        <!-- load box -->
+        <rect x="330" y="86" width="140" height="68" rx="12" fill="#161617" stroke="#48484a" stroke-width="2"/>
+        <g id="iconPhone">
+          <rect x="388" y="95" width="24" height="40" rx="6" fill="none" stroke="#ffffff" stroke-width="3"/>
+          <line x1="395" y1="128" x2="405" y2="128" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+          <text x="400" y="150" font-size="12" font-weight="600" fill="rgba(255,255,255,.7)" text-anchor="middle">phone</text>
+        </g>
+        <g id="iconCharger" visibility="hidden">
+          <line x1="394" y1="96" x2="394" y2="88" stroke="#ff9f0a" stroke-width="3" stroke-linecap="round"/>
+          <line x1="406" y1="96" x2="406" y2="88" stroke="#ff9f0a" stroke-width="3" stroke-linecap="round"/>
+          <rect x="388" y="96" width="24" height="26" rx="5" fill="none" stroke="#ff9f0a" stroke-width="3"/>
+          <line x1="400" y1="122" x2="400" y2="136" stroke="#ff9f0a" stroke-width="3"/>
+          <text x="400" y="150" font-size="12" font-weight="600" fill="#ff9f0a" text-anchor="middle">charger</text>
+        </g>
+        <!-- ion drift chevrons -->
+        <text x="400" y="168" font-size="13" fill="rgba(255,255,255,.55)" text-anchor="middle">Li+ drift</text>
+        <g id="driftDis" fill="#0d9d5c">
+          <polygon points="292,182 304,190 292,198"/><polygon points="322,182 334,190 322,198"/>
+          <polygon points="466,182 478,190 466,198"/><polygon points="496,182 508,190 496,198"/>
+        </g>
+        <g id="driftCh" fill="#0d9d5c" visibility="hidden">
+          <polygon points="308,182 296,190 308,198"/><polygon points="338,182 326,190 338,198"/>
+          <polygon points="482,182 470,190 482,198"/><polygon points="512,182 500,190 512,198"/>
+        </g>
+        <!-- current arrows -->
+        <g id="curDis">
+          <polygon points="165,156 157,141 173,141" fill="#ffffff"/>
+          <text x="165" y="104" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">current</text>
+        </g>
+        <g id="curCh" visibility="hidden">
+          <polygon points="165,134 157,149 173,149" fill="#ffffff"/>
+          <text x="165" y="104" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">current</text>
+        </g>
+        <!-- ions (JS positioned) -->
+        <g id="ions" fill="#0d9d5c">
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+          <g class="ion"><circle r="14"/><text y="4" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Li+</text></g>
+        </g>
+        <!-- bottom labels -->
+        <text x="165" y="384" font-size="15" font-weight="600" fill="#ffffff" text-anchor="middle">− anode (graphite)</text>
+        <text x="400" y="384" font-size="14" fill="rgba(255,255,255,.55)" text-anchor="middle">separator + electrolyte</text>
+        <text x="635" y="384" font-size="15" font-weight="600" fill="#ffffff" text-anchor="middle">+ cathode</text>
+      </svg>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Mode">
+          <button id="btnDis" aria-pressed="true">Discharge ↓</button>
+          <button id="btnCh" aria-pressed="false">Charge ↑</button>
+        </div>
+        <div class="slider-row">
+          <label for="soc">Charge level — drag to move the ions</label>
+          <div class="readout"><span class="v" id="volt">3.7</span> V · <span id="socVal">62</span>%</div>
+          <input type="range" id="soc" min="0" max="100" value="62" aria-label="Charge level percent">
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+    <p class="body">Discharging, ions drift right inside while electrons loop around outside. Charging reverses the whole parade. The slider is the battery meter: ions left means full.</p>
+  </div>
+</section>
+
+<!-- 7 · ADVANCED -->
+<section class="panel light" id="advanced">
+  <div class="wrap">
+    <div class="eyebrow">06 · Going deeper</div>
+    <h2>Why lithium, why 4 volts</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 800 400" role="img" aria-label="Voltage scale from 3.0 to 4.2 volts, graphite sheets with lithium sliding between, and lithium versus sodium ion sizes">
+        <defs>
+          <linearGradient id="vgrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#e5f4ec"/><stop offset="1" stop-color="#0d9d5c"/>
+          </linearGradient>
+        </defs>
+        <text x="400" y="34" font-size="13" font-weight="700" letter-spacing="2" fill="rgba(0,0,0,.55)" text-anchor="middle">CELL VOLTAGE = HOW FULL THE TOP TANK IS</text>
+        <rect x="80" y="58" width="640" height="20" rx="10" fill="url(#vgrad)"/>
+        <g stroke="#1d1d1f" stroke-width="3">
+          <line x1="80" y1="58" x2="80" y2="92"/><line x1="453" y1="58" x2="453" y2="92"/><line x1="720" y1="58" x2="720" y2="92"/>
+        </g>
+        <g font-size="14" font-weight="600" fill="#1d1d1f">
+          <text x="80" y="114">3.0 V · empty</text>
+          <text x="453" y="114" text-anchor="middle">3.7 V · nominal</text>
+          <text x="720" y="114" text-anchor="end">4.2 V · full — stop</text>
+        </g>
+        <text x="720" y="138" font-size="13" fill="#d70015" text-anchor="end">above ≈4.2 V the chemistry breaks down</text>
+        <!-- graphite close-up -->
+        <text x="270" y="180" font-size="14" font-weight="700" fill="#1d1d1f" text-anchor="middle">graphite sheets — lithium slips between them</text>
+        <g stroke="#3a3a3c" stroke-width="6" stroke-linecap="round">
+          <line x1="80" y1="200" x2="460" y2="200"/><line x1="80" y1="226" x2="460" y2="226"/>
+          <line x1="80" y1="252" x2="460" y2="252"/><line x1="80" y1="278" x2="460" y2="278"/>
+          <line x1="80" y1="304" x2="460" y2="304"/>
+        </g>
+        <g fill="#0d9d5c">
+          <circle cx="140" cy="213" r="13"/><circle cx="250" cy="213" r="13"/><circle cx="360" cy="213" r="13"/>
+          <circle cx="195" cy="265" r="13"/><circle cx="305" cy="265" r="13"/>
+          <circle cx="140" cy="291" r="13"/><circle cx="360" cy="291" r="13"/>
+        </g>
+        <g fill="#ffffff" font-size="10" font-weight="700" text-anchor="middle">
+          <text x="140" y="217">Li+</text><text x="250" y="217">Li+</text><text x="360" y="217">Li+</text>
+          <text x="195" y="269">Li+</text><text x="305" y="269">Li+</text>
+          <text x="140" y="295">Li+</text><text x="360" y="295">Li+</text>
+        </g>
+        <g fill="#0d9d5c">
+          <polygon points="438,207 426,213 438,219"/><polygon points="438,285 426,291 438,297"/>
+        </g>
+        <line x1="492" y1="188" x2="492" y2="322" stroke="rgba(0,0,0,.2)" stroke-width="2" stroke-dasharray="6 6"/>
+        <!-- why lithium -->
+        <text x="646" y="180" font-size="14" font-weight="700" fill="#1d1d1f" text-anchor="middle">why lithium?</text>
+        <circle cx="590" cy="248" r="14" fill="#0d9d5c"/>
+        <text x="590" y="252" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Li+</text>
+        <circle cx="692" cy="248" r="27" fill="#8e8e93"/>
+        <text x="692" y="253" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">Na+</text>
+        <text x="590" y="300" font-size="13" fill="#1d1d1f" text-anchor="middle">tiny, nimble</text>
+        <text x="692" y="300" font-size="13" fill="#1d1d1f" text-anchor="middle">bigger, sluggish</text>
+        <text x="400" y="362" font-size="14" font-style="italic" fill="rgba(0,0,0,.6)" text-anchor="middle">this guests-in-layers trick is called intercalation</text>
+      </svg>
+    </div>
+    <p class="body">Lithium ions are the <b>tiniest metal ions</b>, so they slide between graphite sheets like letters into files. And the voltage number is just the chemistry's eagerness gap — about 4 volts when full.</p>
+  </div>
+</section>
+
+<!-- 8 · GOTCHA -->
+<section class="panel dark" id="gotcha">
+  <div class="wrap">
+    <div class="eyebrow">07 · The gotchas</div>
+    <h2>Three traps for beginners</h2>
+    <div class="trio">
+      <div class="card">
+        <span class="tag bad">myth</span>
+        <svg viewBox="0 0 300 210" role="img" aria-label="Electrons blocked at the separator, forced around the wire">
+          <path d="M65 62 V34 H235 V62" fill="none" stroke="#0a84ff" stroke-width="5"/>
+          <circle cx="110" cy="34" r="8" fill="#0a84ff"/><circle cx="190" cy="34" r="8" fill="#0a84ff"/>
+          <rect x="20" y="62" width="90" height="108" rx="8" fill="#3a3a3c"/>
+          <rect x="190" y="62" width="90" height="108" rx="8" fill="#7a6430"/>
+          <line x1="150" y1="54" x2="150" y2="178" stroke="#ffffff" stroke-width="3" stroke-dasharray="7 6"/>
+          <circle cx="150" cy="116" r="12" fill="#0a84ff"/>
+          <circle cx="150" cy="116" r="19" fill="none" stroke="#ff6961" stroke-width="4"/>
+          <line x1="137" y1="129" x2="163" y2="103" stroke="#ff6961" stroke-width="4" stroke-linecap="round"/>
+          <text x="150" y="202" font-size="13" fill="rgba(255,255,255,.6)" text-anchor="middle">the wire is their only road</text>
+        </svg>
+        <h3>Electrons never cross inside</h3>
+        <p>If they could, the cell would short itself and die in minutes. The separator blocks them completely.</p>
+      </div>
+      <div class="card">
+        <span class="tag bad">myth</span>
+        <svg viewBox="0 0 300 210" role="img" aria-label="Current arrow points opposite to electron flow">
+          <text x="150" y="34" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">current</text>
+          <line x1="40" y1="56" x2="252" y2="56" stroke="#ffffff" stroke-width="4"/>
+          <polygon points="262,56 248,48 248,64" fill="#ffffff"/>
+          <line x1="20" y1="108" x2="280" y2="108" stroke="#0a84ff" stroke-width="5"/>
+          <circle cx="80" cy="108" r="8" fill="#0a84ff" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+          <circle cx="150" cy="108" r="8" fill="#0a84ff" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+          <circle cx="220" cy="108" r="8" fill="#0a84ff" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+          <line x1="260" y1="156" x2="48" y2="156" stroke="#5aa9ff" stroke-width="4"/>
+          <polygon points="38,156 52,148 52,164" fill="#5aa9ff"/>
+          <text x="150" y="180" font-size="13" font-weight="600" fill="#5aa9ff" text-anchor="middle">electrons</text>
+          <text x="150" y="202" font-size="12" fill="rgba(255,255,255,.55)" text-anchor="middle">a 200-year-old convention</text>
+        </svg>
+        <h3>Current arrows point backwards</h3>
+        <p>Engineers draw current + to −, opposite the electrons. It predates the electron's discovery — we're stuck with it.</p>
+      </div>
+      <div class="card">
+        <span class="tag bad">limit</span>
+        <svg viewBox="0 0 300 210" role="img" aria-label="Crust growing on the anode and cracks forming">
+          <text x="150" y="30" font-size="13" font-weight="600" fill="rgba(255,255,255,.75)" text-anchor="middle">crust (SEI) thickens</text>
+          <line x1="110" y1="36" x2="110" y2="82" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+          <rect x="40" y="88" width="220" height="82" rx="8" fill="#3a3a3c"/>
+          <g fill="#000000">
+            <circle cx="62" cy="86" r="5"/><circle cx="86" cy="86" r="5"/><circle cx="110" cy="86" r="5"/>
+            <circle cx="134" cy="86" r="5"/><circle cx="158" cy="86" r="5"/><circle cx="182" cy="86" r="5"/>
+            <circle cx="206" cy="86" r="5"/><circle cx="230" cy="86" r="5"/>
+          </g>
+          <polyline points="120,100 112,118 124,132 114,150 122,164" fill="none" stroke="#000000" stroke-width="3"/>
+          <text x="208" y="140" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">cracks</text>
+          <text x="150" y="198" font-size="12" fill="rgba(255,255,255,.55)" text-anchor="middle">heat + full charges age it fastest</text>
+        </svg>
+        <h3>Every cycle wears it out</h3>
+        <p>Crust grows, cathodes crack, lithium gets trapped. That's why phones die at 80% health — and why cooling matters.</p>
+      </div>
+    </div>
+    <p class="body">Not trivia: these three explain why batteries need <b>management chips</b>, cooling, and gentle charging. Respect the chemistry and it lasts years.</p>
+  </div>
+</section>
+
+<!-- 9 · SO WHAT -->
+<section class="panel light" id="sowhat">
+  <div class="wrap">
+    <div class="eyebrow">08 · So what</div>
+    <h2>From earbuds to power grids</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 800 340" role="img" aria-label="Scale from one cell in earbuds to millions of cells in grid storage">
+        <text x="400" y="32" font-size="14" fill="rgba(0,0,0,.55)" text-anchor="middle">the same ~3.7 V cell, stacked to any size</text>
+        <g font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="end">
+          <text x="210" y="80">earbuds</text><text x="210" y="135">phone</text>
+          <text x="210" y="190">laptop</text><text x="210" y="245">electric car</text>
+          <text x="210" y="300">grid storage</text>
+        </g>
+        <g fill="#0a84ff">
+          <rect x="230" y="60" width="36" height="30" rx="6"/>
+          <rect x="230" y="115" width="54" height="30" rx="6"/>
+          <rect x="230" y="170" width="110" height="30" rx="6"/>
+          <rect x="230" y="225" width="270" height="30" rx="6"/>
+          <rect x="230" y="280" width="430" height="30" rx="6"/>
+        </g>
+        <g font-size="14" fill="rgba(0,0,0,.7)">
+          <text x="278" y="80">1 cell · 3.7 V</text>
+          <text x="296" y="135">1 cell · ~15 Wh</text>
+          <text x="352" y="190">6 cells · ~60 Wh</text>
+          <text x="512" y="245">~4,000 cells · 400 V</text>
+          <text x="672" y="300">millions · MWh</text>
+        </g>
+      </svg>
+    </div>
+    <p class="body">One cell is whisper-quiet chemistry. Stack thousands and you get cars; millions, and solar power works <b>after dark</b>. Rechargeable lithium made portable energy ordinary.</p>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <div>ELI5 · How a lithium-ion battery works — a single self-contained file. No network needed.</div>
+  <div>Read it again from the top and watch the two traffics: green inside, blue outside.</div>
+</div></footer>
+
+<script>
+(function(){
+  var soc=document.getElementById('soc'),
+      volt=document.getElementById('volt'),
+      socVal=document.getElementById('socVal'),
+      status=document.getElementById('status'),
+      btnDis=document.getElementById('btnDis'),
+      btnCh=document.getElementById('btnCh');
+  var XL=[120,160,200,140,180,220,110,190],
+      XR=[580,620,660,600,640,680,590,670],
+      IY=[240,265,290,315,245,270,295,320];
+  var ionEls=document.querySelectorAll('#ions .ion');
+  function render(){
+    var s=+soc.value;
+    for(var i=0;i<ionEls.length;i++){
+      var x=XR[i]+(XL[i]-XR[i])*s/100;
+      ionEls[i].setAttribute('transform','translate('+x.toFixed(1)+','+IY[i]+')');
+    }
+    volt.textContent=(3.0+1.2*s/100).toFixed(1);
+    socVal.textContent=s;
+    soc.style.setProperty('--fill',s+'%');
+  }
+  soc.addEventListener('input',render);
+  var TXT={
+    dis:'<b>Discharging</b> — ions drift toward the cathode inside; electrons loop around outside through your phone. That outside loop <b>is</b> the current.',
+    ch:'<b>Charging</b> — the charger forces electrons back the other way, dragging ions home into the graphite. You spend wall-power to rewind the spring.'
+  };
+  var dir=1;
+  function show(id,on){document.getElementById(id).setAttribute('visibility',on?'visible':'hidden');}
+  function setMode(m){
+    var dis=(m==='dis'); dir=dis?1:-1;
+    btnDis.setAttribute('aria-pressed',dis); btnCh.setAttribute('aria-pressed',!dis);
+    show('iconPhone',dis); show('iconCharger',!dis);
+    show('driftDis',dis); show('driftCh',!dis);
+    show('curDis',dis); show('curCh',!dis);
+    status.innerHTML=TXT[m];
+  }
+  btnDis.addEventListener('click',function(){setMode('dis');});
+  btnCh.addEventListener('click',function(){setMode('ch');});
+  render(); setMode('dis');
+  var path=document.getElementById('wirePath'),
+      dots=Array.prototype.slice.call(document.querySelectorAll('#electrons .e')),
+      L=path.getTotalLength(), off=0, last=null;
+  function place(){
+    for(var i=0;i<dots.length;i++){
+      var d=(((off+i*L/dots.length)%L)+L)%L, p=path.getPointAtLength(d);
+      dots[i].setAttribute('cx',p.x.toFixed(1)); dots[i].setAttribute('cy',p.y.toFixed(1));
+    }
+  }
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){ place(); }
+  else{
+    function tick(t){
+      if(last===null)last=t;
+      off+=(t-last)*0.09*dir; last=t; place();
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

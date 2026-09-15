@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India's 7.8% GDP Fight — Explained Simply</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --ink:#0d0d0d; --body:#333333; --muted:#666666;
+    --faint:#888888; --line:rgba(0,0,0,0.08); --line-soft:rgba(0,0,0,0.05);
+    --surface:#fafafa; --brand:#0fa76e; --brand-bg:#d4fae8;
+    --nominal:#3772cf; --nominal-bg:#e3ecfa;
+    --erase:#c37d0d; --erase-bg:#fbf0da;
+    --real:#0fa76e; --real-bg:#d4fae8;
+    --danger:#d45656; --danger-bg:#fbe7e7;
+    --radius:16px; --radius-lg:24px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--body); font-size:17px; line-height:1.55;}
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+  /* hero */
+  .hero{background:linear-gradient(180deg,#eafbf3 0%,#f7fdfa 45%,#ffffff 100%);
+    border-bottom:1px solid var(--line-soft); padding:72px 0 56px; text-align:center;}
+  .pill{display:inline-block; font-size:13px; font-weight:500; letter-spacing:.65px;
+    text-transform:uppercase; background:var(--brand-bg); color:var(--brand);
+    border-radius:9999px; padding:5px 14px; margin-bottom:20px;}
+  .hero h1{font-size:clamp(34px,6vw,58px); font-weight:600; letter-spacing:-1.1px;
+    line-height:1.12; color:var(--ink); max-width:760px; margin:0 auto 16px;}
+  .hero h1 .n{color:var(--nominal);} .hero h1 .r{color:var(--real);}
+  .hero p{font-size:18px; color:var(--muted); max-width:640px; margin:0 auto;}
+  .src{margin-top:18px; font-size:13px; color:var(--faint);}
+  /* panels */
+  section.panel{padding:60px 0; border-bottom:1px solid var(--line-soft);}
+  .kicker{font-size:13px; font-weight:500; letter-spacing:.65px; text-transform:uppercase;
+    color:var(--faint); margin-bottom:10px;}
+  .kicker .dot{display:inline-block; width:8px; height:8px; border-radius:50%;
+    background:var(--brand); margin-right:8px;}
+  h2{font-size:clamp(24px,4vw,36px); font-weight:600; letter-spacing:-.6px;
+    line-height:1.2; color:var(--ink); margin-bottom:12px; max-width:700px;}
+  .lede{font-size:17px; color:var(--body); max-width:680px; margin-bottom:28px;}
+  .viz{background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:28px 24px 20px; box-shadow:rgba(0,0,0,0.03) 0 2px 4px;}
+  svg.diagram{width:100%; height:auto; display:block;}
+  .caption{margin-top:14px; font-size:14px; color:var(--muted); background:var(--surface);
+    border:1px solid var(--line-soft); border-radius:12px; padding:12px 16px;}
+  .caption strong{color:var(--ink);}
+  /* legend chips */
+  .legend{display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px;}
+  .chip{display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:500;
+    color:var(--ink); border:1px solid var(--line); border-radius:9999px; padding:6px 14px 6px 8px;}
+  .sw{width:22px; height:22px; border-radius:50%; flex:none;}
+  .sw.nom{background:var(--nominal);} .sw.era{background:var(--erase);} .sw.rea{background:var(--real);}
+  /* two-col */
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;}
+  .card{border:1px solid var(--line); border-radius:var(--radius); padding:22px; background:#fff;}
+  .card.hi{border-color:var(--real); background:#f4fcf8;}
+  .card.warn{background:var(--surface);}
+  .card .big{font-size:40px; font-weight:700; letter-spacing:-.8px; color:var(--ink); line-height:1;}
+  .card .big.green{color:var(--brand);} .card .big.amber{color:var(--erase);}
+  .card h3{font-size:17px; font-weight:600; color:var(--ink); margin:10px 0 6px;}
+  .card p{font-size:15px; color:var(--muted);}
+  /* slider lab */
+  .lab{background:var(--ink); color:#ededed; border-radius:var(--radius-lg); padding:30px 28px; margin-top:4px;}
+  .lab h3{font-size:20px; font-weight:600; letter-spacing:-.2px; margin-bottom:6px;}
+  .lab p{font-size:15px; color:#a0a0a0; margin-bottom:20px;}
+  .lab-row{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  input[type=range]{flex:1; min-width:200px; accent-color:#18E299; height:32px;}
+  .readout{font-size:15px; font-weight:500; background:#1d1d1d; border:1px solid rgba(255,255,255,.12);
+    border-radius:9999px; padding:8px 18px; white-space:nowrap;}
+  .readout b{color:#18E299; font-size:18px;}
+  .lab-bar{margin-top:20px; background:#1d1d1d; border-radius:12px; padding:16px;}
+  .track{position:relative; height:44px; background:#2a2a2a; border-radius:8px; overflow:hidden;}
+  .fill-real{position:absolute; left:0; top:0; bottom:0; background:#0fa76e; border-radius:8px 0 0 8px;}
+  .fill-era{position:absolute; top:0; bottom:0; background:repeating-linear-gradient(45deg,#c37d0d,#c37d0d 8px,#a86a0b 8px,#a86a0b 16px);}
+  .lab-nums{display:flex; justify-content:space-between; margin-top:10px; font-size:14px; color:#a0a0a0;}
+  .lab-nums b{color:#ededed;}
+  #verdict{margin-top:14px; font-size:15px; font-weight:500; color:#ededed;}
+  /* timeline + watch */
+  .watch{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:8px;}
+  .quote{margin-top:26px; border:1px solid var(--line); border-left:4px solid var(--erase);
+    border-radius:12px; padding:18px 20px; background:#fffdf6;}
+  .quote p{font-size:16px; color:var(--ink); font-weight:500;}
+  .quote span{font-size:14px; color:var(--muted);}
+  footer{padding:44px 0 70px; text-align:center;}
+  footer p{font-size:13px; color:var(--faint); max-width:640px; margin:0 auto 8px;}
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1; transform:none;}
+  @media (prefers-reduced-motion: reduce){.reveal{opacity:1; transform:none; transition:none;}}
+  @media (max-width:700px){
+    .cols{grid-template-columns:1fr;} .watch{grid-template-columns:1fr;}
+    section.panel{padding:44px 0;} .viz{padding:18px 12px 14px;}
+    .card .big{font-size:34px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="pill">ELI5 &bull; Indian economy</div>
+    <h1>India grew <span class="n">7.8%</span>.<br>Why is everyone fighting?</h1>
+    <p>The scorecard says boom. The fight is about the maths behind the score &mdash; and whether your pocket feels it.</p>
+    <div class="src">Built from reporting by Newslaundry, Times of India, MoSPI, BusinessLine &middot; Sept 2026</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1 THE PROBLEM -->
+  <section class="panel reveal">
+    <div class="kicker"><span class="dot"></span>1 &middot; The problem</div>
+    <h2>One number, two opposite stories</h2>
+    <p class="lede">For April&ndash;June, GDP grew 7.8% over the same quarter last year &mdash; faster than the RBI expected. Half the internet celebrated. The other half said: look at jobs and wages first.</p>
+    <div class="cols">
+      <div class="card hi">
+        <div class="big green">7.8%</div>
+        <h3>The headline</h3>
+        <p>Fastest-growing large economy. Beat forecasts. Bugles out, kilts flowing.</p>
+      </div>
+      <div class="card warn">
+        <div class="big amber">Hmm&hellip;</div>
+        <h3>The street</h3>
+        <p>Stagnant pay, thin consumption, high household debt. Growth you can't feel is a rumour.</p>
+      </div>
+    </div>
+    <div class="caption"><strong>To judge the fight you need two ideas:</strong> how growth is <em>counted</em> (the maths debate) and what growth is <em>worth</em> (the lived-experience debate). This page covers both.</div>
+  </section>
+
+  <!-- 2 THE ANALOGY -->
+  <section class="panel reveal">
+    <div class="kicker"><span class="dot"></span>2 &middot; The analogy</div>
+    <h2>A scorecard with an eraser</h2>
+    <p class="lede">Think of the economy as a student's marks. The total printed at the top isn't the full story &mdash; you also ask how tough the paper was. GDP works the same way.</p>
+    <div class="viz">
+      <div class="legend">
+        <span class="chip"><span class="sw nom"></span>Total printed marks</span>
+        <span class="chip"><span class="sw era"></span>Difficulty eraser</span>
+        <span class="chip"><span class="sw rea"></span>Real learning</span>
+      </div>
+      <svg class="diagram" viewBox="0 0 800 300" role="img" aria-label="Nominal 10.3 percent minus eraser 2.5 percent equals real 7.8 percent">
+        <text x="180" y="30" font-size="13" fill="#888" letter-spacing="1">TOTAL PRINTED (nominal, %)</text>
+        <text x="12" y="88" font-size="15" font-weight="600" fill="#0d0d0d">Counted</text>
+        <text x="12" y="108" font-size="13" fill="#666">rupees</text>
+        <rect x="180" y="60" width="543" height="46" rx="8" fill="#3772cf"/>
+        <text x="440" y="89" font-size="17" font-weight="600" fill="#fff" text-anchor="middle">10.3%</text>
+        <text x="12" y="188" font-size="15" font-weight="600" fill="#0d0d0d">Eraser</text>
+        <text x="12" y="208" font-size="13" fill="#666">prices rose</text>
+        <rect x="180" y="160" width="411" height="46" rx="8" fill="#0fa76e"/>
+        <text x="375" y="189" font-size="17" font-weight="600" fill="#fff" text-anchor="middle">7.8% real</text>
+        <rect x="591" y="160" width="132" height="46" rx="8" fill="#c37d0d" opacity="0.9"/>
+        <text x="657" y="189" font-size="15" font-weight="600" fill="#fff" text-anchor="middle">2.5%</text>
+        <line x1="723" y1="106" x2="723" y2="160" stroke="#888" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <g font-size="13" fill="#666">
+          <text x="180" y="240">0</text>
+          <text x="440" y="240">5%</text>
+          <text x="700" y="240">10%</text>
+        </g>
+        <line x1="180" y1="228" x2="723" y2="228" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+        <text x="400" y="272" font-size="14" fill="#0d0d0d" text-anchor="middle" font-weight="500">10.3 counted &minus; 2.5 erased = 7.8 real</text>
+      </svg>
+      <div class="caption"><strong>The whole fight in one line:</strong> everyone agrees on the 10.3 counted. They fight over the size of the eraser &mdash; and over last year's ruler (next panel).</div>
+    </div>
+  </section>
+
+  <!-- 3 THE MAPPING -->
+  <section class="panel reveal">
+    <div class="kicker"><span class="dot"></span>3 &middot; The mapping</div>
+    <h2>Analogy parts, real names</h2>
+    <p class="lede">Same colours everywhere on this page, so your eyes learn the legend without being told.</p>
+    <div class="cols">
+      <div class="card" style="border-top:4px solid var(--nominal)">
+        <h3>Total marks &rarr; Nominal GDP</h3>
+        <p>All rupees counted, no adjustment. Grew <strong>10.3%</strong>. Nobody disputes this number.</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--erase)">
+        <h3>Eraser &rarr; GDP deflator</h3>
+        <p>The inflation adjustment, built from 300+ mini price indices. Official size: <strong>~2.5%</strong>. This is suspect no. 1.</p>
+      </div>
+    </div>
+    <div class="cols">
+      <div class="card" style="border-top:4px solid var(--real)">
+        <h3>Real learning &rarr; Real GDP</h3>
+        <p>Counted minus eraser: <strong>7.8%</strong>. The celebrated number &mdash; fully dependent on the eraser above.</p>
+      </div>
+      <div class="card warn">
+        <h3>The ruler &rarr; Base year</h3>
+        <p>The measuring scale itself was swapped (2011&ndash;12 &rarr; 2022&ndash;23). Compare across rulers and every answer lies. Suspect no. 2.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 MECHANISM 1: THE RULER -->
+  <section class="panel reveal" id="p-ruler">
+    <div class="kicker"><span class="dot"></span>4 &middot; How it works, part 1</div>
+    <h2>They changed the ruler mid-race</h2>
+    <p class="lede">In February the base year moved from 2011&ndash;12 to 2022&ndash;23, and old quarters were redrawn on the new scale. Last year's quarter shrank from &#8377;86.1 lakh crore (old ruler) to about &#8377;80 lakh crore (new ruler). Growth must be measured ruler-to-ruler.</p>
+    <div class="viz">
+      <svg class="diagram" viewBox="0 0 800 350" role="img" aria-label="Old ruler 86.1 versus new ruler 80 versus this year 88.3 lakh crore">
+        <line x1="150" y1="52" x2="662" y2="52" stroke="#d45656" stroke-width="2" stroke-dasharray="7 5"/>
+        <text x="406" y="34" font-size="13.5" fill="#d45656" text-anchor="middle" font-weight="600">mixing rulers &rarr; the gap looks tiny (fake ~2.6%)</text>
+        <rect x="150" y="52" width="110" height="191" rx="8" fill="#888" opacity="0.55"/>
+        <text x="205" y="140" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">&#8377;86.1</text>
+        <text x="205" y="162" font-size="12" fill="#fff" text-anchor="middle">L cr</text>
+        <rect x="352" y="65" width="110" height="178" rx="8" fill="#3772cf"/>
+        <text x="407" y="153" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">&#8377;80</text>
+        <text x="407" y="175" font-size="12" fill="#fff" text-anchor="middle">L cr</text>
+        <rect x="552" y="47" width="110" height="196" rx="8" fill="#0fa76e"/>
+        <text x="607" y="135" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">&#8377;88.3</text>
+        <text x="607" y="157" font-size="12" fill="#fff" text-anchor="middle">L cr</text>
+        <line x1="60" y1="243" x2="740" y2="243" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+        <g font-size="14" font-weight="500" fill="#0d0d0d" text-anchor="middle">
+          <text x="205" y="268">Last year</text>
+          <text x="407" y="268">Last year</text>
+          <text x="607" y="268">This year</text>
+        </g>
+        <g font-size="13" fill="#666" text-anchor="middle">
+          <text x="205" y="290">OLD ruler &#10007;</text>
+          <text x="407" y="290">NEW ruler &#10003;</text>
+          <text x="607" y="290">NEW ruler &#10003;</text>
+        </g>
+        <text x="400" y="326" font-size="14" fill="#0d0d0d" text-anchor="middle" font-weight="500">Fair race: &#8377;80 &rarr; &#8377;88.3 on the SAME ruler = 10.3% nominal</text>
+      </svg>
+      <div class="caption"><strong>The government's reply, fairly stated:</strong> the old &#8377;86 figure belongs to a retired series &mdash; comparing it with today's number is a category error, and revisions like this happen in every country. Critics reply: revisions that always flatter the present deserve sunlight, not trust.</div>
+    </div>
+  </section>
+
+  <!-- 5 MECHANISM 2: THE ERASER -->
+  <section class="panel reveal">
+    <div class="kicker"><span class="dot"></span>5 &middot; How it works, part 2</div>
+    <h2>The eraser looks too small</h2>
+    <p class="lede">The official eraser says economy-wide inflation was only ~2.5%. But shoppers felt ~3.9% (CPI) and wholesalers saw 9%+ (WPI). Why? They measure different baskets &mdash; and the GDP eraser blends 300+ of them, including calm services that drag the average down.</p>
+    <div class="viz">
+      <svg class="diagram" viewBox="0 0 800 300" role="img" aria-label="GDP deflator 2.5 versus CPI 3.9 versus WPI 9 plus">
+        <text x="10" y="80" font-size="15" font-weight="600" fill="#0d0d0d">GDP eraser</text>
+        <text x="10" y="100" font-size="12.5" fill="#666">whole economy</text>
+        <rect x="220" y="52" width="135" height="42" rx="8" fill="#c37d0d"/>
+        <text x="363" y="79" font-size="14" font-weight="600" fill="#0d0d0d">2.5%</text>
+        <text x="10" y="160" font-size="15" font-weight="600" fill="#0d0d0d">CPI</text>
+        <text x="10" y="180" font-size="12.5" fill="#666">household basket</text>
+        <rect x="220" y="132" width="211" height="42" rx="8" fill="#c37d0d" opacity="0.65"/>
+        <text x="439" y="159" font-size="14" font-weight="600" fill="#0d0d0d">3.9%</text>
+        <text x="10" y="240" font-size="15" font-weight="600" fill="#0d0d0d">WPI</text>
+        <text x="10" y="260" font-size="12.5" fill="#666">wholesale goods</text>
+        <rect x="220" y="212" width="500" height="42" rx="8" fill="#c37d0d" opacity="0.35"/>
+        <text x="640" y="239" font-size="14" font-weight="600" fill="#0d0d0d">9%+</text>
+        <text x="400" y="290" font-size="14" fill="#0d0d0d" text-anchor="middle" font-weight="500">Same economy, three different thermometers</text>
+      </svg>
+      <div class="lab">
+        <h3>Try it: you set the eraser</h3>
+        <p>Nominal growth is fixed at 10.3%. Drag the eraser and watch real growth change. Small eraser, big headline.</p>
+        <div class="lab-row">
+          <input type="range" id="eraser" min="0" max="9" step="0.1" value="2.5" aria-label="GDP deflator">
+          <div class="readout">Eraser <b id="eVal">2.5%</b> &nbsp;&rarr;&nbsp; Real <b id="rVal">7.8%</b></div>
+        </div>
+        <div class="lab-bar">
+          <div class="track">
+            <div class="fill-real" id="fReal" style="width:75.7%"></div>
+            <div class="fill-era" id="fEra" style="left:75.7%; width:24.3%"></div>
+          </div>
+          <div class="lab-nums"><span><b style="color:#18E299">&#9632;</b> real growth</span><span><b style="color:#c37d0d">&#9632;</b> erased as inflation</span><span>total 10.3%</span></div>
+        </div>
+        <div id="verdict"></div>
+      </div>
+      <div class="caption"><strong>Why economists grumble:</strong> with near-zero wholesale inflation that quarter, the eraser shrank and real growth ballooned &mdash; possibly flattered by ~1 point. A low eraser today also quietly raises the bar for every quarter after it.</div>
+    </div>
+  </section>
+
+  <!-- 6 MECHANISM 3: THE BAKERY -->
+  <section class="panel reveal">
+    <div class="kicker"><span class="dot"></span>6 &middot; How it works, part 3</div>
+    <h2>The bakery that broke the eraser</h2>
+    <p class="lede">Manufacturing grew 7.7% in rupees but 9.2% "real" &mdash; meaning its eraser was <em>negative</em> (&minus;1.5%). How can inflation be below zero when nothing got cheaper? New method: erase the flour and the bread separately.</p>
+    <div class="viz">
+      <svg class="diagram" viewBox="0 0 800 330" role="img" aria-label="Nominal 7.7 plus input cost gap 1.5 equals real 9.2">
+        <text x="12" y="80" font-size="14.5" font-weight="600" fill="#0d0d0d">Bread price</text>
+        <text x="12" y="100" font-size="12.5" fill="#666">rose slowly</text>
+        <text x="12" y="120" font-size="12.5" fill="#666">shops absorbed costs</text>
+        <rect x="180" y="60" width="383" height="46" rx="8" fill="#3772cf"/>
+        <text x="360" y="89" font-size="16" font-weight="600" fill="#fff" text-anchor="middle">7.7% counted</text>
+        <text x="12" y="190" font-size="14.5" font-weight="600" fill="#0d0d0d">Flour + fuel</text>
+        <text x="12" y="210" font-size="12.5" fill="#666">rose fast (war,</text>
+        <text x="12" y="228" font-size="12.5" fill="#666">energy shock)</text>
+        <rect x="180" y="160" width="383" height="46" rx="8" fill="#0fa76e"/>
+        <text x="360" y="189" font-size="16" font-weight="600" fill="#fff" text-anchor="middle">9.2% real</text>
+        <rect x="563" y="160" width="75" height="46" rx="8" fill="#c37d0d" opacity="0.9"/>
+        <text x="600" y="189" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">1.5</text>
+        <text x="400" y="252" font-size="14" fill="#0d0d0d" text-anchor="middle" font-weight="500">7.7 counted + 1.5 input-cost gap = 9.2 real</text>
+        <text x="400" y="278" font-size="13.5" fill="#666" text-anchor="middle">Flour's eraser was bigger than bread's &rarr; the filling looks bigger than the loaf</text>
+        <text x="400" y="304" font-size="13.5" fill="#666" text-anchor="middle">Method's name: <tspan font-weight="600" fill="#0d0d0d">double deflation</tspan> &mdash; new with this base year</text>
+      </svg>
+      <div class="caption"><strong>Not magic, just new accounting:</strong> when input prices outrun output prices, real filling outgrows the nominal loaf. Sensible in a war-shocked quarter &mdash; but brand-new machinery, so veterans want it audited, not applauded.</div>
+    </div>
+  </section>
+
+  <!-- 7 GOTCHA -->
+  <section class="panel reveal" id="p-gotcha">
+    <div class="kicker"><span class="dot"></span>7 &middot; The gotcha</div>
+    <h2>A first sketch, not the painting</h2>
+    <p class="lede">Quarterly GDP is an early estimate built from partial data. It gets revised five or six times; this quarter's "final" arrives around February 2029 &mdash; 30 months away. Arguing over the second decimal today is arguing over wet paint.</p>
+    <div class="viz">
+      <svg class="diagram" viewBox="0 0 800 210" role="img" aria-label="Revision timeline from first estimate to final in February 2029">
+        <line x1="60" y1="105" x2="740" y2="105" stroke="rgba(0,0,0,0.25)" stroke-width="2"/>
+        <g font-size="13.5" font-weight="600" text-anchor="middle">
+          <circle cx="60" cy="105" r="9" fill="#0fa76e"/><text x="60" y="72" fill="#0d0d0d">1st estimate</text><text x="60" y="150" fill="#666" font-weight="400">you are here</text>
+          <circle cx="200" cy="105" r="7" fill="#888"/><text x="200" y="150" fill="#666" font-weight="400">rev 1</text>
+          <circle cx="335" cy="105" r="7" fill="#888"/><text x="335" y="72" fill="#666" font-weight="400">rev 2</text>
+          <circle cx="470" cy="105" r="7" fill="#888"/><text x="470" y="150" fill="#666" font-weight="400">rev 3&ndash;4</text>
+          <circle cx="605" cy="105" r="7" fill="#888"/><text x="605" y="72" fill="#666" font-weight="400">rev 5</text>
+          <circle cx="740" cy="105" r="9" fill="#3772cf"/><text x="740" y="72" fill="#0d0d0d">final &bull; Feb 2029</text><text x="740" y="150" fill="#666" font-weight="400">~30 months</text>
+        </g>
+      </svg>
+      <div class="caption"><strong>Two honest footnotes:</strong> the "discrepancy" line critics wave around is just a balancing item between two counting methods &mdash; it shrinks to ~zero by the final estimate. And this base revision actually <em>shrank</em> nominal GDP (India slipped a rank) &mdash; not the move of a rigged scale.</div>
+    </div>
+  </section>
+
+  <!-- 8 SO WHAT -->
+  <section class="panel reveal" style="border-bottom:none;">
+    <div class="kicker"><span class="dot"></span>8 &middot; So what</div>
+    <h2>One number is not the economy</h2>
+    <p class="lede">Between 2004&ndash;08, 8% growth could be felt on the street. Today's version can't be &mdash; which is exactly why the critics say: don't stare at the scorecard, watch the classroom.</p>
+    <div class="watch">
+      <div class="card"><div class="big">5<span style="font-size:22px;">/10</span></div><h3>Workers self-employed</h3><p>Over half the workforce runs on "subsistence" gigs with low capital, no hired help. Pakodanomics.</p></div>
+      <div class="card"><div class="big">45<span style="font-size:22px;">%</span></div><h3>Household debt / GDP</h3><p>Up from ~32% a decade ago &mdash; mostly consumption loans, sometimes fresh loans repaying old ones.</p></div>
+      <div class="card"><div class="big">2029</div><h3>$5-trillion target</h3><p>The goalpost keeps sliding. If 8% were fully real and felt, the date wouldn't need postponing.</p></div>
+    </div>
+    <div class="quote">
+      <p>"When a measure becomes a target, it stops being a good measure."</p>
+      <span>&mdash; Goodhart's Law. The GDP figure now travels on WhatsApp as proof, not as information. Treat it as a clue; confirm with jobs, wages and shop sales.</span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Numbers: MoSPI Q1 estimates via press coverage &middot; nominal 10.3%, deflator ~2.5%, manufacturing nominal GVA 7.7% / real 9.2%, series values &#8377;86.05 / ~&#8377;80 / &#8377;88.27 lakh cr (rounded in charts). Labour &amp; debt figures via Newslaundry/NCAER/NITI.</p>
+    <p>An explainer of the debate &mdash; not a verdict on anyone's motives.</p>
+  </div>
+</footer>
+
+<script>
+  var slider = document.getElementById('eraser');
+  var eVal = document.getElementById('eVal');
+  var rVal = document.getElementById('rVal');
+  var fReal = document.getElementById('fReal');
+  var fEra = document.getElementById('fEra');
+  var verdict = document.getElementById('verdict');
+  var NOM = 10.3;
+  function paint(el){ el.classList.add('in'); }
+  function update(){
+    var d = parseFloat(slider.value);
+    var r = (NOM - d).toFixed(1);
+    eVal.textContent = d.toFixed(1) + '%';
+    rVal.textContent = r + '%';
+    var rp = Math.max(0, Math.min(100, (NOM - d) / NOM * 100));
+    fReal.style.width = rp + '%';
+    fEra.style.left = rp + '%';
+    fEra.style.width = (100 - rp) + '%';
+    var msg;
+    if (d <= 2.5) msg = 'Tiny eraser, giant headline. This is the official zone &mdash; ask whether prices really rose this little.';
+    else if (d <= 4.5) msg = 'Plausible middle: closer to what shoppers felt (CPI ~3.9%). Headline cools to ~' + r + '%.';
+    else msg = 'Wholesaler zone (WPI 9%+). Real growth falls to ~' + r + '% &mdash; the boom mostly erases away.';
+    verdict.innerHTML = msg;
+  }
+  slider.addEventListener('input', update);
+  update();
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting){ paint(e.target); io.unobserve(e.target); } });
+  }, {threshold: 0.08});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>
