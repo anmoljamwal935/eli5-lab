@@ -1,60 +1,68 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ELI5 Visual Lab — Complex Systems, Explained Visually</title>
-  <meta name="description" content="Interactive visual explainers breaking down frontier AI, monetary mechanics, high-voltage electrical physics, and macroeconomics. 100% client-side, zero fluff.">
+  <title>ELI5 Visual Lab — Journal of Visual Mental Models</title>
+  <meta name="description" content="An interactive publication explaining non-trivial systems: frontier AI benchmarks, fluid dynamics blowups, monetary swaps, and high-voltage grid physics.">
   
-  <!-- Open Graph / Social Sharing -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ELI5 Visual Lab — Complex Systems, Explained Visually">
-  <meta property="og:description" content="Interactive visual models: BlackRock's $15T Machine, OpenAI Navier–Stokes, Lithium-Ion Batteries, India's GDP, and more.">
+  <meta property="og:title" content="ELI5 Visual Lab — Journal of Visual Mental Models">
+  <meta property="og:description" content="Interactive visual essays breaking down complex systems with zero fluff.">
   <meta name="twitter:card" content="summary_large_image">
-  
-  <!-- Preconnect to Google Fonts -->
+
+  <!-- Google Fonts: Newsreader (Editorial Serif), Inter (Clean Sans), JetBrains Mono (Technical Mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap" rel="stylesheet">
   
-  <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-container">
-      <a href="./" class="nav-brand">
-        <div class="brand-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-        <span>ELI5 Lab</span>
-        <span class="brand-badge">Visuals</span>
+  <!-- Top Publication Header Ticker -->
+  <header class="masthead-ticker">
+    <div class="masthead-ticker-inner">
+      <div class="ticker-left">
+        <span class="ticker-dot"></span>
+        <span>OPEN ACCESS ISSUE · 2026 EDITION</span>
+        <span style="opacity: 0.35;">/</span>
+        <span>9 PEER-CRAFTED VISUAL MODELS</span>
+      </div>
+      <div class="ticker-right">
+        <span>EDGE DISTRIBUTED · ZERO LATENCY</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Editorial Nav -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="./" class="brand-wrapper">
+        <span class="brand-title">ELI5 <em>Visual Lab</em></span>
+        <span class="brand-issue">Index · Vol. 01</span>
       </a>
 
-      <!-- Quick Search Bar in Nav -->
-      <div class="nav-search">
-        <svg class="nav-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- Quick Search -->
+      <div class="nav-search-box">
+        <svg class="nav-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" id="nav-search-input" class="nav-search-input" placeholder="Search visual models... (Press /)" autocomplete="off">
+        <input type="text" id="nav-search-input" placeholder="Search visual models..." autocomplete="off">
         <kbd class="nav-search-kbd">⌘K</kbd>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="nav-actions">
-        <button id="btn-open-studio" class="btn-primary" title="Add or preview a new explainer">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <div class="nav-controls">
+        <button id="btn-open-studio" class="btn-nav-action" title="Add or preview an explainer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          <span>Add Explainer</span>
+          <span>Studio & Add</span>
         </button>
 
-        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Light/Dark Theme" aria-label="Toggle theme">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-theme-toggle" class="btn-theme" title="Toggle Light / Dark Journal Paper" aria-label="Toggle theme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
             <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
             <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
@@ -66,281 +74,198 @@
     </div>
   </nav>
 
-  <!-- Main Content Area -->
-  <main class="main-wrapper">
+  <!-- Main Canvas -->
+  <main class="site-main">
 
-    <!-- Hero Section -->
-    <header class="hero">
-      <div class="hero-pill">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-        </svg>
-        Interactive Explainer Studio
+    <!-- Hero Manifesto -->
+    <header class="editorial-hero">
+      <div class="hero-meta">
+        <span>The Visual Explanations Archive</span>
+        <span class="separator">•</span>
+        <span>Interactive Mental Models for Intricate Systems</span>
       </div>
-      <h1 class="hero-title">Complex Systems, Made Visually Intuitive.</h1>
-      <p class="hero-subtitle">
-        Frontier AI benchmarks, monetary mechanics, high-voltage physics, and macroeconomics broken down into crystal-clear visual mental models. Zero jargon, 100% interactive.
-      </p>
 
-      <!-- Key Stats Ribbon -->
-      <div class="stats-ribbon">
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-          </svg>
-          <span><strong>9</strong> Interactive Visuals</span>
-        </div>
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-          <span><strong>3–5 min</strong> Visual Reads</span>
-        </div>
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-          <span><strong>0%</strong> Jargon / Fluff</span>
-        </div>
-        <div class="stat-item">
-          <svg class="stat-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-          </svg>
-          <span><strong>Serverless</strong> Vercel Ready</span>
+      <h1 class="hero-headline">
+        Complex mechanisms, translated into <em>intuitive visual mechanics</em>.
+      </h1>
+
+      <div class="hero-subdeck">
+        <p class="subdeck-text">
+          Frontier AI sandbox escapes, Navier–Stokes turbulence blowups, sovereign dollar swaps, and the hidden factory bottlenecks powering renewable grids—broken down into clear interactive mental models with zero academic hand-waving.
+        </p>
+        <div class="subdeck-manifesto">
+          <strong>The Editorial Principle:</strong> If a concept cannot be simulated or visualized as a mechanical pump, fluid stream, or interlocking gear, it is not yet fully understood.
         </div>
       </div>
     </header>
 
-    <!-- Featured Spotlight Explainer -->
-    <section id="featured-section" class="featured-section"></section>
+    <!-- Lead Feature -->
+    <section id="lead-feature-container" class="lead-story-section">
+      <!-- Injected by app.js -->
+    </section>
 
-    <!-- Controls & Categories Filter -->
-    <section class="controls-bar">
-      <!-- Category Tabs (Dynamically rendered) -->
-      <div class="categories-scroll" id="category-tabs"></div>
+    <!-- Filter Deck -->
+    <section class="filter-deck">
+      <div class="category-pills" id="category-tabs">
+        <!-- Injected by app.js -->
+      </div>
 
-      <!-- Search & Sort Row -->
-      <div class="filter-subnav">
-        <div class="results-info" id="results-count">
-          Showing <span>9</span> explainers
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-          <div style="position: relative; width: 240px;">
-            <input type="text" id="search-input" class="form-control" style="padding: 7px 12px 7px 32px; font-size: 0.85rem;" placeholder="Filter topics...">
-            <svg style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </div>
-
-          <div class="sort-select-wrapper">
-            <label for="sort-select" style="font-size:0.82rem; color:var(--text-muted);">Sort:</label>
-            <select id="sort-select" class="sort-select">
-              <option value="featured">Featured First</option>
-              <option value="shortest">Shortest Read (Fastest)</option>
-              <option value="longest">Deep Dives (Longest)</option>
-              <option value="title">Alphabetical (A–Z)</option>
-            </select>
-          </div>
-        </div>
+      <div class="sort-controls">
+        <span id="results-count">9 essays</span>
+        <label for="sort-select" style="margin-left: 12px;">Sort:</label>
+        <select id="sort-select" class="sort-select">
+          <option value="featured">Featured First</option>
+          <option value="shortest">Shortest Read</option>
+          <option value="longest">Deep Dive</option>
+          <option value="title">Alphabetical (A–Z)</option>
+        </select>
       </div>
     </section>
 
-    <!-- Explainer Cards Grid -->
-    <section id="explainers-grid" class="explainers-grid">
-      <!-- Dynamically filled by app.js -->
+    <!-- Essays Grid -->
+    <section id="essays-grid" class="essays-grid">
+      <!-- Injected by app.js -->
     </section>
 
   </main>
 
-  <!-- Interactive Reader Modal / Overlay -->
+  <!-- Distraction-Free Reader Room -->
   <div id="reader-modal" class="reader-modal" role="dialog" aria-modal="true">
-    <!-- Top Progress Line -->
-    <div id="reader-progress-bar" class="reader-progress-bar"></div>
+    <div id="reader-progress-bar" class="reader-progress"></div>
 
-    <!-- Reader Toolbar -->
-    <header class="reader-toolbar">
-      <div class="reader-toolbar-left">
-        <button id="btn-close-reader" class="btn-back" title="Press Esc to exit">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <header class="reader-header">
+      <div class="reader-header-left">
+        <button id="btn-close-reader" class="btn-reader-back" title="Press Esc to exit">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
           </svg>
-          <span>Library</span>
+          <span>Return to Index</span>
         </button>
-        <div class="reader-title-info">
-          <span id="reader-badge" class="reader-badge">Topic</span>
-          <h2 id="reader-title" class="reader-title">Explainer Title</h2>
-        </div>
+        <h2 id="reader-title" class="reader-article-title">Explainer Title</h2>
       </div>
 
-      <div class="reader-toolbar-right">
-        <button id="btn-reader-prev" class="btn-icon" title="Previous Explainer (← Left Arrow)" aria-label="Previous explainer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="reader-header-right">
+        <button id="btn-reader-prev" class="btn-icon-link" title="Previous Essay (← Left Arrow)" aria-label="Previous">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
         </button>
-        <button id="btn-reader-next" class="btn-icon" title="Next Explainer (→ Right Arrow)" aria-label="Next explainer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-reader-next" class="btn-icon-link" title="Next Essay (→ Right Arrow)" aria-label="Next">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
         </button>
-        <button id="btn-reader-share" class="btn-icon" title="Copy Shareable Link" aria-label="Copy shareable link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-reader-share" class="btn-icon-link" title="Copy Deep Link" aria-label="Copy link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
           </svg>
         </button>
-        <button id="btn-reader-external" class="btn-icon" title="Open in Full Window" aria-label="Open in new window">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="btn-reader-external" class="btn-icon-link" title="Open Standalone in New Tab" aria-label="Open standalone">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
           </svg>
         </button>
       </div>
     </header>
 
-    <!-- Isolated Explainer Viewport -->
-    <div class="reader-iframe-container">
-      <iframe id="reader-iframe" class="reader-iframe" src="about:blank" title="Explainer Viewer"></iframe>
+    <div class="reader-frame-wrapper">
+      <iframe id="reader-iframe" class="reader-iframe" src="about:blank" title="Reader Viewport"></iframe>
     </div>
   </div>
 
-  <!-- Add Explainer Studio Modal -->
-  <div id="studio-modal" class="modal-backdrop" role="dialog" aria-modal="true">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <div class="modal-header-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2.5">
-            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
-          <span>Add / Preview Explainer Studio</span>
+  <!-- Studio Modal -->
+  <div id="studio-modal" class="studio-modal-backdrop" role="dialog" aria-modal="true">
+    <div class="studio-dialog">
+      <div class="studio-header">
+        <div>
+          <strong style="font-family: var(--font-serif); font-size: 1.25rem;">Visual Explainer Studio</strong>
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-muted); margin-top: 4px;">PREVIEW & COMPOSE CLIENT-SIDE EXPLAINERS</div>
         </div>
-        <button id="btn-close-studio" class="btn-icon" title="Close modal" aria-label="Close modal">
+        <button id="btn-close-studio" class="btn-icon-link" aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
       </div>
 
-      <!-- Studio Navigation Tabs -->
-      <div class="modal-tabs">
-        <button class="modal-tab-btn active" data-tab="tab-live-preview">Live Sandbox & Preview</button>
-        <button class="modal-tab-btn" data-tab="tab-git-guide">Publishing to Vercel</button>
-        <button class="modal-tab-btn" data-tab="tab-template">Starter Template</button>
-      </div>
-
-      <div class="modal-body">
-        <!-- Tab 1: Live Sandbox & Preview -->
-        <div id="tab-live-preview" class="studio-tab-content">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="studio-title-input">Explainer Title</label>
-              <input type="text" id="studio-title-input" class="form-control" placeholder="e.g. How Quantum Computers Work — ELI5">
-            </div>
-            <div class="form-group">
-              <label for="studio-category-input">Category</label>
-              <select id="studio-category-input" class="form-control">
-                <option value="ai">AI & Frontier Tech</option>
-                <option value="finance">Finance & Capital</option>
-                <option value="economics">Macroeconomics</option>
-                <option value="science">Science & Energy</option>
-                <option value="industry">Industrial Power</option>
-                <option value="systems">Distributed Systems</option>
-              </select>
-            </div>
+      <div class="studio-body">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px;">Essay Title</label>
+            <input type="text" id="studio-title-input" class="sort-select" style="width:100%; height:38px;" placeholder="e.g. How Transformers Step Down Voltage">
           </div>
-
-          <div class="form-group">
-            <label for="studio-summary-input">One-line Hook / Summary</label>
-            <input type="text" id="studio-summary-input" class="form-control" placeholder="The intuitive mental model a 5-year old would understand...">
-          </div>
-
-          <div class="form-group">
-            <label for="studio-html-input">Paste HTML Content or Drag & Drop File</label>
-            <textarea id="studio-html-input" class="form-control" rows="8" placeholder="<!doctype html><html><body><h1>My Explainer</h1>...</body></html>"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Live Instant Preview</label>
-            <div style="border: 1px solid var(--border-subtle); border-radius: 12px; height: 260px; overflow: hidden; background: #ffffff;">
-              <iframe id="studio-preview-iframe" style="width: 100%; height: 100%; border: none;"></iframe>
-            </div>
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px;">Category</label>
+            <select id="studio-category-input" class="sort-select" style="width:100%; height:38px;">
+              <option value="ai">AI & Frontier Tech</option>
+              <option value="finance">Finance & Capital</option>
+              <option value="economics">Macroeconomics</option>
+              <option value="science">Energy & Physics</option>
+              <option value="industry">Industrial Infrastructure</option>
+              <option value="systems">Distributed Systems</option>
+            </select>
           </div>
         </div>
 
-        <!-- Tab 2: Publishing Guide -->
-        <div id="tab-git-guide" class="studio-tab-content" style="display: none;">
-          <h3 style="margin-bottom: 12px; font-size: 1.1rem;">How to permanently publish new explainers:</h3>
-          <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 18px;">
-            Because this project is 100% static and serverless, adding a new explainer is as simple as saving an HTML file:
-          </p>
-
-          <ol style="padding-left: 20px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 24px;">
-            <li>Drop your new HTML explainer into the <code style="font-family: var(--font-mono); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: #cbd5e1;">explainers/</code> folder (e.g. <code style="font-family: var(--font-mono); color: #cbd5e1;">explainers/quantum-computing-eli5.html</code>).</li>
-            <li>Add an entry with your title, category, and summary to <code style="font-family: var(--font-mono); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: #cbd5e1;">data/explainers.js</code>.</li>
-            <li>Run <code style="font-family: var(--font-mono); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: #cbd5e1;">git add . && git commit -m "Add explainer" && git push</code> or deploy via Vercel CLI with <code style="font-family: var(--font-mono); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: #cbd5e1;">vercel --prod</code>.</li>
-            <li>Vercel immediately builds and updates the live site in under 5 seconds!</li>
-          </ol>
+        <div style="margin-bottom: 16px;">
+          <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px;">Core Mental Model Hook (1-2 sentences)</label>
+          <input type="text" id="studio-summary-input" class="sort-select" style="width:100%; height:38px;" placeholder="Explain the simplest physical intuition...">
         </div>
 
-        <!-- Tab 3: Starter Template -->
-        <div id="tab-template" class="studio-tab-content" style="display: none;">
-          <h3 style="margin-bottom: 8px; font-size: 1.05rem;">ELI5 Clean Explainer Template</h3>
-          <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 16px;">
-            Use this clean, responsive starter skeleton to write your next visual deep dive:
-          </p>
-          <pre style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.78rem; overflow-x: auto; color: #cbd5e1; border: 1px solid var(--border-subtle); max-height: 240px;">&lt;!doctype html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="utf-8"&gt;
-  &lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;
-  &lt;title&gt;Concept Title — ELI5&lt;/title&gt;
-  &lt;style&gt;
-    :root { --primary: #0f62fe; --bg: #ffffff; --text: #161616; }
-    body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; color: var(--text); background: var(--bg); }
-    .hero { padding: 60px 24px; max-width: 900px; margin: auto; }
-    h1 { font-size: clamp(32px, 5vw, 64px); letter-spacing: -1.5px; }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;main class="hero"&gt;
-    &lt;span&gt;ELI5 Model&lt;/span&gt;
-    &lt;h1&gt;The Core Mechanic&lt;/h1&gt;
-    &lt;p&gt;Explain the simplest intuition first...&lt;/p&gt;
-  &lt;/main&gt;
-&lt;/body&gt;
-&lt;/html&gt;</pre>
-          <button id="btn-copy-template" class="btn-secondary" style="margin-top: 14px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copy Starter Skeleton
-          </button>
+        <div style="margin-bottom: 16px;">
+          <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px;">Raw HTML Content</label>
+          <textarea id="studio-html-input" class="sort-select" style="width:100%; height:120px; font-family:var(--font-mono); font-size:0.75rem; padding:10px;" placeholder="<!doctype html><html><body><h1>Visual Explainer</h1></body></html>"></textarea>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px;">Sandbox Real-Time Render</label>
+          <div style="border: 1px solid var(--border-light); height: 180px; border-radius: 4px; overflow: hidden; background: #fff;">
+            <iframe id="studio-preview-iframe" style="width: 100%; height: 100%; border: none;"></iframe>
+          </div>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button id="btn-save-local" class="btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Save to Local Gallery
-        </button>
+      <div class="studio-footer">
+        <button id="btn-copy-template" class="btn-editorial-ghost" style="padding: 8px 14px; font-size: 0.8rem;">Copy Starter Template</button>
+        <button id="btn-save-local" class="btn-editorial-primary" style="padding: 8px 16px; font-size: 0.8rem;">Add to Local Index</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notifications Container -->
-  <div id="toast-container" class="toast-container"></div>
+  <!-- Toast Shelf -->
+  <div id="toast-shelf" class="toast-shelf"></div>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-left">
+  <!-- Editorial Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
         <div class="footer-brand">ELI5 Visual Lab</div>
-        <div class="footer-desc">Curated collection of interactive visual deep dives. Zero backend, zero bloat, instant static edge delivery.</div>
+        <p style="font-size: 0.88rem; color: var(--ink-secondary); max-width: 440px; line-height: 1.6;">
+          An independent editorial laboratory for visual mental models. Every concept is distilled to its core mechanical primitives with zero academic jargon and zero backend dependency.
+        </p>
       </div>
-      <div class="footer-links">
-        <a href="#navbar">Back to top ↑</a>
+
+      <div class="footer-col">
+        <h4>Publication</h4>
+        <ul>
+          <li><a href="./">Current Issue (Vol. 01)</a></li>
+          <li><a href="https://github.com/anmoljamwal935/eli5-lab" target="_blank">Open Source Codebase</a></li>
+          <li><a href="https://vercel.com" target="_blank">Vercel Edge Network</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Archive Categories</h4>
+        <ul>
+          <li><a href="#" onclick="window.filterByCategory('ai'); return false;">AI & Physics</a></li>
+          <li><a href="#" onclick="window.filterByCategory('finance'); return false;">Monetary Flows</a></li>
+          <li><a href="#" onclick="window.filterByCategory('science'); return false;">Electrochemistry</a></li>
+          <li><a href="#" onclick="window.filterByCategory('industry'); return false;">Grid Hardware</a></li>
+        </ul>
       </div>
     </div>
   </footer>
 
-  <!-- Scripts -->
   <script src="data/explainers.js"></script>
   <script src="app.js"></script>
 </body>
