@@ -224,7 +224,15 @@
   const btnThemeToggle = document.getElementById('btn-theme-toggle');
 
   // Categories
-  const CATEGORIES = [\n    { id: 'all', label: 'All Essays' },\n    { id: 'ai', label: 'AI & Frontier' },\n    { id: 'finance', label: 'Monetary & Capital' },\n    { id: 'economics', label: 'Macro' },\n    { id: 'science', label: 'Physics & Energy' },\n    { id: 'industry', label: 'Infrastructure' },\n    { id: 'systems', label: 'Systems' }\n  ];
+  const CATEGORIES = [
+    { id: 'all', label: 'All Essays' },
+    { id: 'ai', label: 'AI & Frontier' },
+    { id: 'finance', label: 'Monetary & Capital' },
+    { id: 'economics', label: 'Macro' },
+    { id: 'science', label: 'Physics & Energy' },
+    { id: 'industry', label: 'Infrastructure' },
+    { id: 'systems', label: 'Systems' }
+  ];
 
   function getCategoryCounts() {
     const counts = { all: explainers.length };
