@@ -5,6 +5,25 @@
 
   // Micro-diagram SVG generators for each explainer (NYT / Quanta / The Pudding style)
   const MICRO_DIAGRAMS = {
+    'how-money-actually-works-in-india': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <!-- RBI Liability Layer -->
+        <rect x="15" y="10" width="130" height="20" rx="3" fill="rgba(179, 75, 13, 0.12)" stroke="var(--accent-amber)" stroke-width="1.5"/>
+        <text x="80" y="23" font-family="var(--font-mono)" font-size="8" fill="var(--accent-amber)" text-anchor="middle" font-weight="600">RBI: Reserves & Notes</text>
+
+        <!-- Settlement Channel -->
+        <path d="M150 20 H180" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <polygon points="182,20 176,17 176,23" fill="var(--border-strong)"/>
+        
+        <!-- Interbank Settlement -->
+        <rect x="185" y="10" width="120" height="20" rx="3" fill="rgba(13, 148, 136, 0.12)" stroke="var(--accent-emerald)" stroke-width="1.5"/>
+        <text x="245" y="23" font-family="var(--font-mono)" font-size="8" fill="var(--accent-emerald)" text-anchor="middle" font-weight="600">Interbank Settlement</text>
+
+        <!-- Commercial Bank Deposits Layer -->
+        <rect x="15" y="38" width="290" height="20" rx="3" fill="rgba(59, 130, 246, 0.1)" stroke="var(--accent-blue)" stroke-width="1.5"/>
+        <text x="160" y="51" font-family="var(--font-mono)" font-size="8" fill="var(--accent-blue)" text-anchor="middle" font-weight="600">Commercial Bank Lending → Spendable Deposits (M3)</text>
+      </svg>
+    `,
     'blackrock-15-trillion-machine': `
       <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
         <circle cx="45" cy="32" r="22" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="3 3"/>
@@ -205,15 +224,7 @@
   const btnThemeToggle = document.getElementById('btn-theme-toggle');
 
   // Categories
-  const CATEGORIES = [
-    { id: 'all', label: 'All Essays' },
-    { id: 'ai', label: 'AI & Frontier' },
-    { id: 'finance', label: 'Monetary & Capital' },
-    { id: 'economics', label: 'Macro' },
-    { id: 'science', label: 'Physics & Energy' },
-    { id: 'industry', label: 'Infrastructure' },
-    { id: 'systems', label: 'Systems' }
-  ];
+  const CATEGORIES = [\n    { id: 'all', label: 'All Essays' },\n    { id: 'ai', label: 'AI & Frontier' },\n    { id: 'finance', label: 'Monetary & Capital' },\n    { id: 'economics', label: 'Macro' },\n    { id: 'science', label: 'Physics & Energy' },\n    { id: 'industry', label: 'Infrastructure' },\n    { id: 'systems', label: 'Systems' }\n  ];
 
   function getCategoryCounts() {
     const counts = { all: explainers.length };

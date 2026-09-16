@@ -1,5 +1,28 @@
 [
   {
+    "id": "how-money-actually-works-in-india",
+    "title": "How Money Actually Works in India",
+    "category": "finance",
+    "categoryLabel": "Monetary Architecture",
+    "badge": "Masterclass Interactive",
+    "tagline": "A balance-sheet-first course: RBI liabilities, commercial bank deposits, liquidity plumbing, and crisis mechanics.",
+    "summary": "Money is not a single object—it is a layered hierarchy of promises. From double-entry T-accounts and RBI reserves to lending creation, repo corridors, tax drains, inflation deflators, and foreign exchange defense.",
+    "highlights": [
+      "Layered promises: RBI central reserves vs commercial bank spendable deposits",
+      "Endogenous money: How bank lending creates deposits simultaneously",
+      "Interactive simulators: 9-chapter balance-sheet ledger with coverage maps"
+    ],
+    "readTime": "12 min",
+    "words": 3450,
+    "level": "All Levels",
+    "filename": "how-money-actually-works-in-india.html",
+    "url": "explainers/how-money-actually-works-in-india.html",
+    "accentColor": "#b34b0d",
+    "glowColor": "rgba(179, 75, 13, 0.25)",
+    "icon": "layers",
+    "featured": true
+  },
+  {
     "id": "blackrock-15-trillion-machine",
     "title": "BlackRock’s $15 Trillion Machine",
     "category": "finance",
@@ -20,7 +43,7 @@
     "accentColor": "#3b82f6",
     "glowColor": "rgba(59, 130, 246, 0.25)",
     "icon": "landmark",
-    "featured": true
+    "featured": false
   },
   {
     "id": "openai-navier-stokes",
@@ -66,7 +89,7 @@
     "accentColor": "#10b981",
     "glowColor": "rgba(16, 185, 129, 0.25)",
     "icon": "zap",
-    "featured": true
+    "featured": false
   },
   {
     "id": "india-gdp-78",
