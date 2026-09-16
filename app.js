@@ -1,7 +1,156 @@
-// ELI5 Visual Lab - Main Application Logic
+// ELI5 Visual Lab — Editorial Application Logic
 
 (function() {
   'use strict';
+
+  // Micro-diagram SVG generators for each explainer (NYT / Quanta / The Pudding style)
+  const MICRO_DIAGRAMS = {
+    'blackrock-15-trillion-machine': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <circle cx="45" cy="32" r="22" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="3 3"/>
+        <circle cx="45" cy="32" r="8" fill="var(--accent-blue)" opacity="0.2"/>
+        <text x="45" y="35" font-family="var(--font-mono)" font-size="9" fill="var(--ink-primary)" text-anchor="middle" font-weight="600">Aladdin</text>
+        
+        <path d="M70 32 H110" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <polygon points="112,32 106,29 106,35" fill="var(--border-strong)"/>
+        
+        <circle cx="160" cy="32" r="22" stroke="var(--accent-blue)" stroke-width="2"/>
+        <text x="160" y="31" font-family="var(--font-mono)" font-size="9" fill="var(--ink-primary)" text-anchor="middle" font-weight="600">$10T</text>
+        <text x="160" y="41" font-family="var(--font-mono)" font-size="7" fill="var(--ink-muted)" text-anchor="middle">Custody</text>
+        
+        <path d="M185 32 H225" stroke="var(--border-strong)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <polygon points="227,32 221,29 221,35" fill="var(--border-strong)"/>
+        
+        <circle cx="275" cy="32" r="22" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="4 2"/>
+        <text x="275" y="31" font-family="var(--font-mono)" font-size="9" fill="var(--ink-primary)" text-anchor="middle" font-weight="600">Proxy</text>
+        <text x="275" y="41" font-family="var(--font-mono)" font-size="7" fill="var(--ink-muted)" text-anchor="middle">Voting</text>
+      </svg>
+    `,
+    'openai-navier-stokes': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <path d="M20 12 C100 12, 140 30, 160 32 C180 34, 220 52, 300 52" stroke="var(--accent-purple)" stroke-width="2"/>
+        <path d="M20 52 C100 52, 140 34, 160 32 C180 30, 220 12, 300 12" stroke="var(--accent-purple)" stroke-width="2"/>
+        <circle cx="160" cy="32" r="7" fill="var(--accent-purple)" opacity="0.2" stroke="var(--accent-purple)" stroke-width="1.5"/>
+        <circle cx="160" cy="32" r="2" fill="var(--accent-purple)"/>
+        <text x="160" y="20" font-family="var(--font-mono)" font-size="8" fill="var(--accent-purple)" text-anchor="middle" font-weight="600">Blowup Point (Singularity?)</text>
+        <path d="M60 22 L75 22 M70 19 L75 22 L70 25" stroke="var(--ink-muted)" stroke-width="1.2"/>
+        <path d="M245 42 L260 42 M255 39 L260 42 L255 45" stroke="var(--ink-muted)" stroke-width="1.2"/>
+      </svg>
+    `,
+    'lithium-ion-battery': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <!-- Anode -->
+        <rect x="25" y="14" width="80" height="36" rx="4" fill="rgba(13, 148, 136, 0.1)" stroke="var(--accent-emerald)" stroke-width="1.5"/>
+        <text x="65" y="30" font-family="var(--font-mono)" font-size="8" fill="var(--accent-emerald)" text-anchor="middle" font-weight="600">ANODE</text>
+        <text x="65" y="42" font-family="var(--font-mono)" font-size="7" fill="var(--ink-muted)" text-anchor="middle">Graphite Cages</text>
+        
+        <!-- Separator -->
+        <line x1="160" y1="10" x2="160" y2="54" stroke="var(--border-strong)" stroke-width="2" stroke-dasharray="3 3"/>
+        
+        <!-- Ion stream -->
+        <path d="M110 32 H150" stroke="var(--accent-emerald)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <circle cx="130" cy="32" r="4" fill="var(--accent-emerald)"/>
+        <text x="130" y="24" font-family="var(--font-mono)" font-size="8" fill="var(--accent-emerald)" text-anchor="middle">Li+</text>
+        
+        <!-- Cathode -->
+        <rect x="215" y="14" width="80" height="36" rx="4" fill="rgba(59, 130, 246, 0.1)" stroke="var(--accent-blue)" stroke-width="1.5"/>
+        <text x="255" y="30" font-family="var(--font-mono)" font-size="8" fill="var(--accent-blue)" text-anchor="middle" font-weight="600">CATHODE</text>
+        <text x="255" y="42" font-family="var(--font-mono)" font-size="7" fill="var(--ink-muted)" text-anchor="middle">Metal Oxide</text>
+      </svg>
+    `,
+    'india-gdp-78': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <!-- Nominal bar -->
+        <rect x="20" y="16" width="220" height="14" rx="2" fill="rgba(59, 130, 246, 0.2)" stroke="var(--accent-blue)" stroke-width="1.2"/>
+        <text x="28" y="27" font-family="var(--font-mono)" font-size="8" fill="var(--accent-blue)" font-weight="600">Nominal Output: 10.3%</text>
+        
+        <!-- Eraser bracket -->
+        <rect x="180" y="16" width="60" height="14" rx="2" fill="rgba(245, 158, 11, 0.3)" stroke="var(--accent-amber)" stroke-width="1.2"/>
+        <text x="210" y="27" font-family="var(--font-mono)" font-size="7" fill="var(--accent-amber)" text-anchor="middle" font-weight="600">Deflator: -2.5%</text>
+
+        <!-- Real bar -->
+        <rect x="20" y="38" width="160" height="14" rx="2" fill="rgba(13, 148, 136, 0.25)" stroke="var(--accent-emerald)" stroke-width="1.2"/>
+        <text x="28" y="49" font-family="var(--font-mono)" font-size="8" fill="var(--accent-emerald)" font-weight="600">Real Headline GDP: 7.8%</text>
+      </svg>
+    `,
+    'openai-hugging-face-incident': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <rect x="30" y="14" width="85" height="36" rx="3" stroke="var(--accent-rose)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <text x="72" y="35" font-family="var(--font-mono)" font-size="9" fill="var(--accent-rose)" text-anchor="middle">Agent Room A</text>
+        
+        <!-- Leaked channel -->
+        <path d="M120 32 H200" stroke="var(--accent-rose)" stroke-width="2"/>
+        <circle cx="160" cy="32" r="5" fill="var(--accent-rose)"/>
+        <text x="160" y="22" font-family="var(--font-mono)" font-size="7" fill="var(--accent-rose)" text-anchor="middle" font-weight="600">UNSEALED PORT</text>
+        
+        <rect x="205" y="14" width="85" height="36" rx="3" stroke="var(--accent-rose)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <text x="247" y="35" font-family="var(--font-mono)" font-size="9" fill="var(--accent-rose)" text-anchor="middle">Agent Room B</text>
+      </svg>
+    `,
+    'transformer-economics': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <!-- Input coil -->
+        <path d="M40 46 C40 18, 70 18, 70 46 C70 18, 100 18, 100 46" stroke="var(--accent-amber)" stroke-width="2"/>
+        <text x="70" y="58" font-family="var(--font-mono)" font-size="7" fill="var(--accent-amber)" text-anchor="middle">Primary 33kV</text>
+
+        <!-- Core -->
+        <line x1="135" y1="12" x2="135" y2="52" stroke="var(--border-strong)" stroke-width="3"/>
+        <line x1="145" y1="12" x2="145" y2="52" stroke="var(--border-strong)" stroke-width="3"/>
+
+        <!-- Output coil -->
+        <path d="M180 46 C180 14, 205 14, 205 46 C205 14, 230 14, 230 46 C230 14, 255 14, 255 46" stroke="var(--accent-blue)" stroke-width="2"/>
+        <text x="218" y="58" font-family="var(--font-mono)" font-size="7" fill="var(--accent-blue)" text-anchor="middle">Step-Up 400kV Grid</text>
+      </svg>
+    `,
+    'fcnr-b-swaps': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <circle cx="50" cy="32" r="18" stroke="var(--accent-blue)" stroke-width="1.5"/>
+        <text x="50" y="35" font-family="var(--font-mono)" font-size="8" fill="var(--ink-primary)" text-anchor="middle">NRI $</text>
+        
+        <path d="M72 32 H138" stroke="var(--ink-muted)" stroke-width="1.5"/>
+        <polygon points="140,32 134,29 134,35" fill="var(--ink-muted)"/>
+        <text x="105" y="24" font-family="var(--font-mono)" font-size="7" fill="var(--ink-muted)" text-anchor="middle">Deposit</text>
+
+        <circle cx="160" cy="32" r="18" stroke="var(--accent-emerald)" stroke-width="1.5"/>
+        <text x="160" y="35" font-family="var(--font-mono)" font-size="8" fill="var(--ink-primary)" text-anchor="middle">Bank</text>
+
+        <path d="M182 32 H248" stroke="var(--accent-amber)" stroke-width="1.5"/>
+        <polygon points="250,32 244,29 244,35" fill="var(--accent-amber)"/>
+        <text x="215" y="24" font-family="var(--font-mono)" font-size="7" fill="var(--accent-amber)" text-anchor="middle">Swap</text>
+
+        <circle cx="270" cy="32" r="18" stroke="var(--accent-amber)" stroke-width="1.5"/>
+        <text x="270" y="35" font-family="var(--font-mono)" font-size="8" fill="var(--ink-primary)" text-anchor="middle">RBI</text>
+      </svg>
+    `,
+    'hermes-newswire': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <!-- Inputs -->
+        <line x1="20" y1="20" x2="80" y2="28" stroke="var(--ink-muted)" stroke-width="1.5"/>
+        <line x1="20" y1="32" x2="80" y2="32" stroke="var(--ink-muted)" stroke-width="1.5"/>
+        <line x1="20" y1="44" x2="80" y2="36" stroke="var(--ink-muted)" stroke-width="1.5"/>
+        <text x="35" y="14" font-family="var(--font-mono)" font-size="7" fill="var(--ink-muted)">Feeds</text>
+
+        <!-- Funnel Hash -->
+        <polygon points="90,16 150,26 150,38 90,48" stroke="var(--accent-blue)" stroke-width="1.5" fill="rgba(59,130,246,0.08)"/>
+        <text x="120" y="35" font-family="var(--font-mono)" font-size="8" fill="var(--accent-blue)" text-anchor="middle">Dedupe</text>
+
+        <!-- Stream -->
+        <path d="M155 32 H280" stroke="var(--accent-emerald)" stroke-width="2" stroke-dasharray="4 2"/>
+        <polygon points="285,32 277,28 277,36" fill="var(--accent-emerald)"/>
+        <text x="220" y="24" font-family="var(--font-mono)" font-size="8" fill="var(--accent-emerald)" font-weight="600">Terminal Stream</text>
+      </svg>
+    `,
+    'transformer-floor-notes': `
+      <svg viewBox="0 0 320 64" width="100%" height="100%" fill="none" stroke="currentColor">
+        <rect x="30" y="16" width="220" height="12" rx="2" fill="var(--bg-subtle)" stroke="var(--border-strong)" stroke-width="1"/>
+        <text x="36" y="25" font-family="var(--font-mono)" font-size="7" fill="var(--ink-muted)">Legacy Competitor: 180-Day Cash Cycle</text>
+
+        <rect x="30" y="36" width="90" height="14" rx="2" fill="rgba(13,148,136,0.2)" stroke="var(--accent-emerald)" stroke-width="1.5"/>
+        <text x="36" y="47" font-family="var(--font-mono)" font-size="8" fill="var(--accent-emerald)" font-weight="600">Shilchar: 60-Day Cycle</text>
+        <text x="130" y="47" font-family="var(--font-mono)" font-size="7" fill="var(--accent-emerald)">3x Faster Turnaround</text>
+      </svg>
+    `
+  };
 
   // State
   let explainers = [...EXPLAINERS];
@@ -10,33 +159,29 @@
   let sortBy = 'featured';
   let currentReaderIndex = -1;
 
-  // Load custom explainers from localStorage if any
+  // Restore custom local items if any
   try {
-    const savedCustom = localStorage.getItem('eli5_custom_explainers');
-    if (savedCustom) {
-      const customItems = JSON.parse(savedCustom);
-      if (Array.isArray(customItems) && customItems.length > 0) {
-        explainers = [...customItems, ...explainers];
+    const saved = localStorage.getItem('eli5_custom_explainers');
+    if (saved) {
+      const items = JSON.parse(saved);
+      if (Array.isArray(items) && items.length > 0) {
+        explainers = [...items, ...explainers];
       }
     }
-  } catch (e) {
-    console.error('Error reading localStorage explainers:', e);
-  }
+  } catch (e) {}
 
   // DOM Elements
-  const gridEl = document.getElementById('explainers-grid');
-  const searchInput = document.getElementById('search-input');
-  const navSearchInput = document.getElementById('nav-search-input');
-  const resultsCountEl = document.getElementById('results-count');
+  const leadContainer = document.getElementById('lead-feature-container');
+  const gridEl = document.getElementById('essays-grid');
   const categoryTabsContainer = document.getElementById('category-tabs');
   const sortSelect = document.getElementById('sort-select');
-  const featuredSection = document.getElementById('featured-section');
+  const resultsCount = document.getElementById('results-count');
+  const navSearchInput = document.getElementById('nav-search-input');
 
   // Reader elements
   const readerModal = document.getElementById('reader-modal');
   const readerIframe = document.getElementById('reader-iframe');
   const readerTitle = document.getElementById('reader-title');
-  const readerBadge = document.getElementById('reader-badge');
   const readerProgressBar = document.getElementById('reader-progress-bar');
   const btnCloseReader = document.getElementById('btn-close-reader');
   const btnReaderPrev = document.getElementById('btn-reader-prev');
@@ -44,24 +189,32 @@
   const btnReaderExternal = document.getElementById('btn-reader-external');
   const btnReaderShare = document.getElementById('btn-reader-share');
 
-  // Add Studio elements
+  // Studio elements
   const studioModal = document.getElementById('studio-modal');
   const btnOpenStudio = document.getElementById('btn-open-studio');
   const btnCloseStudio = document.getElementById('btn-close-studio');
-  const studioTabs = document.querySelectorAll('.modal-tab-btn');
-  const studioTabContents = document.querySelectorAll('.studio-tab-content');
-  const previewIframe = document.getElementById('studio-preview-iframe');
   const studioHtmlInput = document.getElementById('studio-html-input');
   const studioTitleInput = document.getElementById('studio-title-input');
   const studioCategoryInput = document.getElementById('studio-category-input');
   const studioSummaryInput = document.getElementById('studio-summary-input');
+  const previewIframe = document.getElementById('studio-preview-iframe');
   const btnSaveLocal = document.getElementById('btn-save-local');
   const btnCopyTemplate = document.getElementById('btn-copy-template');
 
-  // Theme Toggle
+  // Theme
   const btnThemeToggle = document.getElementById('btn-theme-toggle');
 
-  // Init Category Counts
+  // Categories
+  const CATEGORIES = [
+    { id: 'all', label: 'All Essays' },
+    { id: 'ai', label: 'AI & Frontier' },
+    { id: 'finance', label: 'Monetary & Capital' },
+    { id: 'economics', label: 'Macro' },
+    { id: 'science', label: 'Physics & Energy' },
+    { id: 'industry', label: 'Infrastructure' },
+    { id: 'systems', label: 'Systems' }
+  ];
+
   function getCategoryCounts() {
     const counts = { all: explainers.length };
     explainers.forEach(item => {
@@ -70,209 +223,189 @@
     return counts;
   }
 
-  function renderCategoryTabs() {
+  function renderCategoryPills() {
     const counts = getCategoryCounts();
-    const categories = [
-      { id: 'all', label: 'All Topics' },
-      { id: 'ai', label: 'AI & Frontier Tech' },
-      { id: 'finance', label: 'Finance & Capital' },
-      { id: 'economics', label: 'Macroeconomics' },
-      { id: 'science', label: 'Science & Energy' },
-      { id: 'industry', label: 'Industrial Power' },
-      { id: 'systems', label: 'Distributed Systems' }
-    ];
-
-    categoryTabsContainer.innerHTML = categories.map(cat => {
+    categoryTabsContainer.innerHTML = CATEGORIES.map(cat => {
       const count = counts[cat.id] || 0;
       if (count === 0 && cat.id !== 'all') return '';
       const isActive = activeCategory === cat.id ? 'active' : '';
       return `
-        <button class="category-tab ${isActive}" data-category="${cat.id}">
-          ${cat.label}
-          <span class="count">${count}</span>
+        <button class="filter-btn ${isActive}" data-category="${cat.id}">
+          <span>${cat.label}</span>
+          <span class="badge-count">${count}</span>
         </button>
       `;
     }).join('');
 
-    // Reattach listeners
-    categoryTabsContainer.querySelectorAll('.category-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        activeCategory = tab.dataset.category;
-        renderCategoryTabs();
+    categoryTabsContainer.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.category;
+        renderCategoryPills();
         renderGrid();
       });
     });
   }
 
-  // Filter & Sort Items
-  function getFilteredItems() {
+  window.filterByCategory = function(catId) {
+    activeCategory = catId;
+    renderCategoryPills();
+    renderGrid();
+    window.scrollTo({ top: categoryTabsContainer.offsetTop - 80, behavior: 'smooth' });
+  };
+
+  function getFilteredExplainers() {
     let filtered = explainers.filter(item => {
-      const matchCat = activeCategory === 'all' || item.category === activeCategory;
-      if (!matchCat) return false;
+      const catMatch = activeCategory === 'all' || item.category === activeCategory;
+      if (!catMatch) return false;
 
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
-      const titleMatch = item.title.toLowerCase().includes(q);
-      const taglineMatch = (item.tagline || '').toLowerCase().includes(q);
-      const summaryMatch = (item.summary || '').toLowerCase().includes(q);
-      const highlightsMatch = (item.highlights || []).some(h => h.toLowerCase().includes(q));
-      const badgeMatch = (item.badge || '').toLowerCase().includes(q);
-
-      return titleMatch || taglineMatch || summaryMatch || highlightsMatch || badgeMatch;
+      return item.title.toLowerCase().includes(q) ||
+             (item.tagline || '').toLowerCase().includes(q) ||
+             (item.summary || '').toLowerCase().includes(q) ||
+             (item.badge || '').toLowerCase().includes(q);
     });
 
-    // Sorting
     filtered.sort((a, b) => {
       if (sortBy === 'shortest') {
-        const timeA = parseInt(a.readTime) || 5;
-        const timeB = parseInt(b.readTime) || 5;
-        return timeA - timeB;
+        return (parseInt(a.readTime) || 5) - (parseInt(b.readTime) || 5);
       } else if (sortBy === 'longest') {
-        const timeA = parseInt(a.readTime) || 5;
-        const timeB = parseInt(b.readTime) || 5;
-        return timeB - timeA;
+        return (parseInt(b.readTime) || 5) - (parseInt(a.readTime) || 5);
       } else if (sortBy === 'title') {
         return a.title.localeCompare(b.title);
-      } else {
-        // 'featured'
-        if (a.featured && !b.featured) return -1;
-        if (!a.featured && b.featured) return 1;
-        return 0;
       }
+      // Featured
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      return 0;
     });
 
     return filtered;
   }
 
-  // Render Featured Hero
-  function renderFeaturedSection() {
-    const featuredItem = explainers.find(item => item.featured) || explainers[0];
-    if (!featuredItem) {
-      featuredSection.innerHTML = '';
+  // Render Lead Feature
+  function renderLeadFeature() {
+    const lead = explainers.find(e => e.featured) || explainers[0];
+    if (!lead) {
+      leadContainer.innerHTML = '';
       return;
     }
 
-    featuredSection.innerHTML = `
-      <div class="featured-card" style="--card-accent: ${featuredItem.accentColor}; --card-glow: ${featuredItem.glowColor};">
-        <div class="featured-info">
-          <div class="featured-meta">
-            <span class="featured-badge">★ Spotlight Explainer</span>
-            <span class="card-category" style="color: ${featuredItem.accentColor}; border-color: ${featuredItem.accentColor}40;">
-              ${featuredItem.categoryLabel || featuredItem.category}
-            </span>
-            <span class="card-read-time">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              ${featuredItem.readTime}
-            </span>
+    const microDiagram = MICRO_DIAGRAMS[lead.id] || `
+      <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-muted);">
+        Interactive Mental Model Simulation
+      </div>
+    `;
+
+    leadContainer.innerHTML = `
+      <article class="lead-card">
+        <div class="lead-content">
+          <div>
+            <div class="lead-kicker">
+              <span>Lead Visual Essay</span>
+              <span style="opacity:0.4;">/</span>
+              <span>${lead.categoryLabel || lead.category}</span>
+              <span style="opacity:0.4;">/</span>
+              <span>${lead.readTime}</span>
+            </div>
+
+            <h2 class="lead-title">${lead.title}</h2>
+            <p class="lead-synopsis">${lead.tagline || lead.summary}</p>
+
+            <ul class="lead-takeaways">
+              ${(lead.highlights || []).slice(0, 3).map(hl => `<li>${hl}</li>`).join('')}
+            </ul>
           </div>
 
-          <h2 class="featured-title">${featuredItem.title}</h2>
-          <p class="featured-desc">${featuredItem.tagline || featuredItem.summary}</p>
-
-          <ul class="featured-bullets">
-            ${(featuredItem.highlights || []).slice(0, 3).map(hl => `
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>${hl}</span>
-              </li>
-            `).join('')}
-          </ul>
-
-          <div class="featured-actions">
-            <button class="btn-primary" onclick="window.openReader('${featuredItem.id}')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              Launch Interactive Deep Dive
+          <div class="lead-footer">
+            <button class="btn-editorial-primary" onclick="window.openReader('${lead.id}')">
+              <span>Read Visual Essay</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
-            <a href="${featuredItem.url}" target="_blank" class="btn-secondary" title="Open standalone HTML">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              Standalone View
+            <a href="${lead.url}" target="_blank" class="btn-editorial-ghost">
+              <span>Standalone Window</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>
         </div>
 
-        <div class="featured-graphic">
-          <div class="featured-visual-box">
-            <div class="visual-rings">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="${featuredItem.accentColor}" stroke-width="2">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
-              </svg>
+        <div class="lead-visual-panel">
+          <div class="interactive-preview-frame">
+            <div class="preview-topbar">
+              <span class="preview-label">Core Diagram Primitives</span>
+              <span class="preview-label">Model Preview</span>
             </div>
-            <strong style="color:#ffffff; font-size:1.05rem; margin-bottom: 6px;">Visual Mental Model</strong>
-            <span style="font-size:0.8rem; color:var(--text-secondary);">Interactive sliders & SVG architecture</span>
+            <div class="preview-diagram-box">
+              ${microDiagram}
+            </div>
           </div>
         </div>
-      </div>
+      </article>
     `;
   }
 
   // Render Grid
   function renderGrid() {
-    const items = getFilteredItems();
-    if (resultsCountEl) {
-      resultsCountEl.innerHTML = `Showing <span>${items.length}</span> ${items.length === 1 ? 'explainer' : 'explainers'}`;
-    }
+    const items = getFilteredExplainers();
+    resultsCount.textContent = `${items.length} ${items.length === 1 ? 'essay' : 'essays'}`;
 
     if (items.length === 0) {
       gridEl.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </div>
-          <h3 class="empty-title">No explainers match your search</h3>
-          <p class="empty-text">Try searching for different terms like "AI", "battery", "GDP", or clear your filter.</p>
-          <button class="btn-secondary" onclick="window.clearFilters()">Clear Filters</button>
+        <div style="grid-column: 1 / -1; padding: 64px 20px; text-align: center; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 4px;">
+          <h3 style="font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 8px;">No essays found matching "${searchQuery}"</h3>
+          <p style="color: var(--ink-muted); font-size: 0.9rem; margin-bottom: 20px;">Try searching for "Navier", "Battery", "Swap", or "GDP".</p>
+          <button class="btn-editorial-ghost" onclick="window.clearSearch()">Clear Filter</button>
         </div>
       `;
       return;
     }
 
-    gridEl.innerHTML = items.map(item => {
-      const bullets = (item.highlights || []).slice(0, 3).map(hl => `
-        <li>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>${hl}</span>
-        </li>
-      `).join('');
+    gridEl.innerHTML = items.map((item, index) => {
+      const idxStr = String(index + 1).padStart(2, '0');
+      const diagram = MICRO_DIAGRAMS[item.id] || `
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--ink-muted);">Interactive Architecture</div>
+      `;
+      const bullets = (item.highlights || []).slice(0, 2).map(hl => `<li>${hl}</li>`).join('');
 
       return `
-        <article class="explainer-card" style="--card-accent: ${item.accentColor}; --card-glow: ${item.glowColor};" data-id="${item.id}">
+        <article class="essay-card" data-id="${item.id}">
           <div>
-            <div class="card-top">
-              <span class="card-category" style="color: ${item.accentColor}; border-color: ${item.accentColor}33;">
-                ${item.badge || item.categoryLabel || item.category}
-              </span>
-              <span class="card-read-time">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                ${item.readTime}
-              </span>
+            <div class="card-header">
+              <span class="card-index">${idxStr}</span>
+              <span class="card-category">${item.categoryLabel || item.category} · ${item.readTime}</span>
             </div>
 
             <h3 class="card-title">${item.title}</h3>
-            <p class="card-tagline">${item.tagline || item.summary}</p>
+            <p class="card-deck">${item.tagline || item.summary}</p>
 
-            ${bullets ? `<ul class="card-highlights">${bullets}</ul>` : ''}
+            <div class="card-mini-wireframe" title="Visual model preview">
+              ${diagram}
+            </div>
+
+            ${bullets ? `<ul class="card-takeaways">${bullets}</ul>` : ''}
           </div>
 
-          <div class="card-footer">
-            <button class="card-btn-read" onclick="window.openReader('${item.id}')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              Read Explainer
+          <div class="card-action-row">
+            <button class="btn-open-essay" onclick="window.openReader('${item.id}')">
+              <span>Read Essay</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
-            <a href="${item.url}" target="_blank" class="card-btn-icon" title="Open in new window" aria-label="Open in new window">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-            <button class="card-btn-icon" onclick="window.shareExplainer('${item.id}', event)" title="Copy Link" aria-label="Copy Link">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-            </button>
+
+            <div class="card-links">
+              <button class="btn-icon-link" onclick="window.shareEssay('${item.id}', event)" title="Copy Link" aria-label="Copy Link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              </button>
+              <a href="${item.url}" target="_blank" class="btn-icon-link" title="Open Fullscreen in New Tab" aria-label="Open Fullscreen">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
         </article>
       `;
     }).join('');
   }
 
-  // Reader functionality
+  // Reader Implementation
   window.openReader = function(id) {
     const idx = explainers.findIndex(e => e.id === id);
     if (idx === -1) return;
@@ -281,49 +414,38 @@
     const item = explainers[idx];
 
     readerTitle.textContent = item.title;
-    readerBadge.textContent = item.badge || item.categoryLabel || item.category;
-    readerBadge.style.backgroundColor = `${item.accentColor}22`;
-    readerBadge.style.color = item.accentColor;
-
-    // Load iframe
     readerIframe.src = item.url;
     readerModal.classList.add('open');
     document.body.style.overflow = 'hidden';
 
-    // Update URL hash
+    // Hash update
     window.location.hash = item.id;
 
-    // Update prev/next button states
+    // Prev/Next disable
+    btnReaderPrev.style.opacity = (idx === 0) ? '0.35' : '1';
     btnReaderPrev.disabled = (idx === 0);
+    btnReaderNext.style.opacity = (idx === explainers.length - 1) ? '0.35' : '1';
     btnReaderNext.disabled = (idx === explainers.length - 1);
-    btnReaderPrev.style.opacity = (idx === 0) ? '0.4' : '1';
-    btnReaderNext.style.opacity = (idx === explainers.length - 1) ? '0.4' : '1';
 
-    // Configure buttons
     btnReaderExternal.onclick = () => window.open(item.url, '_blank');
-    btnReaderShare.onclick = () => window.shareExplainer(item.id);
+    btnReaderShare.onclick = () => window.shareEssay(item.id);
 
-    // Track iframe scroll for progress bar
-    setupIframeScrollTracking();
-  };
-
-  function setupIframeScrollTracking() {
+    // Progress bar inside iframe
     readerProgressBar.style.width = '0%';
-    readerIframe.onload = function() {
+    readerIframe.onload = () => {
       try {
         const frameDoc = readerIframe.contentDocument || readerIframe.contentWindow.document;
         const frameWin = readerIframe.contentWindow;
         frameWin.addEventListener('scroll', () => {
-          const totalHeight = frameDoc.documentElement.scrollHeight - frameWin.innerHeight;
-          const currentProgress = (frameWin.scrollY / totalHeight) * 100;
-          readerProgressBar.style.width = `${Math.min(100, Math.max(0, currentProgress))}%`;
+          const total = frameDoc.documentElement.scrollHeight - frameWin.innerHeight;
+          const prog = (frameWin.scrollY / total) * 100;
+          readerProgressBar.style.width = `${Math.min(100, Math.max(0, prog))}%`;
         });
       } catch (e) {
-        // Cross-origin fallback
         readerProgressBar.style.width = '100%';
       }
     };
-  }
+  };
 
   window.closeReader = function() {
     readerModal.classList.remove('open');
@@ -334,65 +456,55 @@
     }
   };
 
-  window.navigateReader = function(direction) {
-    const newIdx = currentReaderIndex + direction;
-    if (newIdx >= 0 && newIdx < explainers.length) {
-      window.openReader(explainers[newIdx].id);
+  window.navigateReader = function(step) {
+    const nextIdx = currentReaderIndex + step;
+    if (nextIdx >= 0 && nextIdx < explainers.length) {
+      window.openReader(explainers[nextIdx].id);
     }
   };
 
-  // Toast System
-  window.showToast = function(msg, icon = '✓') {
-    const container = document.getElementById('toast-container');
+  // Toast
+  window.showToast = function(msg) {
+    const container = document.getElementById('toast-shelf');
     if (!container) return;
     const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+    toast.className = 'toast-pill';
+    toast.textContent = msg;
     container.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
-      toast.style.transform = 'translateY(10px)';
-      toast.style.transition = 'all 0.2s ease';
+      toast.style.transition = 'opacity 0.2s ease';
       setTimeout(() => toast.remove(), 200);
-    }, 2800);
+    }, 2400);
   };
 
-  // Share Explainer
-  window.shareExplainer = function(id, event) {
-    if (event) event.stopPropagation();
+  window.shareEssay = function(id, e) {
+    if (e) e.stopPropagation();
     const url = `${window.location.origin}${window.location.pathname}?id=${id}#${id}`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(url).then(() => {
-        window.showToast('Explainer link copied to clipboard!');
-      }).catch(() => {
-        prompt('Copy this link:', url);
+        window.showToast('Link copied to clipboard');
       });
     } else {
       prompt('Copy this link:', url);
     }
   };
 
-  window.clearFilters = function() {
+  window.clearSearch = function() {
     searchQuery = '';
-    activeCategory = 'all';
-    if (searchInput) searchInput.value = '';
     if (navSearchInput) navSearchInput.value = '';
-    renderCategoryTabs();
     renderGrid();
   };
 
-  // Search input events
-  function handleSearch(e) {
-    searchQuery = e.target.value;
-    if (searchInput && e.target !== searchInput) searchInput.value = searchQuery;
-    if (navSearchInput && e.target !== navSearchInput) navSearchInput.value = searchQuery;
-    renderGrid();
+  // Search input
+  if (navSearchInput) {
+    navSearchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderGrid();
+    });
   }
 
-  if (searchInput) searchInput.addEventListener('input', handleSearch);
-  if (navSearchInput) navSearchInput.addEventListener('input', handleSearch);
-
-  // Sort select event
+  // Sort
   if (sortSelect) {
     sortSelect.addEventListener('change', (e) => {
       sortBy = e.target.value;
@@ -400,12 +512,12 @@
     });
   }
 
-  // Reader event listeners
+  // Reader buttons
   if (btnCloseReader) btnCloseReader.addEventListener('click', window.closeReader);
   if (btnReaderPrev) btnReaderPrev.addEventListener('click', () => window.navigateReader(-1));
   if (btnReaderNext) btnReaderNext.addEventListener('click', () => window.navigateReader(1));
 
-  // Add Studio Modal
+  // Studio buttons
   if (btnOpenStudio) {
     btnOpenStudio.addEventListener('click', () => {
       studioModal.classList.add('open');
@@ -421,126 +533,87 @@
     });
   }
 
-  // Studio tabs switching
-  studioTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      studioTabs.forEach(t => t.classList.remove('active'));
-      studioTabContents.forEach(c => c.style.display = 'none');
-      tab.classList.add('active');
-      const targetId = tab.dataset.tab;
-      document.getElementById(targetId).style.display = 'block';
-    });
-  });
-
-  // Studio Live Preview
   function updateStudioPreview() {
     if (!previewIframe || !studioHtmlInput) return;
-    const htmlContent = studioHtmlInput.value;
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const html = studioHtmlInput.value || '<p style="padding:20px; font-family:sans-serif; color:#666;">Type or paste HTML above to preview...</p>';
+    const blob = new Blob([html], { type: 'text/html' });
     previewIframe.src = URL.createObjectURL(blob);
   }
 
-  if (studioHtmlInput) {
-    studioHtmlInput.addEventListener('input', updateStudioPreview);
-  }
+  if (studioHtmlInput) studioHtmlInput.addEventListener('input', updateStudioPreview);
 
-  // Save to Local Gallery
   if (btnSaveLocal) {
     btnSaveLocal.addEventListener('click', () => {
-      const title = studioTitleInput.value.trim() || 'Untitled Explainer';
-      const category = studioCategoryInput.value || 'ai';
-      const summary = studioSummaryInput.value.trim() || 'Custom added explainer.';
-      const htmlContent = studioHtmlInput.value.trim();
+      const title = studioTitleInput.value.trim() || 'Untitled Essay';
+      const cat = studioCategoryInput.value || 'ai';
+      const summary = studioSummaryInput.value.trim() || 'Draft visual explanation';
+      const html = studioHtmlInput.value.trim();
 
-      if (!htmlContent) {
-        alert('Please paste or write some HTML content for your explainer.');
+      if (!html) {
+        alert('Please provide some HTML content.');
         return;
       }
 
-      // Generate slug
-      const id = 'custom-' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const id = 'custom-' + title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString().slice(-4);
+      const blob = new Blob([html], { type: 'text/html' });
       const blobUrl = URL.createObjectURL(blob);
 
-      const newItem = {
+      const item = {
         id: id,
         title: title,
-        category: category,
-        categoryLabel: category.toUpperCase(),
-        badge: 'Custom Draft',
+        category: cat,
+        categoryLabel: cat.toUpperCase(),
         tagline: summary,
         summary: summary,
-        highlights: ['Custom user-authored explainer', 'Rendered client-side', 'Saved to browser cache'],
         readTime: '3 min',
         url: blobUrl,
-        accentColor: '#ec4899',
-        glowColor: 'rgba(236, 72, 153, 0.25)',
-        isCustom: true
+        highlights: ['User-created draft', 'Rendered locally in sandbox'],
+        featured: false
       };
 
-      explainers.unshift(newItem);
+      explainers.unshift(item);
       try {
-        const savedCustom = JSON.parse(localStorage.getItem('eli5_custom_explainers') || '[]');
-        newItem.rawHtml = htmlContent;
-        savedCustom.unshift(newItem);
-        localStorage.setItem('eli5_custom_explainers', JSON.stringify(savedCustom));
-      } catch (e) {
-        console.warn('LocalStorage limit reached');
-      }
+        const saved = JSON.parse(localStorage.getItem('eli5_custom_explainers') || '[]');
+        saved.unshift(item);
+        localStorage.setItem('eli5_custom_explainers', JSON.stringify(saved));
+      } catch (e) {}
 
       studioModal.classList.remove('open');
       document.body.style.overflow = '';
-      renderCategoryTabs();
+      renderCategoryPills();
       renderGrid();
-      window.showToast(`"${title}" added to your gallery!`);
+      window.showToast(`Added "${title}"`);
     });
   }
 
-  // Copy template button
   if (btnCopyTemplate) {
     btnCopyTemplate.addEventListener('click', () => {
-      const template = `<!doctype html>
-<html lang="en">
+      const tpl = `<!doctype html>
+<html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My New Visual Explainer</title>
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #1e293b; }
-  h1 { font-size: 2.5rem; letter-spacing: -0.02em; margin-bottom: 12px; }
-  .tag { display: inline-block; padding: 4px 10px; background: #e0e7ff; color: #4338ca; border-radius: 999px; font-weight: 600; font-size: 0.8rem; }
-  .card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin: 24px 0; background: #f8fafc; }
+  body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #111; }
+  h1 { font-size: 2.4rem; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .tag { font-family: monospace; font-size: 0.8rem; background: #eee; padding: 3px 8px; border-radius: 4px; }
 </style>
 </head>
 <body>
-  <span class="tag">ELI5 Concept</span>
-  <h1>Explain Like I'm 5: The Core Concept</h1>
-  <p>Start with the simplest analogy a 5-year-old would understand.</p>
-  <div class="card">
-    <h3>The Mental Model</h3>
-    <p>Break down the gears and mechanics with clear step-by-step points.</p>
-  </div>
+  <span class="tag">VISUAL MODEL</span>
+  <h1>Title: The Core Mechanic</h1>
+  <p>Explain the simplest intuition first.</p>
 </body>
 </html>`;
-      navigator.clipboard.writeText(template).then(() => {
-        window.showToast('Starter template copied to clipboard!');
-      });
+      navigator.clipboard.writeText(tpl).then(() => window.showToast('Starter template copied'));
     });
   }
 
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
-    // Focus search on '/' or 'Cmd+K'
-    if ((e.key === '/' || ((e.metaKey || e.ctrlKey) && e.key === 'k')) && document.activeElement !== searchInput && document.activeElement !== navSearchInput) {
+    if ((e.key === '/' || ((e.metaKey || e.ctrlKey) && e.key === 'k')) && document.activeElement !== navSearchInput) {
       e.preventDefault();
-      if (searchInput) {
-        searchInput.focus();
-      } else if (navSearchInput) {
-        navSearchInput.focus();
-      }
+      if (navSearchInput) navSearchInput.focus();
     }
-
-    // Close reader or modals on 'Escape'
     if (e.key === 'Escape') {
       if (readerModal.classList.contains('open')) window.closeReader();
       if (studioModal.classList.contains('open')) {
@@ -548,51 +621,44 @@
         document.body.style.overflow = '';
       }
     }
-
-    // Prev / Next on Left / Right arrow keys in reader
     if (readerModal.classList.contains('open')) {
       if (e.key === 'ArrowLeft') window.navigateReader(-1);
       if (e.key === 'ArrowRight') window.navigateReader(1);
     }
   });
 
-  // Deep Link Handling on initial page load
-  function checkUrlDeepLink() {
-    const params = new URLSearchParams(window.location.search);
-    const idParam = params.get('id');
-    const hash = window.location.hash.replace('#', '');
-    const targetId = idParam || hash;
-
-    if (targetId) {
-      window.openReader(targetId);
-    }
-  }
-
-  // Theme toggle handler
+  // Theme toggle
   if (btnThemeToggle) {
     btnThemeToggle.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('eli5_theme', newTheme);
-      btnThemeToggle.innerHTML = newTheme === 'dark' 
-        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
-        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('eli5_journal_theme', next);
+      btnThemeToggle.innerHTML = next === 'dark'
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
     });
   }
 
-  // Saved theme restore
+  // Restore saved theme
   try {
-    const savedTheme = localStorage.getItem('eli5_theme');
+    const savedTheme = localStorage.getItem('eli5_journal_theme');
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme);
     }
   } catch (e) {}
 
+  // Check URL deep link
+  function checkDeepLink() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || window.location.hash.replace('#', '');
+    if (id) window.openReader(id);
+  }
+
   // Initialize
-  renderCategoryTabs();
-  renderFeaturedSection();
+  renderCategoryPills();
+  renderLeadFeature();
   renderGrid();
-  checkUrlDeepLink();
+  checkDeepLink();
 
 })();
