@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How India turns rupees into real GDP — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .c-out{color:var(--accent)}.c-in{color:var(--teal)}.c-price{color:var(--gold)}.c-cpi{color:var(--purple)}.c-bad{color:var(--danger)}
+    .lab input[type=range]{padding:0;border:0;background:none}
+    #q{accent-color:var(--accent)}#pi{accent-color:var(--teal)}#po{accent-color:var(--accent)}#cpi{accent-color:var(--purple)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable (>= ~12px) by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{overflow-x:auto;padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Macroeconomics</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MACROECONOMICS / 7 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>How India turns rupees into real GDP</h1>
+      <p class="lede">There is no single "inflation number" subtracted from GDP. Each sector is cleaned of its own price changes, then the sectors are added up.</p>
+      <p class="source-note">Built from Keshav Bedi's video (Hindi captions), facts checked against MoSPI's GDP FAQ, Feb 2026 · <a href="https://youtu.be/OQjOzBiY2wk">Watch the source ↗</a></p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#ff8059"></i>output &amp; value added</span>
+        <span><i style="background:#76d5c1"></i>inputs</span>
+        <span><i style="background:#f5c76a"></i>price-only change</span>
+        <span><i style="background:#c3b8ff"></i>CPI / households</span>
+        <span><i style="background:#f87171"></i>wrong method</span>
+      </div>
+    </section>
+
+    <!-- 1. The claim the video attacks -->
+    <section class="panel">
+      <p class="kicker">The claim</p>
+      <h2>"Real GDP = nominal − imports − deflator"</h2>
+      <p>That formula was offered in a televised debate. Both subtractions are wrong, and the formula hides how real GDP is actually built.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="The claimed formula, with imports and deflator struck out: imports are never inside GDP, and a deflator is divided by, not subtracted">
+          <rect x="30" y="60" width="150" height="70" rx="4" fill="#202020" stroke="#57534f"/>
+          <text x="105" y="103" text-anchor="middle" fill="#f1eee8" font-size="22">Real GDP</text>
+          <text x="198" y="105" text-anchor="middle" fill="#a5a29c" font-size="30">=</text>
+          <rect x="216" y="60" width="180" height="70" rx="4" fill="#202020" stroke="#57534f"/>
+          <text x="306" y="103" text-anchor="middle" fill="#f1eee8" font-size="22">Nominal GDP</text>
+          <text x="416" y="105" text-anchor="middle" fill="#a5a29c" font-size="30">−</text>
+          <rect x="436" y="60" width="140" height="70" rx="4" fill="#202020" stroke="#f87171" stroke-width="2"/>
+          <text x="506" y="103" text-anchor="middle" fill="#f1eee8" font-size="22">Imports</text>
+          <path d="M440 126 L572 64" stroke="#f87171" stroke-width="3"/>
+          <text x="596" y="105" text-anchor="middle" fill="#a5a29c" font-size="30">−</text>
+          <rect x="616" y="60" width="154" height="70" rx="4" fill="#202020" stroke="#f87171" stroke-width="2"/>
+          <text x="693" y="103" text-anchor="middle" fill="#f1eee8" font-size="22">Deflator</text>
+          <path d="M620 126 L766 64" stroke="#f87171" stroke-width="3"/>
+          <text x="506" y="170" text-anchor="middle" fill="#f87171" font-size="19">never inside GDP</text>
+          <text x="506" y="196" text-anchor="middle" fill="#a5a29c" font-size="17">D = Domestic</text>
+          <text x="693" y="170" text-anchor="middle" fill="#f87171" font-size="19">divide, don't subtract</text>
+          <text x="693" y="196" text-anchor="middle" fill="#a5a29c" font-size="17">and there isn't just one</text>
+          <text x="400" y="262" text-anchor="middle" fill="#ff8059" font-size="22">Real GDP = Σ each sector, cleaned with its own prices</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 2. Units -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>You can't add kilometres to litres</h2>
+      <p>GDP is the value of final goods and services produced inside India in a period (equivalently, the sum of every producer's value added). Roads, milk and haircuts have no common unit, so each is valued in rupees first. Only then can they be added.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Road in kilometres, milk in litres and haircuts in counts are each converted to rupees, then stacked into one rupee total">
+          <rect x="40" y="38" width="70" height="40" fill="#2b2b2b"/><path d="M45 58 H105" stroke="#ff8059" stroke-width="3" stroke-dasharray="10 7"/>
+          <text x="130" y="65" fill="#f1eee8" font-size="20">12 km road</text>
+          <path d="M62 102 h26 v8 l8 10 v34 h-42 v-34 l8 -10 Z" fill="none" stroke="#ff8059" stroke-width="3"/>
+          <text x="130" y="137" fill="#f1eee8" font-size="20">5,000 L milk</text>
+          <circle cx="62" cy="200" r="9" fill="none" stroke="#ff8059" stroke-width="3"/><circle cx="62" cy="226" r="9" fill="none" stroke="#ff8059" stroke-width="3"/><path d="M70 196 L104 222 M70 230 L104 204" stroke="#ff8059" stroke-width="3"/>
+          <text x="130" y="219" fill="#f1eee8" font-size="20">300 haircuts</text>
+          <path d="M290 58 H340 M290 130 H340 M290 212 H340" stroke="#73706a" stroke-width="2"/>
+          <path d="M334 52 L342 58 334 64 M334 124 L342 130 334 136 M334 206 L342 212 334 218" fill="none" stroke="#73706a" stroke-width="2"/>
+          <rect x="360" y="40" width="240" height="36" fill="#ff8059"/><text x="612" y="65" fill="#f1eee8" font-size="20">₹60</text>
+          <rect x="360" y="112" width="100" height="36" fill="#ff8059" opacity=".7"/><text x="472" y="137" fill="#f1eee8" font-size="20">₹25</text>
+          <rect x="360" y="194" width="60" height="36" fill="#ff8059" opacity=".45"/><text x="432" y="219" fill="#f1eee8" font-size="20">₹15</text>
+          <rect x="360" y="256" width="240" height="30" fill="#ff8059"/><rect x="600" y="256" width="100" height="30" fill="#ff8059" opacity=".7"/><rect x="700" y="256" width="60" height="30" fill="#ff8059" opacity=".45"/>
+          <text x="40" y="278" fill="#a5a29c" font-size="18">Add in rupees</text>
+          <text x="340" y="278" text-anchor="end" fill="#f1eee8" font-size="20">₹100</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 3. Nominal vs real -->
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>₹100 → ₹110 could mean two opposite things</h2>
+      <p>Rupee GDP that still contains price changes is <b>nominal</b>. Remove the price effect and you get <b>real</b> GDP, the part that is actual extra production.</p>
+      <figure>
+        <svg viewBox="0 0 800 310" role="img" aria-label="Last year 100 rupees. Two worlds reach 110: in world A all of the gain is more output, in world B all of it is higher prices">
+          <text x="40" y="66" fill="#a5a29c" font-size="19">Last year</text>
+          <rect x="190" y="40" width="500" height="38" fill="#ff8059"/><text x="676" y="66" text-anchor="end" fill="#202020" font-size="19">₹100</text>
+          <text x="40" y="146" fill="#a5a29c" font-size="19">World A</text>
+          <rect x="190" y="120" width="550" height="38" fill="#ff8059"/><text x="726" y="146" text-anchor="end" fill="#202020" font-size="19">₹110</text>
+          <text x="190" y="184" fill="#ff8059" font-size="17">10% more stuff made → real growth +10%</text>
+          <text x="40" y="242" fill="#a5a29c" font-size="19">World B</text>
+          <rect x="190" y="216" width="500" height="38" fill="#ff8059"/><rect x="690" y="216" width="50" height="38" fill="#f5c76a"/><text x="726" y="242" text-anchor="end" fill="#202020" font-size="19">₹110</text>
+          <text x="190" y="280" fill="#f5c76a" font-size="17">same stuff, prices +10% → real growth 0%</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 4. Value added, Keshav Enterprises -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Count only what each firm adds</h2>
+      <p>The video's example: Keshav Enterprises buys goods for ₹40 and sells for ₹44. Only the <span class="c-out">₹4</span> it adds counts. Add every firm's slice and you get gross value added (GVA). We reuse this firm for the rest of the page.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Output of 44 rupees drawn as a long bar; 40 rupees of inputs leave a thin 4 rupee slice of value added; many firms' slices add up to GVA">
+          <text x="40" y="30" fill="#a5a29c" font-size="17">KESHAV ENTERPRISES · 16 px = ₹1</text>
+          <rect x="40" y="44" width="704" height="38" fill="#ff8059" opacity=".35"/><text x="56" y="70" fill="#f1eee8" font-size="19">Sells for ₹44</text>
+          <rect x="40" y="92" width="640" height="38" fill="#76d5c1"/><text x="56" y="118" fill="#202020" font-size="19">Buys inputs for ₹40</text>
+          <rect x="680" y="92" width="64" height="38" fill="#ff8059"/>
+          <text x="744" y="156" text-anchor="end" fill="#ff8059" font-size="19">value added ₹4</text>
+          <text x="40" y="206" fill="#a5a29c" font-size="17">EVERY FIRM'S SLICE, ADDED</text>
+          <rect x="40" y="220" width="64" height="38" fill="#ff8059"/><rect x="106" y="220" width="150" height="38" fill="#ff8059" opacity=".8"/><rect x="258" y="220" width="96" height="38" fill="#ff8059" opacity=".65"/><rect x="356" y="220" width="210" height="38" fill="#ff8059" opacity=".8"/><rect x="568" y="220" width="120" height="38" fill="#ff8059" opacity=".65"/>
+          <text x="40" y="282" fill="#a5a29c" font-size="16">Keshav</text>
+          <text x="700" y="246" fill="#f1eee8" font-size="20">= GVA</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 5. The textbook shortcut -->
+    <section class="panel">
+      <p class="kicker">The textbook shortcut</p>
+      <h2>Divide everything by headline CPI? No.</h2>
+      <p>Headline CPI is the inflation number in the news: price changes of 300+ household items, averaged by weight. Schools imply GDP is deflated by it. But it tracks what <i>households buy</i>, not what each sector <i>produces</i>.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Headline CPI basket drawn as weighted blocks, food largest. Beside it, banana price inflation is wrongly applied to a steel mill's output">
+          <text x="40" y="28" fill="#c3b8ff" font-size="17">HEADLINE CPI BASKET (APPROX. WEIGHTS)</text>
+          <rect x="40" y="42" width="166" height="220" fill="#c3b8ff" opacity=".55"/><text x="123" y="158" text-anchor="middle" fill="#202020" font-size="19">Food ~46%</text>
+          <rect x="208" y="42" width="192" height="112" fill="#c3b8ff" opacity=".4"/><text x="304" y="104" text-anchor="middle" fill="#202020" font-size="17">Services, misc ~28%</text>
+          <rect x="208" y="156" width="192" height="42" fill="#c3b8ff" opacity=".3"/><text x="304" y="183" text-anchor="middle" fill="#f1eee8" font-size="16">Housing ~10%</text>
+          <rect x="208" y="200" width="95" height="30" fill="#c3b8ff" opacity=".22"/><text x="255" y="221" text-anchor="middle" fill="#f1eee8" font-size="14">Fuel</text>
+          <rect x="305" y="200" width="95" height="30" fill="#c3b8ff" opacity=".22"/><text x="352" y="221" text-anchor="middle" fill="#f1eee8" font-size="14">Clothes</text>
+          <rect x="208" y="232" width="192" height="30" fill="#c3b8ff" opacity=".12"/>
+          <path d="M470 92 q30 40 80 30 q-10 10 -30 14 q-40 4 -60 -36 Z" fill="#f5c76a"/>
+          <text x="505" y="80" text-anchor="middle" fill="#f5c76a" font-size="19">bananas +8%</text>
+          <path d="M565 112 H640" stroke="#f87171" stroke-width="3"/><path d="M632 105 L642 112 632 119" fill="none" stroke="#f87171" stroke-width="3"/>
+          <path d="M590 98 L616 126 M616 98 L590 126" stroke="#f87171" stroke-width="3"/>
+          <rect x="660" y="82" width="90" height="56" fill="#202020" stroke="#ff8059" stroke-width="2"/><rect x="726" y="52" width="14" height="30" fill="#202020" stroke="#ff8059" stroke-width="2"/>
+          <text x="705" y="160" text-anchor="middle" fill="#ff8059" font-size="17">steel output</text>
+          <text x="610" y="222" text-anchor="middle" fill="#f1eee8" font-size="19">Why deflate steel</text>
+          <text x="610" y="248" text-anchor="middle" fill="#f1eee8" font-size="19">by banana prices?</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 6. What MoSPI actually does -->
+    <section class="panel">
+      <p class="kicker">What MoSPI actually does</p>
+      <h2>Each sector gets its own price lens</h2>
+      <p>The statistics office splits the economy into sectors and removes each one's own price changes, using 300+ item-level indices. Then it adds up the real values. Headline CPI is only a fallback where no better index exists.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Nominal GVA split into services about 55 percent, manufacturing, agriculture and other sectors. Each passes through its own price lens before the real values are added">
+          <text x="40" y="28" fill="#a5a29c" font-size="17">NOMINAL GVA, BY SECTOR (APPROX. SHARES)</text>
+          <rect x="40" y="40" width="396" height="44" fill="#ff8059" opacity=".9"/><text x="238" y="68" text-anchor="middle" fill="#202020" font-size="18">Services ~55%</text>
+          <rect x="438" y="40" width="122" height="44" fill="#ff8059" opacity=".7"/><text x="499" y="68" text-anchor="middle" fill="#202020" font-size="15">Manufacturing</text>
+          <rect x="562" y="40" width="114" height="44" fill="#ff8059" opacity=".55"/><text x="619" y="68" text-anchor="middle" fill="#202020" font-size="15">Agriculture</text>
+          <rect x="678" y="40" width="82" height="44" fill="#ff8059" opacity=".4"/><text x="719" y="68" text-anchor="middle" fill="#f1eee8" font-size="15">Other</text>
+          <g fill="none" stroke="#f1eee8" stroke-width="2.5"><circle cx="238" cy="140" r="22"/><circle cx="499" cy="140" r="22"/><circle cx="619" cy="140" r="22"/><circle cx="719" cy="140" r="22"/></g>
+          <g stroke="#73706a" stroke-width="2"><path d="M238 86 V116 M499 86 V116 M619 86 V116 M719 86 V116"/></g>
+          <text x="238" y="190" text-anchor="middle" fill="#f1eee8" font-size="16">own item indices</text>
+          <text x="499" y="190" text-anchor="middle" fill="#f1eee8" font-size="16">double</text>
+          <text x="619" y="190" text-anchor="middle" fill="#f1eee8" font-size="16">double</text>
+          <text x="719" y="190" text-anchor="middle" fill="#f1eee8" font-size="16">own index</text>
+          <g stroke="#73706a" stroke-width="2" fill="none"><path d="M238 200 L300 248 M499 200 L430 248 M619 200 L520 248 M719 200 L600 248"/></g>
+          <rect x="190" y="252" width="440" height="40" fill="#ff8059"/><text x="410" y="279" text-anchor="middle" fill="#202020" font-size="19">Real GVA = sum of real sectors</text>
+          <text x="400" y="322" text-anchor="middle" fill="#c3b8ff" font-size="16">headline CPI: only where nothing better exists</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 7. Single vs double deflation -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Single vs double deflation</h2>
+      <p>An oil shock lifts Keshav's input prices 6%. Competition lets him raise his own prices only 3%. He makes exactly as much as before. The old method ran inputs and output through <i>one</i> index. The new one gives each its own.</p>
+      <figure>
+        <svg viewBox="0 0 800 340" role="img" aria-label="This year in today's rupees: output 45.32, inputs 42.40, value added shrinks to 2.92. Single deflation says real value added fell to 2.83. Double deflation recovers the true 4 rupees">
+          <text x="40" y="26" fill="#a5a29c" font-size="17">THIS YEAR, TODAY'S ₹ · same 16 px = ₹1</text>
+          <rect x="40" y="38" width="725" height="32" fill="#ff8059" opacity=".35"/><text x="56" y="61" fill="#f1eee8" font-size="18">Output ₹45.32 (+3% price)</text>
+          <rect x="40" y="74" width="678" height="32" fill="#76d5c1"/><text x="56" y="97" fill="#202020" font-size="18">Inputs ₹42.40 (+6% price)</text>
+          <rect x="718" y="74" width="47" height="32" fill="#ff8059"/>
+          <text x="765" y="130" text-anchor="end" fill="#ff8059" font-size="17">value added ₹2.92</text>
+          <text x="40" y="168" fill="#f87171" font-size="17">SINGLE DEFLATION · one index for both</text>
+          <rect x="40" y="180" width="64" height="32" fill="none" stroke="#a5a29c" stroke-dasharray="5 4"/>
+          <rect x="40" y="180" width="45" height="32" fill="#f87171"/>
+          <text x="124" y="203" fill="#f1eee8" font-size="18">₹2.92 ÷ 1.03 = ₹2.83 → "fell 29%"</text>
+          <text x="40" y="250" fill="#ff8059" font-size="17">DOUBLE DEFLATION · each side its own index</text>
+          <rect x="40" y="262" width="640" height="32" fill="#76d5c1"/><rect x="680" y="262" width="64" height="32" fill="#ff8059"/>
+          <text x="56" y="285" fill="#202020" font-size="17">₹42.40 ÷ 1.06 = ₹40</text>
+          <text x="40" y="324" fill="#f1eee8" font-size="18">₹45.32 ÷ 1.03 = ₹44 → ₹44 − ₹40 = ₹4 → real 0%, correct</text>
+        </svg>
+      </figure>
+      <p class="note">"Double" means two separate deflations, one for inputs and one for output. The IMF's 2017 national-accounts manual recommends it. India's new 2022-23 series dropped single deflation entirely, using double deflation in manufacturing <i>and</i> agriculture (the video says manufacturing only).</p>
+    </section>
+
+    <!-- 8. Lab -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Break the shortcuts yourself</h2>
+      <p>Keshav's real production change is whatever you set on the first slider. That is the truth (dashed line). Move prices and watch which method keeps finding it.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="q">Real production change <output id="q-o"></output></label><input id="q" type="range" min="-10" max="10" value="0"></div>
+          <div class="control"><label for="pi">Input price change <output id="pi-o"></output></label><input id="pi" type="range" min="-20" max="30" value="6"></div>
+          <div class="control"><label for="po">Output price change <output id="po-o"></output></label><input id="po" type="range" min="-10" max="20" value="3"></div>
+          <div class="control"><label for="cpi">Headline CPI <output id="cpi-o"></output></label><input id="cpi" type="range" min="0" max="12" value="5"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="0,20,2,5">Oil shock, can't pass on</button>
+            <button type="button" class="secondary" data-p="0,-20,0,3">Commodity crash</button>
+            <button type="button" class="secondary" data-p="0,5,5,5">Prices move together</button>
+            <button type="button" class="secondary" data-p="5,0,0,0">Growth, flat prices</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Estimated real growth by method compared with the true production change"></svg></div>
+      </div></div>
+    </section>
+
+    <!-- 9. Ulti ganga -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Every price rose, yet the deflator fell</h2>
+      <p>The deflator is nominal ÷ real. Keshav's nominal value added shrank to ₹2.92 while real stayed ₹4, so his deflator drops to 73. The video calls this <i>ulti ganga</i>, a river running backwards. It isn't a claim that prices fell.</p>
+      <figure>
+        <svg viewBox="0 0 800 280" role="img" aria-label="Index bars with base 100: output prices 103, input prices 106, value-added deflator 73">
+          <text x="40" y="26" fill="#a5a29c" font-size="17">INDEX, BASE YEAR = 100 · 4 px per point</text>
+          <path d="M600 40 V240" stroke="#a5a29c" stroke-dasharray="5 5"/><text x="600" y="262" text-anchor="middle" fill="#a5a29c" font-size="15">100</text>
+          <text x="40" y="74" fill="#ff8059" font-size="19">Output prices</text><rect x="200" y="50" width="412" height="36" fill="#ff8059"/><text x="624" y="76" fill="#f1eee8" font-size="19">103</text>
+          <text x="40" y="134" fill="#76d5c1" font-size="19">Input prices</text><rect x="200" y="110" width="424" height="36" fill="#76d5c1"/><text x="636" y="136" fill="#f1eee8" font-size="19">106</text>
+          <text x="40" y="194" fill="#f5c76a" font-size="19">VA deflator</text><rect x="200" y="170" width="292" height="36" fill="#f5c76a"/><text x="504" y="196" fill="#f1eee8" font-size="19">73</text>
+        </svg>
+      </figure>
+      <p>That's what happened in the new series: manufacturing's deflator grew <b>−1.5%</b> (figure cited in the video). People read it as "the government says factory prices fell." A falling deflator alone doesn't say why. The video's explanation for this release is the Keshav pattern: input costs rose faster than factories could pass on, which is what a global cost shock looks like.</p>
+      <p class="note">Our toy firm's drop is extreme because ₹4 is a thin slice of ₹44. Thin margins magnify price moves, and any error in the price indices, many times over.</p>
+    </section>
+
+    <!-- 10. Three numbers -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>A method, a ratio, and an inflation rate</h2>
+      <p>The debate's punchline: "double deflation's value is 2.3, but inflation is 4.9." That mixes three different kinds of thing.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Three different things: double deflation is a method with no value; GDP deflator growth was 2.3 percent; headline CPI inflation about 4.9 percent">
+          <text x="400" y="30" text-anchor="middle" fill="#f87171" font-size="18">"Double deflation = 2.3"  ✗</text>
+          <g fill="none" stroke="#ff8059" stroke-width="4"><circle cx="140" cy="118" r="30"/><path d="M140 72 V86 M140 150 V164 M94 118 H108 M172 118 H186 M107 85 L117 95 M163 141 L173 151 M107 151 L117 141 M163 95 L173 85"/></g>
+          <text x="140" y="206" text-anchor="middle" fill="#ff8059" font-size="20">Double deflation</text>
+          <text x="140" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">a method · no value</text>
+          <rect x="350" y="84" width="100" height="22" fill="#ff8059" opacity=".55"/><path d="M340 118 H460" stroke="#f1eee8" stroke-width="3"/><rect x="350" y="130" width="98" height="22" fill="#ff8059"/>
+          <text x="400" y="206" text-anchor="middle" fill="#f5c76a" font-size="34">2.3%</text>
+          <text x="400" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">GDP deflator growth</text>
+          <text x="400" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">nominal ÷ real, all output</text>
+          <path d="M610 100 h80 l-10 52 h-60 Z" fill="none" stroke="#c3b8ff" stroke-width="4"/><path d="M628 100 q22 -34 44 0" fill="none" stroke="#c3b8ff" stroke-width="4"/>
+          <text x="650" y="206" text-anchor="middle" fill="#c3b8ff" font-size="34">~4.9%</text>
+          <text x="650" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">headline CPI</text>
+          <text x="650" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">household basket</text>
+          <text x="525" y="128" text-anchor="middle" fill="#f1eee8" font-size="30">≠</text>
+        </svg>
+      </figure>
+      <p>The deflator and CPI price different baskets, and India's deflator nets out input costs. A gap between 2.3% and 4.9% is expected when input prices jump. It doesn't by itself prove the GDP numbers are wrong <i>or</i> right.</p>
+    </section>
+
+    <!-- 11. Field guide -->
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>Which price index, for what</h2>
+      <div class="field-grid">
+        <div><b>Headline CPI</b><span>Weighted average of 300+ household items. The "inflation" in the news.</span><em>Fallback deflator only</em></div>
+        <div><b>Item-level CPI</b><span>One item's own price series, e.g. a specific service.</span><em>Deflates matching services</em></div>
+        <div><b>WPI (item-level)</b><span>Wholesale goods prices, used separately for output and inputs.</span><em>Manufacturing double deflation</em></div>
+        <div><b>PPI</b><span>Producer prices for outputs and inputs, from DPIIT. Not yet in use as of MoSPI's Feb 2026 FAQ.</span><em>Planned replacement for WPI (as of Feb 2026)</em></div>
+        <div><b>Single extrapolation</b><span>Grows base-year value with a volume indicator, e.g. tonnes or trips.</span><em>Sectors without good prices</em></div>
+        <div><b>GDP deflator</b><span>Not measured directly: nominal GDP ÷ real GDP × 100.</span><em>A result, not an input</em></div>
+      </div>
+    </section>
+
+    <!-- 12. So what -->
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions before trusting a GDP take</h2>
+      <ul class="checks">
+        <li><b>Which sector?</b> Services, manufacturing and agriculture are each deflated differently.</li>
+        <li><b>Which price index?</b> Headline CPI is the households' basket, not the economy's.</li>
+        <li><b>Method or number?</b> "Double deflation" is a technique. The deflator is a ratio. CPI is an index; its % change is the inflation rate.</li>
+      </ul>
+      <p>Source for the method: <a href="https://mospi.gov.in/uploads/announcements/announcements_1772117257791_84ae898f-7be2-4b7d-a135-565e1a809513_FAQ_GDP_26022026_1902.pdf">MoSPI GDP FAQ, Q14–15 and Q25 ↗</a>. A sound method still depends on good data and gets revised.</p>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Real GDP isn't nominal GDP minus "inflation". It's every sector cleaned of its own price changes, then added up.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const ids=['q','pi','po','cpi'],$=id=>document.getElementById(id);
+    const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(1)+'%',rs=v=>(v<0?'−₹':'₹')+Math.abs(v).toFixed(2);
+    function update(){
+      const [q,pi,po,c]=ids.map(id=>+$(id).value/100);
+      ids.forEach(id=>$(id+'-o').textContent=pct(+$(id).value));
+      const out=44*(1+q)*(1+po),inp=40*(1+q)*(1+pi),nva=out-inp;
+      const real=out/(1+po)-inp/(1+pi),single=nva/(1+po),viaCpi=nva/(1+c);
+      const g=v=>(v/4-1)*100,truth=q*100;
+      const rows=[['Double deflation',g(real),'#ff8059'],['Single deflation (one index)',g(single),'#f87171'],['Nominal ÷ headline CPI',g(viaCpi),'#c3b8ff']];
+      // ponytail: axis snaps to the largest bar in steps of 10%, capped at 200%
+      const m=Math.min(200,Math.max(10,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/10)*10));
+      const x0=270,sx=v=>x0+Math.max(-m,Math.min(m,v))*220/m;
+      let s=`<line x1="${x0}" y1="40" x2="${x0}" y2="250" stroke="#57534f"/><line x1="${sx(truth)}" y1="34" x2="${sx(truth)}" y2="250" stroke="#f1eee8" stroke-dasharray="5 5"/><text x="${sx(truth)}" y="24" text-anchor="middle" fill="#f1eee8" font-size="15">truth ${pct(truth)}</text>`;
+      rows.forEach(([name,v,col],i)=>{const y=64+i*66,x=sx(v);s+=`<text x="50" y="${y-8}" fill="#a5a29c" font-size="15">${name} · <tspan fill="${col}">${pct(v)}</tspan></text><rect x="${Math.min(x,x0)}" y="${y}" width="${Math.max(2,Math.abs(x-x0))}" height="26" fill="${col}"/>`;});
+      s+=`<text x="50" y="276" fill="#a5a29c" font-size="13">−${m}%</text><text x="${x0}" y="276" text-anchor="middle" fill="#a5a29c" font-size="13">0</text><text x="490" y="276" text-anchor="end" fill="#a5a29c" font-size="13">+${m}%</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=[['Output, today ₹',out],['Inputs, today ₹',inp],['Value added, today ₹',nva],['Real output ÷ '+(1+po).toFixed(2),out/(1+po)],['Real inputs ÷ '+(1+pi).toFixed(2),inp/(1+pi)],['Real value added',real]].map(([k,v])=>`<span>${k}</span><span>${rs(v)}</span>`).join('');
+      window.labResults={truth,rows:rows.map(r=>+r[1].toFixed(2)),axis:m};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((v,i)=>$(ids[i]).value=v);update()}));
+    update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
