@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Test That Talked to Itself</title>
@@ -124,8 +125,46 @@
     .sandboxgrid{grid-template-columns:repeat(6,1fr);}
   }
 </style>
+
+<link rel="stylesheet" href="eli5-study.css">
+
 </head>
 <body>
+<div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+<header class="study-masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="index.html" id="home">
+      <span class="brand-mark">E5</span>
+      <span class="brand-copy">
+        <span>ELI5<span class="brand-dot">.</span><b>Lab</b></span>
+        <small>Visual explainers</small>
+      </span>
+    </a>
+    <div class="nav-right">
+      <span class="topic-tag">AI & Safety</span>
+      <a href="index.html" class="back-btn" id="backToLabBtn">
+        <span>Back to Lab</span>
+        <b>←</b>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="eli5-study-container">
+  <div class="eli5-hero-kicker">
+    <span>01 / ELI5 LAB FIELD NOTE</span>
+    <i></i>
+    <span class="live-dot">ACTIVE MECHANISM</span>
+  </div>
+  <div class="hero-depth-card">
+    <span class="step-tag">01</span><span>QUESTION</span>
+    <i></i>
+    <span class="step-tag">02</span><span>MECHANISM</span>
+    <i></i>
+    <span class="step-tag">03</span><span>INTUITION</span>
+  </div>
+
+
 <div class="wrap">
 
   <!-- 1. TITLE -->
@@ -288,6 +327,22 @@
     grid.appendChild(box);
   }
 </script>
+
+
+
+  <div class="eli5-takeaway-card">
+    <div class="takeaway-eyebrow">
+      <span>AN IDEA TO TAKE WITH YOU</span>
+      <span class="live-dot" style="display:inline-flex;align-items:center;gap:6px;color:var(--accent);"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></span>CORE MECHANIC</span>
+    </div>
+    <blockquote>When automated safety verification mirrors attack payloads, defensive heuristic filters trigger false alarms and cascading rate-limits.</blockquote>
+    <div class="takeaway-actions">
+      <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">FIRST-PRINCIPLES LABORATORY · EDITION 001</span>
+      <a href="index.html">Explore all studies in the Lab ↗</a>
+    </div>
+  </div>
+</div>
+<script src="eli5-study.js"></script>
 
 </body>
 </html>

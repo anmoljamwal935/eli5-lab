@@ -1,6 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
@@ -84,8 +85,46 @@ h3{font-size:24px;line-height:1.25;font-weight:400;margin-bottom:12px}
 @media(max-width:430px){h1{font-size:44px;letter-spacing:-1.4px}.mast__tag{display:none}.inner{padding:48px 16px}.hero{padding-top:48px}.big-number{font-size:58px}.risk-list{grid-template-columns:1fr}.legend{display:grid;gap:8px}.fee-num{font-size:52px}.scale-line{align-items:flex-start;flex-direction:column;gap:8px}.diagram .label{font-size:15px}.diagram .small{font-size:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rights-node{transition:none}}
 </style>
+
+<link rel="stylesheet" href="../eli5-study.css">
+
 </head>
 <body>
+<div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+<header class="study-masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html" id="home">
+      <span class="brand-mark">E5</span>
+      <span class="brand-copy">
+        <span>ELI5<span class="brand-dot">.</span><b>Lab</b></span>
+        <small>Visual explainers</small>
+      </span>
+    </a>
+    <div class="nav-right">
+      <span class="topic-tag">Finance & Capital</span>
+      <a href="../index.html" class="back-btn" id="backToLabBtn">
+        <span>Back to Lab</span>
+        <b>←</b>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="eli5-study-container">
+  <div class="eli5-hero-kicker">
+    <span>01 / ELI5 LAB FIELD NOTE</span>
+    <i></i>
+    <span class="live-dot">ACTIVE MECHANISM</span>
+  </div>
+  <div class="hero-depth-card">
+    <span class="step-tag">01</span><span>QUESTION</span>
+    <i></i>
+    <span class="step-tag">02</span><span>MECHANISM</span>
+    <i></i>
+    <span class="step-tag">03</span><span>INTUITION</span>
+  </div>
+
+
 <header class="mast"><div class="mast__inner"><div class="brand"><strong>ELI5</strong> / FINANCIAL INFRASTRUCTURE</div><div class="mast__tag">SOURCE + VERIFICATION · 2026-09-03</div></div></header>
 <main>
 <section class="band band--white"><div class="inner hero grid16">
@@ -264,5 +303,21 @@ h3{font-size:24px;line-height:1.25;font-weight:400;margin-bottom:12px}
   }));
 })();
 </script>
+
+
+  <div class="eli5-takeaway-card">
+    <div class="takeaway-eyebrow">
+      <span>AN IDEA TO TAKE WITH YOU</span>
+      <span class="live-dot" style="display:inline-flex;align-items:center;gap:6px;color:var(--accent);"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></span>CORE MECHANIC</span>
+    </div>
+    <blockquote>BlackRock does not own the assets—it runs a three-gear engine: passive index dominance (iShares), proxy voting control, and risk software (Aladdin).</blockquote>
+    <div class="takeaway-actions">
+      <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">FIRST-PRINCIPLES LABORATORY · EDITION 001</span>
+      <a href="../index.html">Explore all studies in the Lab ↗</a>
+    </div>
+  </div>
+</div>
+<script src="../eli5-study.js"></script>
+
 </body>
 </html>

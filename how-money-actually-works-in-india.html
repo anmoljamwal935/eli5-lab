@@ -1,6 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
@@ -13,19 +14,52 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 @media print{.topbar,.toc,.mobile-toc,.actions,.chapter-done,.coverage-filter{display:none!important}.layout{display:block}.course-section,.hero{padding:1rem;background:white!important;break-inside:auto}.lab,.card,.callout{box-shadow:none;break-inside:avoid}details>*{display:block!important}body{font-size:11pt;color:#000}.content{width:100%}a{color:#000;text-decoration:none}}
 </style>
+
+<link rel="stylesheet" href="eli5-study.css">
+
 </head>
 <body>
-<a class="skip" href="#main">Skip to course</a>
-<header class="topbar">
-<button class="mobile-toc" id="mobileToc" aria-expanded="false" aria-controls="toc">Contents</button>
-<div class="brand">How Money Actually Works in India</div>
-<div class="search-wrap"><label class="hidden" for="siteSearch">Search course</label><input id="siteSearch" type="search" placeholder="Search concepts, pages, formulas…" autocomplete="off"><div id="searchResults" class="search-results" role="listbox" aria-label="Search results"></div></div>
-<div class="progress" aria-label="Course progress"><div class="progress-track"><div id="progressFill" class="progress-fill"></div></div><small id="progressText">0 of 9 chapters complete</small></div>
+<div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+<header class="study-masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="index.html" id="home">
+      <span class="brand-mark">E5</span>
+      <span class="brand-copy">
+        <span>ELI5<span class="brand-dot">.</span><b>Lab</b></span>
+        <small>Visual explainers</small>
+      </span>
+    </a>
+    <div class="nav-right">
+      <span class="topic-tag">Monetary Architecture</span>
+      <a href="index.html" class="back-btn" id="backToLabBtn">
+        <span>Back to Lab</span>
+        <b>←</b>
+      </a>
+    </div>
+  </div>
 </header>
+
+<div class="eli5-study-container">
+  <div class="eli5-hero-kicker">
+    <span>01 / ELI5 LAB FIELD NOTE</span>
+    <i></i>
+    <span class="live-dot">ACTIVE MECHANISM</span>
+  </div>
+  <div class="hero-depth-card">
+    <span class="step-tag">01</span><span>QUESTION</span>
+    <i></i>
+    <span class="step-tag">02</span><span>MECHANISM</span>
+    <i></i>
+    <span class="step-tag">03</span><span>INTUITION</span>
+  </div>
+
+
+<a class="skip" href="#main">Skip to course</a>
+
 <div class="layout">
 <nav id="toc" class="toc" aria-label="Course contents"><h2>Course map</h2>
 <a href="#start">Start here</a><a href="#ch1">1 · What counts as money?</a><a href="#ch2">2 · RBI money</a><a href="#ch3">3 · Bank-created money</a><a href="#ch4">4 · Fiscal & RBI operations</a><a href="#ch5">5 · Inflation & real rates</a><a href="#ch6">6 · Asset prices & FX</a><a href="#ch7">7 · System under stress</a><a href="#ch8">8 · Myths & mental model</a><a href="#ch9">9 · Synthesis</a><a href="#sources">Source ledger 45–47</a><a href="#coverage">Coverage appendix</a><a href="#limits">Limits & provenance</a>
-<div class="toc-controls"><button id="expandAll">Expand notes</button><button id="printBtn">Print</button></div>
+
 </nav>
 <main class="content" id="main">
 <section class="hero" id="start"><div class="eyebrow">A balance-sheet-first course · India</div><h1>How money actually works</h1>
@@ -540,15 +574,15 @@ function set(id,html){$(id).innerHTML=html}
 function resetVals(vals,run){Object.entries(vals).forEach(([k,v])=>$(k).value=v);run()}
 
 // navigation, search and progress
-$('#mobileToc').addEventListener('click',e=>{const n=$('#toc'), open=n.style.display==='block';n.style.display=open?'':'block';e.currentTarget.setAttribute('aria-expanded',String(!open))});
-$('#printBtn').addEventListener('click',()=>window.print());
-$('#expandAll').addEventListener('click',()=>$$('details').forEach(d=>d.open=true));
+$('#mobileToc')?.addEventListener('click',e=>{const n=$('#toc'), open=n.style.display==='block';n.style.display=open?'':'block';e.currentTarget.setAttribute('aria-expanded',String(!open))});
+$('#printBtn')?.addEventListener('click',()=>window.print());
+$('#expandAll')?.addEventListener('click',()=>$$('details').forEach(d=>d.open=true));
 const searchIndex=[...$$('h2[id],h3[id],section[id]')].map(e=>({text:(e.textContent||e.id).trim(),id:e.id})).filter(x=>x.id);
 const coverage=JSON.parse($('#coverageData').textContent);
 coverage.forEach(r=>searchIndex.push({text:`${r.id} ${r.concept} page ${r.source_location.page}`,id:r.id.toLowerCase()}));
-$('#siteSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase(), box=$('#searchResults');if(!q){box.classList.remove('active');box.innerHTML='';return}const hits=searchIndex.filter(x=>x.text.toLowerCase().includes(q)).slice(0,18);box.innerHTML=hits.length?hits.map(x=>`<a role="option" href="#${x.id}">${x.text}</a>`).join(''):'<div class="small">No matching concept.</div>';box.classList.add('active')});
-$('#searchResults').addEventListener('click',()=>$('#searchResults').classList.remove('active'));
-function updateProgress(){const checks=$$('[data-complete]'),done=checks.filter(x=>x.checked).length;$('#progressFill').style.width=`${done/checks.length*100}%`;$('#progressText').textContent=`${done} of ${checks.length} chapters complete`;try{localStorage.setItem('moneyIndiaProgress',JSON.stringify(checks.map(x=>x.checked)))}catch(e){}}
+$('#siteSearch')?.addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase(), box=$('#searchResults');if(!box)return;if(!q){box.classList.remove('active');box.innerHTML='';return}const hits=searchIndex.filter(x=>x.text.toLowerCase().includes(q)).slice(0,18);box.innerHTML=hits.length?hits.map(x=>`<a role="option" href="#${x.id}">${x.text}</a>`).join(''):'<div class="small">No matching concept.</div>';box.classList.add('active')});
+$('#searchResults')?.addEventListener('click',()=>$('#searchResults')?.classList.remove('active'));
+function updateProgress(){const checks=$$('[data-complete]'),done=checks.filter(x=>x.checked).length,fill=$('#progressFill'),text=$('#progressText');if(fill)fill.style.width=`${checks.length?done/checks.length*100:0}%`;if(text)text.textContent=`${done} of ${checks.length} chapters complete`;try{localStorage.setItem('moneyIndiaProgress',JSON.stringify(checks.map(x=>x.checked)))}catch(e){}}
 let saved=[];try{saved=JSON.parse(localStorage.getItem('moneyIndiaProgress')||'[]')}catch(e){}$$('[data-complete]').forEach((x,i)=>{x.checked=!!saved[i];x.addEventListener('change',updateProgress)});updateProgress();
 const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){$$('.toc a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-25% 0px -65%'});$$('main>section[id]').forEach(s=>observer.observe(s));
 
@@ -622,4 +656,21 @@ const pages=[...new Set(coverage.map(r=>r.source_location.page))],kinds=[...new 
 function filterCoverage(){const q=$('#covSearch').value.toLowerCase(),p=$('#covPage').value,k=$('#covKind').value;let shown=0;$$('#coverageTable tbody tr').forEach(tr=>{const cells=tr.children,ok=tr.dataset.search.includes(q)&&(!p||cells[1].textContent===p)&&(!k||cells[2].textContent===k);tr.hidden=!ok;if(ok)shown++});$('#covCount').textContent=`${shown} of 174 records shown.`}
 ['#covSearch','#covPage','#covKind'].forEach(id=>$(id).addEventListener('input',filterCoverage));
 </script>
-</body></html>
+
+
+  <div class="eli5-takeaway-card">
+    <div class="takeaway-eyebrow">
+      <span>AN IDEA TO TAKE WITH YOU</span>
+      <span class="live-dot" style="display:inline-flex;align-items:center;gap:6px;color:var(--accent);"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></span>CORE MECHANIC</span>
+    </div>
+    <blockquote>A loan creates a matching bank deposit out of thin air on the balance sheet. Repaying the loan extinguishes that deposit money.</blockquote>
+    <div class="takeaway-actions">
+      <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">FIRST-PRINCIPLES LABORATORY · EDITION 001</span>
+      <a href="index.html">Explore all studies in the Lab ↗</a>
+    </div>
+  </div>
+</div>
+<script src="eli5-study.js"></script>
+
+</body>
+</html>

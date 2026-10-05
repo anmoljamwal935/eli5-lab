@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Why the Power Grid Needs Balance — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    .grid-hero{padding:8px 0 42px;border-bottom:1px solid var(--border-subtle)}
+    .grid-hero p{max-width:62ch;color:var(--muted);font-size:clamp(18px,2vw,21px)}
+    .grid-visual{margin-top:30px;padding:clamp(18px,4vw,30px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .grid-visual svg{display:block;width:100%;height:auto}
+    .grid-lesson{padding:46px 0;border-bottom:1px solid var(--border-subtle)}
+    .grid-lesson h2{font-size:clamp(30px,5vw,48px);margin:0 0 18px;max-width:18ch}
+    .grid-lesson p{max-width:66ch;margin:0 0 14px}
+    .balance-demo{margin-top:26px;padding:22px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
+    .balance-demo label{display:grid;gap:12px;color:var(--muted)}
+    .balance-demo input{width:100%;accent-color:var(--accent)}
+    .balance-readout{display:flex;justify-content:space-between;gap:18px;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:12px}
+    .balance-readout strong{color:var(--accent);font-size:18px;font-family:var(--font-sans);font-weight:500}
+    .grid-note{margin-top:24px;padding-left:16px;border-left:2px solid var(--accent);color:var(--muted);max-width:66ch}
+    @media(max-width:620px){.balance-readout{flex-direction:column}.grid-lesson{padding:34px 0}}
+  </style>
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Infrastructure</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>01 / ELI5 LAB</span><i></i><span class="live-dot">LIVE SYSTEM</span></div>
+    <div class="hero-depth-card"><span class="step-tag">01</span><span>QUESTION</span><i></i><span class="step-tag">02</span><span>MECHANISM</span><i></i><span class="step-tag">03</span><span>INTUITION</span></div>
+
+    <section class="grid-hero">
+      <h1>Why the power grid needs balance</h1>
+      <p>Electricity is a live coordination problem. Supply and demand have to stay matched moment by moment, while the network also has to respect physical limits on where power can flow.</p>
+      <div class="grid-visual">
+        <svg viewBox="0 0 760 250" role="img" aria-label="Generation feeds a transmission grid which serves demand while system frequency indicates imbalance">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4 0 8Z" fill="#ff8059"/></marker>
+          </defs>
+          <rect x="32" y="70" width="180" height="105" fill="#171a1d" stroke="#57534f"/>
+          <rect x="290" y="70" width="180" height="105" fill="#171a1d" stroke="#57534f"/>
+          <rect x="548" y="70" width="180" height="105" fill="#171a1d" stroke="#57534f"/>
+          <text x="122" y="108" text-anchor="middle" fill="#ff8059" font-size="14" font-family="ui-monospace,monospace">GENERATE</text>
+          <text x="122" y="140" text-anchor="middle" fill="#f1eee8" font-size="20" font-family="Outfit,system-ui">Supply</text>
+          <text x="380" y="108" text-anchor="middle" fill="#ff8059" font-size="14" font-family="ui-monospace,monospace">GRID</text>
+          <text x="380" y="140" text-anchor="middle" fill="#f1eee8" font-size="20" font-family="Outfit,system-ui">Network</text>
+          <text x="638" y="108" text-anchor="middle" fill="#ff8059" font-size="14" font-family="ui-monospace,monospace">DEMAND</text>
+          <text x="638" y="140" text-anchor="middle" fill="#f1eee8" font-size="20" font-family="Outfit,system-ui">Load</text>
+          <path d="M212 122H280M470 122H538" stroke="#ff8059" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M122 188V214H638V188" stroke="#73706a" stroke-dasharray="6 7" fill="none"/>
+          <text x="380" y="235" text-anchor="middle" fill="#a5a29c" font-size="13" font-family="ui-monospace,monospace">FREQUENCY REVEALS THE IMBALANCE</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="grid-lesson">
+      <h2>A continuously changing load</h2>
+      <p>When a device turns on, demand changes. The electricity system must balance generation, storage, imports, exports, consumption, and losses. A daily energy total can look perfect while the system is badly out of balance at a particular second.</p>
+      <div class="balance-demo">
+        <label>Move demand relative to available supply
+          <input id="imbalance" type="range" min="-100" max="100" value="0" step="5">
+        </label>
+        <div class="balance-readout">
+          <span>IMBALANCE<br><strong id="mw">0 MW</strong></span>
+          <span>FREQUENCY DIRECTION<br><strong id="frequency">Stable</strong></span>
+          <span>SYSTEM RESPONSE<br><strong id="response">Hold balance</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-lesson">
+      <h2>Frequency is the clue</h2>
+      <p>In a synchronous grid, generators and many motors are tied to one common electrical rhythm. If electrical demand suddenly exceeds mechanical input, rotating machines give up some kinetic energy and slow slightly. System frequency tends to fall.</p>
+      <p>If supply exceeds demand, frequency tends to rise. Governors, batteries, flexible demand, reserves, imports, and other controls respond on different timescales to restore balance.</p>
+      <p class="grid-note">Frequency is an indicator of the balance problem, not the only thing operators manage. Voltage, stability, reserves, and equipment limits matter too.</p>
+    </section>
+
+    <section class="grid-lesson">
+      <h2>Enough power can still be in the wrong place</h2>
+      <p>A system may have enough generation in total and still be unable to serve every load. Transmission lines, transformers, and substations have thermal and stability limits. Congestion can prevent cheap generation in one region from reaching demand somewhere else.</p>
+      <p>That is why grid operators coordinate both the total power balance and the network paths that carry it.</p>
+    </section>
+
+    <section class="grid-lesson">
+      <h2>The model to keep</h2>
+      <p><strong>Power</strong> is a rate. <strong>Energy</strong> is that rate accumulated over time. <strong>The grid</strong> determines which transfers are physically possible. Keeping the lights on means balancing all three: amount, timing, and location.</p>
+    </section>
+  </main>
+
+  <script>
+    const slider=document.getElementById('imbalance'),mw=document.getElementById('mw'),frequency=document.getElementById('frequency'),response=document.getElementById('response');
+    function updateDemo(){const n=Number(slider.value);mw.textContent=(n>0?'+':'')+n+' MW';frequency.textContent=n>0?'Falling':n<0?'Rising':'Stable';response.textContent=n>0?'Add supply / cut load':n<0?'Reduce supply / add load':'Hold balance'}
+    slider.addEventListener('input',updateDemo);updateDemo();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

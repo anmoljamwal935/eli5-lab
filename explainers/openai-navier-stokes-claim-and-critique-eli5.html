@@ -1,6 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What OpenAI says it solved — Navier–Stokes in plain English</title>
@@ -252,8 +253,46 @@ footer { padding: 30px 0 54px; color: var(--quiet); font-size: 13px; }
   .metric { border-bottom: 1px solid rgba(255,255,255,.16); }
 }
 </style>
+
+<link rel="stylesheet" href="../eli5-study.css">
+
 </head>
 <body>
+<div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+<header class="study-masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="../index.html" id="home">
+      <span class="brand-mark">E5</span>
+      <span class="brand-copy">
+        <span>ELI5<span class="brand-dot">.</span><b>Lab</b></span>
+        <small>Visual explainers</small>
+      </span>
+    </a>
+    <div class="nav-right">
+      <span class="topic-tag">Physics & AI</span>
+      <a href="../index.html" class="back-btn" id="backToLabBtn">
+        <span>Back to Lab</span>
+        <b>←</b>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="eli5-study-container">
+  <div class="eli5-hero-kicker">
+    <span>01 / ELI5 LAB FIELD NOTE</span>
+    <i></i>
+    <span class="live-dot">ACTIVE MECHANISM</span>
+  </div>
+  <div class="hero-depth-card">
+    <span class="step-tag">01</span><span>QUESTION</span>
+    <i></i>
+    <span class="step-tag">02</span><span>MECHANISM</span>
+    <i></i>
+    <span class="step-tag">03</span><span>INTUITION</span>
+  </div>
+
+
 <div class="progress" aria-hidden="true"></div>
 
 <header class="wrap hero">
@@ -591,5 +630,21 @@ addEventListener('scroll', () => {
   bar.style.width = (max > 0 ? scrollY / max * 100 : 0) + '%';
 }, { passive: true });
 </script>
+
+
+  <div class="eli5-takeaway-card">
+    <div class="takeaway-eyebrow">
+      <span>AN IDEA TO TAKE WITH YOU</span>
+      <span class="live-dot" style="display:inline-flex;align-items:center;gap:6px;color:var(--accent);"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></span>CORE MECHANIC</span>
+    </div>
+    <blockquote>Neural operators accelerate fluid dynamics predictions by orders of magnitude, but must obey strict energy conservation bounds to handle turbulence.</blockquote>
+    <div class="takeaway-actions">
+      <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">FIRST-PRINCIPLES LABORATORY · EDITION 001</span>
+      <a href="../index.html">Explore all studies in the Lab ↗</a>
+    </div>
+  </div>
+</div>
+<script src="../eli5-study.js"></script>
+
 </body>
 </html>

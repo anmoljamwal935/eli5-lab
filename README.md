@@ -1,97 +1,34 @@
-# ELI5 Visual Lab 🔬
+# ELI5 Lab
 
-[![Production Site](https://img.shields.io/badge/Vercel-Live%20Site-black?style=flat-square&logo=vercel)](https://eli5-seven-mu.vercel.app)
-[![Explainers](https://img.shields.io/badge/Explainers-9%20Interactive%20Models-6366f1?style=flat-square)](https://eli5-seven-mu.vercel.app)
-[![Architecture](https://img.shields.io/badge/Architecture-100%25%20Serverless%20Static-10b981?style=flat-square)](https://eli5-seven-mu.vercel.app)
+Complete source for the latest ELI5 Lab design, including the layered scroll-parallax hero and floating glass header.
 
-> **Live Website:** [https://eli5-seven-mu.vercel.app](https://eli5-seven-mu.vercel.app)
+## Run locally
 
-**Complex Systems, Explained Visually.** Interactive visual mental models breaking down frontier AI benchmarks, monetary mechanics, high-voltage electrical physics, and macroeconomics. 100% client-side, zero backend required, deployed to Vercel in seconds.
+1. Run `python3 -m http.server 8000` (or `python -m http.server 8000` on Windows).
+2. Open http://localhost:8000 in your browser.
 
----
+No npm install, build step, API keys, or backend are required. Use a local HTTP server instead of opening index.html directly so browser storage and sandboxed content work consistently.
 
-## ⚡ Features
+## Files
 
-- **9 Production-Ready Interactive Explainers**:
-  1. *BlackRock’s $15 Trillion Machine* (Aladdin, index custody, voting power)
-  2. *What OpenAI Claims It Solved: Navier–Stokes* (Fluid turbulence & Millennium Prize)
-  3. *How a Lithium-Ion Battery Works* (Chemical pump, anode/cathode highways)
-  4. *India's 7.8% GDP Fight* (GDP vs GVA, price deflators, K-shaped recovery)
-  5. *The Test That Talked to Itself* (OpenAI & Hugging Face benchmark sandbox leakage)
-  6. *Transformer Economics: The Hidden Bottleneck* (Grid infrastructure & custom integration)
-  7. *FCNR(B) Swaps: Who Owes Whom?* (Central bank wiring & forex reserves)
-  8. *Hermes Newswire Pipeline* (High-speed financial data ingestion & deduplication)
-  9. *Transformer Boom: Factory Floor Notes* (Capital velocity & lead time dynamics)
+- index.html: page layout, reader, and authoring studio.
+- app.js: ten built-in explainers, catalog search/filter/sort, reader, sharing, and local drafts.
+- style.css: base layout and components.
+- design.css: editorial redesign, responsive rules, themes, and glass header.
+- hero.js: deterministic ambient stars/shooting stars, pause control, and reduced-motion support.
+- motion.js: GSAP scroll-linked hero parallax, reveal effects, and takeaway carousel.
+- assets/: local GSAP and ScrollTrigger scripts, Outfit font, the inline photo, and generated layered hero artwork.
 
-- **Interactive Reader Mode**:
-  - Reading progress bar
-  - Keyboard navigation (`Esc` to exit, `←` / `→` to flip explainers)
-  - Deep linking support (`#slug` and `?id=slug`)
-  - Direct fullscreen/standalone viewing
+## Customize
 
-- **Instant Search & Topic Filtering**:
-  - Search by keyword, title, tag, or takeaway
-  - Filter by Category (AI, Finance, Macro, Science, Power, Systems)
-  - Sort by Featured, Shortest Read, Deep Dives, Alphabetical
+Edit the `base` array in app.js to change built-in explainers. Edit design.css for the current visual styling. The final rules in design.css control the layered hero and floating header.
 
-- **Add Explainer Studio**:
-  - Live sandbox to preview any HTML explainer instantly
-  - Saves custom explainers to local browser storage
-  - Starter skeleton generator with one-click copy
+All application assets are bundled locally. GSAP/ScrollTrigger and Outfit retain their respective upstream licensing; the GSAP distribution headers include license information. The photograph was retrieved from Picsum and is used in the inline editorial image.
 
-- **Zero Backend Required**:
-  - 100% static client-side architecture
-  - No databases to provision or maintain
-  - Deploys instantly to Vercel Edge Network
+## Storage and sharing
 
----
+Custom explainers and the theme preference are stored in localStorage on the current browser and origin. Built-in explainer links work for other visitors. A custom draft link only opens where that draft already exists. Browser drafts from the hosted site are not part of this source download and do not automatically transfer to localhost or a different host.
 
-## 🚀 How to Add a New Explainer
+## Deploy
 
-1. **Create your HTML file**:
-   Save your standalone visual explainer in the `explainers/` directory (e.g. `explainers/quantum-computing-eli5.html`).
-
-2. **Add metadata to `data/explainers.js`**:
-   ```javascript
-   {
-     id: "quantum-computing",
-     title: "How Quantum Computers Work — ELI5",
-     category: "ai",
-     categoryLabel: "Quantum & Tech",
-     badge: "Quantum Physics",
-     tagline: "Qubits, superposition, and entanglement without the linear algebra.",
-     summary: "A 4-minute visual model of quantum computing for normal humans.",
-     highlights: [
-       "Superposition: Coins spinning on a table",
-       "Entanglement: Connected dice across the universe",
-       "Decoherence: Why heat is the ultimate enemy"
-     ],
-     readTime: "4 min",
-     filename: "quantum-computing-eli5.html",
-     url: "explainers/quantum-computing-eli5.html",
-     accentColor: "#a855f7",
-     glowColor: "rgba(168, 85, 247, 0.25)",
-     featured: false
-   }
-   ```
-
-3. **Deploy**:
-   ```bash
-   git add .
-   git commit -m "Add Quantum Computing explainer"
-   git push
-   ```
-   Or run:
-   ```bash
-   npx vercel --prod
-   ```
-
----
-
-## 🛠 Local Development
-
-```bash
-# Start a local static server
-npx serve .
-```
-Visit `http://localhost:3000`.
+Push `main` to deploy through Vercel: [eli5-seven-mu.vercel.app](https://eli5-seven-mu.vercel.app). The site can also run on any static host if the asset paths stay together.

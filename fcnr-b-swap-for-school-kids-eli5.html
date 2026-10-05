@@ -1,6 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FCNR(B) Swaps — an ELI5 explainer</title>
@@ -8,8 +9,46 @@
 :root{--bg:#0b1118;--panel:#111c27;--panel2:#162536;--ink:#edf5fb;--muted:#a9bbc9;--line:#2c4559;--usd:#f5c76a;--inr:#76d5c1;--rbi:#a78bfa;--bank:#60a5fa;--warn:#fb9b72;--good:#9be38d;--max:980px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 20% 0,#183044 0,#0b1118 44%);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:var(--max);margin:auto;padding:28px 20px 80px}.eyebrow{color:var(--inr);letter-spacing:.13em;text-transform:uppercase;font-size:.76rem;font-weight:700}.hero{padding:32px 0 22px}.hero h1{font-size:clamp(2.2rem,6vw,4.6rem);line-height:1.02;margin:12px 0 16px;max-width:850px}.hero p{font-size:clamp(1.08rem,2vw,1.35rem);color:var(--muted);max-width:760px}.source{display:flex;gap:12px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:.9rem}.source a{color:var(--inr)}.panel{margin:30px 0;padding:30px 28px;background:linear-gradient(145deg,rgba(22,37,54,.96),rgba(13,23,34,.96));border:1px solid var(--line);border-radius:24px;box-shadow:0 16px 42px rgba(0,0,0,.18)}.panel h2{font-size:clamp(1.5rem,3vw,2.4rem);line-height:1.1;margin:0 0 8px}.panel .lead{color:var(--muted);max-width:700px;margin:0 0 22px}.small{font-size:.9rem;color:var(--muted)}.pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#20394c;color:var(--inr);font-size:.8rem;font-weight:700}.diagram{width:100%;height:auto;display:block;margin:18px auto 4px}.caption{font-size:.84rem;color:var(--muted);text-align:center;margin:8px 0 0}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:rgba(11,17,24,.55);border:1px solid var(--line);border-radius:16px;padding:18px}.card h3{margin:0 0 7px;font-size:1.1rem}.card p{margin:0;color:var(--muted)}.number{font-size:clamp(2rem,5vw,3.8rem);font-weight:800;line-height:1;color:var(--usd)}.note{border-left:4px solid var(--warn);padding:12px 16px;background:rgba(251,155,114,.08);color:#f7d1bf;border-radius:8px}.footer{color:var(--muted);font-size:.86rem;border-top:1px solid var(--line);padding-top:20px;margin-top:34px}.hero-img{width:100%;max-height:360px;object-fit:cover;border-radius:18px;border:1px solid var(--line);margin-top:20px;opacity:.9}@media(max-width:700px){main{padding:18px 14px 50px}.panel{padding:22px 17px;border-radius:18px}.two{grid-template-columns:1fr}.hero h1{font-size:2.55rem}}
 </style>
+
+<link rel="stylesheet" href="eli5-study.css">
+
 </head>
 <body>
+<div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+<header class="study-masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="index.html" id="home">
+      <span class="brand-mark">E5</span>
+      <span class="brand-copy">
+        <span>ELI5<span class="brand-dot">.</span><b>Lab</b></span>
+        <small>Visual explainers</small>
+      </span>
+    </a>
+    <div class="nav-right">
+      <span class="topic-tag">Monetary Architecture</span>
+      <a href="index.html" class="back-btn" id="backToLabBtn">
+        <span>Back to Lab</span>
+        <b>←</b>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="eli5-study-container">
+  <div class="eli5-hero-kicker">
+    <span>01 / ELI5 LAB FIELD NOTE</span>
+    <i></i>
+    <span class="live-dot">ACTIVE MECHANISM</span>
+  </div>
+  <div class="hero-depth-card">
+    <span class="step-tag">01</span><span>QUESTION</span>
+    <i></i>
+    <span class="step-tag">02</span><span>MECHANISM</span>
+    <i></i>
+    <span class="step-tag">03</span><span>INTUITION</span>
+  </div>
+
+
 <main>
 <section class="hero">
   <div class="eyebrow">Visual explainer · X Article by Ajay Rotti</div>
@@ -100,5 +139,21 @@
 
 <div class="footer"><strong>Source note:</strong> This explainer represents Ajay Rotti’s intentionally simplified X Article. The $127bn figure and product/legal/accounting details were not independently fact-checked in this artifact. It is educational material, not banking or investment advice.</div>
 </main>
+
+
+  <div class="eli5-takeaway-card">
+    <div class="takeaway-eyebrow">
+      <span>AN IDEA TO TAKE WITH YOU</span>
+      <span class="live-dot" style="display:inline-flex;align-items:center;gap:6px;color:var(--accent);"><span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></span>CORE MECHANIC</span>
+    </div>
+    <blockquote>When the rupee stumbled, the central bank subsidized dollar hedging so commercial banks could import foreign currency without catastrophic exchange risk.</blockquote>
+    <div class="takeaway-actions">
+      <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">FIRST-PRINCIPLES LABORATORY · EDITION 001</span>
+      <a href="index.html">Explore all studies in the Lab ↗</a>
+    </div>
+  </div>
+</div>
+<script src="eli5-study.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,947 @@
+/* ELI5 Lab — Shared Visual System for All Studies */
+@font-face {
+  font-family: 'Outfit';
+  src: url('assets/outfit.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --bg: #161616;
+  --surface: #202020;
+  --raised: #282828;
+  --raised-hover: #323232;
+  --fg: #f1eee8;
+  --fg-dim: #dedcd6;
+  --muted: #a5a29c;
+  --faint: #73706a;
+  --border: #3b3936;
+  --border-subtle: #292826;
+  --accent: #ff8059;
+  --accent-soft: rgba(255, 128, 89, 0.14);
+  --accent-hover: #ffa385;
+  --ink: #20120c;
+
+  --teal: #76d5c1;
+  --teal-soft: rgba(118, 213, 193, 0.14);
+  --gold: #f5c76a;
+  --gold-soft: rgba(245, 199, 106, 0.14);
+  --blue: #8fc9fb;
+  --blue-soft: rgba(143, 201, 251, 0.14);
+  --purple: #c3b8ff;
+  --purple-soft: rgba(195, 184, 255, 0.14);
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+  scrollbar-width: none;
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--fg);
+  line-height: 1.75;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: radial-gradient(ellipse at 85% 20%, rgba(255, 128, 89, 0.04), transparent 60%);
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* ==========================================================================
+   1. STANDALONE MASTHEAD (Perfect Grid Alignment with Content Container)
+   ========================================================================== */
+header.study-masthead {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 78px;
+  width: 100%;
+  background: rgba(22, 22, 22, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 0;
+  color: #fff;
+}
+
+header.study-masthead::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #ff8059 0 72px, rgba(255, 255, 255, 0.16) 72px 100%);
+}
+
+header.study-masthead .masthead-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header.study-masthead .brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: #f5f1e9;
+  text-decoration: none;
+}
+header.study-masthead .brand:hover {
+  color: #fff;
+  opacity: 0.85;
+}
+
+header.study-masthead .brand-mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: #ff8059;
+  color: #21110c;
+  font: 700 14px/1 var(--font-mono);
+  letter-spacing: -0.05em;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+header.study-masthead .brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 26px;
+  line-height: 0.9;
+  letter-spacing: -1.4px;
+  font-weight: 600;
+}
+header.study-masthead .brand-copy b {
+  font-weight: 400;
+  color: #b7b4ae;
+}
+header.study-masthead .brand-copy small {
+  font: 8px/1 var(--font-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8e8b85;
+}
+header.study-masthead .brand-dot {
+  margin: 0 2px;
+  color: #ff8059;
+}
+
+header.study-masthead .nav-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+header.study-masthead .topic-tag {
+  font: 10px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-right: 6px;
+}
+
+header.study-masthead .back-btn {
+  height: 40px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #ff8059;
+  border-radius: 0;
+  background: #ff8059;
+  color: #22120d;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+header.study-masthead .back-btn b {
+  font-size: 15px;
+  font-weight: 400;
+}
+header.study-masthead .back-btn:hover {
+  background: transparent;
+  color: #ff8059;
+}
+
+/* Reading Progress Bar */
+.eli5-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+  z-index: 101;
+  pointer-events: none;
+}
+.eli5-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.1s ease-out;
+}
+
+/* Inside Reader Modal: hide duplicate inner masthead! */
+body.in-frame header.study-masthead {
+  display: none !important;
+}
+body.in-frame .eli5-study-container {
+  padding-top: 28px;
+}
+
+/* ==========================================================================
+   2. UNIFIED CONTENT CONTAINER (All studies share exact same alignment)
+   ========================================================================== */
+.eli5-study-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px 90px;
+  width: 100%;
+}
+
+.eli5-hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  font: 11px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.eli5-hero-kicker i {
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--accent);
+}
+.eli5-hero-kicker .live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  margin-left: auto;
+}
+.eli5-hero-kicker .live-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* THE DEPTH CARD: QUESTION -> MECHANISM -> INTUITION */
+.hero-depth-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 18px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(22, 22, 22, 0.75);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #dedcd6;
+  font: 11px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+
+.hero-depth-card .step-tag {
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+.hero-depth-card i {
+  width: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 128, 89, 0.8), rgba(255, 255, 255, 0.2));
+  position: relative;
+  display: inline-block;
+}
+.hero-depth-card i::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ==========================================================================
+   3. ARTICLE CONTENT & TYPOGRAPHY
+   ========================================================================== */
+.eli5-study-container h1, .hero h1 {
+  margin-bottom: 20px;
+}
+
+.eli5-study-container h2 {
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+  color: #fff;
+  margin: 44px 0 16px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+  position: relative;
+}
+.eli5-study-container h2::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 32px;
+  height: 2px;
+  background: var(--accent);
+}
+
+.eli5-study-container h3 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 30px 0 12px;
+}
+
+.eli5-study-container p {
+  font-size: 16.5px;
+  color: var(--fg-dim);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+.eli5-study-container strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.eli5-study-container .lead, .eli5-study-container .lede {
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+/* Sections & Bands inside studies */
+.course-section, .band, .scene, .panel, .wrap, .section {
+  padding: 36px 0 !important;
+  border-top: 1px solid var(--border-subtle);
+}
+.course-section:first-of-type {
+  border-top: 0;
+}
+
+.grid2, .grid3 {
+  display: grid;
+  gap: 18px;
+  margin: 24px 0;
+}
+.grid2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+.card, .taccount, .snapshot {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 0;
+}
+.taccount {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.taccount h4 {
+  grid-column: span 2;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.formula {
+  padding: 16px 20px;
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: #fff;
+  margin: 20px 0;
+}
+
+.lab {
+  margin: 32px 0;
+  border: 1px solid var(--border);
+  background: #1a1c18;
+  padding: 24px;
+}
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.controls .control {
+  margin-bottom: 14px;
+}
+.controls label {
+  display: block;
+  font: 11px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.controls input, .controls select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: #fff;
+  font-size: 14px;
+}
+.controls input:focus, .controls select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.controls .actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.controls button {
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #20120c;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+.controls button.secondary {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--border);
+}
+.output {
+  padding: 18px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.model-limit {
+  font-size: 12px;
+  color: var(--faint);
+  margin-top: 14px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 24px 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.quiz {
+  margin: 28px 0;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.quiz fieldset {
+  border: 0;
+}
+.quiz legend {
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 14px;
+  font-size: 15px;
+}
+.quiz label {
+  display: block;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.quiz button {
+  margin-top: 12px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #20120c;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+details.trace {
+  margin: 24px 0;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+details.trace summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+details.trace ul {
+  margin: 14px 0 0 18px;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   4. CORE INTUITION TAKEAWAY
+   ========================================================================== */
+.eli5-takeaway-card {
+  margin: 60px 0 30px;
+  padding: 34px 28px;
+  background: radial-gradient(ellipse at top left, rgba(255, 128, 89, 0.08), transparent 70%), var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  position: relative;
+}
+.eli5-takeaway-card .takeaway-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 11px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+.eli5-takeaway-card blockquote {
+  font-size: clamp(19px, 2.4vw, 26px);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.4;
+  color: #fff;
+  margin-bottom: 24px;
+}
+.eli5-takeaway-card .takeaway-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+.eli5-takeaway-card .takeaway-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.eli5-takeaway-card .takeaway-actions a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   5. RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 760px) {
+  header.study-masthead {
+    height: 70px;
+  }
+  header.study-masthead .masthead-inner {
+    padding: 0 16px;
+  }
+  header.study-masthead .brand-mark {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+  header.study-masthead .brand-copy {
+    font-size: 21px;
+  }
+  header.study-masthead .brand-copy small, header.study-masthead .topic-tag {
+    display: none;
+  }
+  header.study-masthead .back-btn {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 11px;
+    gap: 8px;
+  }
+  .hero-depth-card {
+    font-size: 9px;
+    gap: 8px;
+    padding: 7px 12px;
+  }
+  .hero-depth-card i {
+    width: 14px;
+  }
+  .eli5-takeaway-card {
+    padding: 22px 18px;
+  }
+}
+
+/* Reset layout grid wrappers from legacy structures */
+.layout {
+  display: block !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.content, main.content {
+  display: block !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.hero {
+  padding: 10px 0 28px !important;
+  background: transparent !important;
+}
+.hero h1 {
+  max-width: 100% !important;
+}
+.course-section {
+  padding: 36px 0 !important;
+  background: transparent !important;
+}
+
+/* ==========================================================================
+   6. LEGACY STUDY NORMALIZATION
+   Old explainers keep their bespoke diagrams and interactions, while this
+   shared layer gives every page the same ELI5 Lab reading surface.
+   ========================================================================== */
+:root {
+  --paper: var(--bg);
+  --card: var(--surface);
+  --wash: var(--raised);
+  --ink: var(--fg);
+  --body: var(--fg-dim);
+  --line: var(--border);
+  --line-soft: var(--border-subtle);
+  --white: var(--fg);
+  --gray: var(--surface);
+  --grey: var(--surface);
+  --brand: var(--accent);
+  --maroon: var(--accent);
+  --saffron: var(--accent);
+  --saffron2: var(--accent-hover);
+  --green: var(--teal);
+  --good: var(--teal);
+  --blue: var(--blue);
+  --focus: var(--accent);
+  --shadow: none;
+  --radius: 0px;
+  --radius-lg: 0px;
+}
+
+body {
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(19, 88, 96, 0.12), transparent 34rem),
+    radial-gradient(circle at 82% 28%, rgba(255, 128, 89, 0.07), transparent 32rem),
+    #07090b !important;
+}
+
+/* Remove page-specific chrome now duplicated by the shared masthead. */
+.eli5-study-container > .layout > .toc,
+.eli5-study-container > nav,
+.eli5-study-container > header.mast,
+.eli5-study-container main > header.mast,
+.eli5-study-container .mobile-toc {
+  display: none !important;
+}
+
+/* One reading column across every legacy structure. */
+.eli5-study-container :where(.inner, .wrap, .page, .scene-inner, .hero-inner, .copy, .copy--wide) {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.eli5-study-container :where(main, .page, .content) {
+  color: var(--fg-dim) !important;
+  background: transparent !important;
+}
+
+.eli5-study-container :where(.hero, .band, .scene, .panel, .chapter, .closing) {
+  color: var(--fg-dim) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.eli5-study-container :where(.band, .scene, .panel, .chapter) {
+  padding: 42px 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 1px solid var(--border-subtle) !important;
+}
+
+.eli5-study-container > :where(.hero, header.hero),
+.eli5-study-container main > :where(.hero, header.hero),
+.eli5-study-container .layout .hero {
+  padding: 6px 0 38px !important;
+  border: 0 !important;
+  text-align: left !important;
+}
+
+.eli5-study-container :where(.hero h1, h1) {
+  max-width: 15ch !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  color: var(--fg) !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 400 !important;
+  font-size: clamp(42px, 7vw, 72px) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.055em !important;
+}
+
+.eli5-study-container :where(h2, h3, h4, h5) {
+  color: var(--fg) !important;
+  font-family: var(--font-sans) !important;
+}
+
+.eli5-study-container :where(h2) {
+  font-weight: 400 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.eli5-study-container :where(p, li, dd) {
+  color: var(--fg-dim);
+}
+
+.eli5-study-container :where(.lead, .lede, .body) {
+  max-width: 68ch !important;
+  color: var(--muted) !important;
+  font-size: clamp(17px, 2vw, 20px) !important;
+  line-height: 1.65 !important;
+}
+
+.eli5-study-container :where(.eyebrow, .kicker, .label, .src, .smallprint, .source-note, .caption) {
+  font-family: var(--font-mono) !important;
+  letter-spacing: 0.08em;
+}
+
+.eli5-study-container :where(.eyebrow, .kicker, .label) {
+  color: var(--accent) !important;
+  text-transform: uppercase;
+}
+
+/* Shared surface language: square, quiet, high-contrast. */
+.eli5-study-container :where(
+  .card, .viz, .figure, .diagram, .callout, .snapshot, .quote, .note,
+  .analogy, .lens, .check, .risk, .source-block, .evidence-board,
+  .math-audit, .math-viz, .truth-strip, .stat, .mapping, .formula,
+  .lab, .output, .eqbox, .equation, .not-oracle, .bottom-line,
+  .compute-strip, .balance, .complaint, .verdict
+) {
+  color: var(--fg-dim) !important;
+  background-color: rgba(255, 255, 255, 0.035) !important;
+  border-color: var(--border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.eli5-study-container :where(.card, .viz, .figure, .callout, .quote, .note, .stat, .mapping) {
+  padding: clamp(16px, 3vw, 24px) !important;
+}
+
+.eli5-study-container :where(.pill, .tag, .status, .chip, .stamp, .mode, .source-link) {
+  border-radius: 999px !important;
+  border-color: var(--border) !important;
+  background: var(--accent-soft) !important;
+  color: var(--accent) !important;
+  box-shadow: none !important;
+}
+
+.eli5-study-container :where(input, select, textarea) {
+  max-width: 100%;
+  background: #0c0f12 !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+}
+
+.eli5-study-container :where(button) {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.eli5-study-container :where(button:not(.secondary)) {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #20120c !important;
+}
+
+.eli5-study-container :where(button.secondary) {
+  background: transparent !important;
+  border-color: var(--border) !important;
+  color: var(--fg) !important;
+}
+
+.eli5-study-container :where(.chapter-no, .number, .rule-num, .check__n, .gear__num) {
+  background: var(--accent) !important;
+  color: #20120c !important;
+  border-radius: 0 !important;
+}
+
+.eli5-study-container :where(.caption, .src, .fine, .small, .model-limit, footer, .footer) {
+  color: var(--faint) !important;
+}
+
+.eli5-study-container :where(footer, .footer) {
+  background: transparent !important;
+  border-top: 1px solid var(--border-subtle) !important;
+}
+
+/* Keep wide teaching visuals usable instead of forcing them off-screen. */
+.eli5-study-container :where(svg, img, canvas, video) {
+  max-width: 100%;
+}
+
+.eli5-study-container :where(.diagram, .scrollable, .table-wrap, pre) {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.eli5-study-container pre,
+.eli5-study-container code {
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 760px) {
+  body {
+    font-size: 16px;
+  }
+
+  .eli5-study-container {
+    padding: 22px 16px 56px;
+  }
+
+  .eli5-hero-kicker {
+    gap: 9px;
+    font-size: 9px;
+  }
+
+  .eli5-hero-kicker .live-dot {
+    display: none;
+  }
+
+  .hero-depth-card {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .eli5-study-container :where(.hero h1, h1) {
+    max-width: 11ch !important;
+    font-size: clamp(38px, 12vw, 54px) !important;
+  }
+
+  .eli5-study-container :where(.band, .scene, .panel, .chapter, .course-section) {
+    padding: 32px 0 !important;
+  }
+
+  .eli5-study-container :where(.grid2, .grid3, .cols, .two, .two-col, .duo, .trio, .watch, .risk-grid, .signal-grid, .source-grid, .math-grid, .claim-grid, .complaint-grid, .sandboxgrid, .check-grid) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .eli5-study-container :where(.chapter-head) {
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .eli5-study-container :where(.chapter-no, .number) {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    font-size: 14px !important;
+  }
+
+  .eli5-study-container :where(.actions, .lab-row, .slider-row) {
+    align-items: stretch !important;
+  }
+
+  .eli5-study-container :where(.actions) {
+    flex-wrap: wrap !important;
+  }
+
+  .eli5-study-container :where(.actions button) {
+    min-height: 44px;
+  }
+
+  .eli5-study-container table {
+    min-width: 620px;
+  }
+}
