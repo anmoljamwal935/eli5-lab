@@ -427,6 +427,10 @@ body.in-frame .eli5-study-container {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
+/* Wide screens: give the chart two thirds so its 520-wide viewBox renders near 1:1 */
+@media (min-width: 761px) {
+  .lab-grid { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); }
+}
 .controls .control {
   margin-bottom: 14px;
 }

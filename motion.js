@@ -17,5 +17,5 @@
 
  });
  mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)',()=>{ScrollTrigger.create({trigger:'.understand-title',start:'top 120px',endTrigger:'.understand-body',end:'bottom 65%',pin:true,pinSpacing:false});});
- let refreshTimer;const refresh=()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>ScrollTrigger.refresh(),180);};new MutationObserver(refresh).observe(document.querySelector('#grid'),{childList:true});document.fonts.ready.then(refresh);window.addEventListener('load',refresh);
+ let refreshTimer;const refresh=()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>ScrollTrigger.refresh(),180);};const mo=new MutationObserver(refresh);mo.observe(document.querySelector('#grid'),{childList:true});mo.observe(document.querySelector('#catalog'),{childList:true});document.fonts.ready.then(refresh);window.addEventListener('load',refresh);
 })();
