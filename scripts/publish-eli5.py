@@ -6,9 +6,11 @@ Usage:
       --summary S --bullet B1 --bullet B2 --nodes A,B,C --subcategory SUB
       [--card-svg card.svg] [--date YYYY-MM-DD] [--kind ai|fluid|inflation] [--color #hex] [--dry-run]
 
-Only the explainer file and published.js are committed; other local changes are left alone.
+Also writes the link preview image and tags, sitemap.xml and feed.xml (scripts/site_meta.py).
+Only the explainer, published.js and those generated files are committed; other local changes are left alone.
 """
 import argparse, datetime, json, pathlib, re, subprocess, sys
+import site_meta
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CATEGORIES = ['AI & Frontier', 'Monetary Architecture', 'Macroeconomics', 'Energy & Physics', 'Infrastructure', 'Distributed Systems']
@@ -67,12 +69,14 @@ if card:
 items = [entry] + [e for e in items if e['id'] != entry['id']]
 pub.write_text(PREFIX + json.dumps(items, indent=2, ensure_ascii=False) + ';\n')
 print(f'published.js: {len(items)} entries, {"updated" if prev else "added"} {entry["id"]} (dated {entry["date"]})')
+meta = site_meta.build(items, [entry['id']])  # link preview, sitemap, feed
+print('link preview, sitemap and feed:', ', '.join(meta))
 
 if args.dry_run:
     sys.exit(0)
 
 git = lambda *c: subprocess.run(['git', '-C', str(ROOT), *c], check=True)
-paths = [str(html.relative_to(ROOT)), 'published.js']
+paths = sorted({str(html.relative_to(ROOT)), 'published.js', *meta})
 git('add', '--', *paths)
 git('commit', '-m', f'content: {"update" if prev else "publish"} ELI5 "{args.title}"', '--', *paths)
 git('pull', '--rebase', '--autostash', 'origin', 'main')
