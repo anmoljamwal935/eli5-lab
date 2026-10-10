@@ -1,6 +1,6 @@
 (()=>{
  const studioAction=()=>document.querySelector('#openStudio').click();document.querySelector('#footerStudio').onclick=studioAction;
- const takes=[['A loan creates a matching bank deposit.','money-india'],['Attention is a way to route information, not a guarantee of truth.','transformers'],['Energy, power, and location are three different constraints.','grid']];let take=0;
+ const takes=[['A loan creates a matching bank deposit.','how-money-actually-works-in-india'],['A big order book is a promise. The debt is paid now.','oracle-ai-debt-bet-eli5'],['Enough power can still be in the wrong place.','power-grid-balance-eli5']];let take=0;
  const showTake=delta=>{take=(take+delta+takes.length)%takes.length;document.querySelector('#takeawayText').textContent=takes[take][0];document.querySelector('#takeawayLink').href='?id='+takes[take][1];if(window.gsap&&!matchMedia('(prefers-reduced-motion: reduce)').matches)gsap.fromTo('#takeawayText',{opacity:0,y:8},{opacity:1,y:0,duration:.35});};
  document.querySelector('#takeawayNext').onclick=()=>showTake(1);document.querySelector('#takeawayPrev').onclick=()=>showTake(-1);document.querySelector('#takeawayLink').onclick=e=>{e.preventDefault();openReader(takes[take][1]);};
  if(!window.gsap||!window.ScrollTrigger)return;gsap.registerPlugin(ScrollTrigger);const mm=gsap.matchMedia();
