@@ -24,9 +24,9 @@ a.add_argument('--bullet', action='append', required=True)
 a.add_argument('--nodes', required=True, help='three short caps labels for the card diagram, comma-separated')
 a.add_argument('--kind', default='flow', help='card diagram style: ai, fluid, inflation, or anything else for a 3-box flow')
 a.add_argument('--color', default='#ff8059')
-a.add_argument('--subcategory', required=True, help='catalogue sub-heading inside the category, e.g. "AI data centres"')
-a.add_argument('--date', default=datetime.date.today().isoformat(), type=datetime.date.fromisoformat, help='publication date, default today')
-a.add_argument('--card-svg', type=pathlib.Path, help='catalogue card drawing: one <svg viewBox="0 0 320 155"> file, replaces the --nodes box diagram')
+a.add_argument('--subcategory', help='catalogue sub-heading inside the category, e.g. "AI data centres"; required for a new explainer, kept on update')
+a.add_argument('--date', type=datetime.date.fromisoformat, help='publication date; default today for a new explainer, kept on update')
+a.add_argument('--card-svg', type=pathlib.Path, help='catalogue card drawing, one <svg viewBox="0 0 320 155"> file; required for a new explainer, kept on update')
 a.add_argument('--dry-run', action='store_true', help='update published.js but skip git')
 args = a.parse_args()
 
@@ -36,7 +36,16 @@ if html.parent != ROOT / 'explainers' or html.suffix != '.html' or ' ' in html.n
 if '../eli5-study.css' not in html.read_text():
     sys.exit('explainer does not use the house format (missing ../eli5-study.css)')
 
-card = None
+pub = ROOT / 'published.js'
+items = json.loads(pub.read_text().strip().removeprefix(PREFIX).removesuffix(';'))
+# new vs update is decided by the committed catalogue, so a --dry-run preview doesn't count as published
+head = subprocess.run(['git', '-C', str(ROOT), 'show', 'HEAD:published.js'], capture_output=True, text=True).stdout
+committed = json.loads(head.strip().removeprefix(PREFIX).removesuffix(';')) if head else items
+prev = next((e for e in committed if e['id'] == html.stem), None)
+if not prev and not (args.subcategory and args.card_svg):
+    sys.exit('a new explainer needs --subcategory and --card-svg')
+
+card = prev and prev.get('card')
 if args.card_svg:
     card = args.card_svg.read_text().strip()
     # inlined into the catalogue page, so only a plain drawing is allowed
@@ -49,16 +58,15 @@ entry = {
     'id': html.stem, 'title': args.title, 'category': args.category, 'minutes': args.minutes,
     'summary': args.summary, 'bullets': args.bullet, 'kind': args.kind, 'color': args.color,
     'nodes': [n.strip() for n in args.nodes.split(',')], 'file': f'explainers/{html.name}',
-    'date': args.date.isoformat(), 'subcategory': args.subcategory,
+    'date': args.date.isoformat() if args.date else prev['date'] if prev else datetime.date.today().isoformat(),
+    'subcategory': args.subcategory or prev['subcategory'],
 }
 if card:
     entry['card'] = card
 
-pub = ROOT / 'published.js'
-items = json.loads(pub.read_text().strip().removeprefix(PREFIX).removesuffix(';'))
 items = [entry] + [e for e in items if e['id'] != entry['id']]
 pub.write_text(PREFIX + json.dumps(items, indent=2, ensure_ascii=False) + ';\n')
-print(f'published.js: {len(items)} entries, upserted {entry["id"]}')
+print(f'published.js: {len(items)} entries, {"updated" if prev else "added"} {entry["id"]} (dated {entry["date"]})')
 
 if args.dry_run:
     sys.exit(0)
@@ -66,7 +74,7 @@ if args.dry_run:
 git = lambda *c: subprocess.run(['git', '-C', str(ROOT), *c], check=True)
 paths = [str(html.relative_to(ROOT)), 'published.js']
 git('add', '--', *paths)
-git('commit', '-m', f'content: publish ELI5 "{args.title}"', '--', *paths)
+git('commit', '-m', f'content: {"update" if prev else "publish"} ELI5 "{args.title}"', '--', *paths)
 git('pull', '--rebase', '--autostash', 'origin', 'main')
 git('push', 'origin', 'HEAD:main')
 print('pushed; Vercel deploys main automatically')
