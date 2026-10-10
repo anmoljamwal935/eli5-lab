@@ -6,12 +6,10 @@
  if(!window.gsap||!window.ScrollTrigger)return;gsap.registerPlugin(ScrollTrigger);const mm=gsap.matchMedia();
  mm.add('(prefers-reduced-motion: no-preference)',()=>{
   const hero=document.querySelector('.intro'), heroScroll={trigger:hero,start:'top top',end:'bottom top',scrub:.65,invalidateOnRefresh:true};
-  gsap.to('.hero-stars',{y:'150vh',ease:'none',scrollTrigger:{...heroScroll}});
-  gsap.to('.hero-sky',{y:'95vh',scale:1.025,ease:'none',scrollTrigger:{...heroScroll}});
-  gsap.to('.hero-glow',{y:'62vh',ease:'none',scrollTrigger:{...heroScroll}});
-  gsap.to('.hero-ridge-mid',{y:'34vh',scale:1.035,ease:'none',scrollTrigger:{...heroScroll}});
-  gsap.to('.hero-depth-card',{y:'14vh',ease:'none',scrollTrigger:{...heroScroll}});
-  gsap.to('.hero-foreground',{y:'-52vh',scale:1.055,ease:'none',scrollTrigger:{...heroScroll}});
+  gsap.to('.hero-stars',{y:'80vh',ease:'none',scrollTrigger:{...heroScroll}});
+  gsap.to('.hero-glow',{y:'60vh',ease:'none',scrollTrigger:{...heroScroll}});
+  gsap.to('.hero-mid',{y:'38vh',scale:1.04,ease:'none',scrollTrigger:{...heroScroll}});
+  gsap.to('.hero-front',{y:'-28vh',ease:'none',scrollTrigger:{...heroScroll}});
   const p=document.querySelector('.reveal-copy');p.innerHTML=p.textContent.trim().split(/\s+/).map(w=>'<span>'+w+'</span>').join(' ');
   gsap.fromTo('.reveal-copy span',{opacity:.16},{opacity:1,stagger:.13,ease:'none',scrollTrigger:{trigger:p,start:'top 82%',end:'bottom 45%',scrub:1}});
 
