@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "4f-shock-eli5",
+    "title": "The 4F Shock",
+    "category": "Macroeconomics",
+    "minutes": 10,
+    "summary": "How fuel, fertilizer, food, and finance can turn a supply shock into a household cost problem — even when grain stocks look comfortable.",
+    "bullets": [
+      "The four Fs are linked, not four isolated shortages.",
+      "Buffers buy time; they do not erase import exposure or fiscal cost.",
+      "The useful question is where a bottleneck can be removed."
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FUEL",
+      "FOOD",
+      "FINANCE"
+    ],
+    "file": "explainers/4f-shock-eli5.html",
+    "date": "2026-10-15",
+    "subcategory": "Supply chains",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Four linked pressure points feed a resilient economy.\"><path d=\"M52 78Q105 25 160 78T268 78\" fill=\"none\" stroke=\"#57534f\" stroke-width=\"3\"/><circle cx=\"52\" cy=\"78\" r=\"24\" fill=\"#ff8059\" opacity=\".25\" stroke=\"#ff8059\" stroke-width=\"2\"/><circle cx=\"160\" cy=\"78\" r=\"32\" fill=\"#f87171\" opacity=\".2\" stroke=\"#f87171\" stroke-width=\"2\"/><circle cx=\"268\" cy=\"78\" r=\"24\" fill=\"#76d5c1\" opacity=\".25\" stroke=\"#76d5c1\" stroke-width=\"2\"/><path d=\"M38 120H282\" stroke=\"#f5c76a\" stroke-width=\"3\"/><text x=\"52\" y=\"83\" text-anchor=\"middle\" font-size=\"10\" fill=\"#f1eee8\">4F</text><text x=\"160\" y=\"83\" text-anchor=\"middle\" font-size=\"10\" fill=\"#f1eee8\">SHOCK</text><text x=\"268\" y=\"83\" text-anchor=\"middle\" font-size=\"10\" fill=\"#f1eee8\">BUFFER</text></svg>"
+  },
+  {
     "id": "oracle-ai-debt-bet-eli5",
     "title": "Why a profitable Oracle scares investors",
     "category": "Infrastructure",

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The 4F Shock — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .source-list{margin:18px 0 0;padding-left:20px;color:var(--muted);font-size:14px;line-height:1.6}
+    .source-list li{margin:6px 0}
+    .source-list a{overflow-wrap:anywhere}
+    .note{margin-top:20px;padding:14px 16px;border-left:3px solid var(--gold);background:var(--gold-soft);color:var(--fg-dim);font-size:14px;line-height:1.6}
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="How fuel, fertilizer, food, and finance can turn a supply shock into a household cost problem — even when grain stocks look comfortable.">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/4f-shock-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="The 4F Shock">
+<meta property="og:description" content="How fuel, fertilizer, food, and finance can turn a supply shock into a household cost problem — even when grain stocks look comfortable.">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/4f-shock-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/4f-shock-eli5.png?v=e3b6b7d6">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The 4F Shock">
+<meta property="article:published_time" content="2026-10-15">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead"><div class="masthead-inner">
+    <a class="brand" href="../index.html"><span class="brand-mark">E5</span><span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span></a>
+    <div class="nav-right"><span class="topic-tag">Macroeconomics</span><a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a></div>
+  </div></header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MACROECONOMICS / 10 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>The 4F Shock</h1>
+      <p class="lede">A food crisis does not have to begin with empty grain warehouses. It can begin with a fuel shock, pass through fertilizer and transport, and become a finance problem before it reaches a household kitchen.</p>
+      <p class="source-note">Built from Think School’s video with English auto-captions and visual review · facts checked against Indian government and RBI sources · <a href="https://youtu.be/e1cwjeP5Ofs?si=6rfmG0GquD7CHmrz">Watch the source ↗</a></p>
+      <div class="legend" aria-label="Colour key"><span><i style="background:#ff8059"></i>shock / pressure</span><span><i style="background:#76d5c1"></i>buffer / resilience</span><span><i style="background:#f87171"></i>amplifier / risk</span><span><i style="background:#f5c76a"></i>response / opportunity</span></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The apparent contradiction</p>
+      <h2>A full granary can still be fragile</h2>
+      <p>Think School opens with India’s 1965–66 food vulnerability: a war, drought, ration pressure, and grain arriving by ship. The modern version is subtler. India can hold plenty of rice while still depending on imported energy, imported inputs, and stable trade routes.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="A grain silo is buffered, while an incoming ship and fuel line remain exposed to a storm.">
+        <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#ff8059"/></marker></defs>
+        <path d="M82 224H720" stroke="#3b3936" stroke-width="2"/><path d="M110 190V105Q110 75 145 65Q180 75 180 105V190" fill="none" stroke="#76d5c1" stroke-width="4"/><path d="M125 190V120Q145 105 165 120V190" fill="#76d5c1" opacity=".25"/><text x="145" y="220" text-anchor="middle" fill="#f1eee8" font-size="18">grain buffer</text><text x="145" y="250" text-anchor="middle" fill="#76d5c1" font-size="16">can absorb a short shock</text>
+        <path d="M300 205H455L490 180H610V205H650L625 230H330Z" fill="#ff8059" opacity=".2" stroke="#ff8059" stroke-width="3"/><path d="M350 180L380 145H465L500 180" fill="none" stroke="#ff8059" stroke-width="3"/><text x="515" y="260" text-anchor="middle" fill="#f1eee8" font-size="18">imports + routes</text><path d="M210 130C260 100 270 100 315 130" fill="none" stroke="#ff8059" stroke-width="3" marker-end="url(#a1)"/><text x="260" y="88" text-anchor="middle" fill="#ff8059" font-size="16">exposure</text>
+        <path d="M575 65q22 18 44 0t44 0t44 0" fill="none" stroke="#f87171" stroke-width="4"/><path d="M575 90q22 18 44 0t44 0t44 0" fill="none" stroke="#f87171" stroke-width="3"/><text x="665" y="42" text-anchor="middle" fill="#f87171" font-size="16">chokepoint / price shock</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Four inputs, one economy</h2>
+      <p>Jaishankar’s original public framing was a 3F crisis—fuel, food, and fertilizer. Think School extends the lens to finance: the money and currency channel that makes an expensive import even more expensive at home.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Four coloured nodes labelled fuel, fertilizer, food, and finance connect in a loop around the Indian economy.">
+        <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#a5a29c"/></marker></defs>
+        <path d="M255 88Q400 24 545 88Q620 150 545 212Q400 275 255 212Q180 150 255 88Z" fill="none" stroke="#57534f" stroke-width="2" stroke-dasharray="8 8"/>
+        <path d="M310 80L490 80M555 112L555 188M490 220L310 220M245 188L245 112" stroke="#a5a29c" stroke-width="2" marker-end="url(#a2)"/>
+        <circle cx="245" cy="80" r="42" fill="#ff8059" opacity=".22" stroke="#ff8059" stroke-width="3"/><text x="245" y="86" text-anchor="middle" fill="#f1eee8" font-size="20">fuel</text>
+        <circle cx="555" cy="80" r="42" fill="#f5c76a" opacity=".22" stroke="#f5c76a" stroke-width="3"/><text x="555" y="86" text-anchor="middle" fill="#f1eee8" font-size="20">fertilizer</text>
+        <circle cx="555" cy="220" r="42" fill="#76d5c1" opacity=".22" stroke="#76d5c1" stroke-width="3"/><text x="555" y="226" text-anchor="middle" fill="#f1eee8" font-size="20">food</text>
+        <circle cx="245" cy="220" r="42" fill="#f87171" opacity=".22" stroke="#f87171" stroke-width="3"/><text x="245" y="226" text-anchor="middle" fill="#f1eee8" font-size="20">finance</text>
+        <text x="400" y="145" text-anchor="middle" fill="#f1eee8" font-size="18">India’s cost of living</text><text x="400" y="170" text-anchor="middle" fill="#a5a29c" font-size="16">and productive capacity</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The first transmission</p>
+      <h2>Fuel is more than petrol</h2>
+      <p>Crude oil is an input into transport, cooking gas, aviation fuel, lubricants, petrochemicals, and farm logistics. India’s strategic petroleum reserves are a buffer, not a force field: the government lists 5.33 million tonnes at three sites, about 9.5 days of national demand on the stated basis.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="A fuel barrel feeds transport, cooking, farm machinery, and chemical production, while a small reserve tank provides a buffer.">
+        <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#ff8059"/></marker></defs>
+        <ellipse cx="105" cy="135" rx="42" ry="15" fill="#ff8059" opacity=".4" stroke="#ff8059" stroke-width="3"/><path d="M63 135V205Q105 230 147 205V135" fill="#ff8059" opacity=".16" stroke="#ff8059" stroke-width="3"/><text x="105" y="175" text-anchor="middle" fill="#f1eee8" font-size="18">crude</text>
+        <path d="M150 145H250M150 180H250M150 215H250" stroke="#ff8059" stroke-width="3" marker-end="url(#a3)"/>
+        <circle cx="330" cy="105" r="45" fill="#202020" stroke="#ff8059" stroke-width="3"/><text x="330" y="100" text-anchor="middle" fill="#f1eee8" font-size="17">transport</text><text x="330" y="122" text-anchor="middle" fill="#a5a29c" font-size="15">freight</text>
+        <circle cx="330" cy="205" r="45" fill="#202020" stroke="#ff8059" stroke-width="3"/><text x="330" y="200" text-anchor="middle" fill="#f1eee8" font-size="17">farm</text><text x="330" y="222" text-anchor="middle" fill="#a5a29c" font-size="15">machinery</text>
+        <circle cx="560" cy="105" r="45" fill="#202020" stroke="#ff8059" stroke-width="3"/><text x="560" y="100" text-anchor="middle" fill="#f1eee8" font-size="17">cooking</text><text x="560" y="122" text-anchor="middle" fill="#a5a29c" font-size="15">LPG</text>
+        <circle cx="560" cy="205" r="45" fill="#202020" stroke="#ff8059" stroke-width="3"/><text x="560" y="200" text-anchor="middle" fill="#f1eee8" font-size="17">chemicals</text><text x="560" y="222" text-anchor="middle" fill="#a5a29c" font-size="15">materials</text>
+        <rect x="670" y="108" width="60" height="100" fill="#76d5c1" opacity=".2" stroke="#76d5c1" stroke-width="3"/><path d="M670 140H730" stroke="#76d5c1" stroke-width="2"/><text x="700" y="235" text-anchor="middle" fill="#76d5c1" font-size="16">reserve</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The farm channel</p>
+      <h2>Fertilizer turns energy into yield</h2>
+      <p>Fertilizer is not just a line in a farm budget. Its production and transport use energy; its price affects planting decisions; and subsidies can move a shock from the farmer’s bill to the public budget. The video’s 45 kg urea example is an illustration of that transfer, not a timeless price.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Energy and imported inputs flow into fertilizer, then into crops and food supply; a subsidy shield absorbs part of the price.">
+        <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#a5a29c"/></marker></defs>
+        <path d="M90 150H220M310 150H440M530 150H680" stroke="#a5a29c" stroke-width="3" marker-end="url(#a4)"/>
+        <circle cx="100" cy="150" r="52" fill="#ff8059" opacity=".2" stroke="#ff8059" stroke-width="3"/><text x="100" y="145" text-anchor="middle" fill="#f1eee8" font-size="17">energy</text><text x="100" y="168" text-anchor="middle" fill="#a5a29c" font-size="15">gas / power</text>
+        <circle cx="265" cy="150" r="52" fill="#f5c76a" opacity=".2" stroke="#f5c76a" stroke-width="3"/><text x="265" y="145" text-anchor="middle" fill="#f1eee8" font-size="17">fertilizer</text><text x="265" y="168" text-anchor="middle" fill="#a5a29c" font-size="15">N · P · K</text>
+        <circle cx="485" cy="150" r="52" fill="#76d5c1" opacity=".2" stroke="#76d5c1" stroke-width="3"/><text x="485" y="145" text-anchor="middle" fill="#f1eee8" font-size="17">yield</text><text x="485" y="168" text-anchor="middle" fill="#a5a29c" font-size="15">crop output</text>
+        <circle cx="700" cy="150" r="52" fill="#76d5c1" opacity=".2" stroke="#76d5c1" stroke-width="3"/><text x="700" y="145" text-anchor="middle" fill="#f1eee8" font-size="17">food</text><text x="700" y="168" text-anchor="middle" fill="#a5a29c" font-size="15">supply</text>
+        <path d="M265 215Q265 265 380 265Q485 265 485 215" fill="none" stroke="#f5c76a" stroke-width="3" marker-end="url(#a4)"/><text x="380" y="292" text-anchor="middle" fill="#f5c76a" font-size="16">subsidy absorbs some cost</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Food is not only rice</h2>
+      <p>A country can be comfortable in cereals and still feel a food shock through pulses, edible oil, vegetables, animal feed, or transport. The video uses a weak monsoon and a tur-dal gap to make the point: the vulnerable item may be one ingredient, not the whole pantry.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="A balanced cereal silo sits beside smaller, exposed baskets for pulses, oil, and vegetables, showing that food security has multiple components.">
+        <path d="M75 225H730" stroke="#3b3936" stroke-width="2"/>
+        <path d="M90 190V95Q130 60 170 95V190" fill="#76d5c1" opacity=".3" stroke="#76d5c1" stroke-width="3"/><text x="130" y="218" text-anchor="middle" fill="#f1eee8" font-size="18">cereals</text><text x="130" y="246" text-anchor="middle" fill="#76d5c1" font-size="15">buffered</text>
+        <path d="M285 200Q330 160 375 200V220H285Z" fill="#f5c76a" opacity=".3" stroke="#f5c76a" stroke-width="3"/><circle cx="330" cy="175" r="25" fill="#f5c76a" opacity=".25" stroke="#f5c76a" stroke-width="3"/><text x="330" y="247" text-anchor="middle" fill="#f1eee8" font-size="18">pulses</text>
+        <path d="M450 200Q495 160 540 200V220H450Z" fill="#ff8059" opacity=".3" stroke="#ff8059" stroke-width="3"/><path d="M470 178Q495 145 520 178" fill="none" stroke="#ff8059" stroke-width="3"/><text x="495" y="247" text-anchor="middle" fill="#f1eee8" font-size="18">oil</text>
+        <path d="M610 200Q650 160 690 200V220H610Z" fill="#f87171" opacity=".3" stroke="#f87171" stroke-width="3"/><circle cx="630" cy="178" r="10" fill="#f87171"/><circle cx="670" cy="178" r="10" fill="#f87171"/><text x="650" y="247" text-anchor="middle" fill="#f1eee8" font-size="18">fresh food</text>
+        <path d="M210 88L250 118M210 118L250 88" stroke="#f87171" stroke-width="3"/><text x="230" y="65" text-anchor="middle" fill="#f87171" font-size="16">weather / trade</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The amplifier</p>
+      <h2>Finance makes shocks compound</h2>
+      <p>When imports get dearer, the import bill rises. That can pressure the rupee; a weaker rupee raises the domestic price of the next shipment. Higher inflation can pull money toward safer assets, while capital outflows add another source of pressure. This is a feedback loop, not a one-way invoice.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="A loop connects oil price, import bill, rupee pressure, inflation, and capital flows, showing how financial conditions can amplify a supply shock.">
+        <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#f87171"/></marker></defs>
+        <path d="M180 90Q400 20 620 90Q710 150 620 210Q400 280 180 210Q90 150 180 90Z" fill="none" stroke="#f87171" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#a5)"/>
+        <circle cx="160" cy="150" r="44" fill="#ff8059" opacity=".2" stroke="#ff8059" stroke-width="3"/><text x="160" y="146" text-anchor="middle" fill="#f1eee8" font-size="16">oil / input</text><text x="160" y="168" text-anchor="middle" fill="#a5a29c" font-size="15">price ↑</text>
+        <circle cx="320" cy="72" r="44" fill="#f5c76a" opacity=".2" stroke="#f5c76a" stroke-width="3"/><text x="320" y="68" text-anchor="middle" fill="#f1eee8" font-size="16">import bill</text><text x="320" y="90" text-anchor="middle" fill="#a5a29c" font-size="15">↑</text>
+        <circle cx="520" cy="72" r="44" fill="#f87171" opacity=".2" stroke="#f87171" stroke-width="3"/><text x="520" y="68" text-anchor="middle" fill="#f1eee8" font-size="16">rupee</text><text x="520" y="90" text-anchor="middle" fill="#a5a29c" font-size="15">pressure</text>
+        <circle cx="640" cy="150" r="44" fill="#f87171" opacity=".2" stroke="#f87171" stroke-width="3"/><text x="640" y="146" text-anchor="middle" fill="#f1eee8" font-size="16">inflation</text><text x="640" y="168" text-anchor="middle" fill="#a5a29c" font-size="15">↑</text>
+        <circle cx="520" cy="228" r="44" fill="#f87171" opacity=".2" stroke="#f87171" stroke-width="3"/><text x="520" y="224" text-anchor="middle" fill="#f1eee8" font-size="16">capital</text><text x="520" y="246" text-anchor="middle" fill="#a5a29c" font-size="15">outflow</text>
+        <circle cx="320" cy="228" r="44" fill="#76d5c1" opacity=".2" stroke="#76d5c1" stroke-width="3"/><text x="320" y="224" text-anchor="middle" fill="#f1eee8" font-size="16">buffers</text><text x="320" y="246" text-anchor="middle" fill="#a5a29c" font-size="15">can slow it</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Risk is not the same as collapse</h2>
+      <p>India has buffers: grain programmes, fuel reserves, supplier diversification, foreign-exchange reserves, and policy tools. They buy time and spread pain. They do not make every household equally safe, and they do not erase the fiscal cost of absorbing a shock.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="A shock wave meets four buffers—stocks, suppliers, reserves, and policy—and emerges smaller but not zero.">
+        <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#76d5c1"/></marker></defs>
+        <path d="M70 145Q95 105 120 145T170 145T220 145" fill="none" stroke="#f87171" stroke-width="5"/><text x="145" y="95" text-anchor="middle" fill="#f87171" font-size="17">shock</text><path d="M225 150H300" stroke="#a5a29c" stroke-width="3" marker-end="url(#a6)"/>
+        <rect x="305" y="95" width="90" height="110" fill="#76d5c1" opacity=".18" stroke="#76d5c1" stroke-width="3"/><text x="350" y="130" text-anchor="middle" fill="#f1eee8" font-size="16">stocks</text><text x="350" y="154" text-anchor="middle" fill="#a5a29c" font-size="15">time</text><text x="350" y="178" text-anchor="middle" fill="#a5a29c" font-size="15">to react</text>
+        <rect x="420" y="95" width="90" height="110" fill="#76d5c1" opacity=".18" stroke="#76d5c1" stroke-width="3"/><text x="465" y="130" text-anchor="middle" fill="#f1eee8" font-size="16">suppliers</text><text x="465" y="154" text-anchor="middle" fill="#a5a29c" font-size="15">choice</text><text x="465" y="178" text-anchor="middle" fill="#a5a29c" font-size="15">not one route</text>
+        <rect x="535" y="95" width="90" height="110" fill="#76d5c1" opacity=".18" stroke="#76d5c1" stroke-width="3"/><text x="580" y="130" text-anchor="middle" fill="#f1eee8" font-size="16">reserves</text><text x="580" y="154" text-anchor="middle" fill="#a5a29c" font-size="15">currency</text><text x="580" y="178" text-anchor="middle" fill="#a5a29c" font-size="15">capacity</text>
+        <path d="M635 150H715" stroke="#76d5c1" stroke-width="3" marker-end="url(#a6)"/><path d="M675 135Q695 150 675 165" fill="none" stroke="#f5c76a" stroke-width="3"/><text x="720" y="125" text-anchor="middle" fill="#f5c76a" font-size="16">smaller</text><text x="720" y="185" text-anchor="middle" fill="#f5c76a" font-size="16">shock</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Every bottleneck is a market signal</h2>
+      <p>The video ends on opportunity: local fertilizer capacity, distributed solar, biomass logistics, and Indian-made components. The sober version is better than the hype—investment matters when it removes a real dependency, not merely when it wears a patriotic label.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Four opportunity paths—solar, fertilizer, biomass, and logistics—lead from a bottleneck toward more resilient supply.">
+        <defs><marker id="a7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#f5c76a"/></marker></defs>
+        <circle cx="120" cy="150" r="62" fill="#f87171" opacity=".18" stroke="#f87171" stroke-width="3"/><text x="120" y="145" text-anchor="middle" fill="#f1eee8" font-size="18">dependency</text><text x="120" y="168" text-anchor="middle" fill="#a5a29c" font-size="15">bottleneck</text>
+        <path d="M185 150H285M185 150L270 65M185 150L270 235" stroke="#f5c76a" stroke-width="3" marker-end="url(#a7)"/>
+        <circle cx="350" cy="65" r="38" fill="#f5c76a" opacity=".2" stroke="#f5c76a" stroke-width="3"/><text x="350" y="71" text-anchor="middle" fill="#f1eee8" font-size="17">solar</text>
+        <circle cx="350" cy="150" r="38" fill="#f5c76a" opacity=".2" stroke="#f5c76a" stroke-width="3"/><text x="350" y="156" text-anchor="middle" fill="#f1eee8" font-size="17">fertilizer</text>
+        <circle cx="350" cy="235" r="38" fill="#f5c76a" opacity=".2" stroke="#f5c76a" stroke-width="3"/><text x="350" y="241" text-anchor="middle" fill="#f1eee8" font-size="17">biomass</text>
+        <path d="M390 65H610M390 150H610M390 235H610" stroke="#a5a29c" stroke-width="2" marker-end="url(#a7)"/><rect x="620" y="105" width="115" height="90" fill="#76d5c1" opacity=".18" stroke="#76d5c1" stroke-width="3"/><text x="678" y="138" text-anchor="middle" fill="#f1eee8" font-size="17">resilience</text><text x="678" y="163" text-anchor="middle" fill="#a5a29c" font-size="15">more options</text>
+      </svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>See why shocks multiply</h2>
+      <p>Set an oil-price shock and a currency shock. The “truth” compounds them: a 20% price rise followed by a 10% rupee fall is a 32% import-cost rise, not 30%. The additive shortcut is useful for a quick estimate, but it misses the interaction that makes the loop bite.</p>
+      <div class="lab"><div class="lab-grid"><div class="controls">
+        <div class="control"><label for="s1">oil / input price shock <output id="s1-o"></output></label><input id="s1" type="range" min="0" max="50" value="20" step="5"></div>
+        <div class="control"><label for="s2">currency depreciation <output id="s2-o"></output></label><input id="s2" type="range" min="0" max="50" value="10" step="5"></div>
+        <div class="presets"><button type="button" class="secondary" data-p="0,0">calm</button><button type="button" class="secondary" data-p="20,10">video-like shock</button><button type="button" class="secondary" data-p="40,25">stress test</button></div>
+        <div class="ledger" id="ledger"></div>
+      </div><div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars compare the compounded import-cost shock with the additive shortcut."></svg></div></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What to watch in real life</h2>
+      <div class="field-grid"><div><b>Fuel</b><span>Crude, gas, transport, and petrochemical inputs.</span><em>watch import prices + routes</em></div><div><b>Fertilizer</b><span>Energy-intensive inputs that shape farm economics.</span><em>watch subsidy + availability</em></div><div><b>Food</b><span>Stocks help, but diets include exposed non-cereal items.</span><em>watch weather + pulses + oil</em></div><div><b>Finance</b><span>Currency, inflation, reserves, and capital flows.</span><em>watch the feedback loop</em></div></div>
+    </section>
+
+    <div class="eli5-takeaway-card"><div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div><blockquote>Food security is not a warehouse number; it is the whole chain from energy and fertilizer to crops, ships, money, and the price a household can actually afford.</blockquote><div class="takeaway-actions"><span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span><a href="../index.html">Explore all studies in the Lab ↗</a></div></div>
+
+    <details class="trace"><summary>Sources, scope, and corrections</summary>
+      <ul class="source-list">
+        <li><strong>Source video:</strong> Think School, “India's Biggest Economic Threat…”; English automatic captions captured locally, with frames reviewed at 00:00:25, 00:01:35, 00:03:50, 00:05:00, 00:06:20, 00:07:40, 00:08:35, 00:09:40, 00:10:30, 00:11:30, 00:12:35, 00:14:50, 00:15:05, and 00:15:40.</li>
+        <li><a href="https://www.mea.gov.in/Speeches-Statements.htm?dtl%2F37816%2FRemarks_by_EAM_Dr_S_Jaishankar_at_the_CII_Annual_Business_Summit_2024=">MEA: Jaishankar’s CII remarks</a> — verifies the public 3F framing and the supply-chain de-risking argument.</li>
+        <li><a href="https://mopng.gov.in/en/international-cooperation/isprl">Ministry of Petroleum and Natural Gas: ISPRL</a> — 5.33 MMT across Visakhapatnam, Mangalore, and Padur; approximately 9.5 days on the stated consumption basis.</li>
+        <li><a href="https://www.rbi.org.in/Scripts/WSSViewDetail.aspx?PARAM1=2&amp;TYPE=Section">RBI Weekly Statistical Supplement</a> — the official place to read dated foreign-exchange-reserve data; reserves are a buffer, not a guarantee.</li>
+        <li><a href="https://mnre.gov.in/en/notice/guidelines-for-pm-surya-ghar-muft-bijli-yojana/">MNRE: PM Surya Ghar guidelines</a> and <a href="https://samarth.powermin.gov.in/home/regulatory_policies">SAMARTH Mission</a> — examples of policy responses in rooftop solar and biomass supply chains.</li>
+      </ul>
+      <p class="note"><strong>Important correction:</strong> the video’s sponsor segment, exact 2026 oil-price figures, and several on-screen newspaper cards are not used as timeless facts here. The page explains the mechanism and labels time-sensitive numbers with their source/date rather than pretending a forecast is a measurement.</p>
+    </details>
+  </main>
+
+  <script>
+    const ids=['s1','s2'],$=id=>document.getElementById(id);
+    const pct=v=>v.toFixed(0)+'%';
+    function compute(v){
+      const [oil,fx]=v, truth=(1+oil/100)*(1+fx/100)*100-100, shortcut=oil+fx;
+      return {truth,rows:[['compounded truth',truth,'#ff8059'],['additive shortcut',shortcut,'#f87171']],ledger:[['input shock',oil.toFixed(0)+'%'],['currency shock',fx.toFixed(0)+'%'],['product',((1+oil/100)*(1+fx/100)).toFixed(3)+'×'],['gap vs shortcut',(truth-shortcut).toFixed(1)+' points']]};
+    }
+    const labConfig={format:pct,sliderFormats:[pct,pct],minSpan:10,maxSpan:200,step:10};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false}; $('labChart').innerHTML=''; $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmt=labConfig.format; ids.forEach((id,i)=>$(id+'-o').textContent=(labConfig.sliderFormats[i]||fmt)(v[i]));
+      const {truth,rows,ledger}=compute(v); if(!Number.isFinite(truth)||rows.some(r=>!Number.isFinite(r[1]))) throw new Error('non-finite lab result');
+      const {minSpan,maxSpan,step}=labConfig,m=Math.min(maxSpan,Math.max(minSpan,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/step)*step)),x0=260,sx=x=>x0+Math.max(-m,Math.min(m,x))*200/m,bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`); const clipped=rows.map(r=>Math.abs(r[1])>m),truthClipped=Math.abs(truth)>m;
+      let s=`<line x1="${x0}" y1="42" x2="${x0}" y2="${bottom}" stroke="#57534f"/><line x1="${sx(truth)}" y1="42" x2="${sx(truth)}" y2="${bottom}" stroke="#f1eee8" stroke-dasharray="5 5"/><text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">truth ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      rows.forEach(([name,val,col],i)=>{const y=80+i*82,x=sx(val);s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}${clipped[i]?' · off-scale':''}</text><rect x="${Math.min(x,x0)}" y="${y}" width="${Math.abs(x-x0)}" height="26" fill="${esc(col)}"/>`;});
+      s+=`<text x="60" y="${bottom+26}" fill="#a5a29c" font-size="16">0%</text><text x="260" y="${bottom+26}" text-anchor="middle" fill="#a5a29c" font-size="16">${esc(fmt(m/2))}</text><text x="460" y="${bottom+26}" text-anchor="end" fill="#a5a29c" font-size="16">${esc(fmt(m))}</text><text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      $('labChart').innerHTML=s; $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join(''); window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update)); document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()})); update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
