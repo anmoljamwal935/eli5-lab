@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "stock-research-process-eli5",
+    "title": "How I research a stock: six checks before buying",
+    "category": "Monetary Architecture",
+    "minutes": 9,
+    "summary": "A six-step, no-hype walkthrough of one analyst’s stock-research process—from broad screening to a business thesis, valuation, and ongoing review.",
+    "bullets": [
+      "Use a screener to build a shortlist, not to make the decision.",
+      "Read the business, its statements, strategy, risks, and value before buying.",
+      "A good company can still be too expensive; keep the thesis testable."
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SCREEN",
+      "BUSINESS",
+      "VALUE"
+    ],
+    "file": "explainers/stock-research-process-eli5.html",
+    "date": "2026-10-16",
+    "subcategory": "Equity research",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A wide field of companies narrows through research to one business whose future cash flow is valued\"><path d=\"M24 46 L148 64 L148 91 L24 109 Z\" fill=\"none\" stroke=\"#76d5c1\" stroke-width=\"3\"/><g fill=\"#76d5c1\"><circle cx=\"32\" cy=\"55\" r=\"4\"/><circle cx=\"54\" cy=\"65\" r=\"4\"/><circle cx=\"76\" cy=\"74\" r=\"4\"/><circle cx=\"98\" cy=\"82\" r=\"4\"/><circle cx=\"120\" cy=\"90\" r=\"4\"/></g><path d=\"M148 78 H210\" stroke=\"#57534f\" stroke-width=\"3\"/><circle cx=\"236\" cy=\"78\" r=\"26\" fill=\"#ff8059\"/><path d=\"M236 43 V29 M236 113 V99 M201 78 H187 M285 78 H271\" stroke=\"#ff8059\" stroke-width=\"3\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"140\" fill=\"#a5a29c\">SCREEN</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#ff8059\">VALUE</text></g></svg>"
+  },
+  {
     "id": "4f-shock-eli5",
     "title": "The 4F Shock",
     "category": "Macroeconomics",

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How I research a stock: six checks before buying — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="A six-step, no-hype walkthrough of one analyst’s stock-research process—from broad screening to a business thesis, valuation, and ongoing review.">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/stock-research-process-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="How I research a stock: six checks before buying">
+<meta property="og:description" content="A six-step, no-hype walkthrough of one analyst’s stock-research process—from broad screening to a business thesis, valuation, and ongoing review.">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/stock-research-process-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/stock-research-process-eli5.png?v=64842128">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="How I research a stock: six checks before buying">
+<meta property="article:published_time" content="2026-10-16">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 9 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>How I research a stock: six checks before buying</h1>
+      <p class="lede">A stock is a slice of a business, so research it like a possible owner: understand what it does, test its finances and plans, then ask what the future cash flows might be worth. The video’s six-step process is a disciplined checklist—not a promise that a stock will rise.</p>
+      <p class="source-note">Built from Richard Coffin’s video for The Plain Bagel (automatic English captions); the 10-K description checked against Investor.gov · <a href="https://www.youtube.com/watch?v=kXYvRR7gV2E">Watch the source ↗</a></p>
+      <!-- Colour key: one entry per colour you use. Same colour = same concept everywhere on the page. -->
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#ff8059"></i>business & estimated value</span>
+        <span><i style="background:#76d5c1"></i>cash, evidence & risk</span>
+        <span><i style="background:#f87171"></i>wrong method / claim</span>
+      </div>
+    </section>
+
+    <section class="panel" id="p1">
+      <p class="kicker">The claim</p><h2>Research first. Price later.</h2>
+      <p>The speaker is describing his own fundamental-analysis workflow, not giving a stock tip. He says many people may be better served by diversified passive investing; stock picking takes work and has no guaranteed payoff.</p>
+      <figure><svg viewBox="0 0 800 260" role="img" aria-label="Three routes to studying a stock: chart patterns, data relationships, or the underlying business; this explainer follows the business route">
+        <path d="M130 140 H670" stroke="#57534f" stroke-width="2"/><circle cx="150" cy="140" r="52" fill="none" stroke="#f87171" stroke-width="4"/><path d="M108 154 L128 140 143 149 160 112 180 128 195 96" fill="none" stroke="#f87171" stroke-width="4"/><text x="150" y="220" text-anchor="middle" fill="#f1eee8" font-size="18">price patterns</text>
+        <circle cx="400" cy="140" r="52" fill="none" stroke="#76d5c1" stroke-width="4"/><circle cx="382" cy="132" r="8" fill="#76d5c1"/><circle cx="414" cy="116" r="8" fill="#76d5c1"/><circle cx="427" cy="151" r="8" fill="#76d5c1"/><path d="M382 132 L414 116 427 151 382 132" fill="none" stroke="#76d5c1" stroke-width="2"/><text x="400" y="220" text-anchor="middle" fill="#f1eee8" font-size="18">data relationships</text>
+        <circle cx="650" cy="140" r="52" fill="#ff8059"/><path d="M625 147 H675 M650 112 V168" stroke="#202020" stroke-width="5"/><text x="650" y="220" text-anchor="middle" fill="#f1eee8" font-size="18">the business</text>
+        <text x="400" y="34" text-anchor="middle" fill="#a5a29c" font-size="16">THREE DIFFERENT QUESTIONS · THIS VIDEO FOLLOWS THE BUSINESS</text>
+      </svg></figure>
+    </section>
+    <section class="panel" id="p2">
+      <p class="kicker">The first filter</p><h2>Screen wide; investigate narrow</h2>
+      <p>A screener can sort thousands of tickers by broad signals—such as revenue growth, profitability or debt—then a one-page snapshot helps decide what deserves weeks of deeper work. A filter finds candidates; it does not tell you what to buy.</p>
+      <figure><svg viewBox="0 0 800 280" role="img" aria-label="A wide universe narrows through broad screening and an overview into a small shortlist, not an automatic buy decision">
+        <text x="42" y="38" fill="#a5a29c" font-size="16">MANY COMPANIES</text><g fill="#76d5c1"><circle cx="64" cy="90" r="7"/><circle cx="100" cy="90" r="7"/><circle cx="136" cy="90" r="7"/><circle cx="172" cy="90" r="7"/><circle cx="208" cy="90" r="7"/><circle cx="244" cy="90" r="7"/><circle cx="280" cy="90" r="7"/><circle cx="316" cy="90" r="7"/><circle cx="352" cy="90" r="7"/><circle cx="388" cy="90" r="7"/></g>
+        <path d="M60 116 L398 116 330 181 128 181 Z" fill="none" stroke="#a5a29c" stroke-width="2"/><text x="229" y="154" text-anchor="middle" fill="#f1eee8" font-size="18">broad screen</text><path d="M230 186 V220" stroke="#a5a29c" stroke-width="2"/><circle cx="190" cy="232" r="8" fill="#ff8059"/><circle cx="230" cy="232" r="8" fill="#ff8059"/><circle cx="270" cy="232" r="8" fill="#ff8059"/><text x="460" y="142" fill="#f1eee8" font-size="18">growth · profits · debt</text><text x="460" y="171" fill="#a5a29c" font-size="16">Then read the snapshot; shortlist only.</text>
+      </svg></figure>
+    </section>
+    <section class="panel" id="p3">
+      <p class="kicker">Understand the business</p><h2>Could you explain how it earns?</h2>
+      <p>Map segments, customers, suppliers, staff, regulators and geography. Ask whether revenue repeats, depends on seasons or comes from contracts. Look for a real competitive edge—a moat—and what protects it. Sort notes into internal strengths/weaknesses and external opportunities/threats; park questions. If you don’t know the industry, learn it or pass.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="A company sits among customers, suppliers, employees and regulators; its segments and revenue streams connect the network to cash">
+        <circle cx="400" cy="144" r="62" fill="#ff8059"/><text x="400" y="139" text-anchor="middle" fill="#202020" font-size="18">company</text><text x="400" y="163" text-anchor="middle" fill="#202020" font-size="16">segments</text>
+        <g fill="none" stroke="#76d5c1" stroke-width="2"><path d="M344 116 L213 66"/><path d="M344 164 L210 222"/><path d="M456 116 L587 66"/><path d="M456 164 L590 222"/></g>
+        <g fill="#202020" stroke="#76d5c1" stroke-width="3"><circle cx="178" cy="54" r="42"/><circle cx="176" cy="234" r="42"/><circle cx="622" cy="54" r="42"/><circle cx="624" cy="234" r="42"/></g>
+        <text x="178" y="60" text-anchor="middle" fill="#f1eee8" font-size="16">customers</text><text x="176" y="240" text-anchor="middle" fill="#f1eee8" font-size="16">suppliers</text><text x="622" y="60" text-anchor="middle" fill="#f1eee8" font-size="16">employees</text><text x="624" y="240" text-anchor="middle" fill="#f1eee8" font-size="16">regulators</text>
+        <text x="400" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">REVENUE · GEOGRAPHY · SECTOR-SPECIFIC KPIs</text>
+      </svg></figure>
+    </section>
+    <section class="panel" id="p4">
+      <p class="kicker">Find the evidence</p><h2>Start with filings, then triangulate</h2>
+      <p>Annual and quarterly filings lay out the business, risks and financial statements. Add investor presentations, earnings-call transcripts, news and customer feedback. The video uses paid terminals too; whatever the source, learn how its data is collected and adjusted. <a href="https://www.investor.gov/introduction-investing/investing-basics/glossary/form-10-k">Investor.gov: what a Form 10-K contains ↗</a></p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Several independent evidence sources point toward a company model, but each source must be checked for bias and data quality">
+        <path d="M207 94 L351 136 M207 206 L351 164 M593 94 L449 136 M593 206 L449 164" fill="none" stroke="#76d5c1" stroke-width="2"/>
+        <circle cx="160" cy="80" r="48" fill="#202020" stroke="#76d5c1" stroke-width="2"/><text x="160" y="86" text-anchor="middle" fill="#f1eee8" font-size="16">filings</text>
+        <circle cx="160" cy="220" r="48" fill="#202020" stroke="#76d5c1" stroke-width="2"/><text x="160" y="226" text-anchor="middle" fill="#f1eee8" font-size="16">customers</text>
+        <circle cx="640" cy="80" r="48" fill="#202020" stroke="#76d5c1" stroke-width="2"/><text x="640" y="86" text-anchor="middle" fill="#f1eee8" font-size="16">calls &amp; reports</text>
+        <circle cx="640" cy="220" r="48" fill="#202020" stroke="#76d5c1" stroke-width="2"/><text x="640" y="226" text-anchor="middle" fill="#f1eee8" font-size="16">data services</text>
+        <circle cx="400" cy="150" r="55" fill="#ff8059"/><text x="400" y="143" text-anchor="middle" fill="#202020" font-size="16">business</text><text x="400" y="164" text-anchor="middle" fill="#202020" font-size="16">model</text>
+      </svg></figure>
+    </section>
+    <section class="panel" id="p5">
+      <p class="kicker">Check the finances</p><h2>Three statements; one connected story</h2>
+      <p>The income statement records performance over a period; the balance sheet is a snapshot of assets and obligations; cash flow tracks cash in and out. Compare growth, margins, liquidity and debt over time and against relevant peers. He uses multi-year CAGRs (smoothed annual growth rates) and common-size statements (each line as a share of revenue or assets)—not just one headline ratio.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Income statement is a timeline, balance sheet a point-in-time scale, cash flow a stream; together they describe different angles of one company">
+        <text x="40" y="42" fill="#a5a29c" font-size="16">OVER A PERIOD</text><path d="M50 102 H265" stroke="#76d5c1" stroke-width="5"/><path d="M50 84 V120 M265 84 V120" stroke="#76d5c1" stroke-width="3"/><text x="157" y="157" text-anchor="middle" fill="#f1eee8" font-size="18">income statement</text>
+        <text x="320" y="42" fill="#a5a29c" font-size="16">AT ONE DATE</text><path d="M430 68 V130 M375 130 H485 M395 154 H465" stroke="#76d5c1" stroke-width="4"/><path d="M390 83 H470" stroke="#76d5c1" stroke-width="3"/><text x="430" y="190" text-anchor="middle" fill="#f1eee8" font-size="18">balance sheet</text>
+        <text x="558" y="42" fill="#a5a29c" font-size="16">CASH MOVING</text><path d="M560 100 H735" stroke="#76d5c1" stroke-width="5"/><path d="M712 85 L735 100 712 115" fill="none" stroke="#76d5c1" stroke-width="4"/><circle cx="590" cy="100" r="8" fill="#ff8059"/><circle cx="650" cy="100" r="8" fill="#ff8059"/><circle cx="710" cy="100" r="8" fill="#ff8059"/><text x="650" y="157" text-anchor="middle" fill="#f1eee8" font-size="18">cash-flow statement</text>
+        <path d="M160 215 H640" stroke="#ff8059" stroke-width="3"/><circle cx="160" cy="215" r="8" fill="#ff8059"/><circle cx="400" cy="215" r="8" fill="#ff8059"/><circle cx="640" cy="215" r="8" fill="#ff8059"/><text x="400" y="260" text-anchor="middle" fill="#a5a29c" font-size="16">growth · margins · resilience · red flags</text>
+      </svg></figure>
+    </section>
+    <section class="panel" id="p6">
+      <p class="kicker">Test the story</p><h2>Does the plan fit the track record?</h2>
+      <p>Study what management plans to invest in—capital spending, acquisitions—and how it will fund the plan. Check execution history and long-run returns on capital, incentives and related-party deals. “Adjusted” numbers are not automatically dishonest; inspect management’s compensation and exactly what each adjustment removes.</p>
+      <figure><svg viewBox="0 0 800 310" role="img" aria-label="A proposed strategy must pass through three tests: funding, execution history, and independent checks for incentives and accounting red flags">
+        <path d="M90 158 H710" stroke="#57534f" stroke-width="3"/><circle cx="170" cy="158" r="54" fill="#202020" stroke="#76d5c1" stroke-width="4"/><circle cx="400" cy="158" r="54" fill="#202020" stroke="#76d5c1" stroke-width="4"/><circle cx="630" cy="158" r="54" fill="#202020" stroke="#f87171" stroke-width="4"/>
+        <text x="170" y="153" text-anchor="middle" fill="#f1eee8" font-size="17">funding</text><text x="170" y="177" text-anchor="middle" fill="#a5a29c" font-size="15">debt? shares?</text><text x="400" y="153" text-anchor="middle" fill="#f1eee8" font-size="17">execution</text><text x="400" y="177" text-anchor="middle" fill="#a5a29c" font-size="15">track record</text><text x="630" y="153" text-anchor="middle" fill="#f1eee8" font-size="17">red flags</text><text x="630" y="177" text-anchor="middle" fill="#a5a29c" font-size="15">incentives</text>
+        <text x="400" y="48" text-anchor="middle" fill="#ff8059" font-size="19">MANAGEMENT'S FUTURE PLAN</text><path d="M400 58 V95" stroke="#ff8059" stroke-width="3"/><text x="400" y="260" text-anchor="middle" fill="#a5a29c" font-size="16">past returns on capital · stakeholder effects · your checklist</text>
+      </svg></figure>
+    </section>
+    <section class="panel" id="p7">
+      <p class="kicker">Value the stock</p><h2>Good business ≠ good price</h2>
+      <p>Relative valuation compares multiples or cash-flow yield with the company’s history and suitable peers. A discounted-cash-flow model estimates what projected future cash is worth today. Change the assumptions; the estimate changes too. Recent news and chart signals may affect timing, but they don’t replace the business case.</p>
+      <figure><svg viewBox="0 0 800 280" role="img" aria-label="Relative valuation compares a company to peers and its own history; discounted cash flow carries future cash back to today's value">
+        <text x="220" y="42" text-anchor="middle" fill="#a5a29c" font-size="16">COMPARE</text><path d="M80 194 H360 M110 194 V116 M190 194 V86 M270 194 V132 M350 194 V102" stroke="#76d5c1" stroke-width="18"/><text x="110" y="230" text-anchor="middle" fill="#f1eee8" font-size="16">you</text><text x="270" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">peers</text><text x="220" y="264" text-anchor="middle" fill="#f1eee8" font-size="18">multiples / yield</text>
+        <path d="M420 55 V232" stroke="#57534f" stroke-width="2"/><text x="600" y="42" text-anchor="middle" fill="#a5a29c" font-size="16">PROJECT → DISCOUNT → TODAY</text><g fill="#ff8059"><rect x="468" y="151" width="48" height="34"/><rect x="540" y="119" width="48" height="66"/><rect x="612" y="83" width="48" height="102"/></g><path d="M476 204 H680" stroke="#ff8059" stroke-width="3"/><text x="570" y="232" text-anchor="middle" fill="#f1eee8" font-size="18">future cash</text><text x="620" y="265" text-anchor="middle" fill="#a5a29c" font-size="16">assumptions matter</text>
+      </svg></figure>
+    </section>
+    <section class="panel" id="p8">
+      <p class="kicker">Try the model</p><h2>Growth changes what cash is worth</h2>
+      <p>A tiny perpetuity model: next year’s owner cash is $5/share and then grows at a steady rate forever. If the required return is r and growth is g, value = $5 ÷ (r − g), provided r &gt; g. This is a teaching toy, not a complete company valuation.</p>
+      <div class="lab"><div class="lab-grid"><div class="controls">
+        <div class="control"><label for="rate">Required return <output id="rate-o"></output></label><input id="rate" type="range" min="8" max="16" value="12" aria-label="Required return, percent"></div>
+        <div class="control"><label for="growth">Perpetual growth <output id="growth-o"></output></label><input id="growth" type="range" min="0" max="5" value="3" aria-label="Perpetual growth, percent"></div>
+        <div class="presets"><button type="button" class="secondary" data-p="12,3">Base case</button><button type="button" class="secondary" data-p="12,0">No growth</button><button type="button" class="secondary" data-p="10,5">Faster growth</button><button type="button" class="secondary" data-p="15,2">Higher required return</button></div>
+        <div class="ledger" id="ledger"></div>
+      </div><div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Value per share from a growing perpetuity compared with a shortcut that ignores growth"></svg></div></div></div>
+    </section>
+    <section class="panel" id="p9">
+      <p class="kicker">Decide, then keep learning</p><h2>Wait, buy—or walk away</h2>
+      <p>If the business looks strong but the price is too high, park it on a watchlist and set a price alert. The speaker sometimes averages into companies he likes, but still wants a reasonable entry price—overpaying can raise the risk of losing capital. Record the thesis, fill gaps, seek opposing views and revisit it when new evidence arrives; the process continues after buying.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="A research thesis is revisited as new evidence arrives; the decision can change from watch to buy or reject, and the review loop continues">
+        <circle cx="400" cy="144" r="56" fill="#ff8059"/><text x="400" y="150" text-anchor="middle" fill="#202020" font-size="18">thesis</text>
+        <path d="M344 124 C275 60 202 62 170 116 M170 172 C218 236 278 232 344 164 M456 124 C525 60 598 62 630 116 M630 172 C582 236 522 232 456 164" fill="none" stroke="#76d5c1" stroke-width="3"/>
+        <circle cx="150" cy="144" r="40" fill="#202020" stroke="#76d5c1" stroke-width="3"/><circle cx="650" cy="144" r="40" fill="#202020" stroke="#f87171" stroke-width="3"/><text x="150" y="150" text-anchor="middle" fill="#f1eee8" font-size="17">watch</text><text x="650" y="150" text-anchor="middle" fill="#f1eee8" font-size="17">rethink</text>
+        <text x="400" y="270" text-anchor="middle" fill="#a5a29c" font-size="16">NEW FACTS · OPPOSING VIEW · UPDATED DECISION</text>
+      </svg></figure>
+    </section>
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Research is a sequence of questions about a real business; valuation is the final estimate, not the first filter.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const ids=['rate','growth'],$=id=>document.getElementById(id);
+    const money=v=>'$'+Number(v).toFixed(2);
+    function compute(v){
+      const [rPct,gPct]=v, r=rPct/100, g=gPct/100, cash=5;
+      const value=cash/(r-g), shortcut=cash/r;
+      return {truth:value,rows:[['Growing perpetuity',value,'#ff8059'],['Ignore growth (shortcut)',shortcut,'#f87171']],ledger:[['Next-year cash flow / share',money(cash)],['Required return r',rPct.toFixed(0)+'%'],['Growth g',gPct.toFixed(0)+'%'],['Gap r − g',(rPct-gPct).toFixed(0)+'%'],['$5 ÷ (r − g)',money(value)],['Shortcut $5 ÷ r',money(shortcut)]]};
+    }
+    const labConfig={format:money,sliderFormats:[v=>v.toFixed(0)+'%',v=>v.toFixed(0)+'%'],minSpan:50,maxSpan:200,step:25};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false}; $('labChart').innerHTML=''; $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=(labConfig.sliderFormats[i]||fmt)(v[i]));
+      const {truth,rows,ledger}=compute(v);
+      if(!Number.isFinite(truth)||!rows.length||rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned non-finite or missing results');
+      const {minSpan,maxSpan,step}=labConfig;
+      if(!(minSpan>0&&maxSpan>=minSpan&&step>0)) throw new Error('Invalid lab axis configuration');
+      const m=Math.min(maxSpan,Math.max(minSpan,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/step)*step));
+      const neg=Math.min(truth,...rows.map(r=>r[1]))<0,x0=neg?260:60,span=neg?200:400;
+      const sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m,ticks=neg?[-m,0,m]:[0,m/2,m],bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      const clipped=rows.map(r=>Math.abs(r[1])>m),truthClipped=Math.abs(truth)>m;
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">model ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      rows.forEach(([name,val,col],i)=>{const y=80+i*82,x=sx(val);s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><line x1="${sx(truth)}" y1="${y-4}" x2="${sx(truth)}" y2="${y+30}" stroke="#f1eee8" stroke-dasharray="5 5"/><text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}${clipped[i]?' · off-scale':''}</text><rect data-v="${val}" x="${Math.min(x,x0)}" y="${y}" width="${Math.abs(x-x0)}" height="26" fill="${esc(col)}"/>`;if(clipped[i]){const d=val>0?1:-1;s+=`<path class="overflow-marker" d="M${x-d*9} ${y+3} L${x} ${y+13} L${x-d*9} ${y+23}" fill="none" stroke="#f1eee8" stroke-width="3"/>`;}});
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      $('labChart').innerHTML=s;$('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
