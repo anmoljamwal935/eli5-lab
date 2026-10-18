@@ -7,8 +7,7 @@
  mm.add('(prefers-reduced-motion: no-preference)',()=>{
   const hero=document.querySelector('.intro');
   gsap.timeline({defaults:{ease:'none'},scrollTrigger:{trigger:hero,start:'top top',end:'bottom top',scrub:.65,invalidateOnRefresh:true}})
-   .to('.hero-stars',{y:'150vh'},0).to('.hero-sky',{y:'95vh',scale:1.025},0).to('.hero-glow',{y:'62vh'},0)
-   .to('.hero-ridge-mid',{y:'34vh',scale:1.035},0).to('.hero-front',{y:'-24vh'},0);
+   .to('.hero-scene',{'--p':1},0); // --p (0 to 1) drives the stage zoom and the star and glow drift in design.css
   const p=document.querySelector('.reveal-copy');p.innerHTML=p.textContent.trim().split(/\s+/).map(w=>'<span>'+w+'</span>').join(' ');
   gsap.fromTo('.reveal-copy span',{opacity:.16},{opacity:1,stagger:.13,ease:'none',scrollTrigger:{trigger:p,start:'top 82%',end:'bottom 45%',scrub:1}});
 

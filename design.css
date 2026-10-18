@@ -16,33 +16,23 @@ header{position:fixed;top:0;left:0;right:0;z-index:20;transform:none;width:auto;
 
 .intro:after{background:radial-gradient(ellipse 46% 42% at 50% 32%,#10161a22 0%,#06080a66 58%,transparent 82%);pointer-events:none}
 .hero-scene{z-index:-2;overflow:hidden;background:#05070a;transform:translateZ(0)}
-.hero-sky{position:absolute;inset:-8% -3% auto;width:106%;height:102%;max-width:none;object-fit:cover;object-position:center bottom;filter:saturate(1.05) brightness(1.3) contrast(1.05);will-change:transform;transform:translateZ(0)}
 .hero-glow{position:absolute;left:50%;top:64%;width:min(90vw,1300px);aspect-ratio:2.4;translate:-50% -50%;border-radius:50%;background:radial-gradient(ellipse,#ff8a4d38 0,#ff8a4d14 30%,transparent 65%);filter:blur(10px);will-change:transform}
 .hero-stars{position:absolute;inset:-55% 0 0;will-change:transform;overflow:hidden}
 .hero-star{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#fff;opacity:var(--o);box-shadow:0 0 7px #dff9ff55;animation:heroTwinkle var(--dur) ease-in-out var(--delay) infinite alternate}
 .hero-shooter{position:absolute;top:var(--top);left:var(--left);width:120px;height:1px;opacity:0;background:linear-gradient(90deg,transparent,#fff8,#fff);box-shadow:0 0 7px #fff7;transform:rotate(27deg);transform-origin:left center;animation:heroShoot var(--dur) linear var(--delay) infinite}
-.hero-layer{position:absolute;left:-4%;width:108%;max-width:none;pointer-events:none;user-select:none;will-change:transform;transform:translateZ(0)}
-.hero-ridge-mid{bottom:5%;height:67%;object-fit:fill;opacity:.95;filter:brightness(1.9) saturate(.75) contrast(.9);-webkit-mask-image:linear-gradient(180deg,#000 70%,transparent 96%);mask-image:linear-gradient(180deg,#000 70%,transparent 96%)}
 .hero-blackout{position:absolute;z-index:5;left:0;right:0;bottom:-1px;height:22%;background:linear-gradient(180deg,transparent 0%,#05070a24 42%,#05070a8a 78%,#05070ad6 100%);pointer-events:none}
-.hero-front{position:absolute;left:0;bottom:-2.5svh;width:100%;height:auto;z-index:5;overflow:visible;will-change:transform}
-.hf-ground{fill:url(#hfFace)}
 .hf-line{fill:none;stroke:url(#hfRim);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 6px #ff805980);stroke-dasharray:1;stroke-dashoffset:1;animation:heroDraw 1.8s cubic-bezier(.45,0,.2,1) .4s forwards}
 .hf-points{opacity:0;animation:heroFade .6s ease-out 1.9s forwards}
 .hf-points circle{fill:#05070a;stroke:#f1eee8;stroke-width:1.5}
 .hf-points circle.hf-end{fill:#ff8059;stroke:#ff8059}.hf-points text.hf-end{fill:#ff8059}
-.hf-points text{font:500 16px monospace;letter-spacing:.18em;text-anchor:middle;fill:#c9c6bf;stroke:none;filter:drop-shadow(0 0 2px #05070a) drop-shadow(0 0 6px #05070a)}
+.hf-points text{font:500 var(--hf-font,16px) monospace;letter-spacing:.18em;text-anchor:middle;fill:#c9c6bf;stroke:none;filter:drop-shadow(0 0 2px #05070a) drop-shadow(0 0 6px #05070a)}
 @keyframes heroDraw{to{stroke-dashoffset:0}}
 @keyframes heroFade{to{opacity:1}}
-@media(min-aspect-ratio:17/10){.hero-front{bottom:-4.5svh}}
-@media(min-width:761px) and (max-width:1100px){.hero-front{bottom:12px}}
-@media(max-width:760px){.hero-front{width:178%;left:auto;right:-2%;bottom:45px}.hf-points text{font-size:24px;letter-spacing:.14em}.hf-points circle{r:7.5;stroke-width:2}.hf-points circle.hf-end{r:8.5}}
 .hero-content{z-index:6}
 .hero-bottom{z-index:8}
 @keyframes heroTwinkle{to{opacity:.18;transform:scale(.65)}}
 @keyframes heroShoot{0%,72%{opacity:0;transform:translate(-18vw,-11vh) rotate(27deg)}76%{opacity:.9}90%{opacity:0;transform:translate(42vw,24vh) rotate(27deg)}100%{opacity:0}}
-@media(max-width:760px){.hero-sky{inset:-5% -28% auto;width:156%;height:101%}.hero-ridge-mid{height:59%;left:-28%;width:156%}.hero-glow{width:96vw;top:48%}.hero-stars{inset:-35% 0 0}}
-@media(max-width:480px){.hero-sky{inset:-3% -39% auto;width:178%}.hero-ridge-mid{width:178%;left:-39%}}
-@media(prefers-reduced-motion:reduce){.hero-star,.hero-shooter,.hf-line,.hf-points{animation:none!important}.hero-stars,.hero-glow,.hero-layer,.hero-front{transform:none!important}.hf-line{stroke-dashoffset:0}.hf-points{opacity:1}}
+@media(prefers-reduced-motion:reduce){.hero-star,.hero-shooter,.hf-line,.hf-points{animation:none!important}.hero-stars,.hero-glow,.hero-stage{transform:none!important}.hf-line{stroke-dashoffset:0}.hf-points{opacity:1}}
 
 /* Editorial hero composition */
 .hero-content{width:100%;max-width:1150px;margin:clamp(145px,16svh,175px) auto 0;text-align:center;text-shadow:0 3px 34px #000b}.hero-kicker{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 clamp(28px,4vh,48px)!important;font:10px/1 monospace!important;letter-spacing:.16em!important;color:#aaa7a0!important;text-transform:uppercase}.hero-kicker i{width:54px;height:1px;background:#ff8059;display:block}.hero-title-row{display:block}.intro .hero-title-row h1{display:block;max-width:1050px;margin:0 auto;font-size:clamp(64px,6.4vw,104px);line-height:.88;letter-spacing:-.075em;font-weight:400;white-space:normal}.hero-title-row h1 span,.hero-title-row h1 em{display:block;width:max-content;max-width:100%;margin-inline:auto}.hero-title-row h1 em{position:relative;margin-top:.08em;color:#f2eee6;font-style:normal}.hero-title-row h1 em:before{content:'';display:inline-block;width:clamp(28px,4.5vw,70px);height:2px;margin:0 .16em .14em 0;background:#ff8059;vertical-align:middle}.hero-title-row h1 span{transform:translateX(-150px)}.hero-title-row h1 em{transform:translateX(75px)}.hero-copy-row{display:flex;flex-direction:column;align-items:center;gap:22px;margin-top:clamp(42px,9svh - 20px,90px);padding-top:20px;border-top:1px solid #ffffff24}.intro .hero-copy-row>p{margin:0;text-align:center;font-size:16px;line-height:1.55;color:#cac7c0}.hero-copy-row .hero-actions{margin:0;justify-content:center}.hero-copy-row .hero-actions a,.hero-copy-row .hero-actions button{border-radius:0;min-height:48px;padding:0 18px;font-size:12px;letter-spacing:.02em}.hero-copy-row .hero-actions button{background:#0a0d0f73;border-color:#ffffff3b;backdrop-filter:blur(8px)}
@@ -283,3 +273,44 @@ footer .footer-brand .brand-dot { margin: 0 2px; color: #ff8059; }
 .row .icon:hover{color:var(--accent)}
 @media(max-width:760px){#latestBlock{margin-bottom:70px}.row{grid-template-columns:minmax(0,1fr) auto;gap:4px 14px}.row time{grid-column:1/-1}.row-time{display:none}.row-title{font-size:18px}.row p{font-size:14px}}
 .dg text{font:8px monospace;text-anchor:middle;fill:var(--dc)}
+
+/* Wide monitors: the navbar grows a step so it doesn't shrink next to the headline. */@media(min-width:1700px){header{height:96px}header .brand-mark{width:50px;height:50px;font-size:15px}header .brand-copy{font-size:30px}header .brand-copy small{font-size:9px}header .search{width:280px;height:46px}header .search:focus-within{width:340px}header .search input{font-size:14px}header .search kbd{font-size:11px}header .theme{font-size:22px}header .studio-button{height:50px;min-width:132px;font-size:14px}}
+
+/* Cinematic video hero: a looping clip is the scene, the old ridge/sky layers are gone (backup in ../eli5-backups). */
+.hero-scene{container-type:size;--p:0}
+.hero-stage{position:absolute;left:50%;top:50%;width:max(110cqw,177.78cqh);aspect-ratio:16/9;translate:calc(-50% + min(2cqw,30px) + var(--px,0px)) calc(-50% + var(--py,0px));scale:calc(1 + var(--p)*.14);transform-origin:56% 42%;will-change:transform;animation:heroStageIn 2.4s cubic-bezier(.2,.7,.2,1) both}
+.hero-vid{display:block;width:100%;height:100%;object-fit:cover}
+.hero-notes{position:absolute;inset:0;width:100%;height:100%;overflow:visible;--hf-font:19px}
+.hero-notes text{text-anchor:start}.hero-notes text.hf-end{text-anchor:end}
+.hero-notes .hf-line{stroke-width:2.4;animation-delay:1.6s}.hero-notes .hf-points{animation-delay:3s}
+.hn-run{fill:#fff0dc;filter:drop-shadow(0 0 8px #ffb08a)}
+.hn-ring{transform-box:fill-box;transform-origin:center;animation:heroPing 3.2s ease-out infinite}.hn-ring:nth-of-type(2){animation-delay:.5s}.hn-ring:nth-of-type(3){animation-delay:1s}
+.hero-glow{left:56%;top:44%;width:min(60vw,900px);aspect-ratio:1.2;translate:calc(-50% + var(--px,0px)*.5) calc(-50% + var(--py,0px)*.5 + var(--p)*20vh);mix-blend-mode:screen;background:radial-gradient(ellipse,#ffb87a30 0,#ff8a4d12 36%,transparent 68%);filter:none;animation:heroBreathe 7s ease-in-out infinite alternate}
+.hero-stars{translate:calc(var(--px,0px)*-1.8) calc(var(--py,0px)*-1.8 + var(--p)*150vh)}
+.hero-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#05070af0 0,#05070ac0 24%,#05070a40 50%,transparent 66%),linear-gradient(180deg,#05070a99 0,transparent 22%)}
+.intro:after{background:none}
+.hero-bottom{bottom:24px}
+/* Left-aligned editorial type, so the boy and the nebula own the right half. */
+.hero-content{margin:clamp(145px,17svh,190px) 0 0;max-width:min(680px,52%);text-align:left}
+.hero-kicker{justify-content:flex-start}
+.intro .hero-title-row h1{margin:0}
+.hero-title-row h1 span,.hero-title-row h1 em{margin-inline:0;transform:none}
+.hero-title-row h1 em{background:linear-gradient(95deg,#fff 20%,#ffd6a6 75%,#ff9a6b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-copy-row{align-items:flex-start;border-top-color:#ffffff2e}
+.intro .hero-copy-row>p{text-align:left}
+.hero-copy-row .hero-actions{justify-content:flex-start}
+.hero-kicker,.hero-title-row h1 span,.hero-title-row h1 em,.hero-copy-row,.hero-bottom{animation:heroRise 1.1s cubic-bezier(.2,.7,.2,1) both}
+.hero-kicker{animation-delay:.2s}.hero-title-row h1 span{animation-delay:.4s}.hero-title-row h1 em{animation-delay:.6s}.hero-copy-row{animation-delay:.95s}.hero-bottom{animation-delay:1.3s}
+@keyframes heroStageIn{from{opacity:0;scale:1.08}}
+@keyframes heroRise{from{opacity:0;translate:0 26px}}
+@keyframes heroBreathe{from{opacity:.55}to{opacity:1}}
+@keyframes heroPing{0%{opacity:1;scale:1}70%,100%{opacity:.25;scale:1.9}}
+@media(max-width:1100px){.hero-notes{display:none}}
+@media(max-width:760px){
+.hero-stage{width:auto;height:62cqh;top:76px;translate:-50% var(--py,0px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 14%,#000 62%,transparent);mask-image:linear-gradient(180deg,transparent,#000 14%,#000 62%,transparent)}
+.hero-glow{left:50%;top:34%;width:110vw}
+.hero-shade{background:linear-gradient(0deg,#05070a 0,#05070ad0 34%,transparent 64%),linear-gradient(180deg,#05070a99 0,transparent 20%)}
+.hero-content{align-self:end;margin:0;max-width:none;padding-bottom:14px}
+}
+@media(prefers-reduced-motion:reduce){.hero-stage,.hero-kicker,.hero-title-row h1 span,.hero-title-row h1 em,.hero-copy-row,.hero-bottom,.hero-glow,.hn-ring{animation:none!important}}
+.hn-wp{animation:none;fill:none}
