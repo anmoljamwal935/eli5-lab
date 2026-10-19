@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "eli5-3-vs-4-cylinder",
+    "title": "Three cylinders vs four, and why one grunts at idle",
+    "category": "Energy & Physics",
+    "minutes": 11,
+    "summary": "How a car engine turns small explosions into spin — and why the same 1.2-litre engine shakes in three cylinders but purrs in four.",
+    "bullets": [
+      "Why a 3-cylinder fires every 240° and leaves a 60° hole in its torque",
+      "The rocking couple that makes a 3-cylinder block see-saw at idle",
+      "What balance shafts, lopsided flywheels and dual-mass discs do about it"
+    ],
+    "kind": "engine",
+    "color": "#f5c76a",
+    "nodes": [
+      "PUSH",
+      "GAP",
+      "SHAKE"
+    ],
+    "file": "explainers/eli5-3-vs-4-cylinder.html",
+    "date": "2026-10-20",
+    "subcategory": "Engines",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Over one 720-degree engine cycle a 3-cylinder fires three times with a 60-degree gap after each bang, while a 4-cylinder fires four evenly spaced times with no gap\"><text x=\"24\" y=\"22\" font-family=\"monospace\" font-size=\"9\" fill=\"#f5c76a\">3 CYL · 3 PUSHES, 3 HOLES</text><text x=\"296\" y=\"22\" text-anchor=\"end\" font-family=\"monospace\" font-size=\"9\" fill=\"#73706a\">ONE 720° CYCLE</text><g><rect x=\"24\" y=\"32\" width=\"68\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"92\" y=\"32\" width=\"22.7\" height=\"20\" fill=\"#ff8059\" opacity=\".85\"/><rect x=\"114.7\" y=\"32\" width=\"68\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"182.7\" y=\"32\" width=\"22.7\" height=\"20\" fill=\"#ff8059\" opacity=\".85\"/><rect x=\"205.3\" y=\"32\" width=\"68\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"273.3\" y=\"32\" width=\"22.7\" height=\"20\" fill=\"#ff8059\" opacity=\".85\"/></g><text x=\"24\" y=\"86\" font-family=\"monospace\" font-size=\"9\" fill=\"#76d5c1\">4 CYL · 4 EVEN PUSHES</text><g fill=\"#76d5c1\"><rect x=\"24\" y=\"96\" width=\"68\" height=\"20\"/><rect x=\"92\" y=\"96\" width=\"68\" height=\"20\"/><rect x=\"160\" y=\"96\" width=\"68\" height=\"20\"/><rect x=\"228\" y=\"96\" width=\"68\" height=\"20\"/></g><g font-family=\"monospace\" font-size=\"9\" fill=\"#a5a29c\"><rect x=\"24\" y=\"128\" width=\"10\" height=\"10\" fill=\"#f5c76a\"/><text x=\"40\" y=\"137\">3-CYL PUSH</text><rect x=\"106\" y=\"128\" width=\"10\" height=\"10\" fill=\"#ff8059\"/><text x=\"122\" y=\"137\">GAP</text><rect x=\"152\" y=\"128\" width=\"10\" height=\"10\" fill=\"#76d5c1\"/><text x=\"168\" y=\"137\">4-CYL PUSH</text></g></svg>"
+  },
+  {
     "id": "stock-research-process-eli5",
     "title": "How I research a stock: six checks before buying",
     "category": "Monetary Architecture",

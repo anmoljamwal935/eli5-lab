@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Three cylinders vs four, and why one grunts at idle — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below. */
+    :root{
+      --c3:#f5c76a;   /* 3-cylinder */
+      --c4:#76d5c1;   /* 4-cylinder */
+      --fire:#ff8059; /* power stroke / combustion */
+      --air:#8fc9fb;  /* fresh air-fuel */
+      --exh:#a5a29c;  /* exhaust */
+      --steel:#57534f;
+      --piston:#d8d5ce;
+    }
+    /* Colour key */
+    .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px;font:12px/1.5 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:7px;vertical-align:-1px}
+    /* Emphasis */
+    .eli5-study-container b{color:var(--fg);font-weight:600}
+    /* Section headings sit inside a panel, so the shared top rule is redundant */
+    .eli5-study-container .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .eli5-study-container .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}
+    .eli5-study-container .panel .kicker+h2::before{display:none}
+    /* Figures */
+    .eli5-study-container figure{margin:24px 0 0;padding:clamp(14px,3vw,26px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .eli5-study-container svg{display:block;width:100%;height:auto;fill:var(--fg)}
+    .eli5-study-container svg text{font-family:var(--font-sans)}
+    /* Notes and captions */
+    .eli5-study-container p.aside{border-left:3px solid var(--fire);padding:2px 0 2px 16px;color:var(--muted);margin:22px 0}
+    .eli5-study-container p.aside b{color:var(--fg)}
+    .eli5-study-container p.sub{color:var(--muted);font-size:16px;margin:16px 0}
+    /* Cards */
+    .eli5-study-container .card h3{font-size:18px}
+    .eli5-study-container .card h3.t3{color:var(--c3) !important}
+    .eli5-study-container .card h3.t4{color:var(--c4) !important}
+    .eli5-study-container .card .output{margin-top:14px;font:12px/1.6 var(--font-mono)}
+    .eli5-study-container .card .output b{color:var(--fg)}
+    /* Control row */
+    .eli5-study-container .ctrl{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center}
+    .eli5-study-container .ctrl label{font:11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+    .eli5-study-container .ctrl input[type=range]{flex:1;min-width:220px;padding:0;background:transparent !important;border:0 !important;accent-color:var(--fire)}
+    .eli5-study-container .ctrl b{font-variant-numeric:tabular-nums;color:var(--fg);font-weight:500}
+    .eli5-study-container .ctrl button{height:38px;padding:0 18px;font:600 12px/1 var(--font-sans);cursor:pointer}
+    .eli5-study-container .ctrl .sub{margin:0;font-size:13px}
+    /* Phones: keep wide diagram text readable by letting figures scroll sideways */
+    @media (max-width:760px){
+      .eli5-study-container figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+      .eli5-study-container figure svg{min-width:640px}
+      .eli5-study-container figure::after{content:"swipe →";display:block;font:11px/1.4 var(--font-mono);color:var(--faint);margin-top:8px}
+      .eli5-study-container .card svg{min-width:320px}
+    }
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="How a car engine turns small explosions into spin — and why the same 1.2-litre engine shakes in three cylinders but purrs in four.">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/eli5-3-vs-4-cylinder">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Three cylinders vs four, and why one grunts at idle">
+<meta property="og:description" content="How a car engine turns small explosions into spin — and why the same 1.2-litre engine shakes in three cylinders but purrs in four.">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/eli5-3-vs-4-cylinder">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/eli5-3-vs-4-cylinder.png?v=391fe6f2">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Three cylinders vs four, and why one grunts at idle">
+<meta property="article:published_time" content="2026-10-20">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Energy &amp; Physics</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>ENERGY &amp; PHYSICS / 11 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Three cylinders vs four, and why one grunts at idle</h1>
+      <p class="lede">How a car engine turns small explosions into spin — and what changes when you split the same engine into 3 bangs instead of 4.</p>
+      <!-- Colour key: one entry per colour you use. Same colour = same concept everywhere on the page. -->
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:var(--c3)"></i>3-cylinder</span>
+        <span><i style="background:var(--c4)"></i>4-cylinder</span>
+        <span><i style="background:var(--fire)"></i>burning fuel / pushing</span>
+        <span><i style="background:var(--air)"></i>fresh air + fuel</span>
+        <span><i style="background:var(--exh)"></i>exhaust gas</span>
+      </div>
+    </section>
+
+    <section class="panel" id="p1">
+      <p class="kicker">01 · The job</p><h2>A push in a straight line has to become spin</h2>
+      <p>Burning fuel pushes a piston <b>down</b>. Wheels need to <b>turn</b>. Everything in an engine exists to bridge that gap.</p>
+      <figure><svg viewBox="0 0 900 230" role="img" aria-label="Explosion pushes piston down, crank converts to rotation, wheels turn">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#a5a29c"/></marker>
+          <marker id="ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0L10,5L0,10z" fill="#f5c76a"/></marker>
+          <marker id="ar4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0L10,5L0,10z" fill="#76d5c1"/></marker>
+          <marker id="arF" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="18" markerHeight="18" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0L10,5L0,10z" fill="#ff8059"/></marker>
+        </defs>
+        <!-- bang -->
+        <g transform="translate(110,110)">
+          <path d="M0,-55 L14,-20 L50,-30 L24,0 L52,28 L14,20 L0,56 L-14,20 L-52,28 L-24,0 L-50,-30 L-14,-20z" fill="var(--fire)" opacity=".9"/>
+          <text y="92" text-anchor="middle" font-size="17">Fuel + air burns</text>
+          <text y="114" text-anchor="middle" font-size="14" fill="#a5a29c">hot gas expands</text>
+        </g>
+        <line x1="190" y1="110" x2="270" y2="110" stroke="#a5a29c" stroke-width="3" marker-end="url(#ar)"/>
+        <!-- piston down -->
+        <g transform="translate(340,20)">
+          <rect x="-34" y="0" width="68" height="150" fill="none" stroke="#57534f" stroke-width="6"/>
+          <rect x="-30" y="60" width="60" height="34" rx="4" fill="#d8d5ce"/>
+          <line x1="0" y1="10" x2="0" y2="52" stroke="var(--fire)" stroke-width="5" marker-end="url(#arF)"/>
+          <text y="182" text-anchor="middle" font-size="17">Piston shoved down</text>
+          <text y="204" text-anchor="middle" font-size="14" fill="#a5a29c">straight-line push</text>
+        </g>
+        <line x1="400" y1="110" x2="480" y2="110" stroke="#a5a29c" stroke-width="3" marker-end="url(#ar)"/>
+        <!-- crank -->
+        <g transform="translate(570,100)">
+          <circle r="46" fill="var(--raised)" stroke="#57534f" stroke-width="2"/>
+          <line x1="0" y1="0" x2="28" y2="-22" stroke="#f1eee8" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="28" cy="-22" r="7" fill="#f1eee8"/>
+          <path d="M-58,-20 A62,62 0 0 1 20,-58" fill="none" stroke="#a5a29c" stroke-width="3" marker-end="url(#ar)"/>
+          <text y="92" text-anchor="middle" font-size="17">Crankshaft turns</text>
+          <text y="114" text-anchor="middle" font-size="14" fill="#a5a29c">push → rotation</text>
+        </g>
+        <line x1="640" y1="110" x2="720" y2="110" stroke="#a5a29c" stroke-width="3" marker-end="url(#ar)"/>
+        <!-- wheel -->
+        <g transform="translate(800,100)">
+          <circle r="54" fill="none" stroke="#57534f" stroke-width="14"/>
+          <circle r="12" fill="#57534f"/>
+          <g stroke="#57534f" stroke-width="4"><line x1="0" y1="-44" x2="0" y2="44"/><line x1="-44" y1="0" x2="44" y2="0"/></g>
+          <text y="92" text-anchor="middle" font-size="17">Wheels spin</text>
+          <text y="114" text-anchor="middle" font-size="14" fill="#a5a29c">via gearbox</text>
+        </g>
+      </svg></figure>
+    </section>
+
+    <section class="panel" id="p2">
+      <p class="kicker">02 · The analogy</p><h2>You already know this machine: a bicycle</h2>
+      <p>Your leg pushes in a straight line. The pedal crank turns that into spin. Same colours = same job.</p>
+      <figure><svg viewBox="0 0 900 360" role="img" aria-label="Bicycle pedal mapped to engine parts">
+        <!-- bike side -->
+        <g transform="translate(210,190)">
+          <circle r="44" fill="none" stroke="#57534f" stroke-width="3"/>
+          <circle r="5" fill="#57534f"/>
+          <!-- crank arm -->
+          <line x1="0" y1="0" x2="30" y2="30" stroke="#f1eee8" stroke-width="8" stroke-linecap="round"/>
+          <rect x="18" y="26" width="26" height="9" rx="2" fill="#f1eee8"/>
+          <!-- leg -->
+          <path d="M-30,-150 L-10,-70 L30,28" fill="none" stroke="var(--c4)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="-30" cy="-150" r="14" fill="var(--c4)"/>
+          <path d="M38,-60 L38,-10" stroke="var(--fire)" stroke-width="6" marker-end="url(#arF)"/>
+          <text x="48" y="-40" font-size="15" fill="var(--fire)">your push</text>
+          <path d="M-62,-14 A64,64 0 0 0 -14,62" fill="none" stroke="#a5a29c" stroke-width="3" marker-end="url(#ar)"/>
+          <text x="-140" y="100" font-size="15" fill="#a5a29c">crank spins</text>
+          <text x="0" y="150" text-anchor="middle" font-size="17">Cyclist</text>
+        </g>
+        <!-- mapping arrows -->
+        <g font-size="15">
+          <text x="450" y="70" text-anchor="middle" fill="var(--fire)">leg muscle push → burning gas push</text>
+          <text x="450" y="125" text-anchor="middle" fill="var(--c4)">shin bone → connecting rod</text>
+          <text x="450" y="180" text-anchor="middle" fill="#f1eee8">pedal crank → crankshaft</text>
+          <text x="450" y="235" text-anchor="middle" fill="#a5a29c">bike's momentum → flywheel</text>
+          <text x="450" y="290" text-anchor="middle" fill="var(--c3)">two legs taking turns → several cylinders taking turns</text>
+        </g>
+        <!-- engine side -->
+        <g transform="translate(700,40)">
+          <rect x="-34" y="0" width="68" height="120" fill="none" stroke="#57534f" stroke-width="6"/>
+          <rect x="-30" y="0" width="60" height="44" fill="var(--fire)" opacity=".8"/>
+          <rect x="-30" y="44" width="60" height="30" rx="4" fill="#d8d5ce"/>
+          <line x1="0" y1="62" x2="22" y2="168" stroke="var(--c4)" stroke-width="10" stroke-linecap="round"/>
+          <circle cx="0" cy="180" r="40" fill="var(--raised)" stroke="#57534f" stroke-width="2"/>
+          <line x1="0" y1="180" x2="22" y2="168" stroke="#f1eee8" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="22" cy="168" r="6" fill="#f1eee8"/>
+          <text x="0" y="300" text-anchor="middle" font-size="17">One cylinder</text>
+        </g>
+      </svg></figure>
+      <p class="aside">Where the analogy breaks: a cyclist pushes on every half-turn. A cylinder pushes on only <b>one stroke out of four</b>, once every <b>two</b> turns. That gap is the whole 3-vs-4 story.</p>
+    </section>
+
+    <section class="panel" id="p3">
+      <p class="kicker">03 · Parts</p><h2>Inside one cylinder</h2>
+      <p>A sealed tube, a plug that sits in it like a sliding lid (the piston), two doors at the top (valves), and a spark.</p>
+      <figure><svg id="anatomy" viewBox="0 0 900 420" role="img" aria-label="Labelled cutaway of one cylinder"></svg></figure>
+    </section>
+
+    <section class="panel" id="p4">
+      <p class="kicker">04 · The cycle</p><h2>Suck, squeeze, bang, blow</h2>
+      <p>Four up-or-down trips of the piston. Only <span style="color:var(--fire)"><b>bang</b></span> actually pushes. The other three are paid for by momentum.</p>
+      <figure><svg id="strokes" viewBox="0 0 900 340" role="img" aria-label="Four strokes"></svg></figure>
+      <p class="sub">Each trip is half a crank turn, so one full cycle = <b>2 turns (720°)</b>. Every cylinder fires once per 2 turns, no matter how many cylinders there are.</p>
+    </section>
+
+    <section class="panel" id="p5">
+      <p class="kicker">05 · Filling the gaps</p><h2>More cylinders = fewer silent moments</h2>
+      <p>One power stroke lasts about 180° of crank rotation. Line them up over one full 720° cycle:</p>
+      <figure><svg id="coverage" viewBox="0 0 900 400" role="img" aria-label="Power stroke coverage across 720 degrees"></svg></figure>
+      <p class="aside"><span style="color:var(--c3)"><b>3 cylinders:</b></span> a push every 240°, each lasting ~180° → a <b>60° gap</b> after every push, with nobody pushing and the next cylinder busy squeezing (which <i>resists</i>).<br><span style="color:var(--c4)"><b>4 cylinders:</b></span> a push every 180° → pushes hand off end-to-end. No gap.</p>
+    </section>
+
+    <section class="panel" id="p6">
+      <p class="kicker">06 · The crankshaft</p><h2>How the crank is shaped decides the rhythm</h2>
+      <p>Looking down the crankshaft from the front, here's where each cylinder's rod attaches.</p>
+      <div class="grid2">
+        <div class="card"><h3 class="t3">3-cylinder · pins 120° apart</h3>
+          <svg viewBox="0 0 400 300" role="img" aria-label="Three crank pins at 120 degrees">
+            <circle cx="200" cy="140" r="100" fill="none" stroke="#3b3936" stroke-width="2" stroke-dasharray="4 6"/>
+            <circle cx="200" cy="140" r="16" fill="#57534f"/>
+            <g stroke="var(--c3)" stroke-width="10" stroke-linecap="round">
+              <line x1="200" y1="140" x2="200" y2="50"/><line x1="200" y1="140" x2="278" y2="185"/><line x1="200" y1="140" x2="122" y2="185"/>
+            </g>
+            <g fill="var(--c3)"><circle cx="200" cy="50" r="18"/><circle cx="278" cy="185" r="18"/><circle cx="122" cy="185" r="18"/></g>
+            <g font-size="17" font-weight="700" text-anchor="middle" fill="#161616"><text x="200" y="56" fill="#161616">1</text><text x="278" y="191" fill="#161616">2</text><text x="122" y="191" fill="#161616">3</text></g>
+            <text x="200" y="280" text-anchor="middle" font-size="16">Fires 1 → 2 → 3, every <tspan fill="var(--c3)" font-weight="700">240°</tspan></text>
+          </svg></div>
+        <div class="card"><h3 class="t4">4-cylinder · pins in pairs, 180° apart</h3>
+          <svg viewBox="0 0 400 300" role="img" aria-label="Four crank pins in two pairs">
+            <circle cx="200" cy="140" r="100" fill="none" stroke="#3b3936" stroke-width="2" stroke-dasharray="4 6"/>
+            <circle cx="200" cy="140" r="16" fill="#57534f"/>
+            <g stroke="var(--c4)" stroke-width="10" stroke-linecap="round"><line x1="200" y1="140" x2="200" y2="50"/><line x1="200" y1="140" x2="200" y2="230"/></g>
+            <g fill="var(--c4)"><circle cx="200" cy="50" r="22"/><circle cx="200" cy="230" r="22"/></g>
+            <g font-size="15" font-weight="700" text-anchor="middle"><text x="200" y="55" fill="#161616">1 &amp; 4</text><text x="200" y="235" fill="#161616">2 &amp; 3</text></g>
+            <text x="200" y="285" text-anchor="middle" font-size="16">Fires 1 → 3 → 4 → 2, every <tspan fill="var(--c4)" font-weight="700">180°</tspan></text>
+          </svg></div>
+      </div>
+      <p class="sub">720° ÷ 3 = 240°. 720° ÷ 4 = 180°. The 4-cylinder's outer pair (1 &amp; 4) and inner pair (2 &amp; 3) always move as mirror images. Remember that, it matters in step 09.</p>
+    </section>
+
+    <section class="panel" id="p7">
+      <p class="kicker">07 · Watch them run</p><h2>Same 1.2-litre engine, cut into 3 or 4</h2>
+      <p>Side view, front of engine on the left. Drag the RPM. Watch the gaps in the torque trace and the 3-cylinder block see-saw.</p>
+      <div class="grid2">
+        <div class="card"><h3 class="t3">3-cylinder · 400 cc per cylinder</h3>
+          <svg id="e3" viewBox="0 0 440 390" role="img" aria-label="Live 3-cylinder engine with torque trace"></svg>
+          <div class="output" id="r3"></div></div>
+        <div class="card"><h3 class="t4">4-cylinder · 300 cc per cylinder</h3>
+          <svg id="e4" viewBox="0 0 440 390" role="img" aria-label="Live 4-cylinder engine with torque trace"></svg>
+          <div class="output" id="r4"></div></div>
+      </div>
+      <div class="lab">
+        <div class="ctrl">
+          <label for="rpm">Engine speed</label>
+          <input id="rpm" type="range" min="700" max="6000" step="50" value="800" aria-label="Engine speed in rpm">
+          <b id="rpmv">800 rpm</b>
+          <button id="pp" type="button">Pause</button>
+          <span class="sub" id="slow"></span>
+        </div>
+      </div>
+      <p class="sub">Block tilt is exaggerated so you can see it. The torque trace under each engine is a simplified model of the twisting force on the crankshaft; the moving dot is "now".</p>
+    </section>
+
+    <section class="panel" id="p8">
+      <p class="kicker">08 · The torque pulse</p><h2>Three big kicks with holes vs four smaller overlapping ones</h2>
+      <p>Twisting force on the crankshaft over one full cycle. Same engine size, same average.</p>
+      <figure><svg id="tq" viewBox="0 0 900 380" role="img" aria-label="Torque versus crank angle for 3 and 4 cylinders"></svg></figure>
+      <p class="aside">The crankshaft speeds up on every kick and slows in every hole. Newton's third law: the engine <b>block twists the opposite way</b> on its rubber mounts each time. Bigger kicks, deeper holes → more twisting of the block. That rolling, felt through the mounts, is a big part of the 3-cylinder idle shudder.</p>
+    </section>
+
+    <section class="panel" id="p9">
+      <p class="kicker">09 · Balance</p><h2>The see-saw a 4-cylinder doesn't have</h2>
+      <p>Pistons are heavy and slam to a stop at the top and bottom of every stroke, tugging the block each time. Arrows = that tug, one moment in time.</p>
+      <div class="grid2">
+        <div class="card"><h3 class="t3">3-cylinder: forces cancel, but not evenly placed</h3>
+          <svg viewBox="0 0 400 300" role="img" aria-label="Three cylinder rocking couple">
+            <g transform="rotate(-6 200 150)">
+              <rect x="60" y="100" width="280" height="100" rx="10" fill="var(--raised)" stroke="var(--c3)" stroke-width="2"/>
+              <line x1="110" y1="150" x2="110" y2="60" stroke="var(--c3)" stroke-width="7" marker-end="url(#ar3)"/>
+              <line x1="200" y1="150" x2="200" y2="195" stroke="var(--c3)" stroke-width="7" marker-end="url(#ar3)"/>
+              <line x1="290" y1="150" x2="290" y2="195" stroke="var(--c3)" stroke-width="7" marker-end="url(#ar3)"/>
+              <g font-size="14" text-anchor="middle"><text x="110" y="132">1</text><text x="200" y="132">2</text><text x="290" y="132">3</text></g>
+            </g>
+            <polygon points="200,214 186,240 214,240" fill="#57534f"/>
+            <text x="110" y="40" text-anchor="middle" font-size="13" fill="#a5a29c">front pulled up</text>
+            <text x="290" y="262" text-anchor="middle" font-size="13" fill="#a5a29c">rear pulled down</text>
+            <text x="200" y="290" text-anchor="middle" font-size="15">Up = down in total… but it <tspan fill="var(--c3)">rocks end to end</tspan></text>
+          </svg></div>
+        <div class="card"><h3 class="t4">4-cylinder: mirror image, nothing to rock</h3>
+          <svg viewBox="0 0 400 300" role="img" aria-label="Four cylinder mirror balance">
+            <rect x="40" y="100" width="320" height="100" rx="10" fill="var(--raised)" stroke="var(--c4)" stroke-width="2"/>
+            <line x1="85" y1="150" x2="85" y2="60" stroke="var(--c4)" stroke-width="7" marker-end="url(#ar4)"/>
+            <line x1="160" y1="150" x2="160" y2="240" stroke="var(--c4)" stroke-width="7" marker-end="url(#ar4)"/>
+            <line x1="240" y1="150" x2="240" y2="240" stroke="var(--c4)" stroke-width="7" marker-end="url(#ar4)"/>
+            <line x1="315" y1="150" x2="315" y2="60" stroke="var(--c4)" stroke-width="7" marker-end="url(#ar4)"/>
+            <g font-size="14" text-anchor="middle"><text x="85" y="185">1</text><text x="160" y="132">2</text><text x="240" y="132">3</text><text x="315" y="185">4</text></g>
+            <line x1="200" y1="80" x2="200" y2="220" stroke="#a5a29c" stroke-dasharray="4 5"/>
+            <text x="200" y="72" text-anchor="middle" font-size="13" fill="#a5a29c">mirror line</text>
+            <text x="200" y="290" text-anchor="middle" font-size="15">Left half cancels right half → <tspan fill="var(--c4)">stays level</tspan></text>
+          </svg></div>
+      </div>
+      <p class="sub">Engineers call the 3-cylinder's see-saw a <b>rocking couple</b>. It happens once per crank turn: 13 times a second at an 800 rpm idle.</p>
+    </section>
+
+    <section class="panel" id="p10">
+      <p class="kicker">10 · Why idle, specifically</p><h2>At idle, the pulses are slow enough to feel</h2>
+      <p>Pulses per second = rpm ÷ 60 × cylinders ÷ 2. At idle the 3-cylinder's rhythm sits low, where cars and bodies shake.</p>
+      <figure><svg id="freq" viewBox="0 0 900 380" role="img" aria-label="Pulse frequencies at different rpm"></svg></figure>
+      <div class="grid2">
+        <div class="card"><h3>The flywheel is weakest at idle</h3>
+          <svg viewBox="0 0 400 220" role="img" aria-label="Flywheel stored energy at 800 vs 3000 rpm">
+            <text x="20" y="40" font-size="14" fill="#a5a29c">Spinning energy stored (grows with rpm²)</text>
+            <rect x="20" y="62" width="22" height="34" rx="3" fill="var(--fire)"/>
+            <text x="52" y="85" font-size="15">800 rpm · 1×</text>
+            <rect x="20" y="120" width="310" height="34" rx="3" fill="var(--fire)" opacity=".75"/>
+            <text x="30" y="143" font-size="15" fill="#161616" font-weight="700">3000 rpm · 14×</text>
+            <text x="20" y="200" font-size="14" fill="#a5a29c">Less stored spin = each kick and hole shows up more</text>
+          </svg></div>
+        <div class="card"><h3>Each bang is bigger</h3>
+          <svg viewBox="0 0 400 220" role="img" aria-label="Per-cylinder size">
+            <text x="20" y="40" font-size="14" fill="#a5a29c">Same 1.2 L engine, per cylinder</text>
+            <rect x="20" y="62" width="280" height="34" rx="3" fill="var(--c3)"/>
+            <text x="30" y="85" font-size="15" fill="#161616" font-weight="700">3-cyl · 400 cc each</text>
+            <rect x="20" y="120" width="210" height="34" rx="3" fill="var(--c4)"/>
+            <text x="30" y="143" font-size="15" fill="#161616" font-weight="700">4-cyl · 300 cc each</text>
+            <text x="20" y="200" font-size="14" fill="#a5a29c">33% more gas per bang → a harder kick</text>
+          </svg></div>
+      </div>
+      <p class="aside">Put together: <b>bigger kicks</b> + <b>longer holes</b> + <b>see-saw rocking</b> + <b>slow, low rhythm</b> + <b>weak flywheel</b>. That's the idle grunt. Rev it to 3000 and the same pulses come 75 times a second and blur into a hum.</p>
+    </section>
+
+    <section class="panel" id="p11">
+      <p class="kicker">11 · The sound</p><h2>Why it sounds off-beat</h2>
+      <p>Ticks = each crank turn. Dots = each bang. Over two turns:</p>
+      <figure><svg id="rhythm" viewBox="0 0 900 260" role="img" aria-label="Firing rhythm versus crank turns"></svg></figure>
+      <p class="sub">The 4-cylinder bangs exactly twice per turn: tidy, even, a buzz. The 3-cylinder bangs 1.5 times per turn, so the bangs fall on and off the crank's own once-per-turn rocking. That syncopation, at a low pitch, is the thrummy "half a six-cylinder" growl people either love or hate.</p>
+    </section>
+
+    <section class="panel" id="p12">
+      <p class="kicker">12 · The gotcha</p><h2>The 4-cylinder isn't perfect either</h2>
+      <p>Because the rod tilts, a piston covers more distance in the top half of the crank's turn than the bottom. It moves faster up there, so its tug is stronger at the top.</p>
+      <div class="grid2">
+        <div class="card"><h3>Uneven halves</h3>
+          <svg id="second" viewBox="0 0 400 320" role="img" aria-label="Piston travel in top vs bottom half of crank rotation"></svg></div>
+        <div class="card"><h3>Score sheet</h3>
+          <svg viewBox="0 0 400 320" role="img" aria-label="Balance score sheet">
+            <g font-size="14">
+              <text x="250" y="34" text-anchor="middle" fill="var(--c3)" font-weight="700">3-cyl</text>
+              <text x="340" y="34" text-anchor="middle" fill="var(--c4)" font-weight="700">4-cyl</text>
+              <text x="10" y="80">Up-down shake, 1× rpm</text>
+              <text x="10" y="130">Up-down buzz, 2× rpm</text>
+              <text x="10" y="180">End-to-end rocking</text>
+              <text x="10" y="230">Torque gaps</text>
+              <text x="10" y="280">Felt worst at…</text>
+            </g>
+            <g stroke="#292826"><line x1="10" y1="100" x2="390" y2="100"/><line x1="10" y1="150" x2="390" y2="150"/><line x1="10" y1="200" x2="390" y2="200"/><line x1="10" y1="250" x2="390" y2="250"/></g>
+            <g font-size="22" text-anchor="middle" font-weight="700">
+              <text x="250" y="82" fill="var(--teal)">✓</text><text x="340" y="82" fill="var(--teal)">✓</text>
+              <text x="250" y="132" fill="var(--teal)">✓</text><text x="340" y="132" fill="var(--danger)">✗</text>
+              <text x="250" y="182" fill="var(--danger)">✗</text><text x="340" y="182" fill="var(--teal)">✓</text>
+              <text x="250" y="232" fill="var(--danger)">✗</text><text x="340" y="232" fill="var(--teal)">✓</text>
+            </g>
+            <g font-size="14" text-anchor="middle"><text x="250" y="280">low rpm</text><text x="340" y="280">high rpm</text></g>
+          </svg></div>
+      </div>
+      <p class="aside">In a 4-cylinder, all four pistons hit that "stronger at the top" moment together, so the extra tugs <b>add up</b>: a vertical buzz at twice engine speed that grows with rpm². That's why a 4-cylinder gets coarse near the redline, and why big ones (2.0 L+) often carry balance shafts. In a 3-cylinder those tugs cancel. Each layout trades one vibration for another.</p>
+    </section>
+
+    <section class="panel" id="p13">
+      <p class="kicker">13 · The fixes</p><h2>How carmakers tame a 3-cylinder</h2>
+      <figure><svg viewBox="0 0 900 300" role="img" aria-label="Four fixes for three-cylinder vibration">
+        <g font-size="16" text-anchor="middle">
+          <!-- balance shaft -->
+          <g transform="translate(115,120)">
+            <line x1="-80" y1="0" x2="80" y2="0" stroke="#57534f" stroke-width="8"/>
+            <path d="M-60,0 A26,26 0 0 1 -20,-20 L-20,0z" fill="var(--c3)"/>
+            <path d="M60,0 A26,26 0 0 1 20,20 L20,0z" fill="var(--c3)"/>
+            <path d="M-40,-44 A50,50 0 0 1 40,-44" fill="none" stroke="#a5a29c" stroke-width="2.5" marker-end="url(#ar)"/>
+            <text y="80">Balance shaft</text>
+            <text y="102" font-size="13" fill="#a5a29c">off-centre weights spun</text>
+            <text y="120" font-size="13" fill="#a5a29c">to push the see-saw back</text>
+          </g>
+          <!-- offset flywheel -->
+          <g transform="translate(340,120)">
+            <circle r="50" fill="var(--raised)" stroke="#57534f" stroke-width="3"/>
+            <path d="M-35,-35 A50,50 0 0 1 35,-35 L22,-22 A31,31 0 0 0 -22,-22z" fill="var(--c3)"/>
+            <circle r="8" fill="#57534f"/>
+            <text y="80">Lopsided flywheel</text>
+            <text y="102" font-size="13" fill="#a5a29c">extra weight on purpose,</text>
+            <text y="120" font-size="13" fill="#a5a29c">e.g. Ford 1.0 EcoBoost</text>
+          </g>
+          <!-- mount -->
+          <g transform="translate(565,120)">
+            <rect x="-45" y="-50" width="90" height="26" rx="4" fill="var(--raised)" stroke="#57534f"/>
+            <path d="M-20,-24 l10,10 l-20,10 l20,10 l-20,10 l10,10" fill="none" stroke="var(--c4)" stroke-width="3"/>
+            <rect x="10" y="-22" width="18" height="38" rx="3" fill="none" stroke="var(--c4)" stroke-width="3"/>
+            <rect x="-45" y="20" width="90" height="12" fill="#57534f"/>
+            <text y="80">Smarter mounts</text>
+            <text y="102" font-size="13" fill="#a5a29c">fluid-filled rubber that</text>
+            <text y="120" font-size="13" fill="#a5a29c">soaks up low-frequency shake</text>
+          </g>
+          <!-- dual mass -->
+          <g transform="translate(790,120)">
+            <circle r="50" fill="none" stroke="#57534f" stroke-width="10"/>
+            <circle r="28" fill="var(--raised)" stroke="#57534f" stroke-width="3"/>
+            <path d="M-38,0 q4,-8 8,0 t8,0 t8,0" fill="none" stroke="var(--c4)" stroke-width="3"/>
+            <path d="M14,0 q4,-8 8,0 t8,0 t8,0" fill="none" stroke="var(--c4)" stroke-width="3"/>
+            <text y="80">Dual-mass flywheel</text>
+            <text y="102" font-size="13" fill="#a5a29c">two halves joined by springs,</text>
+            <text y="120" font-size="13" fill="#a5a29c">filters kicks before the gearbox</text>
+          </g>
+        </g>
+      </svg></figure>
+      <p class="sub">A good modern 3-cylinder uses one or more of these. That's why some are barely noticeable at idle and some cheaper ones visibly shake the gear lever.</p>
+    </section>
+
+    <section class="panel" id="p14">
+      <p class="kicker">14 · So what</p><h2>Why anyone builds a 3-cylinder</h2>
+      <p>Fewer cylinders means fewer moving parts rubbing, and less cylinder wall to leak heat into. You pay for that in smoothness at low rpm.</p>
+      <figure><svg viewBox="0 0 900 330" role="img" aria-label="Trade-off bars for 3 vs 4 cylinder">
+        <g font-size="15">
+          <text x="0" y="40">Fuel efficiency</text>
+          <text x="0" y="95">Cost, weight, size</text>
+          <text x="0" y="150">Smooth at idle / low rpm</text>
+          <text x="0" y="205">Smooth near redline</text>
+          <text x="0" y="260">Low-rpm pulling feel</text>
+        </g>
+        <g>
+          <rect x="240" y="22" width="300" height="12" rx="3" fill="var(--c3)"/><rect x="240" y="38" width="250" height="12" rx="3" fill="var(--c4)"/>
+          <rect x="240" y="77" width="300" height="12" rx="3" fill="var(--c3)"/><rect x="240" y="93" width="220" height="12" rx="3" fill="var(--c4)"/>
+          <rect x="240" y="132" width="150" height="12" rx="3" fill="var(--c3)"/><rect x="240" y="148" width="300" height="12" rx="3" fill="var(--c4)"/>
+          <rect x="240" y="187" width="260" height="12" rx="3" fill="var(--c3)"/><rect x="240" y="203" width="220" height="12" rx="3" fill="var(--c4)"/>
+          <rect x="240" y="242" width="270" height="12" rx="3" fill="var(--c3)"/><rect x="240" y="258" width="240" height="12" rx="3" fill="var(--c4)"/>
+        </g>
+        <g font-size="13" fill="#a5a29c">
+          <text x="560" y="40">less friction &amp; heat loss</text>
+          <text x="560" y="95">one fewer piston, rod, 4 valves…</text>
+          <text x="560" y="150">gaps + rocking (sections 05–10)</text>
+          <text x="560" y="205">no 2× rpm buzz (section 12)</text>
+          <text x="560" y="260">bigger cylinders, punchy pulses</text>
+        </g>
+        <text x="0" y="315" font-size="13" fill="#a5a29c">Bar length = qualitative, not measured. Real engines vary a lot with tuning and turbocharging.</text>
+      </svg></figure>
+      <div class="grid2">
+        <div class="card"><h3 class="t3">You'll find 3-cylinders in</h3>
+          <p class="sub" style="margin:0">Maruti Suzuki K10 &amp; the newer Swift's Z12E · Tata Tiago/Altroz 1.2 · Hyundai 1.0 turbo · Ford 1.0 EcoBoost · BMW/Mini 1.5 · Toyota GR Yaris 1.6</p></div>
+        <div class="card"><h3 class="t4">What to expect from one</h3>
+          <p class="sub" style="margin:0">A noticeable thrum at idle and when lugging at very low rpm in a high gear. Once above ~1500–2000 rpm, most feel and sound perfectly normal. Keep revs up a little and it rewards you.</p></div>
+      </div>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A 3-cylinder is not a worse 4-cylinder. It is a different rhythm: fewer, bigger, further-apart bangs, and a block that rocks instead of buzzing.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const D = Math.PI/180;
+    const R = 22, L = 70, CY = 200;
+    const mod = (a,m) => ((a % m) + m) % m;
+
+    // ---- one cylinder, local coords: crank centre (0,200), head at y 44..78 ----
+    function cyl(phase, num){
+      const p = mod(phase,720), th = p*D;
+      const pinY = CY - (R*Math.cos(th) + Math.sqrt(L*L - R*R*Math.sin(th)**2));
+      const cpx = R*Math.sin(th), cpy = CY - R*Math.cos(th);
+      const top = pinY - 14;
+      let fill, op;
+      if (p < 180){ fill='var(--fire)'; op = 1 - p/180*0.75; }
+      else if (p < 360){ fill='var(--exh)'; op=.55; }
+      else if (p < 540){ fill='var(--air)'; op=.45; }
+      else { fill='var(--air)'; op = .45 + (p-540)/180*.4; }
+      const iL = (p>=360&&p<540) ? 8*Math.sin((p-360)/180*Math.PI) : 0;
+      const eL = (p>=180&&p<360) ? 8*Math.sin((p-180)/180*Math.PI) : 0;
+      const spark = (p<22 || p>712);
+      return `
+      <rect x="-30" y="78" width="60" height="${top-78}" fill="${fill}" opacity="${op}"/>
+      <rect x="-38" y="78" width="8" height="96" fill="var(--raised)"/><rect x="30" y="78" width="8" height="96" fill="var(--raised)"/>
+      <rect x="-38" y="44" width="76" height="34" fill="var(--raised)"/>
+      <line x1="-15" y1="46" x2="-15" y2="${76+iL}" stroke="#8f8b84" stroke-width="3"/>
+      <rect x="-22" y="${74+iL}" width="14" height="4" fill="var(--air)"/>
+      <line x1="15" y1="46" x2="15" y2="${76+eL}" stroke="#8f8b84" stroke-width="3"/>
+      <rect x="8" y="${74+eL}" width="14" height="4" fill="var(--exh)"/>
+      <rect x="-3" y="40" width="6" height="42" fill="#cfccc5"/>
+      ${spark ? '<circle cx="0" cy="86" r="10" fill="#ffd88a"/><circle cx="0" cy="86" r="5" fill="#fff"/>' : ''}
+      <line x1="0" y1="${pinY}" x2="${cpx}" y2="${cpy}" stroke="#8f8b84" stroke-width="7" stroke-linecap="round"/>
+      <rect x="-29" y="${top}" width="58" height="28" rx="3" fill="#d8d5ce"/>
+      <line x1="-29" y1="${top+6}" x2="29" y2="${top+6}" stroke="#8f8b84"/><line x1="-29" y1="${top+10}" x2="29" y2="${top+10}" stroke="#8f8b84"/>
+      <circle cx="0" cy="${pinY}" r="4" fill="#8f8b84"/>
+      <circle cx="0" cy="${CY}" r="28" fill="var(--raised)" stroke="#46433f" stroke-width="2"/>
+      <line x1="0" y1="${CY}" x2="${cpx}" y2="${cpy}" stroke="#f1eee8" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="${cpx}" cy="${cpy}" r="5" fill="#f1eee8"/>
+      ${num ? `<text x="0" y="34" text-anchor="middle" font-size="14" fill="#a5a29c">${num}</text>`:''}`;
+    }
+
+    // ---- simplified torque model, one cylinder, by cycle phase ----
+    function T1(p){
+      p = mod(p,720);
+      if (p < 180) return 3*Math.sin(p*D)*Math.exp(-p/60);             // power: peaks ~45° after top
+      if (p >= 540){ const q=p-540; return -0.45*Math.sin(q*D)*(q/180)**2; } // compression resists
+      return 0;
+    }
+    const FIRE3 = [0,240,480], FIRE4 = [0,180,360,540];
+    const net = (offs, th) => offs.reduce((s,o)=> s + (4/offs.length)*T1(th-o), 0);
+
+    // ---- anatomy ----
+    (function(){
+      const g = `<g transform="translate(450,-62) scale(2)">${cyl(600)}</g>`;
+      const lab = (x1,y1,x2,y2,t,sub,anchor) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#57534f"/><circle cx="${x1}" cy="${y1}" r="3" fill="#f1eee8"/>
+        <text x="${x2 + (anchor==='end'?-8:8)}" y="${y2+5}" font-size="16" text-anchor="${anchor}">${t}</text>
+        <text x="${x2 + (anchor==='end'?-8:8)}" y="${y2+24}" font-size="13" fill="#a5a29c" text-anchor="${anchor}">${sub}</text>`;
+      document.getElementById('anatomy').innerHTML = g +
+        lab(450,30,620,30,'Spark plug','lights the mix','start') +
+        lab(420,84,240,60,'Intake valve','lets air + fuel in','end') +
+        lab(480,84,660,90,'Exhaust valve','lets burnt gas out','start') +
+        lab(450,130,240,140,'Combustion chamber','where the bang happens','end') +
+        lab(500,220,660,200,'Piston','sliding lid, sealed by rings','start') +
+        lab(432,290,240,280,'Connecting rod','links piston to crank','end') +
+        lab(450,338,660,330,'Crankshaft','turns up-down into round','start');
+    })();
+
+    // ---- four strokes ----
+    (function(){
+      const S = [[450,'1 · Suck','Intake','piston down, air + fuel in','var(--air)'],
+                 [630,'2 · Squeeze','Compression','piston up, both valves shut','var(--air)'],
+                 [25,'3 · Bang','Power','spark, gas shoves piston down','var(--fire)'],
+                 [270,'4 · Blow','Exhaust','piston up, burnt gas out','var(--exh)']];
+      let h='';
+      S.forEach((s,i)=>{
+        const x=112+i*225;
+        h += `<g transform="translate(${x},-30) scale(1.15)">${cyl(s[0])}</g>
+          <text x="${x}" y="276" text-anchor="middle" font-size="18" font-weight="700" fill="${s[4]}">${s[1]}</text>
+          <text x="${x}" y="298" text-anchor="middle" font-size="14" fill="#a5a29c">${s[3]}</text>
+          <text x="${x}" y="320" text-anchor="middle" font-size="13" fill="#73706a">crank ${i*180}°–${(i+1)*180}°</text>`;
+        if(i<3) h += `<line x1="${x+60}" y1="130" x2="${x+165}" y2="130" stroke="#a5a29c" stroke-width="2.5" marker-end="url(#ar)"/>`;
+      });
+      document.getElementById('strokes').innerHTML = h;
+    })();
+
+    // ---- coverage ----
+    (function(){
+      const X = d => 130 + d/720*740;
+      let h = '';
+      [0,180,360,540,720].forEach(d=> h += `<line x1="${X(d)}" y1="20" x2="${X(d)}" y2="380" stroke="#292826"/><text x="${X(d)}" y="395" text-anchor="middle" font-size="13" fill="#73706a">${d}°</text>`);
+      const block = (y0, offs, col, name) => {
+        offs.forEach((o,i)=>{
+          const y = y0 + i*26;
+          h += `<text x="120" y="${y+15}" text-anchor="end" font-size="13" fill="#a5a29c">cyl ${i+1}</text>
+            <rect x="${X(0)}" y="${y}" width="${X(720)-X(0)}" height="20" rx="3" fill="#202020"/>
+            <rect x="${X(o)}" y="${y}" width="${X(180)-X(0)}" height="20" rx="3" fill="var(--fire)" opacity=".85"/>`;
+        });
+        const yc = y0 + offs.length*26 + 6;
+        h += `<text x="120" y="${yc+17}" text-anchor="end" font-size="14" font-weight="700" fill="${col}">${name}</text>
+          <rect x="${X(0)}" y="${yc}" width="${X(720)-X(0)}" height="24" rx="3" fill="#202020" stroke="${col}"/>`;
+        offs.forEach(o=> h += `<rect x="${X(o)}" y="${yc}" width="${X(180)-X(0)}" height="24" fill="${col}" opacity=".85"/>`);
+        return yc;
+      };
+      const y3 = block(20, FIRE3, 'var(--c3)', '3-cyl push');
+      [180,420,660].forEach(g=> h += `<text x="${X(g+30)}" y="${y3+42}" text-anchor="middle" font-size="12" fill="var(--fire)">gap</text>`);
+      const y4 = block(y3+70, [0,180,360,540], 'var(--c4)', '4-cyl push');
+      document.getElementById('coverage').innerHTML = h;
+    })();
+
+    // ---- torque chart ----
+    (function(){
+      const X = d => 70 + d/720*800, N=721;
+      const s3=[],s4=[]; for(let d=0; d<N; d++){ s3.push(net(FIRE3,d)); s4.push(net(FIRE4,d)); }
+      const mx = Math.max(...s3), mn = Math.min(...s3);
+      const Y = v => 300 - (v-mn)/(mx-mn)*260;
+      const path = s => s.map((v,d)=>`${d?'L':'M'}${X(d).toFixed(1)},${Y(v).toFixed(1)}`).join('');
+      const mean = s4.reduce((a,b)=>a+b,0)/N;
+      let h = `<line x1="70" y1="${Y(0)}" x2="870" y2="${Y(0)}" stroke="#57534f"/>
+        <text x="62" y="${Y(0)+5}" text-anchor="end" font-size="13" fill="#a5a29c">0</text>
+        <rect x="70" y="${Y(0)}" width="800" height="${300-Y(0)}" fill="var(--fire)" opacity=".06"/>
+        <text x="866" y="${Y(0)+20}" text-anchor="end" font-size="12" fill="#a5a29c">below 0 = crank being held back</text>
+        <line x1="70" y1="${Y(mean)}" x2="870" y2="${Y(mean)}" stroke="#a5a29c" stroke-dasharray="5 6"/>
+        <text x="874" y="${Y(mean)+4}" font-size="12" fill="#a5a29c">avg</text>
+        <path d="${path(s4)}" fill="none" stroke="var(--c4)" stroke-width="3"/>
+        <path d="${path(s3)}" fill="none" stroke="var(--c3)" stroke-width="3"/>`;
+      [0,180,360,540,720].forEach(d=> h += `<text x="${X(d)}" y="330" text-anchor="middle" font-size="13" fill="#73706a">${d}°</text>`);
+      h += `<text x="470" y="356" text-anchor="middle" font-size="13" fill="#a5a29c">crank angle over one full cycle (2 turns)</text>
+        <text x="${X(46)+14}" y="${Y(mx)+6}" font-size="14" fill="var(--c3)">tall kick</text>
+        <text x="${X(210)}" y="${Y(mn)+22}" text-anchor="middle" font-size="14" fill="var(--c3)">hole</text>
+        <text x="22" y="30" font-size="13" fill="#a5a29c">twisting force</text>`;
+      document.getElementById('tq').innerHTML = h;
+    })();
+
+    // ---- frequency bars ----
+    (function(){
+      const X = hz => 200 + hz/110*660;
+      let h = `<rect x="${X(0)}" y="10" width="${X(30)-X(0)}" height="330" fill="var(--fire)" opacity=".08"/>
+        <text x="${X(15)}" y="30" text-anchor="middle" font-size="12" fill="var(--fire)">felt as shake</text>
+        <text x="${X(15)}" y="46" text-anchor="middle" font-size="12" fill="var(--fire)">(roughly &lt;30 Hz)</text>
+        <text x="${X(85)}" y="30" text-anchor="middle" font-size="12" fill="#a5a29c">blends into a hum →</text>`;
+      [0,20,40,60,80,100].forEach(v=> h += `<line x1="${X(v)}" y1="56" x2="${X(v)}" y2="335" stroke="#292826"/><text x="${X(v)}" y="356" text-anchor="middle" font-size="12" fill="#73706a">${v} Hz</text>`);
+      [800,1500,3000].forEach((r,i)=>{
+        const y = 70 + i*92, f3=r/60*1.5, f4=r/60*2, rock=r/60;
+        h += `<text x="185" y="${y+30}" text-anchor="end" font-size="16" font-weight="700">${r} rpm${i===0?' (idle)':''}</text>
+          <rect x="${X(0)}" y="${y}" width="${X(f3)-X(0)}" height="18" rx="3" fill="var(--c3)"/>
+          <text x="${X(f3)+8}" y="${y+14}" font-size="13" fill="var(--c3)">${f3.toFixed(0)} bangs/s</text>
+          <rect x="${X(0)}" y="${y+22}" width="${X(rock)-X(0)}" height="10" rx="3" fill="var(--c3)" opacity=".45"/>
+          <text x="${X(rock)+8}" y="${y+31}" font-size="12" fill="#a5a29c">${rock.toFixed(0)} rocks/s</text>
+          <rect x="${X(0)}" y="${y+38}" width="${X(f4)-X(0)}" height="18" rx="3" fill="var(--c4)"/>
+          <text x="${X(f4)+8}" y="${y+52}" font-size="13" fill="var(--c4)">${f4.toFixed(0)} bangs/s</text>`;
+      });
+      document.getElementById('freq').innerHTML = h;
+    })();
+
+    // ---- rhythm ----
+    (function(){
+      const X = d => 90 + d/720*760;
+      let h='';
+      const row = (y, offs, col, name) => {
+        h += `<text x="80" y="${y+5}" text-anchor="end" font-size="15" font-weight="700" fill="${col}">${name}</text>
+          <line x1="${X(0)}" y1="${y}" x2="${X(720)}" y2="${y}" stroke="#3b3936" stroke-width="2"/>`;
+        [0,360,720].forEach(d=> h += `<line x1="${X(d)}" y1="${y-22}" x2="${X(d)}" y2="${y+22}" stroke="#a5a29c" stroke-width="2"/>`);
+        offs.forEach(d=> h += `<circle cx="${X(d)}" cy="${y}" r="13" fill="${col}"/>`);
+      };
+      row(70, [0,240,480], 'var(--c3)', '3-cyl');
+      row(170, [0,180,360,540], 'var(--c4)', '4-cyl');
+      h += `<text x="${X(180)}" y="235" text-anchor="middle" font-size="13" fill="#a5a29c">turn 1</text><text x="${X(540)}" y="235" text-anchor="middle" font-size="13" fill="#a5a29c">turn 2</text>
+        <text x="${X(240)}" y="42" text-anchor="middle" font-size="12" fill="var(--c3)">mid-turn</text><text x="${X(480)}" y="42" text-anchor="middle" font-size="12" fill="var(--c3)">1/3 into turn</text>`;
+      document.getElementById('rhythm').innerHTML = h;
+    })();
+
+    // ---- secondary (top/bottom half) ----
+    (function(){
+      const lam = R/L, s = 2*R, at90 = R + L - Math.sqrt(L*L - R*R); // distance from top at 90°
+      const top = (at90/s*100).toFixed(0), bot = (100-at90/s*100).toFixed(0);
+      const cx=110, cy=200, rr=60, H=230;
+      document.getElementById('second').innerHTML = `
+        <path d="M${cx-rr},${cy} A${rr},${rr} 0 0 1 ${cx+rr},${cy}" fill="none" stroke="var(--fire)" stroke-width="6"/>
+        <path d="M${cx+rr},${cy} A${rr},${rr} 0 0 1 ${cx-rr},${cy}" fill="none" stroke="#57534f" stroke-width="6"/>
+        <circle cx="${cx}" cy="${cy}" r="6" fill="#a5a29c"/>
+        <text x="${cx}" y="${cy-rr-14}" text-anchor="middle" font-size="13" fill="var(--fire)">top half of turn</text>
+        <text x="${cx}" y="${cy+rr+22}" text-anchor="middle" font-size="13" fill="#a5a29c">bottom half</text>
+        <rect x="250" y="40" width="40" height="${H}" rx="4" fill="#202020" stroke="#3b3936"/>
+        <rect x="250" y="40" width="40" height="${H*at90/s}" rx="4" fill="var(--fire)" opacity=".8"/>
+        <rect x="250" y="${40+H*at90/s}" width="40" height="${H*(1-at90/s)}" rx="4" fill="#57534f"/>
+        <text x="300" y="${40+H*at90/s/2}" font-size="20" font-weight="700" fill="var(--fire)">${top}%</text>
+        <text x="300" y="${40+H*at90/s/2+20}" font-size="12" fill="#a5a29c">of the stroke</text>
+        <text x="300" y="${40+H*at90/s+H*(1-at90/s)/2+6}" font-size="20" font-weight="700" fill="#a5a29c">${bot}%</text>
+        <text x="270" y="300" text-anchor="middle" font-size="12" fill="#a5a29c">piston travel</text>`;
+    })();
+
+    // ---- live engines ----
+    const e3 = document.getElementById('e3'), e4 = document.getElementById('e4');
+    const rpmEl = document.getElementById('rpm'), rpmv = document.getElementById('rpmv');
+    const SLOW = 40;
+    function strip(offs, col){
+      const s=[]; for(let d=0; d<=720; d+=4) s.push(net(offs,d));
+      return s;
+    }
+    const S3 = strip(FIRE3), S4 = strip(FIRE4);
+    const SMX = Math.max(...S3), SMN = Math.min(...S3);
+    const sx = d => 20 + d/720*400, sy = v => 375 - (v-SMN)/(SMX-SMN)*95;
+    const spath = s => s.map((v,i)=>`${i?'L':'M'}${sx(i*4).toFixed(1)},${sy(v).toFixed(1)}`).join('');
+
+    function drawEngine(svg, xs, phases, tilt, offs, S, col, th){
+      let cyls = phases.map((p,i)=> `<g transform="translate(${xs[i]},0)">${cyl(p, i+1)}</g>`).join('');
+      const x0 = xs[0]-52, w = xs[xs.length-1]-xs[0]+104;
+      const d = mod(th,720), v = net(offs, d);
+      svg.innerHTML = `
+        <g transform="rotate(${tilt.toFixed(2)} 220 140)">
+          <rect x="${x0}" y="20" width="${w}" height="222" rx="12" fill="none" stroke="${col}" stroke-width="2" opacity=".7"/>
+          <line x1="${x0}" y1="200" x2="${x0+w}" y2="200" stroke="#46433f" stroke-width="6"/>
+          ${cyls}
+          <text x="${x0+6}" y="236" font-size="11" fill="#73706a">FRONT</text>
+        </g>
+        <line x1="20" y1="${sy(0)}" x2="420" y2="${sy(0)}" stroke="#3b3936"/>
+        <text x="20" y="272" font-size="11" fill="#73706a">torque on crank</text>
+        <path d="${spath(S)}" fill="none" stroke="${col}" stroke-width="2.5"/>
+        <circle cx="${sx(d)}" cy="${sy(v)}" r="6" fill="#f1eee8" stroke="${col}" stroke-width="3"/>`;
+    }
+
+    let th = 0, last = performance.now(), playing = true;
+    function frame(now){
+      const dt = Math.min(0.05, (now-last)/1000); last = now;
+      const rpm = +rpmEl.value;
+      if (playing) th += dt * rpm*6/SLOW;
+      // 3-cyl: physical order 1,2,3 fire 1-2-3
+      const p3 = [0,240,480].map(o=> th-o);
+      // rocking couple: front (x=-1) up when its piston is at top
+      const M3 = -(-1*Math.cos(p3[0]*D) + 1*Math.cos(p3[2]*D)) / Math.sqrt(3);
+      drawEngine(e3, [130,220,310], p3, 2.2*M3, FIRE3, S3, 'var(--c3)', th);
+      // 4-cyl: physical 1,2,3,4 with firing 1-3-4-2
+      const p4 = [0,540,180,360].map(o=> th-o);
+      drawEngine(e4, [85,175,265,355], p4, 0, FIRE4, S4, 'var(--c4)', th);
+      requestAnimationFrame(frame);
+    }
+    function readouts(){
+      const r = +rpmEl.value;
+      rpmv.textContent = r + ' rpm';
+      document.getElementById('r3').innerHTML = `<b>${(r/60*1.5).toFixed(1)}</b> power pulses/s · rocks end-to-end <b>${(r/60).toFixed(1)}</b>×/s`;
+      document.getElementById('r4').innerHTML = `<b>${(r/60*2).toFixed(1)}</b> power pulses/s · no end-to-end rocking`;
+      document.getElementById('slow').textContent = `Animation slowed ${SLOW}×. Real: ${(r/60).toFixed(1)} crank turns per second.`;
+    }
+    rpmEl.addEventListener('input', readouts);
+    document.getElementById('pp').onclick = e => { playing = !playing; e.target.textContent = playing ? 'Pause' : 'Play'; };
+    readouts();
+    requestAnimationFrame(frame);
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
