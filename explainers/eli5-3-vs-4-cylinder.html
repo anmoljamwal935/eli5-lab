@@ -15,7 +15,9 @@
       --exh:#a5a29c;  /* exhaust */
       --steel:#57534f;
       --piston:#d8d5ce;
+      --tq:#b79cf2;   /* torque */
     }
+    .eli5-study-container .lab .ctrl+.ctrl{margin-top:14px}
     /* Colour key */
     .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px;font:12px/1.5 var(--font-mono);color:var(--muted)}
     .legend i{display:inline-block;width:12px;height:12px;margin-right:7px;vertical-align:-1px}
@@ -85,7 +87,7 @@
   </header>
 
   <main class="eli5-study-container">
-    <div class="eli5-hero-kicker"><span>ENERGY &amp; PHYSICS / 11 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <div class="eli5-hero-kicker"><span>ENERGY &amp; PHYSICS / 17 MIN</span><i></i><span class="live-dot">ELI5</span></div>
 
     <section class="hero">
       <h1>Three cylinders vs four, and why one grunts at idle</h1>
@@ -97,6 +99,7 @@
         <span><i style="background:var(--fire)"></i>burning fuel / pushing</span>
         <span><i style="background:var(--air)"></i>fresh air + fuel</span>
         <span><i style="background:var(--exh)"></i>exhaust gas</span>
+        <span><i style="background:var(--tq)"></i>torque</span>
       </div>
     </section>
 
@@ -449,6 +452,137 @@
       </div>
     </section>
 
+    <section class="panel" id="p15">
+      <p class="kicker">15 · The numbers · cc</p><h2>What "cc" actually measures</h2>
+      <p>Part 1 was about rhythm. Now the spec sheet. <b>cc</b> is cubic centimetres: the space a piston <b>sweeps</b> between the top and bottom of its stroke. That is the gulp of air and fuel one cylinder can swallow in one down-stroke. Add every cylinder together and you get the engine's "size".</p>
+      <figure><svg id="cc" viewBox="0 0 900 380" role="img" aria-label="Cylinder showing bore, stroke and swept volume"></svg></figure>
+      <div class="lab">
+        <div class="ctrl"><label for="bore">Bore (width)</label><input id="bore" type="range" min="60" max="100" step="0.5" value="74" aria-label="Bore in millimetres"><b id="borev"></b></div>
+        <div class="ctrl"><label for="stroke">Stroke (travel)</label><input id="stroke" type="range" min="60" max="100" step="0.5" value="93" aria-label="Stroke in millimetres"><b id="strokev"></b></div>
+        <div class="ctrl"><label for="ncyl">Cylinders</label><input id="ncyl" type="range" min="1" max="8" step="1" value="3" aria-label="Number of cylinders"><b id="ncylv"></b>
+          <button type="button" data-b="74" data-s="93" data-n="3">Our 3-cyl</button><button type="button" data-b="71" data-s="75.6" data-n="4">Our 4-cyl</button></div>
+      </div>
+      <p class="sub">Volume = π ÷ 4 × bore² × stroke (in mm, divide by 1000 for cc). Both presets land on <b>~1.2 L</b>. The 3-cylinder gets there with big, long-stroke cylinders; the 4-cylinder with small, short ones.</p>
+      <p class="aside">cc is <b>size</b>, not power. It says how much air the engine can breathe per cycle. What you <i>get</i> from that air depends on how hard it is squeezed, how fast the engine spins, and whether a turbo stuffs in extra. The next sections build that up.</p>
+      <h3 style="margin-top:34px">The squeeze: compression ratio</h3>
+      <p>The piston doesn't sweep out the whole space. At the top a small pocket is left, the <b>clearance</b>. Compression ratio compares the two.</p>
+      <figure><svg viewBox="0 0 900 330" role="img" aria-label="Compression ratio 10 to 1">
+        <g transform="translate(120,0)">
+          <rect x="-60" y="30" width="120" height="20" fill="var(--raised)"/>
+          <rect x="-60" y="50" width="10" height="210" fill="var(--raised)"/><rect x="50" y="50" width="10" height="210" fill="var(--raised)"/>
+          <rect x="-50" y="50" width="100" height="18" fill="var(--fire)" opacity=".55"/>
+          <rect x="-50" y="68" width="100" height="162" fill="var(--air)" opacity=".4"/>
+          <rect x="-50" y="230" width="100" height="26" rx="3" fill="#d8d5ce"/>
+          <text x="76" y="64" font-size="13" fill="var(--fire)">1 part: clearance</text>
+          <text x="76" y="154" font-size="13" fill="var(--air)">9 parts: swept</text>
+          <text x="0" y="296" text-anchor="middle" font-size="15">Piston down: 10 parts of room</text>
+        </g>
+        <g transform="translate(470,0)">
+          <rect x="-60" y="30" width="120" height="20" fill="var(--raised)"/>
+          <rect x="-60" y="50" width="10" height="210" fill="var(--raised)"/><rect x="50" y="50" width="10" height="210" fill="var(--raised)"/>
+          <rect x="-50" y="50" width="100" height="18" fill="var(--fire)" opacity=".55"/>
+          <rect x="-50" y="68" width="100" height="26" rx="3" fill="#d8d5ce"/>
+          <text x="0" y="296" text-anchor="middle" font-size="15">Piston up: squeezed into 1 part</text>
+        </g>
+        <g transform="translate(640,0)">
+          <text y="110" font-size="30" font-weight="700" fill="var(--fire)">10 ÷ 1 = 10 : 1</text>
+          <text y="144" font-size="15" fill="#a5a29c">compression ratio</text>
+          <text y="190" font-size="14" fill="#a5a29c">Squeeze harder → hotter, tighter mix →</text>
+          <text y="212" font-size="14" fill="#a5a29c">more push per drop of fuel.</text>
+          <text y="244" font-size="14" fill="#a5a29c">Too hard and the mix lights itself: "knock".</text>
+        </g>
+      </svg></figure>
+    </section>
+
+    <section class="panel" id="p16">
+      <p class="kicker">16 · Torque</p><h2>Torque is twisting force, not speed</h2>
+      <p>Try loosening a tight bolt. A longer spanner makes it easy: same push, more <b>twist</b>. Torque = <b>force × length of the lever</b>, measured in newton-metres (Nm).</p>
+      <figure><svg viewBox="0 0 900 250" role="img" aria-label="Same force on a short and a long spanner gives different torque">
+        <g transform="translate(70,130)">
+          <rect x="0" y="-9" width="130" height="18" rx="4" fill="#8f8b84"/><circle r="22" fill="#57534f"/><circle r="9" fill="var(--raised)"/>
+          <line x1="130" y1="-80" x2="130" y2="-16" stroke="var(--fire)" stroke-width="6" marker-end="url(#arF)"/>
+          <text x="144" y="-48" font-size="15" fill="var(--fire)">100 N push</text>
+          <line x1="0" y1="34" x2="130" y2="34" stroke="#a5a29c"/><text x="65" y="56" text-anchor="middle" font-size="14" fill="#a5a29c">0.1 m lever</text>
+          <text x="65" y="92" text-anchor="middle" font-size="22" font-weight="700" fill="var(--tq)">10 Nm</text>
+        </g>
+        <g transform="translate(360,130)">
+          <rect x="0" y="-9" width="390" height="18" rx="4" fill="#8f8b84"/><circle r="22" fill="#57534f"/><circle r="9" fill="var(--raised)"/>
+          <line x1="390" y1="-80" x2="390" y2="-16" stroke="var(--fire)" stroke-width="6" marker-end="url(#arF)"/>
+          <text x="330" y="-52" font-size="15" fill="var(--fire)">same 100 N</text>
+          <line x1="0" y1="34" x2="390" y2="34" stroke="#a5a29c"/><text x="195" y="56" text-anchor="middle" font-size="14" fill="#a5a29c">0.3 m lever</text>
+          <text x="195" y="92" text-anchor="middle" font-size="22" font-weight="700" fill="var(--tq)">30 Nm</text>
+        </g>
+      </svg></figure>
+      <p>In an engine the spanner is the <b>crank arm</b>, half the stroke long. The push is gas pressure × piston area. So torque comes from two things: <b>how much air the engine swallows (cc)</b> and <b>how hard each bang pushes (pressure)</b>. Over a full cycle, the engine's average push is called BMEP:</p>
+      <figure><svg id="tqc" viewBox="0 0 900 190" role="img" aria-label="Torque from engine size and push pressure"></svg></figure>
+      <div class="lab">
+        <div class="ctrl"><label for="vcc">Engine size</label><input id="vcc" type="range" min="600" max="3000" step="50" value="1200" aria-label="Engine size in cc"><b id="vccv"></b></div>
+        <div class="ctrl"><label for="bmep">Average push (BMEP)</label><input id="bmep" type="range" min="6" max="24" step="0.5" value="10" aria-label="Average push pressure in bar"><b id="bmepv"></b></div>
+      </div>
+      <p class="sub">Torque (Nm) ≈ BMEP (bar) × cc ÷ 125.7. A natural petrol engine manages roughly 10–13 bar at its best; a turbo packs in more air and reaches 18–25 bar. Same cc, nearly double the twist. Drag the push to 20 bar to see why a turbo 1.2 L can out-pull a plain 2.0 L.</p>
+    </section>
+
+    <section class="panel" id="p17">
+      <p class="kicker">17 · Power · BHP</p><h2>Power is torque, delivered fast</h2>
+      <p>Torque says how hard you can twist. <b>Power</b> says how much twisting you can do <b>per second</b>. Think of carrying bags up stairs: a heavy bag now and then, or a light bag very often. Same work per minute, same power.</p>
+      <div class="grid2">
+        <div class="card"><h3>Strong and slow</h3>
+          <svg viewBox="0 0 400 200" role="img" aria-label="One heavy bag per minute">
+            <rect x="40" y="70" width="80" height="80" rx="6" fill="var(--tq)"/>
+            <text x="80" y="118" text-anchor="middle" font-size="16" font-weight="700" fill="#161616">60 kg</text>
+            <text x="150" y="104" font-size="15">× 1 bag a minute</text>
+            <text x="20" y="188" font-size="14" fill="#a5a29c">= 60 kg·bags/min</text>
+          </svg></div>
+        <div class="card"><h3>Light and fast</h3>
+          <svg viewBox="0 0 400 200" role="img" aria-label="Six light bags per minute">
+            <g fill="var(--tq)"><rect x="20" y="60" width="34" height="34" rx="4"/><rect x="62" y="60" width="34" height="34" rx="4"/><rect x="104" y="60" width="34" height="34" rx="4"/><rect x="20" y="102" width="34" height="34" rx="4"/><rect x="62" y="102" width="34" height="34" rx="4"/><rect x="104" y="102" width="34" height="34" rx="4"/></g>
+            <text x="168" y="104" font-size="15">10 kg × 6 bags a minute</text>
+            <text x="20" y="188" font-size="14" fill="#a5a29c">= 60 kg·bags/min. Same power.</text>
+          </svg></div>
+      </div>
+      <p>For an engine, "bags per minute" is <b>rpm</b>. So power = torque × rpm. The practical formula:</p>
+      <figure><svg id="pwc" viewBox="0 0 900 230" role="img" aria-label="Power from torque and rpm"></svg></figure>
+      <div class="lab">
+        <div class="ctrl"><label for="tqin">Torque</label><input id="tqin" type="range" min="20" max="400" step="1" value="113" aria-label="Torque in Nm"><b id="tqinv"></b></div>
+        <div class="ctrl"><label for="rpmin">Engine speed</label><input id="rpmin" type="range" min="800" max="8000" step="100" value="4200" aria-label="Engine speed in rpm"><b id="rpminv"></b></div>
+      </div>
+      <p class="sub">bhp = Nm × rpm ÷ 7121 · kW = Nm × rpm ÷ 9549 · PS = Nm × rpm ÷ 7023.</p>
+      <div class="grid2">
+        <div class="card"><h3>Which "horsepower"?</h3><p class="sub" style="margin:0"><b>kW</b> is the honest SI unit. <b>bhp</b> (British) and <b>PS</b> (metric) are within 1.5% of each other and both sit about 34–36% above kW. Marketing uses whichever is biggest.</p></div>
+        <div class="card"><h3>What is "brake"?</h3><p class="sub" style="margin:0">Measured on a <b>brake dynamometer</b>, at the crankshaft, before gearbox and tyres take their share. Power at the wheels is typically 10–15% lower.</p></div>
+      </div>
+    </section>
+
+    <section class="panel" id="p18">
+      <p class="kicker">18 · Rev it up, rev it down</p><h2>What changes as rpm rises or falls</h2>
+      <p>Here is a typical (illustrative) 1.2 L petrol engine. <span style="color:var(--tq)"><b>Torque</b></span> climbs, peaks and falls again. <span style="color:var(--fire)"><b>Power</b></span> keeps rising because it is torque × rpm, until the torque drop wins. Drag the slider.</p>
+      <figure><svg id="rpmc" viewBox="0 0 900 380" role="img" aria-label="Torque and power curves against engine speed"></svg></figure>
+      <div class="lab">
+        <div class="ctrl"><label for="rpm2">Engine speed</label><input id="rpm2" type="range" min="800" max="7000" step="50" value="1500" aria-label="Engine speed in rpm"><b id="rpm2v"></b></div>
+      </div>
+      <div class="card" style="margin-top:18px"><div class="output" id="rpmout"></div></div>
+      <p class="aside" id="zone"></p>
+      <div class="grid2">
+        <div class="card"><h3>Low rpm: slow and weak</h3><p class="sub" style="margin:0">Bangs come slowly (section 10), air crawls through the intake and mixes poorly, a turbo hasn't woken up, and the flywheel stores little spin. Pull hard in a high gear here and the engine lugs and shudders.</p></div>
+        <div class="card"><h3>Mid rpm: the sweet spot</h3><p class="sub" style="margin:0">Valve timing and pipe lengths are tuned so moving air keeps rushing in as the valve closes, packing the cylinder fuller. More air, more push, so <b>peak torque</b> lives here.</p></div>
+        <div class="card"><h3>High rpm: no time to breathe</h3><p class="sub" style="margin:0">Each intake stroke shrinks to a few milliseconds, so the cylinder fills less. Friction and pumping losses climb, pistons fly at ~18 m/s, and valve springs struggle to shut valves in time ("valve float"). Torque falls; a limiter cuts fuel at the redline.</p></div>
+        <div class="card"><h3>Foot off the throttle</h3><p class="sub" style="margin:0">With the throttle shut, the engine has to pull air past a nearly closed door: it becomes a pump that <b>brakes</b> the car. The higher the rpm, the stronger it drags. That is engine braking, and why a low gear helps on a downhill.</p></div>
+      </div>
+      <p class="sub">A short stroke is how 4-cylinders rev higher: at the same rpm its pistons move slower than the 3-cylinder's long ones (see the readout). Slower pistons, less wear and stress.</p>
+    </section>
+
+    <section class="panel" id="p19">
+      <p class="kicker">19 · Gears</p><h2>Gears trade speed for twist</h2>
+      <p>The engine can only work well in a narrow rpm band, but the wheels need to go from standstill to highway. The gearbox is a <b>torque and speed exchange</b>: a big gear driven by a small one turns slower but pushes harder.</p>
+      <figure><svg id="gears" viewBox="0 0 900 380" role="img" aria-label="Engine gear driving a larger gear"></svg></figure>
+      <div class="lab">
+        <div class="ctrl"><label>Gear</label>
+          <button type="button" data-g="0">1st</button><button type="button" data-g="1">2nd</button><button type="button" data-g="2">3rd</button><button type="button" data-g="3">4th</button><button type="button" data-g="4">5th</button></div>
+        <div class="ctrl"><label for="grpm">Engine speed</label><input id="grpm" type="range" min="800" max="6000" step="100" value="3000" aria-label="Engine speed in rpm"><b id="grpmv"></b></div>
+      </div>
+      <p class="sub">Illustrative 5-speed with a 4.1:1 final drive and a 1.85 m tyre. Losses ignored. The engine's power stays the same; the gears just choose how it is split between push and speed. First gear: lots of push, little speed. Fifth: little push, lots of speed, and engine rpm stays low (which is why a 3-cylinder lugs if you stay in it too long).</p>
+    </section>
+
     <div class="eli5-takeaway-card">
       <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
       <blockquote>A 3-cylinder is not a worse 4-cylinder. It is a different rhythm: fewer, bigger, further-apart bangs, and a block that rocks instead of buzzing.</blockquote>
@@ -704,6 +838,129 @@
     document.getElementById('pp').onclick = e => { playing = !playing; e.target.textContent = playing ? 'Pause' : 'Play'; };
     readouts();
     requestAnimationFrame(frame);
+
+    // ================= Part 2: the numbers (sections 15-19) =================
+    (function(){
+      const $ = id => document.getElementById(id);
+      const fmt = (v,d=0) => v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+      // ---- 15: cc ----
+      const bore=$('bore'), stk=$('stroke'), ncyl=$('ncyl');
+      function drawCC(){
+        const b=+bore.value, s=+stk.value, n=+ncyl.value, k=2.3, cx=250, y0=60;
+        const w=b*k, h=s*k, x=cx-w/2, v=Math.PI/4*b*b*s/1000, tot=v*n;
+        $('borev').textContent=b+' mm'; $('strokev').textContent=s+' mm'; $('ncylv').textContent=n;
+        const col = n===3?'var(--c3)':n===4?'var(--c4)':'var(--fg)';
+        let icons=''; for(let i=0;i<n;i++) icons += `<rect x="${480+i*44}" y="272" width="32" height="50" rx="3" fill="var(--air)" opacity=".5" stroke="var(--air)"/>`;
+        $('cc').innerHTML = `
+          <rect x="${x-10}" y="${y0-26}" width="${w+20}" height="26" fill="var(--raised)"/>
+          <rect x="${x-10}" y="${y0}" width="10" height="${h+34}" fill="var(--raised)"/><rect x="${x+w}" y="${y0}" width="10" height="${h+34}" fill="var(--raised)"/>
+          <rect x="${x}" y="${y0}" width="${w}" height="${h}" fill="var(--air)" opacity=".4"/>
+          <rect x="${x+2}" y="${y0+h}" width="${w-4}" height="28" rx="3" fill="#d8d5ce"/>
+          <line x1="${x}" y1="${y0}" x2="${x+w+10}" y2="${y0}" stroke="#a5a29c" stroke-dasharray="4 4"/><text x="${x+w+18}" y="${y0+5}" font-size="12" fill="#a5a29c">top</text>
+          <line x1="${x}" y1="${y0+h}" x2="${x+w+10}" y2="${y0+h}" stroke="#a5a29c" stroke-dasharray="4 4"/><text x="${x+w+18}" y="${y0+h+5}" font-size="12" fill="#a5a29c">bottom</text>
+          <line x1="${x}" y1="${y0-42}" x2="${x+w}" y2="${y0-42}" stroke="#a5a29c"/><line x1="${x}" y1="${y0-48}" x2="${x}" y2="${y0-36}" stroke="#a5a29c"/><line x1="${x+w}" y1="${y0-48}" x2="${x+w}" y2="${y0-36}" stroke="#a5a29c"/>
+          <text x="${cx}" y="${y0-50}" text-anchor="middle" font-size="14">bore ${b} mm</text>
+          <line x1="${x-32}" y1="${y0}" x2="${x-32}" y2="${y0+h}" stroke="#a5a29c"/><line x1="${x-38}" y1="${y0}" x2="${x-26}" y2="${y0}" stroke="#a5a29c"/><line x1="${x-38}" y1="${y0+h}" x2="${x-26}" y2="${y0+h}" stroke="#a5a29c"/>
+          <text x="${x-42}" y="${y0+h/2+5}" text-anchor="end" font-size="14">stroke ${s} mm</text>
+          <text x="480" y="70" font-size="13" fill="#a5a29c">ONE CYLINDER · the blue space the piston sweeps</text>
+          <text x="480" y="102" font-size="15" fill="#a5a29c">π ÷ 4 × ${b}² × ${s} ÷ 1000</text>
+          <text x="480" y="150" font-size="44" font-weight="700" fill="var(--air)">${fmt(v)} cc</text>
+          <text x="480" y="190" font-size="15" fill="#a5a29c">× ${n} cylinder${n>1?'s':''}</text>
+          <text x="480" y="240" font-size="44" font-weight="700" fill="${col}">${fmt(tot)} cc</text>
+          <text x="${488+(fmt(tot).length+3)*20}" y="240" font-size="18" fill="#a5a29c">= ${(tot/1000).toFixed(2)} L</text>
+          ${icons}
+          <text x="480" y="345" font-size="12" fill="#73706a">each box = one cylinder's gulp</text>`;
+      }
+      [bore,stk,ncyl].forEach(el=>el.addEventListener('input',drawCC));
+      document.querySelectorAll('button[data-n]').forEach(btn=>btn.onclick=()=>{ bore.value=btn.dataset.b; stk.value=btn.dataset.s; ncyl.value=btn.dataset.n; drawCC(); });
+      drawCC();
+
+      // ---- 16: torque = BMEP x cc / (4 pi) ----
+      const vcc=$('vcc'), bmep=$('bmep');
+      function drawTq(){
+        const c=+vcc.value, p=+bmep.value, t=p*c/(40*Math.PI), X=n=>60+n/450*780;
+        $('vccv').textContent=fmt(c)+' cc'; $('bmepv').textContent=p+' bar';
+        let g=''; [0,100,200,300,400].forEach(n=> g += `<line x1="${X(n)}" y1="40" x2="${X(n)}" y2="120" stroke="#292826"/><text x="${X(n)}" y="140" text-anchor="middle" font-size="12" fill="#73706a">${n} Nm</text>`);
+        $('tqc').innerHTML = `${g}<rect x="60" y="56" width="780" height="40" rx="4" fill="#202020"/>
+          <rect x="60" y="56" width="${X(t)-60}" height="40" rx="4" fill="var(--tq)"/>
+          <text x="${Math.min(X(t)+12,760)}" y="83" font-size="20" font-weight="700" fill="${X(t)>700?'#161616':'var(--tq)'}" ${X(t)>700?'text-anchor="end" dx="-24"':''}>${fmt(t)} Nm</text>
+          <text x="60" y="30" font-size="13" fill="#a5a29c">${p} bar × ${fmt(c)} cc ÷ 125.7</text>
+          <text x="60" y="176" font-size="12" fill="#a5a29c">Peak torque of this engine. Natural petrol ≈ 10–13 bar · turbo petrol ≈ 18–25 bar.</text>`;
+      }
+      [vcc,bmep].forEach(el=>el.addEventListener('input',drawTq)); drawTq();
+
+      // ---- 17: power = torque x rpm ----
+      const tqin=$('tqin'), rpmin=$('rpmin');
+      function drawPw(){
+        const t=+tqin.value, r=+rpmin.value, kw=t*r/9549.3, bhp=t*r/7121.2, ps=t*r/7023.5, X=n=>60+n/350*780;
+        $('tqinv').textContent=t+' Nm'; $('rpminv').textContent=fmt(r)+' rpm';
+        const row=(y,v,lab,col)=>`<rect x="60" y="${y}" width="780" height="30" rx="4" fill="#202020"/><rect x="60" y="${y}" width="${Math.min(X(v)-60,780)}" height="30" rx="4" fill="${col}" opacity=".85"/>
+          <text x="72" y="${y+21}" font-size="15" font-weight="700" fill="#161616">${fmt(v,1)} ${lab}</text>`;
+        $('pwc').innerHTML = `<text x="60" y="26" font-size="13" fill="#a5a29c">${t} Nm × ${fmt(r)} rpm ÷ 7121 = power</text>
+          ${row(46,bhp,'bhp','var(--fire)')}${row(90,kw,'kW','var(--fire)')}${row(134,ps,'PS','var(--fire)')}
+          <text x="60" y="196" font-size="12" fill="#a5a29c">Bars run 0–350. Double either slider and the power doubles.</text>`;
+      }
+      [tqin,rpmin].forEach(el=>el.addEventListener('input',drawPw)); drawPw();
+
+      // ---- 18: the rpm curve ----
+      const TQ = r => 113*(.55+.45*Math.exp(-(((r-4200)/2600)**2)));
+      const BHP = r => TQ(r)*r/7121.2;
+      const REDLINE = 6200, rpm2=$('rpm2');
+      let pkT=0, pkP=0, rT=0, rP=0;
+      for(let r=800;r<=REDLINE;r+=50){ if(TQ(r)>pkT){pkT=TQ(r);rT=r;} if(BHP(r)>pkP){pkP=BHP(r);rP=r;} }
+      function zone(r){
+        if(r>REDLINE) return ['Redline.','The limiter cuts fuel here so the engine doesn\'t destroy itself. Pistons, rods and valve springs are at their limit.'];
+        if(r<1500) return ['Lugging.','Slow bangs, slow air, weak flywheel, no turbo boost yet. Feels flat and shuddery. Drop a gear.'];
+        if(r<3000) return ['Waking up.','Cylinders are filling better each moment. Torque is climbing but the engine hasn\'t reached its best.'];
+        if(r<5000) return ['Sweet spot.',`Cylinders fill best near ${fmt(rT)} rpm: peak torque (${fmt(pkT)} Nm). This is where it pulls hardest.`];
+        return ['Power zone.',`Torque is falling but rpm is rising faster, so power peaks near ${fmt(rP)} rpm (${fmt(pkP)} bhp). Fast, but each cylinder breathes less per bang.`];
+      }
+      function drawRpm(){
+        const r=+rpm2.value, X=n=>70+(n-800)/6200*790, YT=t=>320-t/130*280, YP=p=>320-p/100*280;
+        $('rpm2v').textContent=fmt(r)+' rpm';
+        let h=`<rect x="${X(REDLINE)}" y="40" width="${X(7000)-X(REDLINE)}" height="280" fill="var(--fire)" opacity=".08"/><text x="${X(REDLINE)+8}" y="56" font-size="12" fill="var(--fire)">limiter</text>`;
+        [1000,2000,3000,4000,5000,6000,7000].forEach(n=> h += `<line x1="${X(n)}" y1="40" x2="${X(n)}" y2="320" stroke="#292826"/><text x="${X(n)}" y="342" text-anchor="middle" font-size="12" fill="#73706a">${n/1000}k</text>`);
+        [0,50,100].forEach(n=> h += `<text x="62" y="${YT(n*1.3)+4}" text-anchor="end" font-size="12" fill="var(--tq)">${n*1.3|0}</text><text x="866" y="${YP(n)+4}" font-size="12" fill="var(--fire)">${n}</text>`);
+        h += `<text x="20" y="30" font-size="13" fill="var(--tq)">torque (Nm)</text><text x="866" y="30" text-anchor="end" font-size="13" fill="var(--fire)">power (bhp)</text><text x="465" y="366" text-anchor="middle" font-size="13" fill="#a5a29c">engine speed (rpm)</text>`;
+        const pts=f=>{ let d=''; for(let n=800;n<=7000;n+=50) d+=`${n>800?'L':'M'}${X(n).toFixed(1)},${f(n).toFixed(1)}`; return d; };
+        h += `<path d="${pts(n=>YP(BHP(n)))}" fill="none" stroke="var(--fire)" stroke-width="3"/><path d="${pts(n=>YT(TQ(n)))}" fill="none" stroke="var(--tq)" stroke-width="3"/>
+          <line x1="${X(r)}" y1="40" x2="${X(r)}" y2="320" stroke="#f1eee8" stroke-dasharray="4 4"/>
+          <circle cx="${X(r)}" cy="${YT(TQ(r))}" r="6" fill="var(--tq)" stroke="#f1eee8" stroke-width="2"/><circle cx="${X(r)}" cy="${YP(BHP(r))}" r="6" fill="var(--fire)" stroke="#f1eee8" stroke-width="2"/>`;
+        $('rpmc').innerHTML = h;
+        const fill = 30000/r;
+        $('rpmout').innerHTML = `torque <b>${fmt(TQ(r))} Nm</b> · power <b>${fmt(BHP(r),1)} bhp</b><br>
+          bangs per second: 3-cyl <b>${fmt(r/60*1.5,1)}</b> · 4-cyl <b>${fmt(r/60*2,1)}</b><br>
+          time for one intake stroke: <b>${fmt(fill,1)} ms</b><br>
+          piston speed: 3-cyl, 93 mm stroke <b>${fmt(2*.093*r/60,1)} m/s</b> · 4-cyl, 75.6 mm stroke <b>${fmt(2*.0756*r/60,1)} m/s</b>`;
+        const [a,b]=zone(r); $('zone').innerHTML = `<b>${a}</b> ${b}`;
+      }
+      rpm2.addEventListener('input',drawRpm); drawRpm();
+
+      // ---- 19: gears ----
+      const G=[3.5,1.9,1.3,1.0,.8], FD=4.1, TYRE=1.85, grpm=$('grpm'), gbtn=document.querySelectorAll('button[data-g]');
+      let gi=2, ang=0, lastT=performance.now(), still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      gbtn.forEach(b=>b.onclick=()=>{ gi=+b.dataset.g; drawGear(0); });
+      function drawGear(dt){
+        const g=G[gi], r=+grpm.value; ang += dt*90;
+        const r1=40, r2=40*g, c1=110, c2=c1+r1+r2+4, cy=185;
+        const gear=(cx,rad,a,col)=>`<g transform="rotate(${a.toFixed(1)} ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${rad}" fill="var(--raised)" stroke="${col}" stroke-width="12" stroke-dasharray="7 7"/><circle cx="${cx}" cy="${cy}" r="${rad-12}" fill="none" stroke="#46433f" stroke-width="2"/><line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-rad+14}" stroke="#f1eee8" stroke-width="4" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="#f1eee8"/></g>`;
+        const wt=TQ(Math.min(r,REDLINE))*g*FD, kmh=r/(g*FD)*TYRE*.06;
+        $('grpmv').textContent=fmt(r)+' rpm';
+        gbtn.forEach((b,i)=>{ b.style.setProperty('background', i===gi?'var(--fire)':'var(--raised)', 'important'); b.style.setProperty('color', i===gi?'#161616':'var(--fg)', 'important'); });
+        $('gears').innerHTML = `${gear(c1,r1,ang,'var(--tq)')}${gear(c2,r2,-ang/g,'var(--c4)')}
+          <text x="${c1-24}" y="${cy-r1-22}" text-anchor="middle" font-size="14" fill="var(--tq)">from the engine</text>
+          <text x="${c2}" y="${cy+r2+28}" text-anchor="middle" font-size="14" fill="var(--c4)">towards the wheels, ${g}× slower</text>
+          <g transform="translate(640,70)"><text font-size="13" fill="#a5a29c">GEAR ${gi+1}</text>
+            <text y="40" font-size="15" fill="#a5a29c">box ${g}× · with final drive ${(g*FD).toFixed(1)}×</text>
+            <text y="100" font-size="13" fill="#a5a29c">WHEEL TORQUE (engine at ${fmt(r)} rpm)</text>
+            <text y="140" font-size="36" font-weight="700" fill="var(--tq)">${fmt(wt)} Nm</text>
+            <text y="190" font-size="13" fill="#a5a29c">CAR SPEED</text>
+            <text y="230" font-size="36" font-weight="700" fill="var(--c4)">${fmt(kmh)} km/h</text></g>`;
+      }
+      grpm.addEventListener('input',()=>drawGear(0));
+      (function loop(now){ drawGear(still?0:Math.min(.05,(now-lastT)/1000)); lastT=now; requestAnimationFrame(loop); })(lastT);
+    })();
   </script>
   <script src="../eli5-study.js"></script>
 </body>
