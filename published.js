@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "sgb-fcnr-masterstroke-eli5",
+    "title": "Gold bonds, dollar swaps and the RBI “masterstroke”",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Two bets on prices the government doesn't control — fact-checked.",
+    "bullets": [
+      "Gold bonds lost money because the government owed grams that kept rising",
+      "The 2026 FCNR(B) swap pays the RBI only on dollars it actually spends",
+      "The video's 10–20× profit claim tops out near 3.5× even in its best case"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "GOLD BONDS",
+      "DOLLAR SWAP",
+      "RUPEE"
+    ],
+    "file": "explainers/sgb-fcnr-masterstroke-eli5.html",
+    "date": "2026-10-26",
+    "subcategory": "Currency swaps",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Gold-bond payout per gram rising from 2,684 to 15,384 rupees beside the RBI swap, where dollars go in and the same dollars come back at the same rate\"><path d=\"M24 118H140\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"32\" y=\"102\" width=\"24\" height=\"16\" fill=\"#f5c76a\" opacity=\".55\"/><rect x=\"68\" y=\"82\" width=\"24\" height=\"36\" fill=\"#f5c76a\"/><rect x=\"104\" y=\"28\" width=\"24\" height=\"90\" fill=\"#f5c76a\"/><rect x=\"186\" y=\"40\" width=\"44\" height=\"22\" fill=\"#ff8059\"/><rect x=\"250\" y=\"86\" width=\"44\" height=\"22\" fill=\"#76d5c1\"/><path d=\"M232 51 C262 51 272 62 272 82\" stroke=\"#ff8059\" stroke-width=\"2\" fill=\"none\"/><path d=\"M268 76 L272 84 L276 76\" stroke=\"#ff8059\" stroke-width=\"2\" fill=\"none\"/><path d=\"M248 97 C218 97 208 86 208 66\" stroke=\"#76d5c1\" stroke-width=\"2\" fill=\"none\"/><path d=\"M204 72 L208 64 L212 72\" stroke=\"#76d5c1\" stroke-width=\"2\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"136\" fill=\"#f5c76a\">GOLD BONDS</text><text x=\"296\" y=\"136\" text-anchor=\"end\" fill=\"#ff8059\">DOLLAR SWAP</text></g></svg>"
+  },
+  {
     "id": "eli5-3-vs-4-cylinder",
     "title": "Three cylinders vs four, and why one grunts at idle",
     "category": "Energy & Physics",

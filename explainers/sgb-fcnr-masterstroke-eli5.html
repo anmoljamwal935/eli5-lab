@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gold bonds, dollar swaps and the RBI “masterstroke” — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Two bets on prices the government doesn&#x27;t control — fact-checked.">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/sgb-fcnr-masterstroke-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Gold bonds, dollar swaps and the RBI “masterstroke”">
+<meta property="og:description" content="Two bets on prices the government doesn&#x27;t control — fact-checked.">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/sgb-fcnr-masterstroke-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/sgb-fcnr-masterstroke-eli5.png?v=884048d5">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Gold bonds, dollar swaps and the RBI “masterstroke”">
+<meta property="article:published_time" content="2026-10-26">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 15 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Gold bonds, dollar swaps and the RBI “masterstroke”</h1>
+      <p class="lede">With gold bonds, the government promised to repay in gold, and it lost money when gold soared. The 2026 dollar swap is the same kind of bet on the US dollar, which the RBI can actually influence. A video calls it a masterstroke. Here is how both bets work, and which of the video's claims hold up.</p>
+      <p class="source-note">Built from Sharad Jhunjhunwala's 56-minute video (Hindi auto-captions, 25 Oct 2026). Facts checked against RBI circulars and releases and the other sources linked in each panel · <a href="https://www.youtube.com/watch?v=v3DNpDqgvbE">Watch the source ↗</a></p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#ff8059"></i>US dollars / the RBI swap</span>
+        <span><i style="background:#76d5c1"></i>rupees</span>
+        <span><i style="background:#f5c76a"></i>gold / gold bonds</span>
+        <span><i style="background:#c3b8ff"></i>official data</span>
+        <span><i style="background:#f87171"></i>claim that doesn't hold</span>
+      </div>
+    </section>
+
+    <!-- 1. The setup -->
+    <section class="panel">
+      <p class="kicker">The question</p>
+      <h2>Should 20% move from shares to bonds?</h2>
+      <p>The video retells a talk with a worried industrialist friend. His fears: bond yields, unrest, foreign selling, and costly dollar deposits. He is offered 11–12% on company bonds and wants to shift 15–25% of his shares there. Top-rated company bonds were paying far less (<a href="https://mutualfund.adityabirlacapital.com/-/media/knowledgecenter/pdf/all-about-market/daily-fixed-income-tracker-28-sep-2026.pdf">fund-house tracker, 25 Sep 2026</a>), so 11–12% means a weaker borrower or a privately negotiated deal. The video admits big lenders can negotiate.</p>
+      <figure>
+        <svg viewBox="0 0 800 290" role="img" aria-label="Interest-rate bars on one scale: repo rate 5.5 percent, AAA 10-year company bond 7.8 percent, AA 10-year bond 8.56 percent, and the friend's 11 to 12 percent offer far beyond them">
+          <text x="20" y="63" fill="#a5a29c" font-size="17">Repo rate (Oct)</text>
+          <rect x="200" y="40" width="258.5" height="34" fill="#c3b8ff"/><text x="448" y="63" text-anchor="end" fill="#202020" font-size="17">5.50%</text>
+          <text x="20" y="118" fill="#a5a29c" font-size="17">AAA firm, 10-yr</text>
+          <rect x="200" y="95" width="366.6" height="34" fill="#c3b8ff"/><text x="556" y="118" text-anchor="end" fill="#202020" font-size="17">7.80%</text>
+          <text x="20" y="173" fill="#a5a29c" font-size="17">AA firm, 10-yr</text>
+          <rect x="200" y="150" width="402.3" height="34" fill="#c3b8ff"/><text x="592" y="173" text-anchor="end" fill="#202020" font-size="17">8.56%</text>
+          <text x="20" y="228" fill="#a5a29c" font-size="17">Friend's offer</text>
+          <rect x="200" y="205" width="517" height="34" fill="#f87171"/><rect x="717" y="205" width="47" height="34" fill="#f87171" opacity=".55"/><text x="707" y="228" text-anchor="end" fill="#202020" font-size="17">11–12%</text>
+          <text x="20" y="276" fill="#a5a29c" font-size="16">47 px = 1%</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 2. Capital as raw material -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Money is a raw material too</h2>
+      <p>The video's first answer: when every factory owner borrows to expand at once, the price of money rises. In the year to March 2026, bank loans grew faster than deposits (<a href="https://www.outlookmoney.com/banking/bank-credit-growth-surges-by-16-per-cent-in-fy26-beats-deposit-growth">16% vs 13.4%</a>). Part of the reason, the video says, is that savers moved money from deposits into shares and SIPs. Rates that are high because demand is strong are different from the early 1990s, when rates were high because inflation was high and growth was weak.</p>
+      <figure>
+        <svg viewBox="0 0 800 215" role="img" aria-label="Bank loans grew 16 percent and deposits 13.4 percent in FY26, leaving a 2.6 point gap that has to be funded some other way">
+          <text x="20" y="63" fill="#a5a29c" font-size="17">Bank loans</text>
+          <rect x="200" y="40" width="560" height="34" fill="#76d5c1"/><text x="750" y="63" text-anchor="end" fill="#202020" font-size="17">+16.0%</text>
+          <text x="20" y="123" fill="#a5a29c" font-size="17">Bank deposits</text>
+          <rect x="200" y="100" width="469" height="34" fill="#76d5c1" opacity=".6"/><text x="659" y="123" text-anchor="end" fill="#202020" font-size="17">+13.4%</text>
+          <rect x="671" y="101" width="87" height="32" fill="none" stroke="#76d5c1" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="714" y="162" text-anchor="middle" fill="#76d5c1" font-size="16">2.6-pt gap</text>
+          <text x="20" y="200" fill="#a5a29c" font-size="16">35 px = 1% growth, FY26</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 3. Power plants aside -->
+    <section class="panel">
+      <p class="kicker">The video's example</p>
+      <h2>Power plants looked crazy, then paid off</h2>
+      <p>The video's example: plants built with huge borrowing around 2008–10 looked reckless then, but they turned a power-short India into one that now meets peak demand. Official data show shortages almost gone (<a href="https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/feb/doc2025221507201.pdf">Ministry of Power, PIB</a>). The video also says those plants were all privately built, and that the same plant would cost 10× today. Both are figures cited in the video that I did not verify.</p>
+      <figure>
+        <svg viewBox="0 0 800 235" role="img" aria-label="Share of peak electricity demand that went unmet: 4.5 percent in 2014, 1.4 percent in 2024, 0.001 percent in 2025">
+          <text x="20" y="63" fill="#a5a29c" font-size="17">2014</text>
+          <rect x="200" y="40" width="450" height="34" fill="#c3b8ff"/><text x="640" y="63" text-anchor="end" fill="#202020" font-size="17">4.5% unmet</text>
+          <text x="20" y="123" fill="#a5a29c" font-size="17">2024</text>
+          <rect x="200" y="100" width="140" height="34" fill="#c3b8ff"/><text x="330" y="123" text-anchor="end" fill="#202020" font-size="17">1.4%</text>
+          <text x="20" y="183" fill="#a5a29c" font-size="17">2025</text>
+          <rect x="200" y="160" width="2" height="34" fill="#c3b8ff"/><text x="214" y="183" fill="#f1eee8" font-size="17">0.001%</text>
+          <text x="20" y="224" fill="#a5a29c" font-size="16">100 px = 1% of peak demand</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 4. The swap mechanism -->
+    <section class="panel">
+      <p class="kicker">What actually happens</p>
+      <h2>The swap: dollars in, rupees out, reversed later</h2>
+      <p>The video uses this example. An NRI deposits $1,000 for 3–5 years. The bank sells those dollars to the RBI and gets rupees at that day's rate (the video uses ₹95). At maturity it buys the same dollars back at <b>the same rate</b> (<a href="https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=13468">RBI circular, 8 June 2026</a>). The bank lends the rupees in between and never pays to hedge against the rupee falling.</p>
+      <figure>
+        <svg viewBox="0 0 800 350" role="img" aria-label="Day one: 1,000 dollars flow from the NRI to the bank to the RBI, and 95,000 rupees flow from the RBI to the bank. At maturity the bank returns 95,000 rupees and the RBI returns 1,000 dollars, which go back to the NRI with interest">
+          <defs>
+            <marker id="mc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#ff8059"/></marker>
+            <marker id="mt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#76d5c1"/></marker>
+          </defs>
+          <circle cx="120" cy="34" r="11" fill="none" stroke="#f1eee8" stroke-width="2"/><path d="M100 72 Q120 46 140 72" fill="none" stroke="#f1eee8" stroke-width="2"/>
+          <text x="120" y="98" text-anchor="middle" fill="#a5a29c" font-size="17">NRI saver</text>
+          <path d="M370 42 L400 26 L430 42 Z" fill="none" stroke="#f1eee8" stroke-width="2"/><path d="M378 46 V70 M393 46 V70 M407 46 V70 M422 46 V70 M370 72 H430" stroke="#f1eee8" stroke-width="2"/>
+          <text x="400" y="98" text-anchor="middle" fill="#a5a29c" font-size="17">Indian bank</text>
+          <path d="M645 42 L680 22 L715 42 Z" fill="none" stroke="#f1eee8" stroke-width="2"/><path d="M652 46 V70 M666 46 V70 M680 46 V70 M694 46 V70 M708 46 V70 M645 72 H715" stroke="#f1eee8" stroke-width="2"/>
+          <text x="680" y="98" text-anchor="middle" fill="#a5a29c" font-size="17">RBI</text>
+          <path d="M120 112 V300 M400 112 V300 M680 112 V300" stroke="#3b3936" stroke-dasharray="4 5"/>
+          <text x="20" y="156" fill="#f1eee8" font-size="17">Day 1</text>
+          <path d="M150 150 H366" stroke="#ff8059" stroke-width="3" marker-end="url(#mc)"/>
+          <text x="258" y="138" text-anchor="middle" fill="#ff8059" font-size="17">$1,000</text>
+          <path d="M434 150 H646" stroke="#ff8059" stroke-width="3" marker-end="url(#mc)"/>
+          <text x="540" y="138" text-anchor="middle" fill="#ff8059" font-size="17">$1,000</text>
+          <path d="M646 180 H434" stroke="#76d5c1" stroke-width="3" marker-end="url(#mt)"/>
+          <text x="540" y="204" text-anchor="middle" fill="#76d5c1" font-size="17">₹95,000</text>
+          <text x="20" y="252" fill="#f1eee8" font-size="17">Maturity</text>
+          <path d="M434 246 H646" stroke="#76d5c1" stroke-width="3" marker-end="url(#mt)"/>
+          <text x="540" y="234" text-anchor="middle" fill="#76d5c1" font-size="17">₹95,000</text>
+          <path d="M646 276 H434" stroke="#ff8059" stroke-width="3" marker-end="url(#mc)"/>
+          <text x="540" y="300" text-anchor="middle" fill="#ff8059" font-size="17">$1,000</text>
+          <path d="M366 276 H150" stroke="#ff8059" stroke-width="3" marker-end="url(#mc)"/>
+          <text x="258" y="300" text-anchor="middle" fill="#ff8059" font-size="17">$1,000 + interest</text>
+          <text x="400" y="338" text-anchor="middle" fill="#f1eee8" font-size="17">Same ₹95 rate both ways</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 5. Size and price -->
+    <section class="panel">
+      <p class="kicker">The real numbers</p>
+      <h2>Far bigger than the video says</h2>
+      <p>The video gives the total as “₹15 lakh crore” in one place and “₹1.5 lakh crore” in another. RBI data: <b>$132.98 billion</b> of these deposits by 31 August 2026 (<a href="https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63638">RBI, 21 Sep 2026</a>), about ₹12.6 lakh crore at ₹95. Savers earned about 6.25–6.75% in dollars (<a href="https://www.businesstoday.in/personal-finance/story/fcnrb-deposits-idfc-first-indusind-offer-6-75-top-psu-banks-offer-6-60-as-rbi-forex-window-nears-closure-550774-2026-08-25">bank rates, Aug 2026</a>), not the friend's 11–12%. The RBI's free hedge is what let banks pay that much.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="On one rupee scale: the video's 15 lakh crore and 1.5 lakh crore figures, the RBI's actual 12.6 lakh crore, and all gold bonds ever sold at 0.72 lakh crore">
+          <text x="20" y="63" fill="#a5a29c" font-size="16">Video, 20:30</text>
+          <rect x="190" y="40" width="570" height="32" fill="#f87171"/><text x="750" y="62" text-anchor="end" fill="#202020" font-size="17">₹15 lakh cr</text>
+          <text x="20" y="123" fill="#a5a29c" font-size="16">Video, 21:10</text>
+          <rect x="190" y="100" width="57" height="32" fill="#f87171"/><text x="257" y="122" fill="#f87171" font-size="17">₹1.5 lakh cr</text>
+          <text x="20" y="183" fill="#a5a29c" font-size="16">RBI data</text>
+          <rect x="190" y="160" width="480" height="32" fill="#ff8059"/><text x="660" y="182" text-anchor="end" fill="#202020" font-size="17">₹12.6 lakh cr</text>
+          <text x="20" y="243" fill="#a5a29c" font-size="16">All gold bonds</text>
+          <rect x="190" y="220" width="27.5" height="32" fill="#f5c76a"/><text x="227" y="242" fill="#f5c76a" font-size="17">₹0.72 lakh cr</text>
+          <text x="20" y="286" fill="#a5a29c" font-size="16">38 px = ₹1 lakh crore</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 6. SGB -->
+    <section class="panel">
+      <p class="kicker">The comparison</p>
+      <h2>Gold bonds: a bet that gold wouldn't soar</h2>
+      <p>Sovereign Gold Bonds took your rupees at that day's gold price and promised to repay the price of the same grams years later, plus 2.5–2.75% interest. The first issue sold at <a href="https://rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=35380">₹2,684 a gram</a> and paid back <a href="https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=56808">₹6,132</a> at maturity in 2023. One gram redeemed in September 2026 paid <a href="https://rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63538">₹15,384</a>. For buyers it was a masterstroke; the video's host says he urged everyone to buy, and retirees later thanked him. For the government it was what the video calls a short on gold: it owed rising grams it didn't hold. 146.96 tonnes were sold, and 130 tonnes were still outstanding in March 2025 (<a href="https://www.outlookmoney.com/invest/gold/government-issues-67-tranches-of-sovereign-gold-bonds-till-fy25">minister's reply to Parliament</a>).</p>
+      <figure>
+        <svg viewBox="0 0 800 240" role="img" aria-label="One gram of gold bond: 2,684 rupees paid in 2015, 6,132 rupees paid out at the first maturity in 2023, and 15,384 rupees per gram paid in September 2026">
+          <text x="20" y="63" fill="#a5a29c" font-size="16">Paid in, 2015</text>
+          <rect x="170" y="40" width="102" height="34" fill="#f5c76a" opacity=".55"/><text x="262" y="63" text-anchor="end" fill="#202020" font-size="17">₹2,684</text>
+          <text x="20" y="123" fill="#a5a29c" font-size="16">Paid out, 2023</text>
+          <rect x="170" y="100" width="233" height="34" fill="#f5c76a"/><text x="393" y="123" text-anchor="end" fill="#202020" font-size="17">₹6,132</text>
+          <text x="20" y="183" fill="#a5a29c" font-size="16">Paid, Sep 2026</text>
+          <rect x="170" y="160" width="584.6" height="34" fill="#f5c76a"/><text x="745" y="183" text-anchor="end" fill="#202020" font-size="17">₹15,384</text>
+          <text x="20" y="225" fill="#a5a29c" font-size="16">38 px = ₹1,000 per gram</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 7. Gold return claim -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Gold didn't return 2–3% a year</h2>
+      <p>The video says gold's long-run average return is 2–3% a year and that the last two years were a freak. At 3% a year, the 2015 gram would be worth ₹3,690 today. It actually paid ₹15,384, about <b>17.6% a year</b>, using the two RBI prices above. The last two years were indeed extreme: the RBI's price went from <a href="https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=58711">₹7,196</a> in September 2024 to ₹15,384, about 2.1×. That is “doubled”, not “tripled”.</p>
+      <figure>
+        <svg viewBox="0 0 800 200" role="img" aria-label="On the same per-gram scale, 3 percent a year would have turned 2,684 rupees into 3,690 rupees, while gold actually reached 15,384 rupees">
+          <text x="20" y="63" fill="#a5a29c" font-size="16">At 3% a year</text>
+          <rect x="170" y="40" width="140" height="34" fill="#f87171"/><text x="300" y="63" text-anchor="end" fill="#202020" font-size="17">₹3,690</text>
+          <text x="20" y="123" fill="#a5a29c" font-size="16">What it did</text>
+          <rect x="170" y="100" width="584.6" height="34" fill="#f5c76a"/><text x="745" y="123" text-anchor="end" fill="#202020" font-size="17">₹15,384</text>
+          <text x="20" y="180" fill="#a5a29c" font-size="16">Nov 2015 → Sep 2026 · 38 px = ₹1,000</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 8. The common mistake -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>The swap pays only if dollars are spent</h2>
+      <p>The video says the RBI “shorted” the dollar at ₹95: if the rupee strengthens to ₹60 by 2031, the RBI books a profit. That is true only if the RBI has <b>sold</b> the dollars in the meantime, for example to defend the rupee. If it simply keeps them in reserves, it hands back the same dollars and the exchange rate doesn't matter. The RBI did spend some: reserves fell by $51 billion in four weeks (<a href="https://www.businesstoday.in/latest/economy/story/rupee-near-record-low-why-rbis-multiple-defences-are-losing-effectiveness-560381-2026-10-08">Business Today, Oct 2026</a>).</p>
+      <figure>
+        <svg viewBox="0 0 800 320" role="img" aria-label="World A: the RBI keeps the 1,000 dollars and returns them, result zero. World B: the RBI sold them for 95,000 rupees; rebuying at 60 costs 60,000 for a 35,000 gain, rebuying at 110 costs 110,000 for a 15,000 loss">
+          <defs><marker id="mc2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#ff8059"/></marker></defs>
+          <text x="20" y="24" fill="#ff8059" font-size="17">World A · keep the dollars</text>
+          <text x="20" y="61" fill="#a5a29c" font-size="16">Held</text>
+          <rect x="200" y="40" width="150" height="32" fill="#ff8059"/><text x="275" y="62" text-anchor="middle" fill="#202020" font-size="17">$1,000</text>
+          <path d="M356 56 H544" stroke="#ff8059" stroke-width="3" marker-end="url(#mc2)"/>
+          <rect x="550" y="40" width="150" height="32" fill="#ff8059"/><text x="625" y="62" text-anchor="middle" fill="#202020" font-size="17">$1,000</text>
+          <text x="200" y="98" fill="#f1eee8" font-size="17">same dollars back → ₹0</text>
+          <text x="20" y="128" fill="#ff8059" font-size="17">World B · sell them at ₹95</text>
+          <text x="20" y="162" fill="#a5a29c" font-size="16">Received</text>
+          <rect x="200" y="140" width="380" height="32" fill="#76d5c1"/><text x="570" y="162" text-anchor="end" fill="#202020" font-size="17">₹95,000</text>
+          <text x="20" y="212" fill="#a5a29c" font-size="16">Rebuy at ₹60</text>
+          <rect x="200" y="190" width="240" height="32" fill="#76d5c1" opacity=".55"/><text x="430" y="212" text-anchor="end" fill="#202020" font-size="17">₹60,000</text>
+          <rect x="441" y="191" width="138" height="30" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="510" y="212" text-anchor="middle" fill="#ff8059" font-size="17">+₹35,000</text>
+          <text x="20" y="262" fill="#a5a29c" font-size="16">Rebuy at ₹110</text>
+          <rect x="200" y="240" width="380" height="32" fill="#76d5c1" opacity=".55"/><rect x="580" y="240" width="60" height="32" fill="#f87171"/><text x="570" y="262" text-anchor="end" fill="#202020" font-size="17">₹1,10,000</text>
+          <text x="650" y="262" fill="#f87171" font-size="17">−₹15,000</text>
+          <text x="20" y="306" fill="#a5a29c" font-size="16">4 px = ₹1,000</text>
+        </svg>
+      </figure>
+      <p class="note">The RBI took on this bet by offering banks a free hedge. A market forward contract would have priced in the gap between Indian and US interest rates. The video's “masterstroke” profit therefore depends on two things: how many swap dollars the RBI spends, and where the rupee is when the swaps mature in 2029–31.</p>
+    </section>
+
+    <!-- 9. Lab -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Is it really 10–20× the gold-bond loss?</h2>
+      <p>The video predicts the swap's profit will be 10–20 times the gold-bond loss. Assumptions: all $132.98 billion entered at ₹95; you choose what share the RBI sold and the rupee rate at maturity. Gold bonds: the 130 tonnes outstanding in March 2025, sold for ₹67,322 crore, valued at your gold price. Interest on both sides is ignored. The dashed line marks the swap's result. Values are in ₹ lakh crore (L cr).</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="share">Swap dollars the RBI sold <output id="share-o"></output></label><input id="share" type="range" min="0" max="100" step="5" value="35"></div>
+          <div class="control"><label for="fx">Rupee per $ at maturity <output id="fx-o"></output></label><input id="fx" type="range" min="50" max="130" step="1" value="60"></div>
+          <div class="control"><label for="gold">Gold price per gram <output id="gold-o"></output></label><input id="gold" type="range" min="5000" max="25000" step="1" value="15384"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="100,60,15384">Video's hope: ₹60, all sold</button>
+            <button type="button" class="secondary" data-p="0,60,15384">RBI keeps the dollars</button>
+            <button type="button" class="secondary" data-p="35,110,15384">Rupee keeps sliding</button>
+            <button type="button" class="secondary" data-p="35,60,7200">Gold back to 2024</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars compare the RBI swap's gain or loss, the government's gold-bond result, and the video's claim of ten times the gold-bond loss, in lakh crore rupees"></svg></div>
+      </div></div>
+    </section>
+
+    <!-- 10. Timeline -->
+    <section class="panel">
+      <p class="kicker">What actually happened</p>
+      <h2>2026: the rupee's defence, in order</h2>
+      <p>The video describes a chain of moves after the swap: the rupee dipped and climbed again, so the RBI opened a dollar window for oil companies, raised the CRR, and cracked down on gold and silver. The real order is different. The gold curbs came <b>before</b> the swap (<a href="https://www.gold.org/goldhub/gold-focus/2026/05/india-gold-market-update-import-tightening">World Gold Council</a>). The oil-company window came in October (<a href="https://www.businesstoday.in/latest/corporate/story/rbi-opens-special-dollar-window-for-three-state-run-oil-companies-from-october-12-560786-2026-10-10">Business Today</a>). I found no CRR hike: a fund-house tracker shows the CRR <i>lower</i>, at 3.00%.</p>
+      <figure>
+        <svg viewBox="0 0 800 380" role="img" aria-label="Timeline of 2026: jewellery import curbs in April, gold duty raised to 15 percent and rupee record low in May, swap opened 8 June and closed 31 August with 133 billion dollars, reserves peaked at 785 billion then fell to 734 billion, repo hiked in October and an oil-company dollar window opened 12 October">
+          <path d="M170 28 V352" stroke="#57534f" stroke-width="2"/>
+          <g font-size="17">
+            <text x="150" y="46" text-anchor="end" fill="#a5a29c">1 Apr</text><circle cx="170" cy="40" r="6" fill="#f5c76a"/><text x="190" y="46" fill="#f1eee8">Jewellery import curbs</text>
+            <text x="150" y="84" text-anchor="end" fill="#a5a29c">May</text><circle cx="170" cy="78" r="6" fill="#f5c76a"/><text x="190" y="84" fill="#f1eee8">Gold duty 6% → 15%</text>
+            <text x="150" y="122" text-anchor="end" fill="#a5a29c">May</text><circle cx="170" cy="116" r="6" fill="#76d5c1"/><text x="190" y="122" fill="#f1eee8">Rupee record low</text><text x="560" y="122" fill="#76d5c1">₹96.97 per $</text>
+            <text x="150" y="160" text-anchor="end" fill="#a5a29c">8 Jun</text><circle cx="170" cy="154" r="6" fill="#ff8059"/><text x="190" y="160" fill="#f1eee8">Dollar swap opens</text>
+            <text x="150" y="198" text-anchor="end" fill="#a5a29c">31 Aug</text><circle cx="170" cy="192" r="6" fill="#ff8059"/><text x="190" y="198" fill="#f1eee8">Swap closes to deposits</text><text x="560" y="198" fill="#ff8059">$133 bn raised</text>
+            <text x="150" y="236" text-anchor="end" fill="#a5a29c">4 Sep</text><circle cx="170" cy="230" r="6" fill="#c3b8ff"/><text x="190" y="236" fill="#f1eee8">Reserves record high</text><text x="560" y="236" fill="#c3b8ff">$785 bn</text>
+            <text x="150" y="274" text-anchor="end" fill="#a5a29c">2 Oct</text><circle cx="170" cy="268" r="6" fill="#c3b8ff"/><text x="190" y="274" fill="#f1eee8">Reserves after defence</text><text x="560" y="274" fill="#c3b8ff">$734 bn</text>
+            <text x="150" y="312" text-anchor="end" fill="#a5a29c">7 Oct</text><circle cx="170" cy="306" r="6" fill="#c3b8ff"/><text x="190" y="312" fill="#f1eee8">First rate hike since 2023</text><text x="560" y="312" fill="#c3b8ff">repo 5.50%</text>
+            <text x="150" y="350" text-anchor="end" fill="#a5a29c">12 Oct</text><circle cx="170" cy="344" r="6" fill="#ff8059"/><text x="190" y="350" fill="#f1eee8">Oil firms get RBI dollars</text>
+          </g>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 11. BoP -->
+    <section class="panel">
+      <p class="kicker">Checking the data</p>
+      <h2>The external gap widened in 2026</h2>
+      <p>The video says balance-of-payments data come out every Friday, and they show the trade gap closing while capital inflows stay positive. The Friday data are actually forex reserves. Balance-of-payments figures are quarterly. The latest quarter (<a href="https://rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=63493">RBI, April–June 2026</a>) shows a <b>wider</b> current-account deficit, which is mostly the trade gap. Net capital inflows did stay positive, though smaller, and foreign portfolio money left.</p>
+      <figure>
+        <svg viewBox="0 0 800 365" role="img" aria-label="April to June 2025 versus 2026, in billions of dollars: current account minus 3.4 then minus 4.2, net capital inflow plus 4.7 then plus 2.6, portfolio flows plus 1.6 then minus 9.6, reserves plus 4.5 then minus 8.1">
+          <rect x="430" y="12" width="14" height="14" fill="#c3b8ff" opacity=".45"/><text x="452" y="25" fill="#a5a29c" font-size="16">Apr–Jun 2025</text>
+          <rect x="600" y="12" width="14" height="14" fill="#c3b8ff"/><text x="622" y="25" fill="#a5a29c" font-size="16">Apr–Jun 2026</text>
+          <path d="M430 44 V338" stroke="#57534f"/>
+          <text x="20" y="78" fill="#a5a29c" font-size="16">Current account</text>
+          <rect x="355.2" y="50" width="74.8" height="18" fill="#c3b8ff" opacity=".45"/><text x="347" y="65" text-anchor="end" fill="#f1eee8" font-size="16">−$3.4 bn</text>
+          <rect x="337.6" y="72" width="92.4" height="18" fill="#c3b8ff"/><text x="329" y="87" text-anchor="end" fill="#f1eee8" font-size="16">−$4.2 bn</text>
+          <text x="20" y="158" fill="#a5a29c" font-size="16">Net capital in</text>
+          <rect x="430" y="130" width="103.4" height="18" fill="#c3b8ff" opacity=".45"/><text x="541" y="145" fill="#f1eee8" font-size="16">+$4.7 bn</text>
+          <rect x="430" y="152" width="57.2" height="18" fill="#c3b8ff"/><text x="495" y="167" fill="#f1eee8" font-size="16">+$2.6 bn</text>
+          <text x="20" y="238" fill="#a5a29c" font-size="16">Portfolio flows</text>
+          <rect x="430" y="210" width="35.2" height="18" fill="#c3b8ff" opacity=".45"/><text x="473" y="225" fill="#f1eee8" font-size="16">+$1.6 bn</text>
+          <rect x="218.8" y="232" width="211.2" height="18" fill="#c3b8ff"/><text x="211" y="247" text-anchor="end" fill="#f1eee8" font-size="16">−$9.6 bn</text>
+          <text x="20" y="318" fill="#a5a29c" font-size="16">Reserves change</text>
+          <rect x="430" y="290" width="99" height="18" fill="#c3b8ff" opacity=".45"/><text x="537" y="305" fill="#f1eee8" font-size="16">+$4.5 bn</text>
+          <rect x="251.8" y="312" width="178.2" height="18" fill="#c3b8ff"/><text x="244" y="327" text-anchor="end" fill="#f1eee8" font-size="16">−$8.1 bn</text>
+          <text x="560" y="355" fill="#a5a29c" font-size="16">22 px = $1 bn</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 12. Dollar dominance -->
+    <section class="panel">
+      <p class="kicker">The claim</p>
+      <h2>“Global trade no longer runs on dollars”</h2>
+      <p>The video says de-dollarisation has already happened and the dollar will collapse by 2031. The most recent global survey, from April 2025, found the dollar on one side of <b>89%</b> of all currency trades (<a href="https://www.bis.org/press/p250930.htm">BIS Triennial Survey</a>). Each trade has two currencies, so the shares add up to 200%. The collapse is a prediction; the “already happened” part is wrong.</p>
+      <figure>
+        <svg viewBox="0 0 800 290" role="img" aria-label="Share of global currency trades in April 2025: US dollar 89 percent, euro 28.9, yen 16.8, pound 10.2">
+          <text x="20" y="63" fill="#a5a29c" font-size="17">US dollar</text>
+          <rect x="150" y="40" width="534" height="32" fill="#ff8059"/><text x="674" y="62" text-anchor="end" fill="#202020" font-size="17">89%</text>
+          <text x="20" y="118" fill="#a5a29c" font-size="17">Euro</text>
+          <rect x="150" y="95" width="173.4" height="32" fill="#c3b8ff"/><text x="333" y="117" fill="#f1eee8" font-size="17">28.9%</text>
+          <text x="20" y="173" fill="#a5a29c" font-size="17">Yen</text>
+          <rect x="150" y="150" width="100.8" height="32" fill="#c3b8ff"/><text x="261" y="172" fill="#f1eee8" font-size="17">16.8%</text>
+          <text x="20" y="228" fill="#a5a29c" font-size="17">Pound</text>
+          <rect x="150" y="205" width="61.2" height="32" fill="#c3b8ff"/><text x="221" y="227" fill="#f1eee8" font-size="17">10.2%</text>
+          <text x="20" y="274" fill="#a5a29c" font-size="16">6 px = 1% of trades</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 13. Export pipeline -->
+    <section class="panel">
+      <p class="kicker">The video's reasons</p>
+      <h2>Why the video expects more dollars</h2>
+      <p>The video's reasons for a stronger rupee: weapons sales (Make in India), refined fuel exports, and limits on gold imports. Defence exports beat the video's guess, at ₹38,424 crore in FY26 (<a href="https://www.etvbharat.com/en/bharat/india-defence-exports-hit-record-rs-38424-crore-in-fy-2025-26-rajnath-singh-enn26040201424">Defence Ministry via ETV Bharat</a>). The claim that India is the EU's third-largest arms supplier is unverified. US Secretary of State Marco Rubio did visit Jamnagar to ask Reliance to refine Venezuelan oil (<a href="https://www.aljazeera.com/news/2026/10/20/why-rubio-is-visiting-reliances-oil-refinery-in-india-the-worlds-largest">Al Jazeera</a>). But India is not the only country that can refine it: US Gulf Coast refiners such as Valero run it too (<a href="https://pgjonline.com/news/2026/january/valero-buys-venezuelan-crude-from-three-authorized-sellers">PGJ</a>).</p>
+      <figure>
+        <svg viewBox="0 0 800 240" role="img" aria-label="Defence exports: about 24,000 crore rupees in FY25 and 38,424 crore in FY26, above the video's 30,000 to 35,000 crore estimate">
+          <text x="20" y="63" fill="#a5a29c" font-size="16">FY 2024-25</text>
+          <rect x="170" y="40" width="360" height="32" fill="#c3b8ff"/><text x="520" y="62" text-anchor="end" fill="#202020" font-size="17">≈ ₹24,000 cr</text>
+          <text x="20" y="123" fill="#a5a29c" font-size="16">FY 2025-26</text>
+          <rect x="170" y="100" width="576.4" height="32" fill="#c3b8ff"/><text x="736" y="122" text-anchor="end" fill="#202020" font-size="17">₹38,424 cr</text>
+          <text x="20" y="183" fill="#a5a29c" font-size="16">Video's estimate</text>
+          <rect x="620" y="161" width="75" height="30" fill="#f87171" fill-opacity=".15" stroke="#f87171" stroke-width="2" stroke-dasharray="5 4"/><text x="608" y="182" text-anchor="end" fill="#f87171" font-size="17">₹30–35k cr</text>
+          <text x="20" y="226" fill="#a5a29c" font-size="16">15 px = ₹1,000 crore</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 14. China 2008 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>“India today is China in 2008”</h2>
+      <p>The video's big analogy: in 2008 China was the world's third-largest economy, and its stock market rose while every other market fell. India is about to be third, and an AI-bubble crash in the US would help it the same way. The market part is backwards. Shanghai shares lost <b>65%</b> in 2008, the worst in Asia, even though China's economy grew about 9% (<a href="https://research.nus.edu.sg/eai/wp-content/uploads/2017/11/BB427.pdf">NUS East Asian Institute</a>). India is third by purchasing power but sixth in dollar terms in the IMF's October 2026 numbers (<a href="https://vajiramandravi.com/current-affairs/largest-economies-in-the-world-2026/">summary</a>). The video says fifth.</p>
+      <figure>
+        <svg viewBox="0 0 800 230" role="img" aria-label="Shanghai stock index set to 100 at the start of 2008 fell to 35 by the end of 2008, a 65 percent loss, contrary to the video's claim that it rose">
+          <text x="20" y="63" fill="#a5a29c" font-size="17">Start of 2008</text>
+          <rect x="200" y="40" width="500" height="34" fill="#c3b8ff"/><text x="690" y="63" text-anchor="end" fill="#202020" font-size="17">100</text>
+          <text x="20" y="123" fill="#a5a29c" font-size="17">End of 2008</text>
+          <rect x="200" y="100" width="175" height="34" fill="#c3b8ff"/><text x="365" y="123" text-anchor="end" fill="#202020" font-size="17">35</text>
+          <rect x="376" y="101" width="323" height="32" fill="none" stroke="#f87171" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="537" y="123" text-anchor="middle" fill="#f87171" font-size="17">−65% · video said it rose</text>
+          <text x="20" y="196" fill="#a5a29c" font-size="16">Shanghai index · 5 px = 1 point</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 15. Field guide -->
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The video's other claims, checked</h2>
+      <div class="field-grid">
+        <div><b>“Nifty fell 10 weeks running”</b><span>It fell 8 straight weeks to early October, the longest losing run in 25 years (<a href="https://www.businesstoday.in/markets/stocks/story/nifty-extends-slide-to-eighth-straight-week-longest-in-25-years-tmpv-maruti-mm-jio-financial-among-top-drags-559105-2026-10-01">Business Today</a>).</span><em>PARTLY RIGHT</em></div>
+        <div><b>“Foreign selling is relentless”</b><span>Foreign investors sold almost $30 bn of Indian shares in 2026, and pulled $9.6 bn of portfolio money in April–June.</span><em>SUPPORTED</em></div>
+        <div><b>CJP protests forced a resignation</b><span>Education Minister Dharmendra Pradhan resigned on 25 July after the Cockroach Janta Party protests (<a href="https://organiser.org/2026/10/24/418877/politics/the-right-to-protest-the-duty-not-to-mislead-young-why-constitutionalism-must-prevail-over-political-mobilisation">Organiser</a>).</span><em>SUPPORTED</em></div>
+        <div><b>A “deep state” funds unrest</b><span>Says one foreign network funded protests in India, Bangladesh, Nepal, France and elsewhere. The video offers no evidence.</span><em>UNVERIFIABLE · VIDEO'S CLAIM</em></div>
+        <div><b>Five leaders who won't quit</b><span>Modi, Shah, Rajnath Singh, Jaishankar and Doval are “indispensable” and won't step down under pressure.</span><em>OPINION</em></div>
+        <div><b>GIFT Nifty shorts and NSE puts</b><span>Big players are said to sell heavily on GIFT Nifty and hedge by buying NSE puts, which traps option sellers. This is the host's own reading of trading data.</span><em>UNVERIFIABLE</em></div>
+        <div><b>Reliance's ₹1 lakh crore Jio sale “in 2024”</b><span>It happened in 2020. Reliance said it became net-debt-free in June 2020 after raising ₹1.69 lakh crore from Jio stake sales and a rights issue (<a href="https://www.onmanorama.com/news/business/2020/06/19/reliance-industries-becomes-net-debt-free.html">report</a>). The video's speculation about Mukesh Ambani's health is left out here.</span><em>WRONG YEAR</em></div>
+        <div><b>“Gold duty was cut in 2023”</b><span>The cut to 6% came in July 2024. It was reversed to 15% in May 2026, so the video is right that duty is high now (<a href="https://www.gold.org/goldhub/gold-focus/2026/05/india-gold-market-update-import-tightening">WGC</a>).</span><em>WRONG YEAR</em></div>
+        <div><b>India rated “BBB+”</b><span>S&amp;P's rating is BBB, upgraded from BBB- in August 2025 (<a href="https://www.businesstoday.in/latest/economy/story/what-indias-sovereign-ratings-upgrade-by-sp-means-489523-2025-08-14">Business Today</a>).</span><em>CONTRADICTED</em></div>
+        <div><b>“We won't repeat the China mistake”</b><span>US Deputy Secretary of State Christopher Landau said this about India at the Raisina Dialogue in March 2026 (<a href="https://www.tribuneindia.com/news/india/us-deputy-secretary-of-states-china-comparison-at-raisina-dialogue-draws-sharp-reaction/">Tribune</a>).</span><em>SUPPORTED</em></div>
+        <div><b>“Rupee won't see three digits”</b><span>The video says ₹96–97 is the peak because the RBI will defend its swap level. The record low so far is ₹96.97 (May 2026).</span><em>PREDICTION</em></div>
+        <div><b>Petrol held at ₹103–107</b><span>Says long-term crude contracts and buying from many countries shielded consumers through two wars.</span><em>NOT CHECKED · VIDEO'S CLAIM</em></div>
+        <div><b>Copper 3–4× since Covid</b><span>Used to argue that capex now costs far more.</span><em>NOT CHECKED · VIDEO'S CLAIM</em></div>
+        <div><b>WW3, an AI crash, an 18-year cycle</b><span>Says the reigning superpower loses in world wars, the AI bubble will burst in the US, and India will rise like China did.</span><em>PREDICTION · ASTROLOGY-BASED IN PART</em></div>
+        <div><b>“Not investing now may be your biggest mistake”</b><span>Expects Nifty to perhaps fall 1,000 points but rise 5,000–15,000. The host also recalls telling people in 2024 to redeem at the peak and keep their SIPs running.</span><em>OPINION · NOT ADVICE</em></div>
+      </div>
+    </section>
+
+    <!-- 16. So what -->
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions to ask next time</h2>
+      <ol class="checks">
+        <li><b>Is that yield normal for this borrower?</b> Compare an 11–12% offer with AAA (7.8%) and AA (8.56%) bonds. The extra few percent pays you for extra risk.</li>
+        <li><b>Has the RBI actually spent the swap dollars?</b> Watch the weekly reserves (Fridays) and the RBI's forward book. Only dollars that have been sold turn the swap into the bet the video describes.</li>
+        <li><b>Is a claim data or a forecast?</b> The swap's terms and the gold-bond prices can be checked. “The rupee peaks at 97” and “India is China in 2008” cannot be checked yet.</li>
+      </ol>
+      <p class="note">Gold bonds and the swap are opposite bets. Gold bonds cost the government when gold rose. The swap pays the RBI only if it sold the dollars and the rupee later strengthens. Nothing here is investment advice.</p>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A promise to repay in something you don't hold is a bet on its price. Gold bonds lost that bet when gold soared. The dollar swap wins only on the dollars the RBI actually spends.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Configure ids, labConfig and compute() only. Do not edit update(): check_render.py verifies its ticks and bars.
+    // Assumptions: all $132.98 bn swapped at ₹95; 130 t of gold bonds outstanding, issue value ₹67,322 crore; interest ignored.
+    const ids=['share','fx','gold'],$=id=>document.getElementById(id);
+    const lc=v=>(v>0?'+':v<0?'−':'')+'₹'+Math.abs(v).toFixed(2)+' L cr';
+    const SWAP_USD=132.98e9, ENTRY=95, SGB_GRAMS=130e6, SGB_ISSUE=0.67322; // ₹ lakh crore = 1e12 rupees
+    function compute(v){
+      const [share,fx,gold]=v;
+      const sold=SWAP_USD*share/100, rbi=sold*(ENTRY-fx)/1e12;
+      const sgbValue=SGB_GRAMS*gold/1e12, sgbLoss=sgbValue-SGB_ISSUE;
+      return {truth:rbi, rows:[
+        ['RBI swap result',rbi,'#ff8059'],
+        ['Gold bonds result (govt)',-sgbLoss,'#f5c76a'],
+        ['Video: 10× gold-bond loss',10*sgbLoss,'#f87171']
+      ], ledger:[
+        ['Swap dollars (RBI)','$132.98 bn'],
+        ['Sold by RBI','$'+(sold/1e9).toFixed(2)+' bn'],
+        ['Gain per $ vs ₹95','₹'+(ENTRY-fx)],
+        ['RBI swap result',lc(rbi)],
+        ['Gold bonds at your price','₹'+sgbValue.toFixed(2)+' L cr'],
+        ['Raised for them','₹0.67 L cr'],
+        ['Gold-bond loss',lc(sgbLoss)],
+        ['Swap ÷ gold-bond loss',sgbLoss>0?(rbi/sgbLoss).toFixed(1)+'×':'n/a (no loss)']
+      ]};
+    }
+    const labConfig={format:lc, sliderFormats:[v=>v+'%',v=>'₹'+v,v=>'₹'+v.toLocaleString('en-IN')+'/g'], minSpan:1, maxSpan:30, step:1};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false}; // invalidate stale success before computation
+      $('labChart').innerHTML='';
+      $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value), fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=(labConfig.sliderFormats[i]||fmt)(v[i]));
+      const {truth,rows,ledger}=compute(v);
+      if(!Number.isFinite(truth)||!rows.length||rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned non-finite or missing results');
+      const {minSpan,maxSpan,step}=labConfig;
+      if(!(minSpan>0 && maxSpan>=minSpan && step>0)) throw new Error('Invalid lab axis configuration');
+      const m=Math.min(maxSpan,Math.max(minSpan,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/step)*step));
+      // Zero sits at the left edge unless some value is negative; never hand-place ticks or bars.
+      const neg=Math.min(truth,...rows.map(r=>r[1]))<0, x0=neg?260:60, span=neg?200:400;
+      const sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m, ticks=neg?[-m,0,m]:[0,m/2,m];
+      const bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      const clipped=rows.map(r=>Math.abs(r[1])>m), truthClipped=Math.abs(truth)>m;
+      // Axis and truth lines are drawn per row band so they never cross the row labels above each bar.
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">truth ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      rows.forEach(([name,val,col],i)=>{
+        const y=80+i*82,x=sx(val);
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><line x1="${sx(truth)}" y1="${y-4}" x2="${sx(truth)}" y2="${y+30}" stroke="#f1eee8" stroke-dasharray="5 5"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}${clipped[i]?' · off-scale':''}</text><rect data-v="${val}" x="${Math.min(x,x0)}" y="${y}" width="${Math.abs(x-x0)}" height="26" fill="${esc(col)}"/>`;
+        if(clipped[i]){const d=val>0?1:-1;s+=`<path class="overflow-marker" d="M${x-d*9} ${y+3} L${x} ${y+13} L${x-d*9} ${y+23}" fill="none" stroke="#f1eee8" stroke-width="3"/>`;}
+      });
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
