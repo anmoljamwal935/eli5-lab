@@ -1,5 +1,27 @@
 window.PUBLISHED = [
   {
+    "id": "inside-llm-serving-eli5",
+    "title": "Inside LLM serving: one model, millions of chats",
+    "category": "AI & Frontier",
+    "minutes": 20,
+    "summary": "One shared model copy, private memory per chat",
+    "bullets": [
+      "Weights are shared; each chat owns a growing KV cache",
+      "Batching, paging and precision decide how many chats fit"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "WEIGHTS",
+      "KV CACHE",
+      "BATCH"
+    ],
+    "file": "explainers/inside-llm-serving-eli5.html",
+    "date": "2026-10-28",
+    "subcategory": "LLM serving",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"One long shared weights bar next to eight tiny private chat memory bars\"><rect x=\"24\" y=\"48\" width=\"200\" height=\"22\" fill=\"#ff8059\"/><g fill=\"#76d5c1\"><rect x=\"24\" y=\"92\" width=\"6\" height=\"28\"/><rect x=\"34\" y=\"92\" width=\"6\" height=\"28\"/><rect x=\"44\" y=\"92\" width=\"6\" height=\"28\"/><rect x=\"54\" y=\"92\" width=\"6\" height=\"28\"/><rect x=\"64\" y=\"92\" width=\"6\" height=\"28\"/><rect x=\"74\" y=\"92\" width=\"6\" height=\"28\"/><rect x=\"84\" y=\"92\" width=\"6\" height=\"28\"/><rect x=\"94\" y=\"92\" width=\"6\" height=\"28\"/></g><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"36\" fill=\"#ff8059\">WEIGHTS</text><text x=\"24\" y=\"140\" fill=\"#76d5c1\">CHAT KV</text><text x=\"296\" y=\"62\" text-anchor=\"end\" fill=\"#a5a29c\">SHARED</text></g></svg>"
+  },
+  {
     "id": "exponential-time-hypothesis-eli5",
     "title": "The Exponential Time Hypothesis, and OpenAI’s claim to break it",
     "category": "AI & Frontier",
