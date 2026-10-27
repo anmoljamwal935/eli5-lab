@@ -3,7 +3,7 @@ window.PUBLISHED = [
     "id": "inside-llm-serving-eli5",
     "title": "Inside LLM serving: one model, millions of chats",
     "category": "AI & Frontier",
-    "minutes": 20,
+    "minutes": 45,
     "summary": "One shared model copy, private memory per chat",
     "bullets": [
       "Weights are shared; each chat owns a growing KV cache",

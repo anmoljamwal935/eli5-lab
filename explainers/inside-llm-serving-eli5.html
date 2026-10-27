@@ -26,6 +26,25 @@
     .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
     .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
     .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Small hands-on controls inside chapters (the main lab keeps the sliders) */
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--teal)!important;color:var(--teal)!important;background:rgba(118,213,193,.1)!important}
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin-top:16px;background:var(--border);border:1px solid var(--border)}
+    .tiles div{background:var(--surface);padding:12px 14px}
+    .tiles b{display:block;font-size:22px;line-height:1.2;color:var(--fg);font-weight:600}
+    .tiles span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--muted)}
+    .tiles .warn b{color:var(--danger)}
+    .tiles.t3{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:700px){.tiles.t3{grid-template-columns:repeat(2,1fr)}}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+    .tok-in{width:100%;min-height:84px;margin-top:16px;font:15px/1.5 var(--font-mono)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    details.trace .table-wrap{margin:12px 0}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--teal);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
     /* Phones: keep diagram text readable by letting wide figures scroll sideways */
     .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
     @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
@@ -38,7 +57,7 @@
 <meta property="og:title" content="Inside LLM serving: one model, millions of chats">
 <meta property="og:description" content="One shared model copy, private memory per chat">
 <meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/inside-llm-serving-eli5">
-<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/inside-llm-serving-eli5.png?v=8d624f00">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/inside-llm-serving-eli5.png?v=420001cd">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Inside LLM serving: one model, millions of chats">
 <meta property="article:published_time" content="2026-10-28">
@@ -61,12 +80,13 @@
   </header>
 
   <main class="eli5-study-container">
-    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 20 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 45 MIN</span><i></i><span class="live-dot">ELI5</span></div>
 
     <section class="hero">
       <h1>Inside LLM serving: one model, millions of chats</h1>
-      <p class="lede">A frontier model is one read-only copy of hundreds of gigabytes of numbers, shared by everyone. Each chat owns a small, growing pile of memory. Nearly every odd thing about AI products follows from those two facts.</p>
-      <p class="source-note">Built from the study “Inside LLM Serving” (shared by the reader, Oct 2026), facts checked against the papers and spec sheets it cites</p>
+      <p class="lede">A frontier AI model is one read-only copy of hundreds of gigabytes of numbers, shared by everyone who uses it. Each chat owns only a small, growing pile of memory. Nearly every odd thing about AI products, from pricing to slow first words, follows from those two facts. This page walks through all 25 chapters of the original study, with its hands-on controls.</p>
+      <p class="source-note">Built from the study “Inside LLM Serving” (shared by the reader, Oct 2026; author not named), facts checked against the papers and spec sheets it cites</p>
+      <p>Three kinds of numbers appear below. <span class="tag">public</span> means a published spec sheet, paper or plain arithmetic. <span class="tag">example</span> means one made-up but self-consistent system (set out in chapter 10) used to show how things work. <span class="tag np">not public</span> means Anthropic has not said; nothing here claims to be the real size or setup of any Claude model.</p>
       <div class="legend" aria-label="Colour key">
         <span><i style="background:#ff8059"></i>compute, weights, output</span>
         <span><i style="background:#76d5c1"></i>memory &amp; the KV cache</span>
@@ -80,7 +100,8 @@
     <section class="panel">
       <p class="kicker">The setup</p>
       <h2>One copy, millions of chats</h2>
-      <p>The <b>weights</b> are the model’s learned numbers: one read-only copy of hundreds of gigabytes, shared by every user. Each conversation owns only its own memory, called the <b>KV cache</b>. That split — shared weights, private chats — explains almost everything that follows.</p>
+      <p>A frontier model sits in the memory of a small group of chips. Its <b>weights</b> are the numbers it learned in training: one read-only copy of hundreds of gigabytes, spread over 8 to 72 chips. Thousands of people use that one copy at the same moment, because nobody changes it while chatting.</p>
+      <p>The only private thing each person has is the conversation so far, held in a form the chips can reuse. That pile is called the <b>KV cache</b> (chapter 11 explains the name). A longer conversation is a bigger pile. Everything below explains why this layout works and what limits it.</p>
       <figure>
         <svg viewBox="0 0 800 300" role="img" aria-label="A 200 gigabyte weights bar, shared and read-only, compared with eight tiny private conversation memories of 1.3 gigabytes each">
           <text x="40" y="28" fill="#a5a29c" font-size="16">ONE MODEL · 3 px = 1 GB</text>
@@ -104,7 +125,9 @@
     <section class="panel">
       <p class="kicker">The trip</p>
       <h2>A message’s short journey</h2>
-      <p>Your text passes sign-in, rate limits and a router, which picks a <b>replica</b>: one full copy of the model spread over a group of chips. The replica reads the whole prompt in one parallel pass (<b>prefill</b>), then writes the answer one token per pass (<b>decode</b>). Only that last part is expensive.</p>
+      <p>Your message first reaches a <b>gateway</b>, which does cheap checks: are you signed in, have you hit your usage limit, does a safety filter flag anything, and how much to bill. Then a <b>router</b> picks a <b>replica</b>: one complete copy of the model, spread over 8 to 72 chips that act as one machine. It prefers a replica with free room that may already hold the start of your conversation.</p>
+      <p>The replica does two jobs. First it reads your whole prompt in one parallel pass, called <b>prefill</b>. Then it writes the answer one <b>token</b> (a chunk of a word) per pass, called <b>decode</b>, and streams each token to your screen as soon as it exists. Almost everything before the replica is light work. The replica is the expensive part, and it is shared.</p>
+      <p><b>Common mix-up:</b> one customer does not get one chip. A replica handles many conversations in the same instant, which is why the rest of this page exists.</p>
       <figure>
         <svg viewBox="0 0 800 320" role="img" aria-label="A request passes you, a gateway, a router and a replica, then streams to your screen; a time strip shows prefill at 0.3 seconds and 600 decode steps at 12 seconds">
           <g fill="none" stroke="#a5a29c" stroke-width="2">
@@ -133,59 +156,85 @@
           <path d="M70 214 V222" stroke="#f1eee8" stroke-width="2"/><text x="78" y="214" fill="#f1eee8" font-size="14">first word</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: where the time goes</summary>
+        <p>Typical time at each stage, as an <span class="tag">example</span> for a request with a few thousand prompt tokens:</p>
+        <div class="table-wrap"><table>
+          <tr><th>Stage</th><th>Rough time</th><th>What decides it</th></tr>
+          <tr><td>Network to the gateway</td><td>20 to 100 ms</td><td>your distance and connection</td></tr>
+          <tr><td>Checks and routing</td><td>1 to 10 ms</td><td>cheap lookups</td></tr>
+          <tr><td>Waiting in a queue</td><td>0 ms to seconds</td><td>how busy the fleet is</td></tr>
+          <tr><td>Prefill (reading the prompt)</td><td>0.1 to 3 s</td><td>prompt length, cache hits</td></tr>
+          <tr><td>Each decode step (one token)</td><td>10 to 40 ms</td><td>memory speed, how many people share the step</td></tr>
+        </table></div>
+        <p><b>The model has no memory between messages.</b> Every turn, the app sends the instructions, tool descriptions, the whole conversation so far and your new message as one long text. The server rebuilds its working state from that text each time. Caches (chapter 13) make the rebuild cheap when the earlier part has not changed.</p>
+        <p><b>Streaming.</b> Tokens are pushed to you the moment they are made, usually over a connection that stays open (server-sent events). So the first words appear right after prefill, not after the whole answer.</p>
+        <p><b>When it stops.</b> The model writes a special end-of-turn token, or hits the output limit you set, or produces a stop phrase. The replica then frees that conversation’s seat, and the bill counts input and output tokens separately.</p>
+      </details>
     </section>
 
     <!-- 3. Sampling -->
     <section class="panel">
       <p class="kicker">The engine</p>
       <h2>A model only guesses words</h2>
-      <p>Each pass scores every token in the model’s vocabulary. A function called <b>softmax</b> turns those scores into probabilities, and a sampler picks one token. <b>Temperature</b> sets how boldly it picks: near zero it takes the top word, higher values spread the chances.</p>
+      <p>That is the whole job. Given the text so far, the model gives every possible next token a score. A formula called <b>softmax</b> turns those scores into chances that add up to 100%. One token is picked at random using those chances, added to the text, and the whole pass runs again for the next one.</p>
+      <p><b>Temperature</b> is a dial on that pick. Low temperature makes the top word win almost every time. High temperature flattens the chances, so unlikely words get picked more often. Try it:</p>
+      <div class="pick" id="tempPick" role="group" aria-label="Temperature"><span>TEMPERATURE</span>
+        <button type="button" class="secondary" data-v="0.1" aria-pressed="false">0.1</button><button type="button" class="secondary" data-v="0.5" aria-pressed="false">0.5</button><button type="button" class="secondary" data-v="1" aria-pressed="true">1.0</button><button type="button" class="secondary" data-v="1.5" aria-pressed="false">1.5</button><button type="button" class="secondary" data-v="2" aria-pressed="false">2.0</button>
+      </div>
       <figure>
-        <svg viewBox="0 0 800 270" role="img" aria-label="Five candidate next words with probabilities: the 62 percent, mat 12, a 9, dog 7, sofa 4">
-          <text x="40" y="42" fill="#f1eee8" font-size="22">The cat sat on the ___</text>
-          <text x="200" y="74" fill="#a5a29c" font-size="15">CHANCE OF BEING PICKED</text>
-          <text x="190" y="112" text-anchor="end" fill="#f1eee8" font-size="18">the</text><rect x="200" y="92" width="260" height="28" fill="#ff8059"/><text x="472" y="112" fill="#ff8059" font-size="17">62%</text>
-          <text x="190" y="154" text-anchor="end" fill="#f1eee8" font-size="18">mat</text><rect x="200" y="134" width="50" height="28" fill="#ff8059" opacity=".45"/><text x="262" y="154" fill="#f1eee8" font-size="17">12%</text>
-          <text x="190" y="196" text-anchor="end" fill="#f1eee8" font-size="18">a</text><rect x="200" y="176" width="38" height="28" fill="#ff8059" opacity=".35"/><text x="250" y="196" fill="#f1eee8" font-size="17">9%</text>
-          <text x="190" y="238" text-anchor="end" fill="#f1eee8" font-size="18">dog</text><rect x="200" y="218" width="29" height="28" fill="#ff8059" opacity=".28"/><text x="241" y="238" fill="#f1eee8" font-size="17">7%</text>
-          <text x="330" y="154" fill="#a5a29c" font-size="16">one is picked, added,</text>
-          <text x="330" y="176" fill="#a5a29c" font-size="16">then the pass repeats</text>
-          <text x="600" y="112" fill="#f5c76a" font-size="16">temperature 1.0</text>
-        </svg>
+        <svg id="tempSvg" viewBox="0 0 800 300" role="img" aria-label="Chance of each candidate next word after The cat sat on the, at the chosen temperature"></svg>
       </figure>
+      <p class="readout" id="tempNote"></p>
+      <details class="trace"><summary>Go deeper: scores, chances and cost</summary>
+        <p><b>Scores, then chances.</b> The last layer produces one raw score for every entry in the model’s word list, often 100,000 entries or more. Each score is divided by the temperature, then softmax turns the scores into chances. At temperature 0 the sampler simply takes the top word every time (called greedy decoding).</p>
+        <code class="eq">chance(word) = e^(score ÷ T) ÷ (sum of e^(score ÷ T) over every word)</code>
+        <p><b>Cutting the tail.</b> Before picking, servers often keep only the k best words (top-k), or the smallest group whose chances add up to some share p (top-p). This stops rare nonsense words from ever being chosen.</p>
+        <p><b>Why a longer answer costs more.</b> Each new token needs one full pass through the model. A 1,000-token answer is 1,000 passes, one after another. They cannot run side by side, because token 501 depends on token 500. This single fact drives most of the engineering on the rest of the page.</p>
+        <p><b>Why answers vary.</b> The pick uses a random number. Same prompt, different draw, different word, and every later word builds on it.</p>
+        <p>The six words and their scores here are made up to show the shape; they are not from a real model.</p>
+      </details>
     </section>
 
     <!-- 4. Tokens -->
     <section class="panel">
       <p class="kicker">The unit</p>
       <h2>Words become tokens</h2>
-      <p>The model never sees letters. Text is cut into <b>tokens</b>: chunks of about four characters in English. Every limit and price is counted in them, and so is memory. In the example system, 1,000 tokens of chat hold about 160 MB of KV cache.</p>
+      <p>The model never sees letters or whole words. It sees <b>tokens</b>: chunks of text taken from a fixed list. In English one token is about four characters, or three quarters of a word. Common words are one token; rare words are split into pieces. Real tokenizers differ, and Claude’s is <span class="tag np">not public</span>.</p>
+      <p>Tokens are the unit for everything: the context limit, the answer limit, the bill, and the memory a conversation takes on the chips. In the <span class="tag">example</span> system, every token of conversation holds 160 KB of KV cache, so 1,000 tokens hold about 160 MB. Type below to see your own text measured:</p>
+      <textarea class="tok-in" id="tokTxt" aria-label="Type or paste text to estimate its tokens">Serving a large language model is mostly a memory problem, not a maths problem.</textarea>
+      <div class="tiles"><div><b id="tkC"></b><span>characters</span></div><div><b id="tkW"></b><span>words</span></div><div><b id="tkT"></b><span>tokens, roughly (characters ÷ 4)</span></div><div><b id="tkM"></b><span>KV memory it would hold in the example system</span></div></div>
       <figure>
         <svg viewBox="0 0 800 300" role="img" aria-label="A sentence cut into eight tokens, a ruler showing one token is about four characters, and KV memory bars of 160 megabytes at 1,000 tokens and 1.3 gigabytes at 8,000">
           <g font-size="18" fill="#202020">
-            <rect x="40" y="40" width="38" height="34" fill="#ff8059"/><text x="48" y="64">Serv</text>
-            <rect x="82" y="40" width="34" height="34" fill="#ff8059" opacity=".55"/><text x="90" y="64">ing</text>
-            <rect x="120" y="40" width="26" height="34" fill="#ff8059" opacity=".4"/><text x="128" y="64">a</text>
-            <rect x="150" y="40" width="52" height="34" fill="#ff8059" opacity=".55"/><text x="158" y="64">model</text>
-            <rect x="206" y="40" width="26" height="34" fill="#ff8059" opacity=".4"/><text x="214" y="64">is</text>
-            <rect x="236" y="40" width="60" height="34" fill="#ff8059" opacity=".55"/><text x="244" y="64">mostly</text>
-            <rect x="300" y="40" width="66" height="34" fill="#ff8059"/><text x="308" y="64">memory</text>
-            <rect x="370" y="40" width="18" height="34" fill="#ff8059" opacity=".4"/><text x="378" y="64">.</text>
+            <rect x="40" y="40" width="62" height="34" fill="#ff8059"/><text x="49" y="64">Serv</text>
+            <rect x="106" y="40" width="51" height="34" fill="#ff8059" opacity="0.55"/><text x="115" y="64">ing</text>
+            <rect x="161" y="40" width="29" height="34" fill="#ff8059" opacity="0.4"/><text x="170" y="64">a</text>
+            <rect x="194" y="40" width="73" height="34" fill="#ff8059" opacity="0.55"/><text x="203" y="64">model</text>
+            <rect x="271" y="40" width="40" height="34" fill="#ff8059" opacity="0.4"/><text x="280" y="64">is</text>
+            <rect x="315" y="40" width="84" height="34" fill="#ff8059" opacity="0.55"/><text x="324" y="64">mostly</text>
+            <rect x="403" y="40" width="84" height="34" fill="#ff8059"/><text x="412" y="64">memory</text>
+            <rect x="491" y="40" width="29" height="34" fill="#ff8059" opacity="0.4"/><text x="500" y="64">.</text>
           </g>
-          <text x="40" y="104" fill="#a5a29c" font-size="15">8 TOKENS · 38 CHARACTERS</text>
+          <text x="40" y="104" fill="#a5a29c" font-size="15">8 TOKENS · 33 CHARACTERS</text>
           <text x="40" y="150" fill="#f1eee8" font-size="18">1 token ≈ 4 characters ≈ ¾ of a word</text>
           <text x="40" y="196" fill="#a5a29c" font-size="15">KV MEMORY · 0.5 px = 1 MB</text>
           <rect x="40" y="208" width="80" height="30" fill="#76d5c1"/><text x="132" y="230" fill="#f1eee8" font-size="16">1,000 tokens = 160 MB</text>
           <rect x="40" y="248" width="640" height="30" fill="#76d5c1"/><text x="692" y="270" fill="#76d5c1" font-size="16">8k = 1.3 GB</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: where the token list comes from</summary>
+        <p><b>Building the list.</b> Before training, a tokenizer is built by finding the chunks that appear most often in a huge sample of text. The common method is called byte-pair encoding: it starts from single bytes and keeps merging the most frequent pairs. Any text can still be written, piece by piece, so no word is ever “unknown”.</p>
+        <p><b>Why the count matters.</b> Code, numbers and languages other than English usually need more tokens per word than plain English, so they cost more and fill the context faster.</p>
+        <p><b>Embeddings.</b> The first step inside the model swaps each token’s id for a long list of numbers, looked up in a table with one row per token in the list. With 150,000 entries and 12,288 numbers per row, that table alone holds about 1.8 billion numbers.</p>
+      </details>
     </section>
 
     <!-- 5. One pass -->
     <section class="panel">
       <p class="kicker">The building block</p>
       <h2>Inside one pass</h2>
-      <p>A pass is a stack of identical layers. In each one, tokens first look at each other (<b>attention</b>), then each token is processed alone by a big matrix (the <b>MLP</b>). Both add their result to a running list, so early information survives to the end.</p>
+      <p>One pass through the model is a stack of identical <b>layers</b>. First, each token is swapped for a list of thousands of numbers. Then every layer does two things. In <b>attention</b>, tokens look back at each other (chapter 5). In the <b>MLP</b> (a block of big multiplication tables, also called feed-forward), each token is processed on its own.</p>
+      <p>Each block adds its result to a running list of numbers that travels up the stack, so earlier information is never thrown away. At the top, the model scores every token in its word list and one new token comes out. In a typical model, attention holds about a third of the weights and the MLP about two thirds.</p>
       <figure>
         <svg viewBox="0 0 800 310" role="img" aria-label="One layer split into attention at one third and MLP at two thirds, repeated about 80 times along a running list">
           <text x="40" y="28" fill="#a5a29c" font-size="16">ONE LAYER · SHARE OF WEIGHTS</text>
@@ -204,13 +253,20 @@
           <text x="120" y="282" fill="#f5c76a" font-size="16">the running list: each layer adds a correction</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: sizes and the cost rule</summary>
+        <p><b>Sizes in public models.</b> <span class="tag">public</span> Llama 3 70B has 80 layers with 8,192 numbers per token; Llama 3.1 405B has 126 layers with 16,384; GPT-3 has 96 layers with 12,288; DeepSeek-V3 has 61 layers. <span class="tag np">not public</span> Claude’s layer count and width.</p>
+        <p><b>Where the weights sit.</b> Call the width of one token’s list d. Attention has four d-by-d tables (for the query, key, value and output), about 4d² numbers. A standard MLP widens to 4d and back, about 8d². That gives the one-third / two-thirds split. Modern designs shift the ratio a little, not the idea.</p>
+        <p><b>The cost rule that drives everything.</b> Each weight is used for one multiply and one add per token. So one pass costs about 2 × (number of parameters) operations per token. A 200-billion-parameter model needs about 400 billion operations per token, and must read all 200 GB of its weights (at 1 byte each) to do it. Chapter 9 shows why that ratio decides the speed.</p>
+        <p><b>The running list</b> is called the residual stream. Because each block only adds a correction, very deep stacks can still be trained, and early information is still available at the end.</p>
+      </details>
     </section>
 
     <!-- 6. Attention -->
     <section class="panel">
       <p class="kicker">The mechanism</p>
       <h2>Attention looks backwards</h2>
-      <p>The newest token asks a question, the <b>query</b>. Every earlier token offers a label (a <b>key</b>) and some content (a <b>value</b>); matches get more weight. Those keys and values never change for that chat, so the replica saves them. That saved pile is the KV cache.</p>
+      <p>Attention is how a token gathers context. The newest token asks a question, called the <b>query</b> (“what do I need?”). Every earlier token has already stored a label, its <b>key</b>, and some content, its <b>value</b>. The query is compared with every key; good matches get a bigger share. The result is a blend of the values, weighted by those shares.</p>
+      <p>A token’s key and value depend only on the tokens before it, and those never change. So instead of recomputing them on every step, the replica saves them. That saved pile of keys and values is the <b>KV cache</b>, and it is the main subject of chapters 11 to 13.</p>
       <figure>
         <svg viewBox="0 0 800 320" role="img" aria-label="The newest token's query compares with five earlier keys, and the result is a weighted blend of their values; earlier keys and values are saved">
           <g text-anchor="middle" font-size="18" fill="#f1eee8">
@@ -239,37 +295,56 @@
           <text x="120" y="292" fill="#a5a29c" font-size="16">line thickness = attention weight</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: heads, cost and order</summary>
+        <p><b>Many heads.</b> A layer runs dozens of these lookups side by side. Each one is called a <b>head</b> and learns its own view: one may track grammar, another which name a “she” refers to. Their results are joined and mixed by the output table.</p>
+        <p><b>Cost grows with context.</b> Each new token compares its query with every earlier key, so the work per token grows in step with the conversation length. Across a whole sequence, the total grows with the square of the length. That is why very long contexts get expensive in both time and memory.</p>
+        <p><b>Only looking back.</b> A token may only look at tokens before it (and itself). This rule, called the causal mask, is exactly what makes the saved keys and values reusable.</p>
+        <p><b>Word order.</b> Attention by itself has no sense of order, so position is added in. The common method (rotary embeddings, or RoPE) turns each query and key by an angle that depends on its position.</p>
+      </details>
     </section>
     <!-- 7. Weights -->
     <section class="panel">
       <p class="kicker">The hardware</p>
-      <h2>The model must fit in memory</h2>
-      <p>A model’s <b>parameters</b> are its learned numbers. <b>Precision</b> is how many bits each number uses: 16-bit takes 2 bytes, 8-bit takes 1, 4-bit takes half. For 200 billion parameters, that is 400, 200 or 100 GB.</p>
-      <p>A chip holds 80–288 GB, and weights can fill at most about 60% of it; the rest is working space and other people’s caches. So even a 200 GB model is spread over several chips.</p>
+      <h2>The weights are huge</h2>
+      <p>Every number in the model must sit in the chips’ fast memory while it serves. A model’s <b>parameters</b> are those learned numbers. <b>Precision</b> is how many bits each one uses: a 16-bit number takes 2 bytes, an 8-bit number takes 1 byte, and a 4-bit number takes half a byte. Multiply the count by the bytes each one takes, and a single chip is nowhere near enough for a large model.</p>
+      <p>Pick a model size, a precision and a chip below. Each column in the drawing is one chip: teal is weights, the dark part is room left for conversations. Weights are allowed to fill at most 60% of a chip, and chips come in fixed group sizes.</p>
+      <div class="pick" id="wPar" role="group" aria-label="Parameters in the model"><span>PARAMETERS IN THE MODEL</span>
+        <button type="button" class="secondary" data-v="70" aria-pressed="false">70B</button><button type="button" class="secondary" data-v="200" aria-pressed="true">200B</button><button type="button" class="secondary" data-v="400" aria-pressed="false">400B</button><button type="button" class="secondary" data-v="1000" aria-pressed="false">1T</button><button type="button" class="secondary" data-v="2000" aria-pressed="false">2T</button><button type="button" class="secondary" data-v="5000" aria-pressed="false">5T</button>
+      </div>
+      <div class="pick" id="wPrec" role="group" aria-label="Bits per number"><span>BITS PER NUMBER</span>
+        <button type="button" class="secondary" data-v="2" aria-pressed="false">16-bit</button><button type="button" class="secondary" data-v="1" aria-pressed="true">8-bit</button><button type="button" class="secondary" data-v="0.5" aria-pressed="false">4-bit</button>
+      </div>
+      <div class="pick" id="wChip" role="group" aria-label="Memory per chip"><span>MEMORY PER CHIP</span>
+        <button type="button" class="secondary" data-v="80" aria-pressed="false">80 GB</button><button type="button" class="secondary" data-v="141" aria-pressed="false">141 GB</button><button type="button" class="secondary" data-v="192" aria-pressed="true">192 GB</button><button type="button" class="secondary" data-v="288" aria-pressed="false">288 GB</button>
+      </div>
       <figure>
-        <svg viewBox="0 0 800 280" role="img" aria-label="Three bars show a 200 billion parameter model needs 400 gigabytes at 16-bit, 200 at 8-bit and 100 at 4-bit, with a dashed line marking a 192 gigabyte chip">
-          <text x="40" y="28" fill="#a5a29c" font-size="16">200B PARAMETERS · MEMORY NEEDED</text>
-          <text x="160" y="71" text-anchor="end" fill="#f1eee8" font-size="17">16-bit</text>
-          <rect x="180" y="50" width="400" height="30" fill="#ff8059"/>
-          <text x="590" y="71" fill="#ff8059" font-size="17">400 GB</text>
-          <text x="160" y="121" text-anchor="end" fill="#f1eee8" font-size="17">8-bit</text>
-          <rect x="180" y="100" width="200" height="30" fill="#ff8059" opacity=".8"/>
-          <text x="390" y="121" fill="#f1eee8" font-size="17">200 GB</text>
-          <text x="160" y="171" text-anchor="end" fill="#f1eee8" font-size="17">4-bit</text>
-          <rect x="180" y="150" width="100" height="30" fill="#ff8059" opacity=".6"/>
-          <text x="290" y="171" fill="#f1eee8" font-size="17">100 GB</text>
-          <path d="M372 40 V200" stroke="#f5c76a" stroke-width="2" stroke-dasharray="5 5"/>
-          <text x="382" y="38" fill="#f5c76a" font-size="16">one 192 GB chip</text>
-          <text x="180" y="238" fill="#a5a29c" font-size="16">chips range from 80 GB to 288 GB</text>
-        </svg>
+        <svg id="wSvg" viewBox="0 0 800 160" role="img" aria-label="Chips needed to hold the chosen model, each column one chip filled with weights in teal up to its share"></svg>
       </figure>
+      <div class="tiles"><div><b id="wGB"></b><span>of weights to store</span></div><div><b id="wN"></b><span>chips minimum, if weights fill at most 60% of each</span></div><div><b id="wG"></b><span>chips at the next common group size</span></div><div><b id="wRoom"></b><span>left for conversations in that group</span></div></div>
+      <p>The 8-chip example in later chapters uses more chips than capacity alone needs. Each extra chip also adds memory speed, which decides how fast a step runs (chapter 9). <span class="tag np">not public</span> Anthropic has not published the size of any Claude model. The buttons build intuition; they are not a guess.</p>
+      <details class="trace"><summary>Go deeper: why 60%, why groups, real chips</summary>
+        <code class="eq">weight bytes = parameters × bytes per parameter</code>
+        <p>200 billion parameters at 1 byte each (8-bit) is 200 GB. At 2 bytes (16-bit) it is 400 GB. At half a byte (4-bit) it is 100 GB. Lower precision trades a little accuracy for a lot of memory and speed (chapter 19).</p>
+        <p><b>Why only 60%.</b> The rest of the memory is not spare. It holds every active conversation’s KV cache, temporary working numbers, buffers for talking to other chips, and the compiled programs. If the weights filled the chip there would be no room to serve anyone. The more room is left, the more people fit at once (chapter 11).</p>
+        <p><b>Why group sizes jump.</b> Chips are sold in boxes of 8, linked at full speed inside the box, and a rack can link 72. Groups follow those physical shapes, so you round up to 8, 16, 32, 64 or 72 instead of using an exact count.</p>
+        <p><b>Mixture-of-experts models</b> (chapter 16) store a large total but use only a slice per token. The total is what must fit in memory.</p>
+        <div class="table-wrap"><table>
+          <tr><th>Chip <span class="tag">public</span></th><th>Memory</th><th>Memory speed</th><th>8-bit maths, dense</th></tr>
+          <tr><td>NVIDIA H100</td><td>80 GB</td><td>3.35 TB/s</td><td>about 2.0 PFLOPS</td></tr>
+          <tr><td>NVIDIA H200</td><td>141 GB</td><td>4.8 TB/s</td><td>about 2.0 PFLOPS</td></tr>
+          <tr><td>NVIDIA B200</td><td>192 GB</td><td>8 TB/s</td><td>about 4.5 PFLOPS</td></tr>
+          <tr><td>AMD MI355X</td><td>288 GB</td><td>8 TB/s</td><td>not used here</td></tr>
+        </table></div>
+        <p>TB/s is terabytes per second; one PFLOPS is a thousand trillion (10¹⁵) operations per second. “Dense” means without a trick that skips zeros, which the headline spec-sheet numbers often include. NVIDIA’s DGX B200 page lists 180 GB per chip as usable, against 192 GB on the chip. Google TPUs and AWS Trainium chips have their own sizes in the same range. Anthropic has said it uses three chip platforms (Google TPUs, Amazon Trainium and NVIDIA GPUs), which is why this page says “chip” rather than “GPU”.</p>
+      </details>
     </section>
 
     <!-- 8. Inside a chip -->
     <section class="panel">
       <p class="kicker">Inside the chip</p>
       <h2>A kitchen beside a warehouse</h2>
-      <p>Inside a chip, a small <b>compute die</b> does the arithmetic, surrounded by stacks of <b>HBM</b> (high-bandwidth memory). HBM is the chip’s main memory: big and fast, but far slower than the tiny <b>SRAM</b> on the die. <b>Tensor cores</b> (specialised matrix multipliers) do the maths. A B200-class chip can do about 560 operations for every byte it reads from HBM.</p>
+      <p>A chip is a small area that computes, called the <b>compute die</b>, with thousands of multiply-and-add units and tens of megabytes of very fast on-chip memory (<b>SRAM</b>). Around it sit stacks of <b>HBM</b> (high-bandwidth memory): the chip’s main memory, where the weights and KV caches live. Every step away from the maths is bigger and slower: SRAM, then HBM, then other chips, then the computer’s ordinary memory, then disk.</p>
+      <p>The bar lengths below are read speeds on a log scale, so each gridline is ten times faster than the one before. Keep one number in mind: a B200-class chip can do about 560 operations for every byte it can fetch from HBM. That ratio comes back in chapter 9.</p>
       <figure>
         <svg viewBox="0 0 800 320" role="img" aria-label="A log-scale ladder of read speeds: on-chip SRAM about 30 terabytes per second, HBM 8, PCIe 64 gigabytes per second, network 50, and SSD 10">
           <text x="40" y="28" fill="#a5a29c" font-size="16">READ SPEED · LOG SCALE</text>
@@ -296,13 +371,20 @@
           <text x="40" y="294" fill="#a5a29c" font-size="14">each gridline = 10×</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: the memory ladder</summary>
+        <p><b>HBM</b> is ordinary memory chips stacked in layers and mounted right beside the compute die, on the same package. That closeness is what gives it terabytes per second.</p>
+        <p><b>On-chip SRAM</b> is far faster but tiny. An H100 has about 33 MB of registers, about 33 MB of shared memory and level-1 cache, and 50 MB of level-2 cache. Fast programs try to do as much work as possible on data already in SRAM, which is the idea behind FlashAttention (chapter 21). <span class="tag">example</span> The SRAM speed drawn is a rough total; vendors do not publish one number for it.</p>
+        <p><b>The arithmetic</b> is done by tensor cores, units built to multiply small blocks of a table at once. A B200-class chip does about 4.5 thousand trillion 8-bit operations per second, while HBM delivers 8 trillion bytes per second: about 560 operations per byte.</p>
+        <p><b>Below HBM.</b> The computer’s main memory, reached over a PCIe link, gives about 64 GB/s. A fast SSD gives around 7 to 14 GB/s. Servers can park rarely used KV caches there (chapter 13), but reading them back is far slower than HBM, so it is a fallback, not a plan.</p>
+      </details>
     </section>
 
     <!-- 9. Prefill vs decode -->
     <section class="panel">
       <p class="kicker">Two workloads</p>
       <h2>Reading is parallel, writing is serial</h2>
-      <p><b>Prefill</b> reads the whole prompt at once: all tokens are known, so the chip runs one large matrix multiply. <b>Decode</b> writes the answer one token per pass, because each token depends on the last. The wait for the first token is called <b>time to first token</b>; the gap between later tokens is one decode step.</p>
+      <p>Your prompt is read in one big parallel pass; the answer is written one token per pass. These are two very different workloads. In <b>prefill</b> every prompt token is already known, so the chip handles them all as one large multiplication and reads each weight once for thousands of tokens. The arithmetic units stay busy, so prefill is limited by arithmetic.</p>
+      <p>In <b>decode</b>, token 501 needs token 500, so each pass makes just one token per conversation and must read all the weights to do it. The arithmetic units mostly wait for memory, so decode is limited by memory speed. You feel two numbers: <b>time to first token</b> (queue plus prefill; a long prompt hurts it) and <b>time between tokens</b> (one decode step; a busy replica hurts it). In the drawing, a 3,000-token prompt takes a few tenths of a second, then each token takes about 20 ms.</p>
       <figure>
         <svg viewBox="0 0 800 310" role="img" aria-label="A 3,000-token prompt is read in one parallel prefill pass, then the answer is written as six sequential tokens about 20 milliseconds apart">
           <text x="40" y="30" fill="#a5a29c" font-size="16">SAME REQUEST · TWO WORKLOADS</text>
@@ -322,15 +404,20 @@
           <text x="40" y="280" fill="#f1eee8" font-size="17">time between tokens = one step</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: why output costs more than input</summary>
+        <p><b>Why output is priced higher.</b> Reading a prompt token shares one trip to memory with thousands of other tokens. Writing a token shares its trip only with the other conversations running at that moment. Providers commonly price output several times higher than input for this reason.</p>
+        <p><b>Size of prefill.</b> It costs about 2 × parameters operations per prompt token. For the 200B example, 3,000 tokens is 1.2 thousand trillion operations: about 70 ms of the whole 8-chip replica at the example’s 50% arithmetic efficiency. Real systems land at a few hundred milliseconds once attention, scheduling and communication are included.</p>
+      </details>
     </section>
 
     <!-- 10. Cookbook -->
     <section class="panel">
       <p class="kicker">The analogy</p>
-      <h2>The cookbook is the bottleneck</h2>
-      <p>Think of a chef who must haul the entire cookbook from a warehouse for every dish. Cooking is quick; the road is slow. A decode step is that trip: it reads all the weights to make one token per conversation. Put 128 conversations on the same step and one haul makes 128 tokens. That is <b>batching</b>.</p>
+      <h2>Why writing is slow</h2>
+      <p>Picture a chef who must haul the entire cookbook from a far warehouse to cook one dish. The road is the bottleneck, not the kitchen. In the analogy, the cookbook is the weights, the haul is reading them from HBM, one dish is one token for one person, and cooking is the arithmetic.</p>
+      <p>For one person, the 200 GB haul feeds one dish and the kitchen is busy only about 0.4% of the time. The trip is the same size no matter how many dishes you cook, so the fix is to cook for many people per trip. In the <span class="tag">example</span> system, about 230 people per trip keeps the kitchen fully busy. That is <b>batching</b>. Where the analogy breaks: each dish also needs that person’s own KV cache, which is hauled too (chapter 11).</p>
       <figure>
-        <svg viewBox="0 0 800 320" role="img" aria-label="One chat makes the chip read 200 gigabytes of weights for one token; 128 chats share the same read and produce 128 tokens">
+        <svg viewBox="0 0 800 320" role="img" aria-label="One chat makes the chip read 200 gigabytes of weights for one token while the kitchen sits almost idle; 230 chats share the same read and keep it fully busy">
           <defs>
             <marker id="arw10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#f5c76a"/></marker>
           </defs>
@@ -342,87 +429,88 @@
           <rect x="250" y="60" width="100" height="70" fill="#ff8059" opacity=".25"/>
           <text x="300" y="90" text-anchor="middle" fill="#f1eee8" font-size="16">compute</text>
           <text x="300" y="114" text-anchor="middle" fill="#ff8059" font-size="16">1 token</text>
-          <text x="40" y="178" fill="#f1eee8" font-size="17">128 CHATS</text>
+          <text x="40" y="178" fill="#f1eee8" font-size="17">230 CHATS</text>
           <rect x="40" y="200" width="90" height="70" fill="#76d5c1" opacity=".22"/>
           <text x="85" y="240" text-anchor="middle" fill="#76d5c1" font-size="16">weights</text>
           <line x1="136" y1="235" x2="238" y2="235" stroke="#f5c76a" stroke-width="6" marker-end="url(#arw10)"/>
           <text x="187" y="222" text-anchor="middle" fill="#f5c76a" font-size="15">same 200 GB</text>
           <rect x="250" y="200" width="100" height="70" fill="#ff8059" opacity=".25"/>
           <text x="300" y="230" text-anchor="middle" fill="#f1eee8" font-size="16">compute</text>
-          <text x="300" y="254" text-anchor="middle" fill="#ff8059" font-size="16">128 tokens</text>
-          <text x="420" y="95" fill="#a5a29c" font-size="16">the road is the limit</text>
-          <text x="420" y="235" fill="#a5a29c" font-size="16">same road, more dishes</text>
+          <text x="300" y="254" text-anchor="middle" fill="#ff8059" font-size="16">230 tokens</text>
+          <text x="420" y="95" fill="#a5a29c" font-size="16">kitchen busy about 0.4%</text>
+          <text x="420" y="235" fill="#a5a29c" font-size="16">kitchen busy about 100%</text>
           <text x="40" y="306" fill="#f1eee8" font-size="17">a batch shares one read of the weights</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: the ratio that decides it</summary>
+        <p><b>Operations per byte.</b> A chip can do a fixed number of operations per byte it reads, set by its hardware. For a B200-class chip that is about 4.5 thousand trillion operations per second divided by 8 trillion bytes per second: roughly 560 operations per byte. Writing one token for one person does about 2 operations per weight byte at 8 bits, 280 times below what the chip could handle. The arithmetic units are starved.</p>
+        <p><b>Arithmetic intensity</b> is the name for operations done per byte moved. Decode for one person has an intensity near 2; prefill can reach thousands. A chip’s balance point is called its ridge. Below the ridge a job is limited by memory, above it by arithmetic. This picture is called the roofline model.</p>
+        <code class="eq">time per step = the longer of (bytes moved ÷ memory speed) and (operations ÷ arithmetic speed)</code>
+        <p><b>The fix is to raise the intensity.</b> Serve B people from one read of the weights and the intensity becomes about 2 × B. With the example’s efficiencies (60% of peak memory speed, 50% of peak arithmetic) the balance point is about 230 people. Past it, the kitchen is the limit and extra people no longer come free.</p>
+        <p><b>Why not always run full?</b> Each person then waits for a longer step, and all their KV caches must fit in memory. The next two chapters are about exactly that trade.</p>
+      </details>
     </section>
-    <!-- 11. Batching curve -->
+    <!-- 11. Batching -->
     <section class="panel">
       <p class="kicker">The trade-off</p>
-      <h2>Batching shares one read</h2>
-      <p>One read of the weights can serve everyone in the batch. Total output rises as the batch grows, but each person’s step gets slower and memory fills. Operators pick a point: small batches for snappy chat, large batches for cheap bulk work.</p>
+      <h2>Batching: sharing the haul</h2>
+      <p>Put more people on the same replica and the total output rises almost for free, until memory or arithmetic runs out. Here is the <span class="tag">example</span> replica used for the rest of the page: 8 chips, running a 200-billion-parameter model at 8-bit. Choose how many people share it and how long their conversations are.</p>
+      <div class="pick" id="bPick" role="group" aria-label="People sharing the replica"><span>PEOPLE SHARING THE REPLICA</span>
+        <button type="button" class="secondary" data-v="1" aria-pressed="false">1</button><button type="button" class="secondary" data-v="8" aria-pressed="false">8</button><button type="button" class="secondary" data-v="32" aria-pressed="false">32</button><button type="button" class="secondary" data-v="64" aria-pressed="false">64</button><button type="button" class="secondary" data-v="128" aria-pressed="true">128</button><button type="button" class="secondary" data-v="256" aria-pressed="false">256</button><button type="button" class="secondary" data-v="512" aria-pressed="false">512</button>
+      </div>
+      <div class="pick" id="cPick" role="group" aria-label="Conversation length so far"><span>CONVERSATION LENGTH SO FAR</span>
+        <button type="button" class="secondary" data-v="1000" aria-pressed="false">1k tokens</button><button type="button" class="secondary" data-v="8000" aria-pressed="true">8k</button><button type="button" class="secondary" data-v="32000" aria-pressed="false">32k</button><button type="button" class="secondary" data-v="128000" aria-pressed="false">128k</button>
+      </div>
       <figure>
-        <svg viewBox="0 0 800 350" role="img" aria-label="At 8,000-token chats, total output rises from 23 to about 3,100 tokens per second as the batch grows to 900, while each person's speed falls from 23 to 3.5 tokens per second">
-          <text x="120" y="28" fill="#ff8059" font-size="17">total output · tokens/s</text>
-          <text x="650" y="28" text-anchor="end" fill="#f5c76a" font-size="16">memory wall · 900</text>
-          <path d="M120 40 V180" stroke="#57534f" stroke-width="2"/>
-          <text x="110" y="184" text-anchor="end" fill="#a5a29c" font-size="14">0</text>
-          <text x="110" y="124" text-anchor="end" fill="#a5a29c" font-size="14">1.6k</text>
-          <text x="110" y="64" text-anchor="end" fill="#a5a29c" font-size="14">3.2k</text>
-          <polyline points="120.6,169.1 129.6,157.5 158.4,130.7 196.8,108.9 273.6,85.5 427.2,65.3 660,53.4" fill="none" stroke="#ff8059" stroke-width="3"/>
-          <g fill="#ff8059"><circle cx="120.6" cy="169.1" r="4"/><circle cx="129.6" cy="157.5" r="4"/><circle cx="158.4" cy="130.7" r="4"/><circle cx="196.8" cy="108.9" r="4"/><circle cx="273.6" cy="85.5" r="4"/><circle cx="427.2" cy="65.3" r="4"/><circle cx="660" cy="53.4" r="4"/></g>
-          <text x="205" y="126" fill="#f1eee8" font-size="15">128 people</text>
-          <text x="120" y="205" fill="#76d5c1" font-size="17">each person · tokens/s</text>
-          <path d="M120 215 V310" stroke="#57534f" stroke-width="2"/>
-          <text x="110" y="314" text-anchor="end" fill="#a5a29c" font-size="14">0</text>
-          <text x="110" y="260" text-anchor="end" fill="#a5a29c" font-size="14">12.5</text>
-          <text x="110" y="220" text-anchor="end" fill="#a5a29c" font-size="14">25</text>
-          <polyline points="120.6,227.2 129.6,233.4 158.4,247.6 196.8,259.3 273.6,271.8 427.2,282.6 660,288.9" fill="none" stroke="#76d5c1" stroke-width="3"/>
-          <g fill="#76d5c1"><circle cx="120.6" cy="227.2" r="4"/><circle cx="129.6" cy="233.4" r="4"/><circle cx="158.4" cy="247.6" r="4"/><circle cx="196.8" cy="259.3" r="4"/><circle cx="273.6" cy="271.8" r="4"/><circle cx="427.2" cy="282.6" r="4"/><circle cx="660" cy="288.9" r="4"/></g>
-          <text x="210" y="250" fill="#f1eee8" font-size="15">12.7 each</text>
-          <path d="M660 40 V310" stroke="#f5c76a" stroke-width="2" stroke-dasharray="5 5"/>
-          <path d="M120 310 H720" stroke="#57534f" stroke-width="2"/>
-          <g fill="#a5a29c" font-size="14" text-anchor="middle">
-            <text x="120" y="334">0</text><text x="270" y="334">250</text><text x="420" y="334">500</text><text x="570" y="334">750</text><text x="720" y="334">1,000</text>
-          </g>
-          <text x="748" y="334" fill="#a5a29c" font-size="14">people</text>
-        </svg>
+        <svg id="bSvg" viewBox="0 0 800 520" role="img" aria-label="Time for one step split into memory reading, arithmetic and overhead, and total output for each batch size at the chosen conversation length"></svg>
       </figure>
+      <div class="tiles"><div><b id="bU"></b><span>tokens per second each person sees</span></div><div><b id="bT"></b><span>tokens per second from the whole replica</span></div><div><b id="bB"></b><span>what limits the step</span></div><div id="bFitT"><b id="bF"></b><span id="bFs">people fit in memory at this length</span></div></div>
+      <p>At low batch the step barely changes, so total output climbs almost in a straight line. As more people’s KV caches have to be read, or the arithmetic limit is reached, the step stretches and each person slows down. Longer conversations hit that wall sooner, because every person’s cache is a bigger read. Operators choose a point: a product promising fast streaming runs fewer people per replica; a cheap bulk product runs more. Same chips, different prices.</p>
+      <details class="trace"><summary>Go deeper: the example system and its step model</summary>
+        <div class="table-wrap"><table>
+          <tr><th colspan="2">The example system <span class="tag">example</span></th></tr>
+          <tr><td>Chips in the replica</td><td>8, each 192 GB, 8 TB/s, 4.5 PFLOPS (8-bit, dense)</td></tr>
+          <tr><td>Efficiency assumed</td><td>60% of peak memory speed, 50% of peak arithmetic</td></tr>
+          <tr><td>Model</td><td>200B dense, 8-bit, 80 layers, 8 KV heads of 128 numbers, width 12,288</td></tr>
+          <tr><td>KV cache per token</td><td>2 × 80 × 8 × 128 × 1 byte = 160 KB</td></tr>
+          <tr><td>Fixed overhead per step</td><td>2 ms (syncing chips, launching work)</td></tr>
+          <tr><td>Memory usable</td><td>90% of the total</td></tr>
+        </table></div>
+        <code class="eq">memory time = (weights + people × length × KV per token) ÷ memory speed<br>arithmetic time = people × (2 × parameters + attention work) ÷ arithmetic speed<br>step = the longer of the two + overhead</code>
+        <p>Each person gets one token per step, so their speed is 1 ÷ step, and the replica’s output is people ÷ step. For example, at 128 people and 8k tokens the step takes about 11.6 ms: about 86 tokens per second for each person and about 11,000 for the replica.</p>
+        <p><b>What the example leaves out.</b> Real systems add scheduler delays, uneven expert loads, time spent picking tokens, and prompt-reading work that interrupts writing. They also use tricks such as speculative decoding (chapter 20) that change the curve.</p>
+      </details>
     </section>
 
-    <!-- 12. KV cache capacity -->
+    <!-- 12. KV cache -->
     <section class="panel">
       <p class="kicker">The KV cache</p>
-      <h2>Each chat owns a growing pile</h2>
-      <p>For every token, each layer stores a <b>key</b> and a <b>value</b>. In the example that is 160 KB per token, so an 8,000-token chat owns about 1.3 GB. The weights are shared; these piles are not. Memory, not arithmetic, caps how many chats fit.</p>
+      <h2>The KV cache: what each person owns</h2>
+      <p>Instead of recomputing the key and value of every earlier token on every step, the replica saves them. In the drawing, each row is one step of writing and each cell is one token’s key and value. Without a cache, every step rebuilds all of them (teal). With a cache, each step builds just one new pair and reads the rest back from memory (gold).</p>
+      <p>That saved pile is private to each conversation, and it grows with every token. Pick a conversation length to see how big one pile gets and how many such conversations fit beside the weights in the <span class="tag">example</span> system, which has 1,182 GB spare after the weights.</p>
+      <div class="pick" id="kvPick" role="group" aria-label="Conversation length"><span>CONVERSATION LENGTH</span>
+        <button type="button" class="secondary" data-v="1000" aria-pressed="false">1k</button><button type="button" class="secondary" data-v="4000" aria-pressed="false">4k</button><button type="button" class="secondary" data-v="8000" aria-pressed="true">8k</button><button type="button" class="secondary" data-v="32000" aria-pressed="false">32k</button><button type="button" class="secondary" data-v="128000" aria-pressed="false">128k</button><button type="button" class="secondary" data-v="200000" aria-pressed="false">200k</button><button type="button" class="secondary" data-v="1000000" aria-pressed="false">1M</button>
+      </div>
       <figure>
-        <svg viewBox="0 0 800 310" role="img" aria-label="With 1,182 gigabytes free after weights, an 8,000-token chat needs 1.3 gigabytes and 900 fit, a 128,000-token chat needs 21 gigabytes and 56 fit, and a million-token chat needs 164 gigabytes and 7 fit">
-          <text x="40" y="28" fill="#a5a29c" font-size="16">1,182 GB FREE AFTER WEIGHTS</text>
-          <text x="40" y="58" fill="#f1eee8" font-size="17">KV CACHE · 160 KB PER TOKEN</text>
-          <text x="300" y="92" fill="#a5a29c" font-size="15">CACHE PER CHAT</text>
-          <text x="780" y="92" text-anchor="end" fill="#a5a29c" font-size="15">CHATS THAT FIT</text>
-          <text x="40" y="132" fill="#f1eee8" font-size="17">8k tokens</text>
-          <rect x="300" y="110" width="5" height="32" fill="#76d5c1"/>
-          <text x="315" y="132" fill="#76d5c1" font-size="16">1.3 GB</text>
-          <text x="780" y="132" text-anchor="end" fill="#f1eee8" font-size="17">900 chats</text>
-          <text x="40" y="192" fill="#f1eee8" font-size="17">128k tokens</text>
-          <rect x="300" y="170" width="46" height="32" fill="#76d5c1"/>
-          <text x="356" y="192" fill="#76d5c1" font-size="16">21 GB</text>
-          <text x="780" y="192" text-anchor="end" fill="#f1eee8" font-size="17">56 chats</text>
-          <text x="40" y="252" fill="#f1eee8" font-size="17">1M tokens</text>
-          <rect x="300" y="230" width="361" height="32" fill="#76d5c1"/>
-          <text x="652" y="252" text-anchor="end" fill="#202020" font-size="16">164 GB</text>
-          <text x="780" y="252" text-anchor="end" fill="#f1eee8" font-size="17">7 chats</text>
-          <text x="40" y="292" fill="#f5c76a" font-size="16">memory, not arithmetic, sets the cap</text>
-        </svg>
+        <svg id="kvSvg" viewBox="0 0 800 300" role="img" aria-label="Left: without a cache 36 key-value pairs are rebuilt over eight steps; with a cache 8 are built and 28 read back. Right: people per replica for each conversation length"></svg>
       </figure>
+      <div class="tiles"><div><b id="kvGB"></b><span>of KV cache for this one conversation</span></div><div><b id="kvN"></b><span>conversations like it fit beside the weights</span></div></div>
+      <p>Memory, not arithmetic, is what runs out first for long conversations. That is why per-person speed drops as chats get long, and why long-context requests are priced higher.</p>
+      <details class="trace"><summary>Go deeper: the size formula and the real cost</summary>
+        <code class="eq">KV bytes per token = 2 × layers × KV heads × head size × bytes per number</code>
+        <p>The example model has 80 layers, 8 KV heads and 128 numbers per head at 1 byte: 2 × 80 × 8 × 128 × 1 = 163,840 bytes, about 160 KB per token. The 2 is for keys and values. Multiply by the conversation length to get the pile’s size.</p>
+        <p><b>Where the saving comes from.</b> Without a cache, writing token n means rebuilding keys and values for tokens 1 to n, so the total work over an answer grows with the square of its length. With the cache, each step builds exactly one new pair. The price is memory that grows steadily with length for as long as the conversation stays active.</p>
+        <p><b>Reading it back is the real cost.</b> Every writing step reads every person’s whole cache from memory, on top of reading the weights once. At long lengths the cache reads take most of the step.</p>
+        <p><b>Memory is the cap.</b> People per replica ≈ (usable memory − weights) ÷ (cache size of one conversation). At 8k tokens the example fits about 900, at 128k about 56, and at 1M tokens about 7. The arithmetic might support more, but the memory does not.</p>
+      </details>
     </section>
 
     <!-- 13. Shrinking the cache -->
     <section class="panel">
       <p class="kicker">Shrinking the cache</p>
       <h2>Share the keys and values</h2>
-      <p>Attention can let several <b>query heads</b> share one set of keys and values. The questions stay separate; the stored answers shrink. MHA stores one pair per head, <b>GQA</b> one per group, and <b>MQA</b> one for all. <b>MLA</b> compresses each token into a small vector instead.</p>
+      <p>Remember that a layer runs many attention heads side by side (chapter 5). The trick: let many heads share a few stored keys and values. The question each head asks stays separate; the stored answers do not. Fewer stored pairs means a smaller cache and fewer bytes read every step.</p>
+      <p>The original design, <b>multi-head attention</b> (MHA), stores a key and value for every head. <b>Grouped-query attention</b> (GQA) splits the heads into groups with one pair per group. <b>Multi-query attention</b> (MQA) shares one pair among all heads. <b>Multi-head latent attention</b> (MLA) instead stores one small compressed list per token and expands it when needed. The bars count stored numbers per token, per layer, for an <span class="tag">example</span> with 64 heads of 128 numbers.</p>
       <figure>
         <svg viewBox="0 0 800 300" role="img" aria-label="Stored numbers per token per layer: MHA 16,384, GQA 2,048, MQA 256 and MLA 576">
           <text x="40" y="28" fill="#a5a29c" font-size="16">NUMBERS STORED PER TOKEN, PER LAYER</text>
@@ -441,13 +529,24 @@
           <text x="40" y="280" fill="#f5c76a" font-size="16">fewer stored numbers, more chats fit</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: the four designs and other tricks</summary>
+        <ul>
+          <li><b>MHA.</b> Every head stores its own keys and values. Biggest cache: 2 × 64 × 128 = 16,384 numbers.</li>
+          <li><b>MQA.</b> One key-value pair shared by all heads. Smallest cache (2 × 1 × 128 = 256), with some loss of quality. Proposed by Noam Shazeer in 2019.</li>
+          <li><b>GQA.</b> Heads are split into groups, one pair per group; with 8 groups that is 2 × 8 × 128 = 2,048. A middle path that keeps most of the quality. <span class="tag">public</span> Used in Llama 2 70B and Llama 3, among others.</li>
+          <li><b>MLA.</b> Used in DeepSeek-V2 and V3. <span class="tag">public</span> DeepSeek-V3 keeps 512 compressed numbers plus 64 for position: 576 per token per layer.</li>
+        </ul>
+        <p><b>Other ways to shrink it.</b> Some layers only look at the last few thousand tokens (a sliding window), so their cache stops growing. Keys and values can be stored in 8-bit or 4-bit instead of 16-bit. Tokens that attention rarely uses can be dropped or compressed. Some layer types keep a fixed-size summary instead of a growing list, and are often mixed with a few ordinary attention layers.</p>
+        <p><span class="tag np">not public</span> Which of these Claude models use. The point is the pressure: every byte shaved from the cache is room for more people per replica.</p>
+      </details>
     </section>
 
     <!-- 14. Paging and shared prefixes -->
     <section class="panel">
       <p class="kicker">Paging and sharing</p>
       <h2>Hand out memory in blocks</h2>
-      <p>Old servers reserved the longest possible answer, so most of the slab sat empty. <b>PagedAttention</b> (vLLM, 2023) hands out small blocks only when needed, and identical prefixes can be stored once. In the paper, real token data used just 20–38% of KV memory before paging.</p>
+      <p>A conversation’s final length is unknown when it starts. Early servers reserved one continuous slab of memory sized for the longest possible answer, so most of it sat empty. The fix borrows an idea from how a computer’s operating system hands out memory: give out small fixed <b>blocks</b> (often 16 tokens each) only when a conversation needs one, and keep a small table of where each conversation’s blocks are.</p>
+      <p>Conversations that begin with the same text, such as the same long instructions, have identical keys and values for that part. So that shared <b>prefix</b> can be stored once and pointed to by everyone. The PagedAttention paper (vLLM, 2023) found that earlier systems used only 20.4% to 38.2% of their KV memory for real data, and reported 2 to 4 times more throughput at the same delay after fixing it.</p>
       <figure>
         <svg viewBox="0 0 800 440" role="img" aria-label="Reserved memory has 19 of 48 cells real and the rest empty; paged memory has 22 of 32 cells real; three chats reuse one shared prefix stored once">
           <text x="40" y="28" fill="#a5a29c" font-size="16">THREE WAYS TO HOLD KV MEMORY</text>
@@ -496,13 +595,20 @@
           <text x="400" y="350" fill="#f1eee8" font-size="16">one copy, three chats</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: prompt caching, lifetimes and tiers</summary>
+        <p><b>Prompt caching.</b> Blocks are labelled by a fingerprint (a hash) of their contents plus everything before them. A new request that matches reuses the blocks and skips reading that part of the prompt. This is the mechanism behind the prompt caching that API providers sell: cached input tokens are cheaper because they cost memory, not arithmetic.</p>
+        <p><b>Why caches expire quickly.</b> A cached prefix takes scarce HBM that could hold live conversations. Servers throw out the blocks used least recently, so entries typically live minutes, not hours, unless moved to a slower tier.</p>
+        <p><b>Tiers.</b> Cold blocks can move from HBM to the computer’s main memory, to SSD, or to a shared pool over the network; the public Mooncake system describes this. Reading them back is sometimes slower than recomputing, so schedulers choose.</p>
+        <p><b>When memory fills.</b> The scheduler may pause a conversation: move its blocks out, or drop them and recompute later. Good scheduling keeps this rare.</p>
+        <p><span class="tag np">not public</span> Anthropic’s internal design. Prompt caching is a documented product feature; the machinery here is the public research it most resembles.</p>
+      </details>
     </section>
 
     <!-- LAB -->
     <section class="panel">
       <p class="kicker">Try it</p>
       <h2>How many chats fit?</h2>
-      <p>The example system has 1,182 GB of KV room after the weights, and every token costs 160 KB. Set the conversation length, the maximum a server reserves per chat, and how much of each conversation is a shared prefix. Then compare three allocation policies against the true count.</p>
+      <p>Now try the three ideas together. The example system has 1,182 GB of room for KV caches after the weights, and every token costs 160 KB. Set how long each conversation is, the maximum an old-style server reserves for each one, and how much of each conversation is a shared prefix. The bars compare how many chats fit under each memory policy; the dashed line is the best case, paging plus sharing.</p>
       <div class="lab"><div class="lab-grid">
         <div class="controls">
           <div class="control"><label for="len">conversation length <output id="len-o"></output></label><input id="len" type="range" min="2000" max="128000" step="2000" value="8000"></div>
@@ -525,10 +631,14 @@
     <section class="panel">
       <p class="kicker">Many chips</p>
       <h2>Four ways to cut a model</h2>
-      <p><b>Tensor parallelism</b> slices every matrix across chips. <b>Pipeline parallelism</b> gives each chip a stretch of layers. <b>Expert parallelism</b> spreads experts. <b>Replication</b> copies the whole model. The first needs the fastest wires, the second creates idle bubbles, and the third needs all-to-all traffic.</p>
+      <p>One chip cannot hold the model, so it is cut up. How it is cut decides what has to travel between chips, and how fast the wires must be. There are four basic cuts, and real systems combine several. Tap one to highlight it:</p>
+      <div class="pick" id="cutPick" role="group" aria-label="Way to split the model"><span>FOUR WAYS TO CUT</span>
+        <button type="button" class="secondary" data-v="0" aria-pressed="true">Slice each table</button><button type="button" class="secondary" data-v="1" aria-pressed="false">Split by layers</button><button type="button" class="secondary" data-v="2" aria-pressed="false">Split experts</button><button type="button" class="secondary" data-v="3" aria-pressed="false">Copy everything</button>
+      </div>
+      <p class="readout" id="cutNote"></p>
       <figure>
         <svg viewBox="0 0 800 360" role="img" aria-label="Four cuts: tensor slices every matrix, pipeline puts layer groups in stages, experts spread across chips, and replication copies the whole model">
-          <text x="40" y="38" fill="#ff8059" font-size="16">TENSOR</text>
+          <g id="cut0"><text x="40" y="38" fill="#ff8059" font-size="16">TENSOR</text>
           <g>
             <rect x="60" y="54" width="67" height="22" fill="#ff8059"/><rect x="131" y="54" width="67" height="22" fill="#ff8059" opacity=".8"/><rect x="202" y="54" width="67" height="22" fill="#ff8059" opacity=".6"/><rect x="273" y="54" width="67" height="22" fill="#ff8059" opacity=".4"/>
           </g>
@@ -536,33 +646,47 @@
             <rect x="60" y="90" width="60" height="34"/><rect x="130" y="90" width="60" height="34"/><rect x="200" y="90" width="60" height="34"/><rect x="270" y="90" width="60" height="34"/>
           </g>
           <g fill="#f1eee8" font-size="14" text-anchor="middle"><text x="90" y="112">chip</text><text x="160" y="112">chip</text><text x="230" y="112">chip</text><text x="300" y="112">chip</text></g>
-          <text x="60" y="150" fill="#a5a29c" font-size="15">every matrix sliced</text>
-          <text x="420" y="38" fill="#76d5c1" font-size="16">PIPELINE</text>
+          <text x="60" y="150" fill="#a5a29c" font-size="15">every table sliced</text></g>
+          <g id="cut1"><text x="420" y="38" fill="#76d5c1" font-size="16">PIPELINE</text>
           <g fill="#2f2d2a">
             <rect x="430" y="70" width="60" height="40"/><rect x="500" y="70" width="60" height="40"/><rect x="570" y="70" width="60" height="40"/><rect x="640" y="70" width="60" height="40"/>
           </g>
           <g fill="#f1eee8" font-size="14" text-anchor="middle"><text x="460" y="95">1-20</text><text x="530" y="95">21-40</text><text x="600" y="95">41-60</text><text x="670" y="95">61-80</text></g>
           <path d="M492 85 l6 5 -6 5 z" fill="#76d5c1"/><path d="M562 85 l6 5 -6 5 z" fill="#76d5c1"/><path d="M632 85 l6 5 -6 5 z" fill="#76d5c1"/>
-          <text x="430" y="150" fill="#a5a29c" font-size="15">layers in stages</text>
-          <text x="40" y="210" fill="#f5c76a" font-size="16">EXPERTS · pick a few</text>
+          <text x="430" y="150" fill="#a5a29c" font-size="15">layers in stages</text></g>
+          <g id="cut2"><text x="40" y="210" fill="#f5c76a" font-size="16">EXPERTS · pick a few</text>
           <circle cx="80" cy="270" r="14" fill="#f5c76a"/><text x="80" y="275" text-anchor="middle" fill="#202020" font-size="14">R</text>
           <g fill="#2f2d2a"><rect x="140" y="222" width="50" height="22"/><rect x="140" y="252" width="50" height="22"/><rect x="140" y="282" width="50" height="22"/><rect x="140" y="312" width="50" height="22"/></g>
           <g fill="#f1eee8" font-size="14" text-anchor="middle"><text x="165" y="237">E1</text><text x="165" y="267">E2</text><text x="165" y="297">E3</text><text x="165" y="327">E4</text></g>
-          <g stroke="#f5c76a" stroke-width="2" fill="none"><path d="M94 270 L140 233"/><path d="M94 270 L140 263"/><path d="M94 270 L140 293"/><path d="M94 270 L140 323"/></g>
-          <text x="420" y="210" fill="#c3b8ff" font-size="16">REPLICA · full copies</text>
+          <g stroke="#f5c76a" stroke-width="2" fill="none"><path d="M94 270 L140 233"/><path d="M94 270 L140 263"/><path d="M94 270 L140 293"/><path d="M94 270 L140 323"/></g></g>
+          <g id="cut3"><text x="420" y="210" fill="#c3b8ff" font-size="16">REPLICA · full copies</text>
           <circle cx="460" cy="270" r="14" fill="#c3b8ff"/><text x="460" y="275" text-anchor="middle" fill="#202020" font-size="14">R</text>
           <g fill="#2f2d2a"><rect x="520" y="230" width="50" height="22"/><rect x="520" y="260" width="50" height="22"/><rect x="520" y="290" width="50" height="22"/></g>
           <g fill="#f1eee8" font-size="14" text-anchor="middle"><text x="545" y="245">full</text><text x="545" y="275">full</text><text x="545" y="305">full</text></g>
-          <g stroke="#c3b8ff" stroke-width="2" fill="none"><path d="M474 270 L520 241"/><path d="M474 270 L520 271"/><path d="M474 270 L520 301"/></g>
+          <g stroke="#c3b8ff" stroke-width="2" fill="none"><path d="M474 270 L520 241"/><path d="M474 270 L520 271"/><path d="M474 270 L520 301"/></g></g>
           <text x="40" y="350" fill="#f1eee8" font-size="15">real systems mix all four</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: what travels, and how cuts combine</summary>
+        <div class="table-wrap"><table>
+          <tr><th>Cut</th><th>What is split</th><th>What travels</th><th>Best where</th></tr>
+          <tr><td>Tensor</td><td>each table</td><td>an all-reduce twice per layer</td><td>inside one fast link domain</td></tr>
+          <tr><td>Pipeline</td><td>groups of layers</td><td>small lists of numbers, once per stage</td><td>across slower links</td></tr>
+          <tr><td>Expert</td><td>MoE experts</td><td>an all-to-all per MoE layer</td><td>many chips, large batches</td></tr>
+          <tr><td>Replica</td><td>nothing; whole copies</td><td>only the requests</td><td>adding capacity</td></tr>
+        </table></div>
+        <p>An <b>all-reduce</b> means every chip sends its partial result and every chip gets back the sum. An <b>all-to-all</b> means every chip sends something to every other chip.</p>
+        <p><b>How they combine.</b> A common shape is tensor splitting inside one 8-chip server or one 72-chip rack, experts spread across a larger group, and many identical replicas behind a router. DeepSeek’s public description of its serving system spreads experts across dozens of chips, so each chip holds only a few and reads fewer weights per step.</p>
+        <p><b>Speed or capacity?</b> Tensor splitting divides the bytes each chip reads, so each step gets faster. Pipeline splitting does not: one token still walks through every stage in turn. It lets a model fit across more chips with cheaper links, at the cost of “bubbles”, moments when a stage has nothing to do.</p>
+        <p><b>Splitting the conversation.</b> For very long prompts, the sequence itself can be divided among chips (sequence or context parallelism), so no single chip holds the whole KV cache.</p>
+        <p><span class="tag np">not public</span> The mix Anthropic uses.</p>
+      </details>
     </section>
     <!-- 16. Wires -->
     <section class="panel">
       <p class="kicker">The wires</p>
       <h2>Fast inside the box, slow outside</h2>
-      <p>Chips in one box talk over <b>NVLink</b> at hundreds of gigabytes per second; an NVL72 rack links 72 chips. Between servers, InfiniBand or Ethernet (the data-centre network) is 10–100× slower. That is why tensor splitting stays inside one fast link domain, while pipeline splitting can cross racks.</p>
+      <p><b>Bandwidth</b> is how many bytes per second a link can move. Chips in one box talk over NVIDIA’s <b>NVLink</b> almost as fast as they read their own memory: 900 GB/s per chip on an H100, 1.8 TB/s on a B200. Between servers, the data-centre network (InfiniBand or Ethernet) is ten to a hundred times slower. That limit decides which cuts are allowed: tensor splitting stays inside one fast box or rack, while pipeline splitting can cross racks.</p>
       <figure>
         <svg viewBox="0 0 800 320" role="img" aria-label="A log-scale bandwidth ladder: NVLink 900 gigabytes per second, PCIe 64, data-centre network 50, and home internet 0.1">
           <text x="40" y="28" fill="#a5a29c" font-size="16">BANDWIDTH · LOG SCALE</text>
@@ -586,35 +710,51 @@
           <text x="40" y="262" fill="#a5a29c" font-size="14">each gridline = 10×</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: why tensor splitting stays in the box</summary>
+        <p><b>The numbers.</b> In the 128-person example, each all-reduce moves about 3 MB (128 people × 12,288 numbers × 2 bytes). There are two per layer and 80 layers, so 160 per step, around 500 MB. Over 900 GB/s NVLink that takes about half a millisecond. Over a 50 GB/s network link it takes about ten milliseconds, nearly a whole step. Each exchange also has a fixed delay of several microseconds, which is why the example charges 2 ms of overhead per step even on fast links.</p>
+        <p><b>Link domains.</b> <span class="tag">public</span> An 8-GPU server links its chips with NVLink. NVIDIA’s GB200 NVL72 rack links 72 Blackwell GPUs in one NVLink domain, about 130 TB/s combined, which lets a single replica span a whole rack. Google TPU pods link thousands of chips with their own fast links.</p>
+        <p><b>Between servers.</b> Servers connect through InfiniBand or Ethernet with remote memory access, so one chip can write straight into another server’s memory without involving its main processor. Switches are arranged so any pair of racks has plenty of paths.</p>
+        <p><b>What never travels: the weights.</b> They are loaded once when a replica starts and stay put. What moves while serving is small by comparison: numbers between chips, requests and tokens to and from the router, and sometimes KV cache blocks between prefill and decode pools (chapter 18).</p>
+        <p><b>The internet leg.</b> Your connection carries only text. A 1,000-token answer is a few kilobytes, so streaming it adds almost nothing next to the time spent generating it.</p>
+      </details>
     </section>
 
     <!-- 17. Mixture of experts -->
     <section class="panel">
       <p class="kicker">Mixture of experts</p>
       <h2>Many experts, few per token</h2>
-      <p>A <b>mixture-of-experts</b> model keeps many small networks called <b>experts</b> and routes each token to a few. DeepSeek-V3 stores 671 billion parameters but uses about 37 billion per token, choosing 8 of 256 experts. At large batches, almost every expert gets read anyway.</p>
+      <p>Instead of one big MLP per layer, a <b>mixture-of-experts</b> (MoE) model keeps many smaller ones, called <b>experts</b>. A small scoring table, the <b>router</b>, picks a few experts for each token and blends their answers. That makes each token cheap in arithmetic. It is not cheap in memory: every expert must still be stored, and any expert chosen by any token in a step has to be read.</p>
+      <p>Choose the number of experts, how many each token uses, and how many tokens share the step. Each square is one expert in one layer; lit means at least one token chose it, so its weights were read.</p>
+      <div class="pick" id="mE" role="group" aria-label="Experts in each layer"><span>EXPERTS IN EACH LAYER</span>
+        <button type="button" class="secondary" data-v="8" aria-pressed="false">8</button><button type="button" class="secondary" data-v="16" aria-pressed="false">16</button><button type="button" class="secondary" data-v="64" aria-pressed="true">64</button><button type="button" class="secondary" data-v="128" aria-pressed="false">128</button><button type="button" class="secondary" data-v="256" aria-pressed="false">256</button>
+      </div>
+      <div class="pick" id="mK" role="group" aria-label="Experts used per token"><span>EXPERTS USED PER TOKEN</span>
+        <button type="button" class="secondary" data-v="1" aria-pressed="false">1</button><button type="button" class="secondary" data-v="2" aria-pressed="true">2</button><button type="button" class="secondary" data-v="4" aria-pressed="false">4</button><button type="button" class="secondary" data-v="8" aria-pressed="false">8</button>
+      </div>
+      <div class="pick" id="mB" role="group" aria-label="Tokens in this step"><span>TOKENS IN THIS STEP (PEOPLE SHARING)</span>
+        <button type="button" class="secondary" data-v="1" aria-pressed="false">1</button><button type="button" class="secondary" data-v="4" aria-pressed="false">4</button><button type="button" class="secondary" data-v="16" aria-pressed="true">16</button><button type="button" class="secondary" data-v="64" aria-pressed="false">64</button><button type="button" class="secondary" data-v="256" aria-pressed="false">256</button><button type="button" class="secondary" data-v="1024" aria-pressed="false">1,024</button>
+      </div>
       <figure>
-        <svg viewBox="0 0 800 270" role="img" aria-label="Left: one token lights 8 of 256 experts. Right: 64 tokens light 224 of 256, so almost all expert weights are read">
-          <text x="40" y="30" fill="#a5a29c" font-size="16">EACH SQUARE IS ONE EXPERT</text>
-          <text x="177" y="62" text-anchor="middle" fill="#f1eee8" font-size="17">1 token</text>
-          <rect x="110" y="80" width="135" height="135" fill="#2f2d2a"/>
-          <g fill="#ff8059"><rect x="118.5" y="88.5" width="7" height="7"/><rect x="144" y="97" width="7" height="7"/><rect x="195" y="97" width="7" height="7"/><rect x="127" y="114" width="7" height="7"/><rect x="186.5" y="122.5" width="7" height="7"/><rect x="178" y="139.5" width="7" height="7"/><rect x="169.5" y="156.5" width="7" height="7"/><rect x="229" y="173.5" width="7" height="7"/></g>
-          <path d="M118.5 80 V215 M127.0 80 V215 M135.5 80 V215 M144.0 80 V215 M152.5 80 V215 M161.0 80 V215 M169.5 80 V215 M178.0 80 V215 M186.5 80 V215 M195.0 80 V215 M203.5 80 V215 M212.0 80 V215 M220.5 80 V215 M229.0 80 V215 M237.5 80 V215 M110 88.5 H245 M110 97.0 H245 M110 105.5 H245 M110 114.0 H245 M110 122.5 H245 M110 131.0 H245 M110 139.5 H245 M110 148.0 H245 M110 156.5 H245 M110 165.0 H245 M110 173.5 H245 M110 182.0 H245 M110 190.5 H245 M110 199.0 H245 M110 207.5 H245" stroke="#4a4743" stroke-width="1" fill="none"/>
-          <text x="177" y="240" text-anchor="middle" fill="#a5a29c" font-size="16">8 of 256 experts</text>
-          <text x="567" y="62" text-anchor="middle" fill="#f1eee8" font-size="17">64 tokens</text>
-          <rect x="500" y="80" width="135" height="135" fill="#2f2d2a"/>
-          <rect x="500" y="80" width="135" height="119" fill="#ff8059"/>
-          <path d="M508.5 80 V215 M517.0 80 V215 M525.5 80 V215 M534.0 80 V215 M542.5 80 V215 M551.0 80 V215 M559.5 80 V215 M568.0 80 V215 M576.5 80 V215 M585.0 80 V215 M593.5 80 V215 M602.0 80 V215 M610.5 80 V215 M619.0 80 V215 M627.5 80 V215 M500 88.5 H635 M500 97.0 H635 M500 105.5 H635 M500 114.0 H635 M500 122.5 H635 M500 131.0 H635 M500 139.5 H635 M500 148.0 H635 M500 156.5 H635 M500 165.0 H635 M500 173.5 H635 M500 182.0 H635 M500 190.5 H635 M500 199.0 H635 M500 207.5 H635" stroke="#4a4743" stroke-width="1" fill="none"/>
-          <text x="567" y="240" text-anchor="middle" fill="#a5a29c" font-size="16">224 of 256 read</text>
-        </svg>
+        <svg id="moeSvg" viewBox="0 0 800 200" role="img" aria-label="A grid of experts, with the ones chosen by at least one token this step lit in coral"></svg>
       </figure>
+      <div class="tiles"><div><b id="mT"></b><span id="mTs">of the experts were read this step</span></div><div><b id="mC"></b><span>of the expert arithmetic each token does, compared with using all of them</span></div></div>
+      <details class="trace"><summary>Go deeper: total versus active, and why batching changes it</summary>
+        <p><b>Total versus active.</b> <span class="tag">public</span> DeepSeek-V3 has 671 billion parameters in total and 37 billion active per token, with 256 routed experts per layer and 8 chosen for each token. Mixtral 8x7B has 8 experts per layer and uses 2.</p>
+        <p><b>The router.</b> A small table scores every expert for each token. The top few are picked and their outputs are blended using those scores. Tokens in the same sentence can go to different experts.</p>
+        <p><b>Why batching changes the picture.</b> With one token, only 8 of 256 experts are read, about 3% of the expert weights. With 64 tokens, the chance that a given expert is untouched is (1 − 8/256)⁶⁴, about 13%, so about 87% are read anyway. With 256 tokens nearly all of them are. At the batch sizes that make serving efficient, the memory reading costs about as much as a dense model of the same total size, while the arithmetic stays at the small active size.</p>
+        <code class="eq">share read ≈ 1 − (1 − experts used ÷ experts)^tokens</code>
+        <p><b>Why spread experts over many chips.</b> If 256 experts live on 32 chips, each chip holds 8 and reads only those 8 per step. Each chip serves a large pool of tokens sent from everywhere, so every expert it holds sees a healthy batch. That is expert parallelism (chapter 14); its cost is an all-to-all exchange of tokens at every MoE layer, where every chip sends to every other chip.</p>
+        <p><b>Weak spots.</b> Some experts get more traffic than others, and the slowest chip sets the step time. Training adds balancing rules to keep load even; serving adds extra copies of popular experts. <span class="tag np">not public</span> Whether any Claude model is dense or mixture-of-experts.</p>
+        <p>The lit squares come from a fixed pseudo-random routing, so the count can differ a little from the formula.</p>
+      </details>
     </section>
 
     <!-- 18. Continuous batching -->
     <section class="panel">
       <p class="kicker">Continuous batching</p>
       <h2>A finished chat frees its seat</h2>
-      <p>Fixed batches wait for the longest answer, leaving seats idle. <b>Continuous batching</b> decides at every step: finished chats leave, queued ones join, and their memory is reused at once. Orca (2022) introduced iteration-level scheduling; it is now standard.</p>
+      <p>Requests arrive at random and finish at random. Keeping the chips full anyway is a scheduling problem, solved every few milliseconds. If four answers start together as a fixed batch, the batch lasts as long as the longest one; the shorter ones leave empty seats until it ends, and newcomers wait for the next batch. Answer lengths vary wildly, from one word to a long essay, so the waste is large.</p>
+      <p><b>Continuous batching</b> decides who runs at every single step: finished conversations leave, waiting ones take the free seat on the very next step, and their KV memory is handed back and reused at once. Nobody waits for the longest answer in the group. The idea was published as iteration-level scheduling in the Orca system (2022) and is now standard.</p>
       <figure>
         <svg viewBox="0 0 800 350" role="img" aria-label="Fixed batches leave idle seats after short answers finish; continuous batching fills each freed seat with a new chat on the next step">
           <text x="40" y="45" fill="#f5c76a" font-size="17">FIXED BATCH</text>
@@ -648,13 +788,19 @@
           <text x="500" y="320" fill="#a5a29c" font-size="15">time →</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: who gets to join</summary>
+        <p><b>Two limits on joining.</b> Free KV memory (chapter 11) and a speed promise. If admitting more people would stretch each step past the speed promised to users, the scheduler keeps them in the queue. This is why overload first shows up as waiting rather than errors, until a queue limit is reached.</p>
+        <p><b>Mixed steps.</b> One step can include writing work for running conversations and a slice of prompt reading for a newcomer. Chapter 18 shows why that mixing needs care.</p>
+        <p><b>What this means for you.</b> Your answer’s speed depends on who happens to share your step. That is one reason the same prompt can stream at different speeds at different times of day.</p>
+      </details>
     </section>
 
     <!-- 19. Prefill clash -->
     <section class="panel">
       <p class="kicker">Reading versus writing</p>
       <h2>A big prompt stalls the room</h2>
-      <p>A long prompt takes tens to hundreds of milliseconds of arithmetic. If it runs as one block, every mid-answer chat waits and streaming stutters. <b>Chunked prefill</b> splits it across steps; a <b>separate-pool</b> setup gives reading and writing their own chips and copies the KV cache over the network.</p>
+      <p>A big prompt stalls everyone who is mid-answer. Reading a long prompt keeps the arithmetic units fully busy for tens to hundreds of milliseconds, while writing steps are meant to tick every 10 to 40 ms. A step that includes a whole prompt makes everyone’s next token late, which you see as a stutter in streaming.</p>
+      <p>There are two fixes. <b>Chunked prefill</b> cuts the prompt into pieces of a fixed size and attaches one piece to each writing step, so steps stay short and the newcomer finishes reading after several steps. <b>Separate pools</b> give reading and writing their own chips: prompt-reading chips are tuned for arithmetic, writing chips for memory. The cost is that each KV cache has to be copied over the network after its prompt is read.</p>
       <figure>
         <svg viewBox="0 0 800 420" role="img" aria-label="Three schedules: one big prefill blocks every decode row; chunked prefill inserts small slices between decode steps; separate prefill and decode pools copy the KV cache between them">
           <defs><marker id="arw19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#c3b8ff"/></marker></defs>
@@ -687,13 +833,20 @@
           <text x="720" y="400" fill="#a5a29c" font-size="15">time →</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: the published versions</summary>
+        <p><b>Chunked prefill</b> was published as Sarathi-Serve (2024) and is available in open serving software.</p>
+        <p><b>Separate pools</b> (called disaggregation) appear in public work such as Splitwise (Microsoft), DistServe and Mooncake (Moonshot AI). Each pool can use its own chip count, batch size, even chip type. Mixing and chunking are simplest; separate pools win at large scale.</p>
+        <p><b>The balancing act.</b> Too few prompt-reading chips and the first token is late; too few writing chips and answers stream slowly. The fleet adjusts the ratio as traffic changes, for example when coding tools send long prompts and get short replies, or when people ask for long essays from short prompts.</p>
+        <p><span class="tag np">not public</span> Which of these arrangements Anthropic runs.</p>
+      </details>
     </section>
 
     <!-- 20. Quantization -->
     <section class="panel">
       <p class="kicker">Smaller numbers</p>
       <h2>Fewer bits, fewer bytes</h2>
-      <p>Storing each weight in fewer bits cuts the memory read almost proportionally. A 200-billion-parameter model is 400 GB at 16-bit, 200 GB at 8-bit, 100 GB at 4-bit. The cost is <b>rounding error</b>; block scales and keeping sensitive layers at higher precision limit the damage.</p>
+      <p>Once you know that moving memory is the bill, most speed tricks are the same idea: move fewer bytes, or get more out of each byte. The simplest is to store each weight in fewer bits, called <b>quantization</b>. Half the bytes means half the memory, and when reading memory is the limit, nearly twice the speed. A 200-billion-parameter model is 400 GB at 16-bit, 200 GB at 8-bit and 100 GB at 4-bit.</p>
+      <p>The cost is <b>rounding error</b>. A 4-bit floating-point number (the E2M1 format) can say only 15 different values, drawn as dots below, packed closer together near zero. A shared scale factor for each small block of weights stretches those 15 values to fit that block’s real range. Training with low precision in mind, and keeping sensitive layers at higher precision, keeps quality.</p>
       <figure>
         <svg viewBox="0 0 800 340" role="img" aria-label="Memory bars fall from 400 to 200 to 100 gigabytes as precision drops from 16 to 8 to 4 bits, while the 4-bit number line holds only 15 values">
           <text x="40" y="28" fill="#a5a29c" font-size="16">200B PARAMETERS · MEMORY AND SPEED</text>
@@ -719,44 +872,48 @@
           <g fill="#a5a29c" font-size="14" text-anchor="middle"><text x="120" y="300">−6</text><text x="400" y="300">0</text><text x="680" y="300">6</text></g>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: speed, scales and quality</summary>
+        <p><b>Why speed follows bytes.</b> A memory-limited step takes weights ÷ memory speed: half the bytes, half the time. Newer chips also do low-precision arithmetic faster. <span class="tag">public</span> A B200-class chip is rated at about 2.25 thousand trillion operations per second at 16-bit, 4.5 at 8-bit and 9 at 4-bit, without the zero-skipping trick.</p>
+        <p><b>Scaling in blocks.</b> Weights are grouped, for example 16 or 32 at a time, and each group shares a scale factor stored in a few extra bits. Formats such as MXFP4 and NVFP4 are built this way.</p>
+        <p><b>What gets quantized.</b> Weights always. Often the KV cache too (chapter 12). Sometimes the temporary working numbers as well, which lets the arithmetic itself run at low precision.</p>
+        <p><b>Where quality can slip.</b> A few weights and working numbers are unusually large and matter a lot; rounding them hurts. Methods handle them by rescaling, rotating, or keeping them at higher precision. The checks are benchmarks and, more importantly, comparing outputs before and after.</p>
+        <p><span class="tag np">not public</span> The precision Claude models are served at.</p>
+      </details>
     </section>
     <!-- 21. Speculative decoding -->
     <section class="panel">
       <p class="kicker">Guessing ahead</p>
-      <h2>A small model drafts, the big one checks</h2>
-      <p><b>Speculative decoding</b> lets a small draft model guess the next few tokens, then the big model checks all the guesses in one pass. Accepted guesses cost one big pass instead of several. Rejection sampling keeps the output distribution exactly the same.</p>
+      <h2>Guess ahead, then check</h2>
+      <p><b>Speculative decoding</b> lets a small, fast “draft” model guess the next few tokens. The big model then checks all the guesses in one pass. Checking several tokens costs about the same as writing one, because the step is limited by reading the weights, not by the arithmetic. Every right guess is a free token. At the first wrong guess, the big model’s own token is used instead and the rest are thrown away.</p>
+      <p>Set how many tokens are drafted per round, how often the big model accepts each one, and how expensive a draft step is compared with a big step.</p>
+      <div class="pick" id="sK" role="group" aria-label="Tokens drafted per round"><span>TOKENS DRAFTED PER ROUND</span>
+        <button type="button" class="secondary" data-v="1" aria-pressed="false">1</button><button type="button" class="secondary" data-v="2" aria-pressed="false">2</button><button type="button" class="secondary" data-v="4" aria-pressed="true">4</button><button type="button" class="secondary" data-v="6" aria-pressed="false">6</button><button type="button" class="secondary" data-v="8" aria-pressed="false">8</button><button type="button" class="secondary" data-v="10" aria-pressed="false">10</button>
+      </div>
+      <div class="pick" id="sA" role="group" aria-label="Chance the big model accepts each draft token"><span>CHANCE EACH DRAFT TOKEN IS ACCEPTED</span>
+        <button type="button" class="secondary" data-v="50" aria-pressed="false">50%</button><button type="button" class="secondary" data-v="60" aria-pressed="false">60%</button><button type="button" class="secondary" data-v="75" aria-pressed="true">75%</button><button type="button" class="secondary" data-v="90" aria-pressed="false">90%</button>
+      </div>
+      <div class="pick" id="sC" role="group" aria-label="Draft step cost as a share of one big step"><span>DRAFT STEP COST, AS A SHARE OF ONE BIG STEP</span>
+        <button type="button" class="secondary" data-v="2" aria-pressed="false">2%</button><button type="button" class="secondary" data-v="5" aria-pressed="false">5%</button><button type="button" class="secondary" data-v="8" aria-pressed="true">8%</button><button type="button" class="secondary" data-v="15" aria-pressed="false">15%</button>
+      </div>
       <figure>
-        <svg viewBox="0 0 800 300" role="img" aria-label="Serial decoding needs four big passes for four tokens; speculative decoding uses four cheap guesses plus one big verification pass for the same four tokens">
-          <text x="40" y="30" fill="#a5a29c" font-size="16">FOUR TOKENS · TWO WAYS</text>
-          <text x="40" y="86" fill="#f1eee8" font-size="16">serial</text>
-          <g fill="#ff8059">
-            <rect x="160" y="65" width="90" height="30"/><rect x="270" y="65" width="90" height="30"/><rect x="380" y="65" width="90" height="30"/><rect x="490" y="65" width="90" height="30"/>
-          </g>
-          <g fill="#202020" font-size="15" text-anchor="middle">
-            <text x="205" y="85">pass</text><text x="315" y="85">pass</text><text x="425" y="85">pass</text><text x="535" y="85">pass</text>
-          </g>
-          <text x="600" y="86" fill="#f5c76a" font-size="16">4 big passes</text>
-          <text x="40" y="176" fill="#f1eee8" font-size="16">draft</text>
-          <g fill="#76d5c1">
-            <rect x="160" y="155" width="34" height="30"/><rect x="200" y="155" width="34" height="30"/><rect x="240" y="155" width="34" height="30"/><rect x="280" y="155" width="34" height="30"/>
-          </g>
-          <text x="237" y="208" text-anchor="middle" fill="#76d5c1" font-size="15">4 cheap guesses</text>
-          <text x="40" y="252" fill="#f1eee8" font-size="16">check</text>
-          <rect x="160" y="232" width="154" height="30" fill="#ff8059"/>
-          <text x="237" y="253" text-anchor="middle" fill="#202020" font-size="15">one big pass</text>
-          <g fill="#f5c76a">
-            <rect x="340" y="232" width="56" height="30"/><rect x="400" y="232" width="56" height="30"/><rect x="460" y="232" width="56" height="30"/><rect x="520" y="232" width="56" height="30"/>
-          </g>
-          <text x="590" y="253" fill="#f5c76a" font-size="16">4 tokens out</text>
-        </svg>
+        <svg id="spSvg" viewBox="0 0 800 420" role="img" aria-label="Top: an average round of drafted tokens, kept ones in teal and the first rejection in red, plus the big model's own token. Bottom: speed-up for each draft length at the chosen settings"></svg>
       </figure>
+      <div class="tiles"><div><b id="sE"></b><span>tokens kept per big-model pass, on average</span></div><div id="sSt"><b id="sS"></b><span>faster than normal decoding</span></div></div>
+      <details class="trace"><summary>Go deeper: the formulas and when it helps</summary>
+        <code class="eq">tokens per round = (1 − a^(k+1)) ÷ (1 − a)<br>speed-up = tokens per round ÷ (1 + k × draft cost)</code>
+        <p>Here k is the draft length, a is the chance each draft token is accepted, and draft cost is a draft step as a share of a big step. The first formula counts the accepted tokens plus the one the big model always supplies where it first disagrees. It treats each guess as accepted independently, which is a simplification.</p>
+        <p><b>The output does not change.</b> The standard method (Leviathan and colleagues, 2022; Chen and colleagues, 2023) accepts or rejects guesses with a rule that provably leaves the big model’s output exactly as likely as without the trick. It is a speed trick, not a quality trade.</p>
+        <p><b>When it helps less.</b> With many people on the step, the arithmetic units are already busy, so extra checked tokens are no longer free. It shines when few people share a step, as in low-latency products. Easy text (boilerplate code, quotes, repeated phrases) is accepted far more often than hard reasoning.</p>
+        <p><b>Variants.</b> Draft with a tiny model; draft with extra prediction heads on the big model itself (Medusa, EAGLE, multi-token prediction); or draft by copying phrases that already appeared in the prompt.</p>
+      </details>
     </section>
 
     <!-- 22. FlashAttention -->
     <section class="panel">
       <p class="kicker">The kernel</p>
       <h2>Do not write the big grid</h2>
-      <p>Attention builds a score for every pair of tokens. A naive kernel writes that grid to HBM and reads it back, which costs more time than the arithmetic. <b>FlashAttention</b> (2022) works through small tiles in on-chip SRAM, so the grid never lands in HBM. It is exact, not an approximation.</p>
+      <p>Doing several steps in a row on data that stays on the chip beats writing each result back to main memory and reading it again. The simple way to do attention builds a table with one score for every pair of tokens, writes it to HBM, then reads it back to turn the scores into shares and blend the values. For a 32,000-token context that table has about a billion entries per head: far too big for on-chip memory, and many slow trips.</p>
+      <p><b>FlashAttention</b> (2022) works through the keys and values in small tiles that fit in on-chip SRAM, keeping running totals as it goes, so the big table never exists. The result is exact, not an approximation. A small program that runs on the chip is called a <b>kernel</b>, and this is a “fused” kernel: several steps in one trip.</p>
       <figure>
         <svg viewBox="0 0 800 300" role="img" aria-label="The standard kernel writes a large score grid out to HBM and reads it back; FlashAttention keeps small tiles in on-chip SRAM and never writes the grid">
           <text x="40" y="30" fill="#a5a29c" font-size="16">STANDARD</text>
@@ -777,17 +934,23 @@
           <rect x="60" y="240" width="130" height="40" fill="#2f2d2a" stroke="#76d5c1" stroke-width="2"/>
           <g fill="#76d5c1"><rect x="70" y="250" width="26" height="9"/><rect x="100" y="250" width="26" height="9"/><rect x="130" y="250" width="26" height="9"/><rect x="160" y="250" width="20" height="9"/><rect x="70" y="263" width="26" height="9"/><rect x="100" y="263" width="26" height="9"/><rect x="130" y="263" width="26" height="9"/><rect x="160" y="263" width="20" height="9"/></g>
           <text x="230" y="255" fill="#f1eee8" font-size="16">tiles in SRAM</text>
-          <text x="230" y="278" fill="#76d5c1" font-size="15">the grid never leaves the chip</text>
+          <text x="230" y="278" fill="#76d5c1" font-size="15">the table never leaves the chip</text>
           <defs><marker id="arw21" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff8059"/></marker></defs>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: fusion, launch cost and overlap</summary>
+        <p><b>Kernel fusion.</b> Many tiny steps around the big multiplications (normalising, adding to the running list, applying the activation, picking the token) each read and write the whole list of numbers. Fusing them into one kernel keeps the data on the chip between steps.</p>
+        <p><b>Launch cost.</b> Starting each kernel costs microseconds, and one writing step has thousands of small kernels. Recording them once and replaying them (CUDA graphs on NVIDIA, compiled graphs on TPUs) removes most of that cost.</p>
+        <p><b>Overlap.</b> While one group of chips computes, the previous result is already being sent over the wire. Good schedules hide most of the communication from chapter 15 behind arithmetic.</p>
+      </details>
     </section>
 
     <!-- 23. Routing and queues -->
     <section class="panel">
       <p class="kicker">The front door</p>
       <h2>Queues absorb what chips cannot</h2>
-      <p>A <b>router</b> sends each request to a pool with the right model and priority. Chat needs a fast first token and steady gaps; batch work can wait. When arrivals outrun capacity, the queue grows and waiting time explodes, so providers return an <b>overload error</b> (Anthropic uses 529) instead of hiding it.</p>
+      <p>Before any replica sees your request, it passes the gateway (sign-in, per-account limits, safety checks), then waits in a line sorted by priority: live chat first, then API traffic, then batch jobs that can wait and fill the gaps. A <b>router</b> then weighs how full each replica is and what it already has cached. A replica that is 80% full but still holds your conversation’s start can beat an empty one, because reusing the cache skips a long prompt read.</p>
+      <p>When arrivals outrun capacity, the line grows and waiting time shoots up. Capacity cannot be added in seconds, because a new replica must first load hundreds of gigabytes of weights. So when requests wait too long, the gateway turns them away. The Claude API reports this as an <b>overloaded error</b>, status 529.</p>
       <figure>
         <svg viewBox="0 0 800 300" role="img" aria-label="Twelve requests arrive; four are served at once, eight wait in a queue, and a dashed capacity line marks the point where arrivals exceed service and overload errors begin">
           <text x="40" y="30" fill="#a5a29c" font-size="16">ARRIVALS · ONE SECOND</text>
@@ -805,13 +968,20 @@
           <text x="40" y="268" fill="#a5a29c" font-size="15">past it: longer queues, timeouts, 529 overload errors</text>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: limits, priority and shedding</summary>
+        <p><b>Limits protect the fleet.</b> Per-account limits on requests and tokens per minute stop one customer from soaking up shared capacity. They also help planning: the provider knows the most traffic any tier can send.</p>
+        <p><b>Priority.</b> Live chat is sensitive to delay, so it goes first. Bulk jobs that can wait run in the gaps; Anthropic offers its batch API at a discount for exactly this. That is how a fleet keeps chips busy without hurting live users.</p>
+        <p><b>Cache-aware routing.</b> Sending a conversation back to the replica that still holds its KV blocks saves reading the earlier part again. Routers trade off load against cache hits, like “sticky sessions” on a website. A real router also weighs geography, model version and failures.</p>
+        <p><b>Shedding.</b> Under heavy load, a system can protect core traffic by refusing lower-priority requests first, shortening allowed outputs, or both.</p>
+      </details>
     </section>
 
     <!-- 24. Failures and updates -->
     <section class="panel">
       <p class="kicker">The fleet</p>
       <h2>Chips fail; traffic must not notice</h2>
-      <p>A large cluster is never fully healthy. Meta reported 466 job interruptions in 54 days while training Llama 3 on 16,000 GPUs — about one every three hours. Serving adds failures mid-request and weight updates. Replicas, health checks and draining let a spare take over without dropping the answer.</p>
+      <p>Replicas sit in racks, racks in data centres, data centres in regions, with a global traffic manager on top. At the scale of thousands of chips, something breaks every day. Meta reported 466 job interruptions in 54 days while training Llama 3 on about 16,000 GPUs; 419 were unexpected, roughly one every three hours. Serving suffers less, because replicas are independent: one failing does not stop the others.</p>
+      <p>A failed chip takes its replica out of rotation. The router stops sending it work, and spare replicas absorb the load. Fleets keep enough spares to lose a rack, or a whole zone, and carry on.</p>
       <figure>
         <svg viewBox="0 0 800 320" role="img" aria-label="Three racks of six chips; one chip is marked failed and a spare chip beside the rack takes its traffic while a drained chip is emptied">
           <text x="40" y="30" fill="#a5a29c" font-size="16">ONE RACK · SIX CHIPS</text>
@@ -834,68 +1004,109 @@
           <defs><marker id="arw24" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#76d5c1"/></marker></defs>
         </svg>
       </figure>
+      <details class="trace"><summary>Go deeper: updates, many models, many chips</summary>
+        <p><b>Updates without downtime.</b> A new model version is loaded onto spare replicas, tested on a trickle of traffic (a “canary”), then given a growing share while old replicas finish their conversations and drain. Loading weights takes minutes, so rollouts are planned, not instant.</p>
+        <p><b>Many models at once.</b> A fleet serves several model sizes and versions at the same time, each with its own replicas, memory layout and routing rules. Smaller tiers fit in fewer chips and serve more people per chip, which is part of why they cost less.</p>
+        <p><b>Many kinds of chips.</b> <span class="tag">public</span> Anthropic has said it uses Google TPUs, Amazon Trainium and NVIDIA GPUs. The same model has to be compiled and tuned separately for each, and traffic is spread across them.</p>
+        <p><b>Demand moves.</b> Traffic follows working hours around the world, peaks on weekdays, and can surge when a new feature launches. Capacity is planned months ahead, because racks cannot be rented by the minute at this scale.</p>
+      </details>
     </section>
 
-    <!-- 25. Economics -->
+    <!-- 25. Fleet calculator -->
     <section class="panel">
-      <p class="kicker">The bill</p>
-      <h2>Idle chips still cost money</h2>
-      <p>A chip costs the same whether it is busy or idle, so cost per token falls as utilisation rises. The example system at about 3,100 tokens per second can keep roughly 155 people supplied at 20 tokens per second — if every seat stays full. Batching, caching and queues exist to keep it full.</p>
+      <p class="kicker">The answer</p>
+      <h2>So how many people per chip?</h2>
+      <p>Pick a world. This calculator uses the <span class="tag">example</span> system from chapter 10 and sizes a whole fleet for it. People spend most of their time reading and typing, so one chat “seat” on a replica is shared by many people over a minute or two. That is how tens to hundreds of people can be using one chip at once.</p>
+      <div class="pick" id="fA" role="group" aria-label="People using it at the same moment"><span>PEOPLE USING IT AT THE SAME MOMENT (PEAK)</span>
+        <button type="button" class="secondary" data-v="10000" aria-pressed="false">10k</button><button type="button" class="secondary" data-v="100000" aria-pressed="false">100k</button><button type="button" class="secondary" data-v="1000000" aria-pressed="true">1M</button><button type="button" class="secondary" data-v="10000000" aria-pressed="false">10M</button>
+      </div>
+      <div class="pick" id="fT" role="group" aria-label="Seconds between one person's messages"><span>SECONDS BETWEEN ONE PERSON’S MESSAGES</span>
+        <button type="button" class="secondary" data-v="30" aria-pressed="false">30 s</button><button type="button" class="secondary" data-v="90" aria-pressed="true">90 s</button><button type="button" class="secondary" data-v="300" aria-pressed="false">300 s</button>
+      </div>
+      <div class="pick" id="fP" role="group" aria-label="Tokens sent per request"><span>TOKENS SENT PER REQUEST (WHOLE CONVERSATION)</span>
+        <button type="button" class="secondary" data-v="500" aria-pressed="false">500</button><button type="button" class="secondary" data-v="2000" aria-pressed="false">2k</button><button type="button" class="secondary" data-v="6000" aria-pressed="true">6k</button><button type="button" class="secondary" data-v="20000" aria-pressed="false">20k</button><button type="button" class="secondary" data-v="50000" aria-pressed="false">50k</button>
+      </div>
+      <div class="pick" id="fH" role="group" aria-label="Share of that already cached"><span>SHARE OF THAT ALREADY CACHED</span>
+        <button type="button" class="secondary" data-v="0" aria-pressed="false">0%</button><button type="button" class="secondary" data-v="50" aria-pressed="false">50%</button><button type="button" class="secondary" data-v="70" aria-pressed="true">70%</button><button type="button" class="secondary" data-v="90" aria-pressed="false">90%</button>
+      </div>
+      <div class="pick" id="fO" role="group" aria-label="Tokens written per reply"><span>TOKENS WRITTEN PER REPLY</span>
+        <button type="button" class="secondary" data-v="100" aria-pressed="false">100</button><button type="button" class="secondary" data-v="600" aria-pressed="true">600</button><button type="button" class="secondary" data-v="1500" aria-pressed="false">1,500</button><button type="button" class="secondary" data-v="4000" aria-pressed="false">4,000</button>
+      </div>
+      <div class="pick" id="fC" role="group" aria-label="Price of one chip per hour"><span>PRICE OF ONE CHIP PER HOUR</span>
+        <button type="button" class="secondary" data-v="2" aria-pressed="false">$2</button><button type="button" class="secondary" data-v="3" aria-pressed="true">$3</button><button type="button" class="secondary" data-v="5" aria-pressed="false">$5</button>
+      </div>
       <figure>
-        <svg viewBox="0 0 800 280" role="img" aria-label="One person typing needs 20 tokens per second; one eight-chip server produces about 3,100 tokens per second, enough for roughly 155 people at once">
-          <text x="40" y="30" fill="#a5a29c" font-size="16">TOKENS PER SECOND</text>
-          <text x="40" y="86" fill="#f1eee8" font-size="16">one person</text>
-          <rect x="240" y="66" width="12" height="28" fill="#76d5c1"/>
-          <text x="266" y="86" fill="#76d5c1" font-size="16">20</text>
-          <text x="40" y="146" fill="#f1eee8" font-size="16">one 8-chip server</text>
-          <rect x="240" y="126" width="360" height="28" fill="#ff8059"/>
-          <text x="612" y="146" fill="#ff8059" font-size="16">3,100</text>
-          <text x="240" y="196" fill="#a5a29c" font-size="15">about 155 people at 20 tokens/s each</text>
-          <path d="M240 226 H720" stroke="#57534f" stroke-width="2"/>
-          <text x="240" y="252" fill="#f5c76a" font-size="15">empty seats are the most expensive seats</text>
-        </svg>
+        <svg id="fSvg" viewBox="0 0 800 220" role="img" aria-label="Replica time spent on one request, split into reading the uncached prompt and writing the reply"></svg>
       </figure>
+      <div class="tiles t3"><div><b id="fR"></b><span>requests per second across the fleet</span></div><div><b id="fPR"></b><span>people one 8-chip replica keeps busy</span></div><div><b id="fN"></b><span>replicas, with 30% spare</span></div><div><b id="fG"></b><span>chips in total</span></div><div><b id="fPC"></b><span>people per chip</span></div><div><b id="fM"></b><span>chip cost per million tokens written</span></div></div>
+      <p class="readout" id="fNote"></p>
+      <details class="trace"><summary>Go deeper: the formulas and what they leave out</summary>
+        <code class="eq">requests per second = people ÷ seconds between messages<br>replica time per request = prompt-reading time + reply tokens × step time ÷ people in the batch<br>replicas = requests per second × replica time per request × 1.3</code>
+        <p>Prompt-reading time comes from the tokens that are not cached, at about 2 operations per parameter each, plus attention work. Step time is the chapter 10 model at 128 people per replica, lowered when long conversations do not fit in memory. 128 is an assumed operating point, not a measured one.</p>
+        <p><b>What moves the answer most.</b> The cached share (cached tokens skip prompt reading entirely), the conversation length (it sets both KV memory and the cost of each step), and the length of replies. AI agents and long reasoning make replies longer and keep conversations open longer.</p>
+        <p><b>Why list prices are far above the chip cost.</b> The calculator counts only chip rental. Real prices also pay for idle capacity kept for peaks and failures, networking and buildings, much larger models, lower real efficiency than an ideal model, engineering, and training the model in the first place. Do not read the last tile as a price.</p>
+        <p><span class="tag np">not public</span> None of the defaults are Anthropic’s numbers.</p>
+      </details>
     </section>
+
     <!-- Field guide 1 -->
     <section class="panel">
       <p class="kicker">Field guide</p>
-      <h2>What the symptoms mean</h2>
+      <h2>What you notice from the outside</h2>
+      <p>Most of what looks odd about AI products follows from the mechanics above.</p>
       <div class="field-grid">
-        <div><b>First token is slow</b><span>The prompt is still being read, or the request waited in a queue.</span><em>time to first token</em></div>
-        <div><b>Fast start, then stalls</b><span>A long prompt arrived and is holding the step while your answer waits.</span><em>prefill blocks decode</em></div>
-        <div><b>Gaps grow as you chat</b><span>Each step re-reads a longer cache, so the same chip does less per second.</span><em>memory-bound decode</em></div>
-        <div><b>Everyone slows at once</b><span>The batch is full; each step now serves more people and takes longer.</span><em>utilisation</em></div>
-        <div><b>One document freezes the room</b><span>A huge prefill ran as one block instead of in slices.</span><em>chunked prefill</em></div>
-        <div><b>Overload errors</b><span>Arrivals beat capacity and the queue is capped, so the router refuses work.</span><em>429 or 529</em></div>
+        <div><b>Output costs more than input</b><span>Reading a prompt token shares one trip to memory with thousands of other tokens. Writing a token shares it only with whoever is on the same step.</span><em>chapters 8, 9</em></div>
+        <div><b>Long chats get slower and pricier</b><span>Every writing step re-reads the whole KV cache, and a longer chat has a bigger one.</span><em>chapter 11</em></div>
+        <div><b>Cached prompts are cheaper</b><span>The replica already holds those keys and values, so it skips reading that part of the prompt.</span><em>chapter 13</em></div>
+        <div><b>Speed varies by time of day</b><span>Your step is shared with whoever else is on the replica at that moment.</span><em>chapters 10, 17</em></div>
+        <div><b>Huge prompts delay the first word</b><span>Prompt reading is limited by arithmetic and grows with prompt length.</span><em>chapters 8, 18</em></div>
+        <div><b>Smaller tiers are faster and cheaper</b><span>Fewer weights to read each step, so more people fit per replica.</span><em>chapters 6, 10</em></div>
+        <div><b>Rate limits and overload errors</b><span>Chips and memory are fixed and cannot be added in seconds. The Claude API reports overload as error 529.</span><em>chapter 22</em></div>
+        <div><b>Batch jobs are discounted</b><span>They can wait, so they fill gaps that would otherwise sit idle.</span><em>chapter 22</em></div>
       </div>
     </section>
 
     <!-- Field guide 2 -->
     <section class="panel">
       <p class="kicker">Field guide</p>
-      <h2>The words on the dashboard</h2>
+      <h2>The words, in plain language</h2>
       <div class="field-grid">
-        <div><b>TTFT</b><span>Time to first token: queue wait plus prompt reading.</span><em>what chat users feel first</em></div>
-        <div><b>TPOT</b><span>Time per output token: the gap between words as the answer streams.</span><em>the second thing users feel</em></div>
-        <div><b>Prefill</b><span>Reading the prompt in one parallel pass.</span><em>compute-bound</em></div>
-        <div><b>Decode</b><span>Writing one token per pass, one pass per step.</span><em>memory-bound</em></div>
-        <div><b>KV cache</b><span>Saved keys and values, so earlier tokens are never recomputed.</span><em>the per-chat memory bill</em></div>
-        <div><b>Batching</b><span>Sharing one read of the weights across many requests.</span><em>the throughput lever</em></div>
-        <div><b>Quantization</b><span>Storing weights in fewer bits so each step reads fewer bytes.</span><em>the memory lever</em></div>
-        <div><b>MoE</b><span>Mixture of experts: many subnetworks, a few active per token.</span><em>more capacity, similar cost</em></div>
-        <div><b>Continuous batching</b><span>When one chat finishes, its seat is given to a new chat on the next step.</span><em>no waiting for the whole batch</em></div>
+        <div><b>Token</b><span>A chunk of text, about 4 characters in English. The unit of cost, speed and memory.</span></div>
+        <div><b>Weights, parameters</b><span>The learned numbers that make up the model. Fixed while serving.</span></div>
+        <div><b>Activations</b><span>The temporary numbers flowing through the model for the current tokens.</span></div>
+        <div><b>Attention</b><span>The step where each token looks back at earlier tokens.</span></div>
+        <div><b>KV cache</b><span>Saved keys and values of earlier tokens. Private to each conversation.</span></div>
+        <div><b>Prefill</b><span>Reading the prompt in one parallel pass.</span></div>
+        <div><b>Decode</b><span>Writing the answer, one token per pass.</span></div>
+        <div><b>Time to first token</b><span>Waiting plus prefill, before the first word appears.</span></div>
+        <div><b>Batch</b><span>The group of conversations moved forward together in one step.</span></div>
+        <div><b>Continuous batching</b><span>Letting conversations join and leave the batch at every step.</span></div>
+        <div><b>Replica</b><span>One complete copy of the model, spread over a group of chips.</span></div>
+        <div><b>HBM</b><span>High-bandwidth memory beside the chip. Holds the weights and KV cache.</span></div>
+        <div><b>SRAM</b><span>Tiny, very fast memory on the computing part of the chip itself.</span></div>
+        <div><b>NVLink</b><span>NVIDIA’s fast link between chips in one server or rack.</span></div>
+        <div><b>All-reduce</b><span>Every chip sends its partial result, and every chip gets back the sum.</span></div>
+        <div><b>Tensor, pipeline, expert parallelism</b><span>Cutting a model by table slices, by groups of layers, or by experts.</span></div>
+        <div><b>Mixture of experts</b><span>Many small MLPs per layer, with only a few used per token.</span></div>
+        <div><b>Quantization</b><span>Storing numbers with fewer bits.</span></div>
+        <div><b>Speculative decoding</b><span>Draft several tokens cheaply, check them in one big pass.</span></div>
+        <div><b>Arithmetic intensity</b><span>Operations done per byte moved. Low means limited by memory.</span></div>
+        <div><b>Roofline</b><span>The rule that speed is set by memory or by arithmetic, whichever is slower.</span></div>
+        <div><b>Prefix cache</b><span>Reusing stored KV blocks when a new request starts with the same text.</span></div>
       </div>
     </section>
 
     <!-- Field guide 3 -->
     <section class="panel">
       <p class="kicker">Field guide</p>
-      <h2>How sure can we be?</h2>
+      <h2>What is known and what is not</h2>
       <div class="field-grid">
-        <div><b>Published</b><span>Papers, model cards, pricing pages and engineering posts with numbers.</span><em>vLLM, FlashAttention, DeepSeek-V3</em></div>
-        <div><b>Inferred</b><span>Hardware and throughput guessed from listings, benchmarks and arithmetic.</span><em>the 8-chip example</em></div>
-        <div><b>Not public</b><span>Routing rules, exact chip mix, cache eviction and per-request scheduling.</span><em>no lab publishes its full mix</em></div>
+        <div><b>Public</b><span>Claude runs on a mix of AWS Trainium, Google TPUs and NVIDIA GPUs. Prompt caching and a discounted batch API exist. Rate limits and overload errors exist. The techniques in chapters 6 to 21 are published research or open-source practice.</span><em>Anthropic posts and docs, papers</em></div>
+        <div><b>Reasonable inference</b><span>A model this size is cut across many chips. KV cache memory limits how many people fit. Continuous batching and prefix caching are in use. Fleets keep spare capacity in several regions.</span><em>follows from the mechanics</em></div>
+        <div><b>Not public</b><span>The size and shape of any Claude model, dense or mixture-of-experts. The precision it is served at, chips per replica, batch sizes, real people per chip, efficiency, cost per token and real speed on real hardware.</span><em>Anthropic has not said</em></div>
       </div>
+      <p><b>The short answer to the question.</b> One replica of several chips holds one shared copy of the weights and moves many conversations forward by one token every step. In the example, 16 conversations are being written on each chip at any instant. Since most of a person’s time is spent reading and typing, on the order of a hundred people can be actively chatting per chip. The real numbers are not published.</p>
+      <p>Sources the study names: PagedAttention (vLLM), FlashAttention, speculative decoding (two papers), grouped-query and multi-query attention, DeepSeek-V2 and V3, Splitwise, DistServe, Mooncake, Llama 3, and NVIDIA’s published specifications for H100, H200 and B200.</p>
     </section>
 
     <div class="eli5-takeaway-card">
@@ -967,6 +1178,182 @@
     ids.forEach(id=>$(id).addEventListener('input',update));
     document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
     update();
+  </script>
+  <script>
+    // Chapter controls. Example system from chapter 10; formulas as stated in the study.
+    (function(){
+      const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+      const C={teal:'#76d5c1',coral:'#ff8059',gold:'#f5c76a',red:'#f87171',fg:'#f1eee8',mut:'#a5a29c',box:'#2f2d2a',line:'#57534f'};
+      const fmt=(n,d=0)=>n.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+      const bytes=b=>b>=1e12?fmt(b/1e12,2)+' TB':b>=1e10?fmt(b/1e9)+' GB':b>=1e9?fmt(b/1e9,2)+' GB':b>=1e6?fmt(b/1e6,1)+' MB':fmt(b/1e3)+' KB';
+      const gb=g=>g>=1000?fmt(g/1000,2)+' TB':fmt(g)+' GB';
+      const ms=t=>{const x=t*1000;return fmt(x,x<10?2:1)+' ms';};
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+      const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+      // A button group: returns a getter for the pressed value and calls cb on change.
+      function pick(id,cb){
+        const bs=[...$(id).querySelectorAll('button')];
+        bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
+        return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+      }
+      const SYS={P:200e9,L:80,D:12288,chips:8,mem:192e9,kv:163840,over:0.002};
+      SYS.bw=SYS.chips*8e12*0.6; SYS.fl=SYS.chips*4.5e15*0.5;
+      function step(B,ctx){
+        const tW=SYS.P/SYS.bw, tKV=B*ctx*SYS.kv/SYS.bw, tC=B*(2*SYS.P+4*SYS.L*SYS.D*ctx)/SYS.fl, m=tW+tKV, t=Math.max(m,tC)+SYS.over;
+        return {tW,tKV,tC,mem:m,t,user:1/t,total:B/t,bound:tC>m?'arithmetic':'memory speed'};
+      }
+      const maxUsers=ctx=>Math.max(0,Math.floor((SYS.chips*SYS.mem*0.9-SYS.P)/(ctx*SYS.kv)));
+
+      /* 2: temperature (made-up scores) */
+      const W=[['mat',4.6],['floor',3.9],['couch',3.6],['roof',2.5],['keyboard',2.0],['moon',0.2]];
+      const temp=pick('tempPick',drawTemp);
+      function drawTemp(){
+        const t=temp(),svg=$('tempSvg'),ex=W.map(w=>Math.exp(w[1]/t)),sum=ex.reduce((a,b)=>a+b,0);clear(svg);
+        T(svg,40,28,'The cat sat on the ___',{'font-size':20});
+        T(svg,560,28,'temperature '+t.toFixed(1),{fill:C.gold});
+        ex.forEach((e,i)=>{const p=e/sum,y=50+i*40,w=Math.max(2,p*480);
+          T(svg,180,y+19,W[i][0],{'text-anchor':'end'});
+          S(svg,'rect',{x:200,y,width:w.toFixed(1),height:26,fill:C.coral,opacity:i?0.6:1});
+          T(svg,200+w+10,y+19,(p*100).toFixed(p<0.1?1:0)+'%',{fill:i?C.fg:C.coral});});
+        $('tempNote').textContent=t<0.3?'Nearly always the top word: almost the same answer every time.':t<0.8?'Mostly the top word, with some variety.':t<1.2?'At 1.0 the model picks using its own chances, unchanged.':t<1.7?'Flatter: unlikely words get picked more often.':'Very flat: the output starts to look random.';
+      }
+      drawTemp();
+
+      /* 3: token estimate */
+      function tok(){const s=$('tokTxt').value,c=s.length,w=s.trim()?s.trim().split(/\s+/).length:0,k=Math.ceil(c/4);
+        $('tkC').textContent=fmt(c);$('tkW').textContent=fmt(w);$('tkT').textContent=fmt(k);$('tkM').textContent=bytes(k*SYS.kv);}
+      $('tokTxt').addEventListener('input',tok);tok();
+
+      /* 6: weights and chips */
+      const GROUPS=[1,2,4,8,16,32,64,72,144,288,576,1152];
+      const wPar=pick('wPar',drawW),wPrec=pick('wPrec',drawW),wChip=pick('wChip',drawW);
+      function drawW(){
+        const GB=wPar()*wPrec(),chip=wChip(),n=Math.max(1,Math.ceil(GB/(0.6*chip))),grp=GROUPS.find(g=>g>=n)||n,room=grp*chip-GB,f=Math.min(1,GB/grp/chip);
+        $('wGB').textContent=gb(GB);$('wN').textContent=fmt(n);$('wG').textContent=fmt(grp);$('wRoom').textContent=gb(room);
+        const svg=$('wSvg'),show=Math.min(grp,72),cols=Math.min(18,show),rows=Math.ceil(show/cols),pitch=40,cw=32,ch=56,x0=40;clear(svg);
+        for(let i=0;i<show;i++){const x=x0+(i%cols)*pitch,y=12+Math.floor(i/cols)*(ch+10);
+          S(svg,'rect',{x,y,width:cw,height:ch,fill:C.box,stroke:C.gold,'stroke-width':2});
+          S(svg,'rect',{x:x+2,y:y+ch-2-f*(ch-4),width:cw-4,height:Math.max(0,f*(ch-4)),fill:C.teal});}
+        const H=12+rows*(ch+10)+30;
+        T(svg,40,H-10,fmt(grp)+' chips of '+chip+' GB'+(grp>72?' (72 drawn)':'')+', weights fill '+Math.round(f*100)+'% of each',{fill:C.mut});
+        svg.setAttribute('viewBox','0 0 800 '+H);
+      }
+      drawW();
+
+      /* 10: batching */
+      const BATCH=[1,8,32,64,128,256,512],bP=pick('bPick',drawB),cP=pick('cPick',drawB);
+      function drawB(){
+        const B=bP(),ctx=cP(),r=step(B,ctx),mu=maxUsers(ctx),svg=$('bSvg');clear(svg);
+        const tmax=Math.max(r.mem,r.tC,SYS.over),sx=v=>v/tmax*470;
+        T(svg,40,24,'ONE STEP, '+fmt(B)+' PEOPLE, '+fmt(ctx)+'-TOKEN CHATS',{fill:C.mut,'font-size':15});
+        [['reading memory',r.mem],['arithmetic',r.tC],['overhead',SYS.over]].forEach(([n,v],i)=>{const y=44+i*46;
+          T(svg,40,y+19,n);
+          if(i===0){S(svg,'rect',{x:220,y,width:Math.max(1,sx(r.tW)),height:26,fill:C.teal});S(svg,'rect',{x:220+sx(r.tW),y,width:sx(r.tKV),height:26,fill:C.teal,opacity:0.45});}
+          else S(svg,'rect',{x:220,y,width:Math.max(1.5,sx(v)),height:26,fill:i===1?C.coral:C.gold});
+          T(svg,220+Math.max(sx(v),1.5)+10,y+19,ms(v),{fill:C.mut});});
+        T(svg,220,196,'solid: weights · faded: everyone’s KV cache',{fill:C.mut,'font-size':14});
+        T(svg,40,228,'one step takes '+ms(r.t)+': the longer bar plus overhead',{fill:C.fg});
+        T(svg,40,272,'TOKENS PER SECOND FROM THE WHOLE REPLICA',{fill:C.mut,'font-size':15});
+        const tot=BATCH.map(b=>step(b,ctx).total),mx=Math.max(...tot);
+        BATCH.forEach((b,i)=>{const y=288+i*32,fits=b<=mu,w=tot[i]/mx*520,sel=b===B;
+          T(svg,150,y+17,fmt(b)+(b===1?' person':' people'),{'text-anchor':'end',fill:sel?C.fg:C.mut});
+          S(svg,'rect',{x:166,y,width:Math.max(2,w),height:22,fill:fits?C.coral:C.gold,opacity:fits?(sel?1:0.5):0.3});
+          T(svg,166+Math.max(2,w)+10,y+17,fmt(Math.round(tot[i]))+(fits?'':' · does not fit'),{fill:fits?(sel?C.fg:C.mut):C.gold,'font-size':15});});
+        $('bU').textContent=fmt(Math.round(r.user));$('bT').textContent=fmt(Math.round(r.total));$('bB').textContent=r.bound;
+        const fits=B<=mu;$('bFitT').className=fits?'':'warn';$('bF').textContent=fmt(mu);
+        $('bFs').textContent=fits?'people fit in memory at this length':'is the memory limit here, so this setting does not fit';
+      }
+      drawB();
+
+      /* 11: KV cache */
+      const KVL=[[1000,'1k'],[4000,'4k'],[8000,'8k'],[32000,'32k'],[128000,'128k'],[200000,'200k'],[1000000,'1M']],kvP=pick('kvPick',drawKV);
+      function drawKV(){
+        const n=kvP(),svg=$('kvSvg');clear(svg);
+        [[40,false,'without a cache','36 pairs rebuilt'],[230,true,'with a cache','8 built, 28 read']].forEach(([x0,cached,h,f])=>{
+          T(svg,x0,34,h,{fill:C.fg});
+          for(let r=0;r<8;r++)for(let c=0;c<=r;c++){const built=!cached||c===r;S(svg,'rect',{x:x0+c*19,y:50+r*19,width:16,height:16,fill:built?C.teal:C.gold,opacity:built?0.9:0.6});}
+          T(svg,x0,226,f,{fill:C.mut,'font-size':15});});
+        T(svg,40,262,'row = one writing step',{fill:C.mut,'font-size':14});
+        T(svg,430,34,'PEOPLE PER REPLICA · LOG SCALE',{fill:C.mut,'font-size':15});
+        KVL.forEach(([t,l],j)=>{const y=50+j*38,u=maxUsers(t),w=Math.max(4,Math.log10(Math.max(1,u))/4*230),sel=t===n;
+          T(svg,500,y+18,l,{'text-anchor':'end',fill:sel?C.fg:C.mut});
+          S(svg,'rect',{x:512,y,width:w,height:24,fill:C.teal,opacity:sel?1:0.4});
+          T(svg,512+w+10,y+18,fmt(u),{fill:sel?C.fg:C.mut});});
+        $('kvGB').textContent=bytes(n*SYS.kv);$('kvN').textContent=fmt(maxUsers(n));
+      }
+      drawKV();
+
+      /* 14: four cuts */
+      const CUTS=['Tensor parallelism slices every weight table into pieces, one per chip. Each chip reads a quarter of the weights, so a step is faster. Cost: two all-reduces per layer, so it needs the fastest wires.','Pipeline parallelism gives each chip a block of layers, like an assembly line. Only a small list of numbers per token moves between stages, so slower links are fine. But each token still passes every stage in turn, so it is not faster, and stages sit idle in “bubbles”.','Expert parallelism gives each chip a few experts (chapter 16); tokens travel to the chips holding the experts they chose, then results come back and are blended. A chip reads only the experts it holds.','Replicas are whole copies of the model behind a router, each serving its own people. This adds capacity for more people, not room for a bigger model. It is how a fleet scales (chapter 23).'];
+      const cut=pick('cutPick',drawCut);
+      function drawCut(){const v=cut();[0,1,2,3].forEach(i=>$('cut'+i).setAttribute('opacity',i===v?1:0.25));$('cutNote').textContent=CUTS[v];}
+      drawCut();
+
+      /* 16: mixture of experts (fixed pseudo-random routing) */
+      const mE=pick('mE',drawM),mK=pick('mK',drawM),mB=pick('mB',drawM);
+      function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+      function drawM(){
+        const E=mE(),K=Math.min(mK(),E),B=mB(),hit=new Array(E).fill(false);
+        for(let t=0;t<B;t++){const r=rng((t+1)*2654435761+E*131+K*7),idx=[...Array(E).keys()];
+          for(let j=0;j<K;j++){const p=j+Math.floor(r()*(E-j));[idx[j],idx[p]]=[idx[p],idx[j]];hit[idx[j]]=true;}}
+        const lit=hit.filter(Boolean).length,cols=Math.min(E,32),rows=Math.ceil(E/cols),x0=(800-(cols*22-2))/2,svg=$('moeSvg');clear(svg);
+        hit.forEach((h,c)=>S(svg,'rect',{x:x0+(c%cols)*22,y:8+Math.floor(c/cols)*22,width:20,height:20,fill:h?C.coral:C.box,stroke:h?'none':C.line}));
+        svg.setAttribute('viewBox','0 0 800 '+(rows*22+16));
+        $('mT').textContent=Math.round(100*lit/E)+'%';
+        $('mTs').textContent='of the '+E+' experts were read this step ('+lit+' of them). The formula predicts '+Math.round(100*(1-Math.pow(1-K/E,B)))+'%.';
+        const sh=100*K/E;$('mC').textContent=fmt(sh,sh<10?1:0)+'%';
+      }
+      drawM();
+
+      /* 20: speculative decoding */
+      const sK=pick('sK',drawS),sA=pick('sA',drawS),sC=pick('sC',drawS);
+      const kept=(a,k)=>(1-Math.pow(a,k+1))/(1-a), speed=(a,k,c)=>kept(a,k)/(1+k*c);
+      function drawS(){
+        const k=sK(),a=sA()/100,c=sC()/100,e=kept(a,k),s=speed(a,k,c),acc=e-1,svg=$('spSvg');clear(svg);
+        T(svg,40,24,'AN AVERAGE ROUND · '+k+' DRAFTED',{fill:C.mut,'font-size':15});
+        const pitch=Math.min(60,700/(k+1)),w=pitch-8;
+        for(let i=0;i<k;i++){const x=40+i*pitch,full=i+1<=Math.floor(acc+1e-9),part=!full&&i<acc?acc-i:0;
+          S(svg,'rect',{x,y:40,width:w,height:36,fill:full||part?C.teal:C.red,opacity:full?1:part?0.25+0.6*part:0.6});}
+        S(svg,'rect',{x:40+k*pitch,y:40,width:w,height:36,fill:'none',stroke:C.teal,'stroke-width':2});
+        T(svg,40+k*pitch+w/2,64,'+1',{'text-anchor':'middle'});
+        T(svg,40,104,'about '+acc.toFixed(1)+' drafted tokens kept, plus 1, from one big pass',{fill:C.fg});
+        T(svg,40,128,'solid: kept · faded: kept in some rounds · red: thrown away',{fill:C.mut,'font-size':14});
+        T(svg,40,160,'SPEED-UP FOR EACH DRAFT LENGTH',{fill:C.mut,'font-size':15});
+        const sp=[...Array(10).keys()].map(q=>speed(a,q+1,c)),ym=Math.max(2,Math.ceil(Math.max(...sp)*1.15)),base=370,H=170,ys=v=>base-v/ym*H;
+        S(svg,'path',{d:'M80 '+base+' H760',stroke:C.line,'stroke-width':2});
+        S(svg,'path',{d:'M80 '+ys(1).toFixed(1)+' H760',stroke:C.gold,'stroke-width':2,'stroke-dasharray':'5 5'});
+        T(svg,72,ys(1)+5,'1×',{'text-anchor':'end',fill:C.gold,'font-size':14});
+        T(svg,72,ys(ym)+5,ym+'×',{'text-anchor':'end',fill:C.mut,'font-size':14});
+        sp.forEach((v,i)=>{const x=96+i*66,sel=i+1===k;
+          S(svg,'rect',{x,y:ys(v).toFixed(1),width:42,height:(base-ys(v)).toFixed(1),fill:v<1?C.red:C.teal,opacity:sel?1:0.4});
+          T(svg,x+21,ys(v)-8,v.toFixed(1),{'text-anchor':'middle','font-size':14,fill:sel?C.fg:C.mut});
+          T(svg,x+21,base+22,String(i+1),{'text-anchor':'middle','font-size':14,fill:C.mut});});
+        T(svg,760,base+44,'tokens drafted per round',{'text-anchor':'end',fill:C.mut,'font-size':14});
+        $('sE').textContent=e.toFixed(2);$('sS').textContent=s.toFixed(2)+'×';$('sSt').className=s<1?'warn':'';
+      }
+      drawS();
+
+      /* 24: fleet calculator */
+      const fA=pick('fA',drawF),fT=pick('fT',drawF),fP=pick('fP',drawF),fH=pick('fH',drawF),fO=pick('fO',drawF),fC=pick('fC',drawF);
+      function drawF(){
+        const people=fA(),cyc=fT(),prompt=fP(),hit=fH()/100,out=fO(),price=fC();
+        const rps=people/cyc,ctx=prompt+out/2,mu=maxUsers(ctx),B=Math.max(1,Math.min(128,mu)),st=step(B,ctx),unc=prompt*(1-hit);
+        const tPre=(unc*2*SYS.P+unc*4*SYS.L*SYS.D*(prompt*hit+unc/2))/SYS.fl,tDec=out*st.t/B,tReq=tPre+tDec,repRps=1/tReq;
+        const reps=Math.ceil(rps/repRps*1.3),ppr=repRps*cyc,ppc=ppr/SYS.chips,tokHr=repRps*out*3600;
+        $('fR').textContent=fmt(Math.round(rps));$('fPR').textContent=fmt(Math.round(ppr));$('fN').textContent=fmt(reps);$('fG').textContent=fmt(reps*SYS.chips);
+        $('fPC').textContent=fmt(ppc,ppc<10?1:0);$('fM').textContent='$'+(SYS.chips*price/(tokHr/1e6)).toFixed(2);
+        const svg=$('fSvg'),k=680/tReq,wp=tPre*k,wd=tDec*k;clear(svg);
+        T(svg,40,26,'REPLICA TIME SPENT ON ONE REQUEST · '+ms(tReq),{fill:C.mut,'font-size':15});
+        S(svg,'rect',{x:40,y:44,width:Math.max(1,wp),height:40,fill:C.coral});
+        S(svg,'rect',{x:40+wp,y:44,width:Math.max(1,wd),height:40,fill:C.teal});
+        T(svg,40,118,'reading the uncached prompt · '+ms(tPre),{fill:C.coral});
+        T(svg,40,148,'writing the reply, its share of the replica · '+ms(tDec),{fill:C.teal});
+        T(svg,40,190,'one step '+ms(st.t)+' · '+B+' conversations per step',{fill:C.mut});
+        $('fNote').textContent='At this setting one replica runs '+B+' conversations at once and one step takes '+ms(st.t)+'.'+(B<128?' Conversations this long limit the batch to '+B+' by memory.':'');
+      }
+      drawF();
+    })();
   </script>
   <script src="../eli5-study.js"></script>
 </body>
