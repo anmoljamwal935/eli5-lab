@@ -1,5 +1,27 @@
 window.PUBLISHED = [
   {
+    "id": "exponential-time-hypothesis-eli5",
+    "title": "The Exponential Time Hypothesis, and OpenAI’s claim to break it",
+    "category": "AI & Frontier",
+    "minutes": 12,
+    "summary": "OpenAI claims an AI proof that 3-SAT beats exponential time",
+    "bullets": [
+      "ETH bet each extra switch multiplies the work by a fixed amount",
+      "OpenAI claims that multiplier keeps shrinking; still astronomically slow"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CHECK ALL",
+      "BEST BEFORE",
+      "CLAIMED"
+    ],
+    "file": "explainers/exponential-time-hypothesis-eli5.html",
+    "date": "2026-10-27",
+    "subcategory": "Research claims",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Work per variable: brute force and the best known algorithms stay flat while the claimed algorithm curves down toward the ETH floor.\"><path d=\"M24 35.0H296\" fill=\"none\" stroke=\"#f5c76a\" stroke-width=\"2\"/><path d=\"M24 90.1H296\" fill=\"none\" stroke=\"#76d5c1\" stroke-width=\"2\"/><path d=\"M24 121.4H296\" fill=\"none\" stroke=\"#f87171\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\"/><polyline points=\"24.0,65.7 28.5,70.5 33.1,74.3 37.6,77.4 42.1,80.0 46.7,82.2 51.2,84.1 55.7,85.7 60.3,87.2 64.8,88.6 69.3,89.8 73.9,90.9 78.4,91.8 82.9,92.8 87.5,93.6 92.0,94.4 96.5,95.1 101.1,95.8 105.6,96.4 110.1,97.0 114.7,97.5 119.2,98.1 123.7,98.6 128.3,99.0 132.8,99.5 137.3,99.9 141.9,100.3 146.4,100.7 150.9,101.1 155.5,101.4 160.0,101.7 164.5,102.1 169.1,102.4 173.6,102.7 178.1,102.9 182.7,103.2 187.2,103.5 191.7,103.7 196.3,104.0 200.8,104.2 205.3,104.5 209.9,104.7 214.4,104.9 218.9,105.1 223.5,105.3 228.0,105.5 232.5,105.7 237.1,105.9 241.6,106.1 246.1,106.2 250.7,106.4 255.2,106.6 259.7,106.7 264.3,106.9 268.8,107.0 273.3,107.2 277.9,107.3 282.4,107.5 286.9,107.6 291.5,107.7 296.0,107.9\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"2.5\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"134.4\" fill=\"#f87171\">ETH FLOOR</text><text x=\"40\" y=\"58\" fill=\"#ff8059\">CLAIMED</text><text x=\"296\" y=\"84.1\" text-anchor=\"end\" fill=\"#76d5c1\">BEST BEFORE</text></g></svg>"
+  },
+  {
     "id": "sgb-fcnr-masterstroke-eli5",
     "title": "Gold bonds, dollar swaps and the RBI “masterstroke”",
     "category": "Monetary Architecture",
