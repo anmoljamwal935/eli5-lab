@@ -29,6 +29,7 @@ a.add_argument('--color', default='#ff8059')
 a.add_argument('--subcategory', help='catalogue sub-heading inside the category, e.g. "AI data centres"; required for a new explainer, kept on update')
 a.add_argument('--date', type=datetime.date.fromisoformat, help='publication date; default today for a new explainer, kept on update')
 a.add_argument('--card-svg', type=pathlib.Path, help='catalogue card drawing, one <svg viewBox="0 0 320 155"> file; required for a new explainer, kept on update')
+a.add_argument('--part', type=int, help='position inside its series sub-heading (the catalogue lists series parts in this order); kept on update')
 a.add_argument('--dry-run', action='store_true', help='update published.js but skip git')
 args = a.parse_args()
 
@@ -65,6 +66,9 @@ entry = {
 }
 if card:
     entry['card'] = card
+part = args.part if args.part is not None else prev and prev.get('part')
+if part is not None:
+    entry['part'] = part
 
 items = [entry] + [e for e in items if e['id'] != entry['id']]
 pub.write_text(PREFIX + json.dumps(items, indent=2, ensure_ascii=False) + ';\n')

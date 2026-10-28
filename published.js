@@ -1,5 +1,51 @@
 window.PUBLISHED = [
   {
+    "id": "text-becomes-numbers-eli5",
+    "title": "Text becomes numbers",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 1: how text is cut into tokens and turned into a map of meaning",
+    "bullets": [
+      "Tokens: why models read word pieces, not letters or words",
+      "Embeddings: meaning as a position, and arithmetic on meaning"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "TOKENS",
+      "IDS",
+      "EMBEDDINGS"
+    ],
+    "file": "explainers/text-becomes-numbers-eli5.html",
+    "date": "2026-10-28",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"The word cat is cut into a token, given an ID number, and swapped for a list of numbers\"><rect x=\"18\" y=\"38\" width=\"62\" height=\"34\" fill=\"#f5c76a\"/><text x=\"49\" y=\"61\" text-anchor=\"middle\" font-size=\"18\" fill=\"#20140a\">␣cat</text><text x=\"49\" y=\"98\" text-anchor=\"middle\" font-size=\"12\" fill=\"#a5a29c\">token</text><path d=\"M88 55h26m-6-5 6 5-6 5\" stroke=\"#a5a29c\" fill=\"none\"/><text x=\"146\" y=\"61\" text-anchor=\"middle\" font-size=\"18\" fill=\"#76d5c1\" font-family=\"monospace\">902</text><text x=\"146\" y=\"98\" text-anchor=\"middle\" font-size=\"12\" fill=\"#a5a29c\">ID</text><path d=\"M178 55h26m-6-5 6 5-6 5\" stroke=\"#a5a29c\" fill=\"none\"/><g fill=\"#76d5c1\"><rect x=\"214\" y=\"44\" width=\"7\" height=\"22\"/><rect x=\"224\" y=\"36\" width=\"7\" height=\"30\"/><rect x=\"234\" y=\"52\" width=\"7\" height=\"14\"/><rect x=\"244\" y=\"30\" width=\"7\" height=\"36\"/><rect x=\"254\" y=\"48\" width=\"7\" height=\"18\"/><rect x=\"264\" y=\"40\" width=\"7\" height=\"26\"/><rect x=\"274\" y=\"56\" width=\"7\" height=\"10\"/><rect x=\"284\" y=\"34\" width=\"7\" height=\"32\"/></g><text x=\"252\" y=\"98\" text-anchor=\"middle\" font-size=\"12\" fill=\"#a5a29c\">list of numbers</text><text x=\"18\" y=\"134\" font-size=\"12\" fill=\"#ff8059\">PART 1 · HOW AI WORKS, FROM SCRATCH</text></svg>",
+    "part": 1
+  },
+  {
+    "id": "how-ai-works-from-scratch",
+    "title": "How AI works, from scratch: the series map",
+    "category": "AI & Frontier",
+    "minutes": 3,
+    "summary": "A series that builds AI up from nothing: the program, and the chips it runs on",
+    "bullets": [
+      "17 studies on two tracks, LLMs and chips, in one reading order",
+      "One colour key and one honesty tag system across every part"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "LLMS",
+      "CHIPS",
+      "SERVING"
+    ],
+    "file": "explainers/how-ai-works-from-scratch.html",
+    "date": "2026-10-28",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two tracks, LLMs and chips, with the reading order zig-zagging between them towards a bonus study\"><text x=\"16\" y=\"30\" font-size=\"11\" fill=\"#76d5c1\">LLMS</text><text x=\"16\" y=\"124\" font-size=\"11\" fill=\"#c3b8ff\">CHIPS</text><path d=\"M56 52H272M56 102H272\" stroke=\"#3b3936\" stroke-width=\"2\"/><path d=\"M60 52L80 52L100 102L120 102L140 102L160 52L180 52L200 102L220 52L240 102L260 52L290 77\" fill=\"none\" stroke=\"#f1eee8\" stroke-opacity=\".4\" stroke-dasharray=\"3 3\"/><circle cx=\"60\" cy=\"52\" r=\"7\" fill=\"#76d5c1\"/><g fill=\"#161616\" stroke-width=\"2\"><circle cx=\"80\" cy=\"52\" r=\"6\" stroke=\"#76d5c1\"/><circle cx=\"100\" cy=\"102\" r=\"6\" stroke=\"#c3b8ff\"/><circle cx=\"120\" cy=\"102\" r=\"6\" stroke=\"#c3b8ff\"/><circle cx=\"140\" cy=\"102\" r=\"6\" stroke=\"#c3b8ff\"/><circle cx=\"160\" cy=\"52\" r=\"6\" stroke=\"#76d5c1\"/><circle cx=\"180\" cy=\"52\" r=\"6\" stroke=\"#76d5c1\"/><circle cx=\"200\" cy=\"102\" r=\"6\" stroke=\"#c3b8ff\"/><circle cx=\"220\" cy=\"52\" r=\"6\" stroke=\"#76d5c1\"/><circle cx=\"240\" cy=\"102\" r=\"6\" stroke=\"#c3b8ff\"/><circle cx=\"260\" cy=\"52\" r=\"6\" stroke=\"#76d5c1\"/></g><rect x=\"283\" y=\"70\" width=\"14\" height=\"14\" fill=\"#f5c76a\" transform=\"rotate(45 290 77)\"/><text x=\"16\" y=\"146\" font-size=\"12\" fill=\"#ff8059\">17 STUDIES + A BONUS DEEP DIVE</text></svg>",
+    "part": 0
+  },
+  {
     "id": "inside-llm-serving-eli5",
     "title": "Inside LLM serving: one model, millions of chats",
     "category": "AI & Frontier",

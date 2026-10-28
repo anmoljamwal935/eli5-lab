@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Text becomes numbers — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Series colour key:
+       gold = text and tokens, teal = stored numbers, orange = arithmetic, purple = connections, rose = the wrong intuition */
+    :root{--danger:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .c-tok{color:var(--gold)}.c-num{color:var(--teal)}.c-calc{color:var(--accent)}.c-link{color:var(--purple)}.c-bad{color:var(--danger)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    details.trace .table-wrap{margin:12px 0}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+
+    /* Sliders (stepped ones are built by pick()) */
+    .eli5-study-container input[type=range]{--c:var(--teal);-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:6px 0 0;padding:0!important;border:0!important;background:transparent!important;cursor:pointer}
+    .eli5-study-container input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(90deg,var(--c) var(--fill,0%),var(--border) var(--fill,0%))}
+    .eli5-study-container input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-track{height:4px;background:var(--border)}
+    .eli5-study-container input[type=range]::-moz-range-progress{height:4px;background:var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]:focus-visible{outline:none}
+    .eli5-study-container input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px var(--c),0 0 0 5px rgba(118,213,193,.25)}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--gold)!important;color:var(--gold)!important;background:rgba(245,199,106,.1)!important}
+    .pick.slide{display:block;max-width:520px;margin-top:20px}
+    .pick.slide>span{display:flex;gap:10px;align-items:baseline}
+    .pick.slide output{color:var(--teal);font-weight:600;letter-spacing:.02em}
+    .pick .ticks{position:relative;height:20px;margin:2px 9px 0;font:12px/1.4 var(--font-mono);color:var(--faint)}
+    .pick .ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;padding:2px 0;cursor:pointer}
+    .pick .ticks span.first{transform:translateX(-9px)}.pick .ticks span.last{transform:translateX(calc(9px - 100%))}
+    .pick .ticks span:hover{color:var(--fg)}.pick .ticks span.on{color:var(--teal)}
+
+    /* Number tiles and card grids (outlines, so an unfilled last row stays empty) */
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;padding:1px;margin:16px 0 22px}
+    .tiles div{background:var(--surface);outline:1px solid var(--border);padding:12px 14px}
+    .tiles b{display:block;font-size:22px;line-height:1.2;color:var(--fg);font-weight:600}
+    .tiles span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--muted)}
+    .tiles span .tag{display:inline-block;margin:0 0 0 2px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .field-grid div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+
+    /* Text pieces drawn as HTML so they wrap on any screen */
+    .box{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .box>small,.cap{display:block;font:12px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .cap{margin-top:14px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px 4px;margin-top:12px}
+    .tk{display:inline-flex;flex-direction:column;align-items:center;min-width:28px}
+    .tk b{display:block;padding:4px 7px;font:500 18px/1.3 var(--font-sans);white-space:pre;color:#20140a;background:var(--gold)}
+    .tk:nth-child(even) b{background:#d9a94e}
+    .tk b.raw{background:transparent;color:var(--gold);outline:1px dashed var(--gold);font:13px/1.9 var(--font-mono)}
+    .tk i{display:block;margin-top:3px;font:normal 11px/1.2 var(--font-mono);color:var(--teal)}
+    .sp{color:rgba(32,20,10,.45)}
+    .codes{display:flex;flex-wrap:wrap;gap:10px 6px;margin-top:12px}
+    .code{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:8px 6px;border:1px solid var(--border);background:var(--surface)}
+    .code b{font:500 26px/1.2 var(--font-sans);color:var(--gold)}
+    .code span{font:12px/1.5 var(--font-mono);color:var(--teal)}
+    .code em{font:normal 11px/1.4 var(--font-mono);color:var(--muted)}
+    .tok-in{width:100%;min-height:72px;margin-top:14px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
+    .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .presets button{min-height:34px;padding:5px 12px}
+    .bpe-words{display:grid;gap:10px;margin-top:12px}
+    .bpe-word{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+    .bpe-word>em{width:44px;font:normal 12px/1 var(--font-mono);color:var(--muted)}
+    .bpe-word .tk b{font-size:20px}
+    .tk b.hit{background:var(--accent)!important;color:#20120c}
+    .pairs{display:grid;grid-template-columns:auto auto;gap:2px 18px;justify-content:start;margin-top:10px;font:13px/1.7 var(--font-mono);color:var(--muted)}
+    .pairs .top{color:var(--accent)}
+    .vocab{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .vocab span{padding:1px 7px;font:13px/1.7 var(--font-mono);border:1px solid var(--border);color:var(--muted)}
+    .vocab span.new{border-color:var(--gold);color:var(--gold)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media (max-width:700px){.two{grid-template-columns:1fr}}
+    .bars{display:grid;grid-template-columns:minmax(0,180px) 1fr;gap:10px 14px;align-items:center;margin-top:14px;font-size:15px}
+    .bars .bl{color:var(--fg)}.bars .bl small{display:block;color:var(--muted);font:11px/1.4 var(--font-mono)}
+    .bars .bar{display:flex;align-items:center;gap:10px;font:13px var(--font-mono);color:var(--muted)}
+    .bars .bar i{display:block;height:22px;background:var(--gold);min-width:2px}
+    .status{font:12px/1.5 var(--font-mono);color:var(--muted);margin-top:10px}
+
+    /* Phones: wide drawings scroll sideways, edge to edge */
+    .panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure,.box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}.panel figure svg{min-width:540px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}.panel figure.fit svg{min-width:0}.panel figure.fit::after{display:none}.bars{grid-template-columns:minmax(0,120px) 1fr}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 1: how text is cut into tokens and turned into a map of meaning">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/text-becomes-numbers-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Text becomes numbers">
+<meta property="og:description" content="Part 1: how text is cut into tokens and turned into a map of meaning">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/text-becomes-numbers-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/text-becomes-numbers-eli5.png?v=6521e1a6">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Text becomes numbers">
+<meta property="article:published_time" content="2026-10-28">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="text-becomes-numbers-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>Text becomes numbers</h1>
+      <p class="lede">A computer can only do arithmetic. So before an AI model can read a single word of your message, the words have to become numbers. This part shows how: first the text is cut into pieces, then each piece is swapped for a list of numbers that works like a position on a map of meaning.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Facts carry a tag. <span class="tag">public</span> means a published paper, spec sheet or plain arithmetic. <span class="tag">example</span> means a made-up but consistent number, used to show how something works. <span class="tag np">not public</span> means the company has not said. The <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:var(--gold)"></i>text and tokens</span>
+        <span><i style="background:var(--teal)"></i>stored numbers</span>
+        <span><i style="background:var(--accent)"></i>arithmetic</span>
+        <span><i style="background:var(--purple)"></i>connections</span>
+        <span><i style="background:var(--danger)"></i>the wrong intuition</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>A computer only understands numbers</h2>
+      <p>Everything inside a computer is stored as numbers. A photo is a grid of dots, and each dot is three numbers: how much red, green and blue. A song is a long list of numbers saying how far the speaker should push the air, forty-four thousand times a second. Text is no different. It has to be numbers too.</p>
+      <p>An AI model is a giant calculator. It takes numbers in, does a huge amount of multiplying and adding, and gives numbers out. So the first question of the whole series is simple: <b>which numbers should stand for words?</b> The answer has two steps, and this part covers both: cut the text into pieces, then give every piece a list of numbers that captures what it means.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="A photo is stored as numbers per dot, a sound as a list of numbers over time, and text needs numbers too before a model can use it">
+          <text x="40" y="34" fill="#a5a29c" font-size="15">A PHOTO</text>
+          <g id="pix"></g>
+          <text x="40" y="246" fill="#76d5c1" font-size="14">each dot: red 212, green 96, blue 61</text>
+          <text x="300" y="34" fill="#a5a29c" font-size="15">A SOUND</text>
+          <path d="M300 130 C320 60 340 60 360 130 S400 200 420 130 S460 70 480 130 S510 180 530 130" fill="none" stroke="#76d5c1" stroke-width="3"/>
+          <g fill="#76d5c1" font-size="13" text-anchor="middle"><text x="330" y="246">0.42</text><text x="380" y="246">−0.71</text><text x="430" y="246">0.18</text><text x="480" y="246">0.65</text></g>
+          <text x="560" y="34" fill="#a5a29c" font-size="15">TEXT</text>
+          <rect x="560" y="76" width="56" height="56" fill="#f5c76a"/><rect x="620" y="76" width="56" height="56" fill="#d9a94e"/><rect x="680" y="76" width="56" height="56" fill="#f5c76a"/>
+          <g font-size="30" fill="#20140a" text-anchor="middle"><text x="588" y="114">c</text><text x="648" y="114">a</text><text x="708" y="114">t</text></g>
+          <text x="648" y="190" fill="#ec6a94" font-size="34" text-anchor="middle">? ? ?</text>
+          <text x="648" y="246" fill="#a5a29c" font-size="14" text-anchor="middle">which numbers?</text>
+          <text x="40" y="284" fill="#f1eee8" font-size="17">A model can only multiply and add. Text has to become numbers first.</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">First try</p>
+      <h2>Give every letter a number</h2>
+      <p>The obvious idea already exists. Every letter, digit and symbol has an agreed number, set by a worldwide standard called <b>Unicode</b>. Lowercase <b>a</b> is 97, <b>b</b> is 98, <b>c</b> is 99. It covers about 150,000 characters <span class="tag">public</span>, from English and Hindi to Chinese and emoji. Type below and see the numbers your computer already uses:</p>
+      <div class="box">
+        <small>Type anything</small>
+        <textarea class="tok-in" id="codeIn" aria-label="Text to turn into character numbers">cat</textarea>
+        <div class="presets" id="codePre"><button type="button" class="secondary" data-t="cat">cat</button><button type="button" class="secondary" data-t="café">café</button><button type="button" class="secondary" data-t="नमस्ते">नमस्ते</button><button type="button" class="secondary" data-t="🍕">🍕</button></div>
+        <div class="codes" id="codes"></div>
+        <p class="readout" id="codeNote"></p>
+      </div>
+      <p>This works, and it is how text is stored on disk. But it is a poor way to feed a model, for two reasons. It is <b>long</b>: a 1,000-word essay is about 5,000 letters, and later parts show the model does real work for every single piece it reads and writes. And the numbers <b>mean nothing</b>: 97 and 98 sit next to each other, yet “a” and “b” have nothing in common. Worse, a model might believe they do.</p>
+      <details class="trace"><summary>Go deeper: characters versus bytes</summary>
+        <p><b>Two layers of numbers.</b> Unicode gives each character one number, called a code point: “é” is 233, the Hindi letter “न” is 2,344, the pizza emoji is 127,829. To store those on disk, a scheme called UTF-8 writes each code point as one to four small numbers between 0 and 255, called bytes.</p>
+        <p><b>English is cheap in bytes.</b> Plain English letters take one byte each. Accented letters take two, Hindi and most Indian scripts take three, and emoji take four. This detail comes back later: many tokenizers start from bytes, so text in some scripts starts out several times longer.</p>
+      </details>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">Second try</p>
+      <h2>Give every word a number</h2>
+      <p>So try the opposite: a big numbered dictionary of whole words. “the” is 1, “cat” is 2, and so on. Now a sentence is short, one number per word. But three new problems appear.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="A numbered word list works for common words, but a new word like unfollowed has no number, and run, runs and running get unrelated numbers">
+          <text x="40" y="34" fill="#a5a29c" font-size="15">A WORD LIST</text>
+          <g font-size="17">
+            <text x="40" y="74" fill="#76d5c1">1</text><text x="90" y="74" fill="#f5c76a">the</text>
+            <text x="40" y="104" fill="#76d5c1">2</text><text x="90" y="104" fill="#f5c76a">cat</text>
+            <text x="40" y="134" fill="#76d5c1">3</text><text x="90" y="134" fill="#f5c76a">sat</text>
+            <text x="40" y="164" fill="#a5a29c">…</text>
+            <text x="40" y="194" fill="#76d5c1">48,211</text><text x="120" y="194" fill="#f5c76a">run</text>
+            <text x="40" y="224" fill="#76d5c1">91,734</text><text x="120" y="224" fill="#f5c76a">running</text>
+            <text x="40" y="254" fill="#76d5c1">207,560</text><text x="120" y="254" fill="#f5c76a">runs</text>
+          </g>
+          <text x="300" y="74" fill="#f1eee8" font-size="17">1. It is enormous</text>
+          <text x="300" y="98" fill="#a5a29c" font-size="15">hundreds of thousands of words, plus names, slang and other languages</text>
+          <text x="300" y="148" fill="#f1eee8" font-size="17">2. New words have no number</text>
+          <rect x="300" y="162" width="130" height="36" fill="#f5c76a"/><text x="365" y="186" text-anchor="middle" fill="#20140a" font-size="17">unfollowed</text>
+          <text x="446" y="186" fill="#ec6a94" font-size="17">→ “unknown”</text>
+          <text x="300" y="240" fill="#f1eee8" font-size="17">3. Related words look unrelated</text>
+          <text x="300" y="264" fill="#a5a29c" font-size="15">run, running and runs share a root, but their numbers are far apart</text>
+          <text x="40" y="312" fill="#f1eee8" font-size="17">Whole words are short, but brittle: anything new or misspelled falls through.</text>
+        </svg>
+      </figure>
+      <p>Typos, new slang, product names, a word in another language: none of them are in the list, so the model would see only a blank “unknown” marker and lose the word entirely.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The middle path</p>
+      <h2>Cut text into reusable pieces</h2>
+      <p>The answer every modern model uses sits between letters and words. Keep a list of <b>pieces</b>. Common words get one piece each. Rare words are built from smaller pieces that are reused everywhere, like “un”, “follow” and “ed”. And the list always contains every single byte, so even a string of nonsense can be spelled out piece by piece. Nothing is ever unknown.</p>
+      <div class="box">
+        <small>How a piece list cuts text (example)</small>
+        <div class="chips"><span class="tk"><b>The</b></span><span class="tk"><b><span class="sp">␣</span>cat</b></span><span class="tk"><b><span class="sp">␣</span>sat</b></span><span class="tk"><b><span class="sp">␣</span>on</b></span><span class="tk"><b><span class="sp">␣</span>the</b></span><span class="tk"><b><span class="sp">␣</span>mat</b></span><span class="tk"><b>.</b></span></div>
+        <span class="cap">common words: one piece each</span>
+        <div class="chips"><span class="tk"><b>un</b></span><span class="tk"><b>follow</b></span><span class="tk"><b>ed</b></span><span style="width:24px"></span><span class="tk"><b>run</b></span><span class="tk"><b>ning</b></span><span style="width:24px"></span><span class="tk"><b>Ana</b></span><span class="tk"><b>ya</b></span></div>
+        <span class="cap">rare words, endings and names: built from smaller pieces</span>
+      </div>
+      <p>Each piece is called a <b>token</b>, and the list of all pieces is the model’s <b>vocabulary</b>. Notice the ␣ marks: the space before a word usually belongs to the piece, so “ cat” and “cat” at the start of a sentence can be different tokens. In English, one token is about four characters, or three quarters of a word, on average <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: real vocabulary sizes</summary>
+        <p><b>Lists are tens of thousands of pieces long.</b> <span class="tag">public</span> GPT-2 used 50,257 tokens. Llama 2 used 32,000; Llama 3 grew to 128,256, partly to handle more languages and code efficiently. OpenAI’s GPT-4 tokenizer has about 100,000. <span class="tag np">not public</span> Claude’s tokenizer and its size.</p>
+        <p><b>Special tokens.</b> A few entries are not text at all: markers meaning “end of text” or “a new message from the user starts here”. They let the model tell where one part of a conversation ends and the next begins.</p>
+        <p><b>Bigger is not simply better.</b> A longer list makes text shorter in tokens, but every entry needs its own row of numbers inside the model (chapter 16), and rare entries are seen too seldom in training to learn well.</p>
+      </details>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Building the list</p>
+      <h2>Glue the most common pair, again and again</h2>
+      <p>Nobody writes the piece list by hand. A program builds it from a huge pile of sample text with one simple rule. Start with single letters. Count every pair of neighbours. Glue the most common pair into a new piece and add it to the list. Repeat, tens of thousands of times.</p>
+      <p>Here is the whole idea on four words, each with how often it appears in the sample. Slide to run the rule one step at a time; the orange pair is the one about to be glued.</p>
+      <div class="box">
+        <div class="pick" id="bpeK" role="group" aria-label="Glue steps done"><span>GLUE STEPS DONE</span>
+          <button type="button" data-v="0" aria-pressed="true">0</button><button type="button" data-v="1" aria-pressed="false">1</button><button type="button" data-v="2" aria-pressed="false">2</button><button type="button" data-v="3" aria-pressed="false">3</button><button type="button" data-v="4" aria-pressed="false">4</button><button type="button" data-v="5" aria-pressed="false">5</button><button type="button" data-v="6" aria-pressed="false">6</button><button type="button" data-v="7" aria-pressed="false">7</button><button type="button" data-v="8" aria-pressed="false">8</button><button type="button" data-v="9" aria-pressed="false">9</button><button type="button" data-v="10" aria-pressed="false">10</button>
+        </div>
+        <span class="cap">The sample text, cut by the current list</span>
+        <div class="bpe-words" id="bpeWords"></div>
+        <div class="two">
+          <div><span class="cap">Most common neighbour pairs</span><div class="pairs" id="bpePairs"></div></div>
+          <div><span class="cap">The piece list so far</span><div class="vocab" id="bpeVocab"></div></div>
+        </div>
+        <p class="readout" id="bpeNote"></p>
+      </div>
+      <p>After a few steps, “est” and “low” and “new” exist as pieces, because they kept turning up. Run this on billions of words and the list fills with whole common words, common endings like “ing” and “tion”, and pieces of names. This method is called <b>byte-pair encoding</b>, or BPE <span class="tag">public</span>: it began as a way to compress files in 1994 and was adopted for language models in 2016.</p>
+      <details class="trace"><summary>Go deeper: the details that matter</summary>
+        <p><b>Starting from bytes.</b> Most modern tokenizers start from the 256 possible bytes rather than letters (chapter 2). That is why nothing is ever unknown: any text in any script is some sequence of bytes.</p>
+        <p><b>Splitting first.</b> Before counting pairs, text is split at spaces and punctuation, so a piece never glues the end of one word to the start of the next. Digits are often handled specially, for example cut into groups of up to three.</p>
+        <p><b>Using the list.</b> To cut new text, the tokenizer replays the glue steps in the order they were learned. Ties and the exact splitting rules differ between tokenizers, which is why two models can cut the same sentence differently. Other methods exist (WordPiece, Unigram), but they share the idea: frequent text gets big pieces, rare text gets small ones.</p>
+      </details>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>A working tokenizer, trained on this page</h2>
+      <p>When this page opened, your browser ran the glue rule on the text of this page itself: <span id="corpusN">a few thousand</span> words. So the tokenizer below is real, just small and trained on very little. Slide to grow its piece list and watch the same text take fewer tokens. Each token’s ID number is underneath.</p>
+      <div class="box">
+        <div class="pick" id="tkK" role="group" aria-label="Pieces in the list"><span>PIECES IN THE LIST</span>
+          <button type="button" data-v="0" aria-pressed="false">256</button><button type="button" data-v="50" aria-pressed="false">306</button><button type="button" data-v="150" aria-pressed="false">406</button><button type="button" data-v="300" aria-pressed="false">556</button><button type="button" data-v="600" aria-pressed="false">856</button><button type="button" data-v="1000" aria-pressed="true">1,256</button>
+        </div>
+        <textarea class="tok-in" id="tkIn" aria-label="Text to cut into tokens">The cat sat on the mat. Tokenizers cut unfamiliar words into smaller pieces.</textarea>
+        <div class="presets" id="tkPre"><button type="button" class="secondary" data-t="The cat sat on the mat. Tokenizers cut unfamiliar words into smaller pieces.">English</button><button type="button" class="secondary" data-t="unbelievably unfollowed">rare words</button><button type="button" class="secondary" data-t="How many r letters are in strawberry?">strawberry</button><button type="button" class="secondary" data-t="नमस्ते, आप कैसे हैं?">Hindi</button><button type="button" class="secondary" data-t="for (let i = 0; i < 10; i++) {">code</button><button type="button" class="secondary" data-t="3.14159 and 1,234,567">numbers</button><button type="button" class="secondary" data-t="I love pizza 🍕">emoji</button></div>
+        <div class="chips" id="tkOut" aria-live="polite"></div>
+        <p class="status" id="tkStatus">Training the tokenizer on this page…</p>
+      </div>
+      <div class="tiles">
+        <div><b id="tkC">0</b><span>characters</span></div>
+        <div><b id="tkT">0</b><span>tokens</span></div>
+        <div><b id="tkR">0</b><span>characters per token</span></div>
+      </div>
+      <p>At 256 pieces the list holds only bytes, so English text is one token per letter. As pieces are added the count drops fast, then more slowly. Dashed boxes are lone bytes that are only part of a character: this small list never saw Hindi or emoji, so it spells them out byte by byte.</p>
+      <details class="trace"><summary>Go deeper: what is different in a real one</summary>
+        <p><b>Training text.</b> Real tokenizers learn from billions of words across many languages and a lot of code, so their pieces are much more general. This one learned only from this page, so it knows “tokens” and “numbers” very well and almost nothing else.</p>
+        <p><b>Size.</b> This list stops at 1,256 pieces; real ones have 30,000 to 200,000 (chapter 4). The rule is exactly the same.</p>
+        <p><b>The ID numbers.</b> IDs 0 to 255 are the bytes. Every glued piece gets the next free number, in the order it was learned, so a low ID means the piece was found early, because it is very common.</p>
+      </details>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The hand-off</p>
+      <h2>The model only ever sees ID numbers</h2>
+      <p>Once text is cut, each token is replaced by its position in the list: its <b>ID</b>. Your message reaches the model as nothing but a row of whole numbers. The model never sees a letter. When it answers, it produces IDs too, and the app looks each one up in the same list to turn it back into text for your screen.</p>
+      <figure>
+        <svg viewBox="0 0 800 260" role="img" aria-label="Text is cut into tokens, tokens become ID numbers, the model works on IDs and returns IDs, which are looked up and turned back into text">
+          <defs><marker id="ar7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
+          <text x="40" y="34" fill="#a5a29c" font-size="15">YOUR MESSAGE</text>
+          <rect x="40" y="50" width="62" height="40" fill="#f5c76a"/><rect x="106" y="50" width="62" height="40" fill="#d9a94e"/><rect x="172" y="50" width="62" height="40" fill="#f5c76a"/>
+          <g font-size="18" fill="#20140a" text-anchor="middle"><text x="71" y="77">The</text><text x="137" y="77">␣cat</text><text x="203" y="77">␣sat</text></g>
+          <path d="M137 98 V128" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar7)"/>
+          <g font-size="18" fill="#76d5c1" text-anchor="middle" font-family="monospace"><text x="71" y="156">271</text><text x="137" y="156">902</text><text x="203" y="156">1,044</text></g>
+          <text x="137" y="182" fill="#a5a29c" font-size="14" text-anchor="middle">IDs: all the model gets</text>
+          <path d="M250 150 H310" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar7)"/>
+          <rect x="320" y="110" width="180" height="80" fill="#ff8059" opacity=".2" stroke="#ff8059"/>
+          <text x="410" y="146" fill="#f1eee8" font-size="18" text-anchor="middle">the model</text>
+          <text x="410" y="170" fill="#ff8059" font-size="14" text-anchor="middle">numbers in, numbers out</text>
+          <path d="M508 150 H570" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar7)"/>
+          <text x="620" y="156" fill="#76d5c1" font-size="18" text-anchor="middle" font-family="monospace">388</text>
+          <path d="M620 128 V98" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar7)"/>
+          <rect x="582" y="50" width="76" height="40" fill="#f5c76a"/><text x="620" y="77" font-size="18" fill="#20140a" text-anchor="middle">␣on</text>
+          <text x="582" y="34" fill="#a5a29c" font-size="15">THE REPLY</text>
+          <text x="40" y="236" fill="#f1eee8" font-size="17">Text in, IDs to the model, IDs back, text out. The ID numbers are <tspan fill="#a5a29c">example</tspan> values.</text>
+        </svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: a chat is one long row of IDs</summary>
+        <p><b>Everything is tokens.</b> The app’s hidden instructions, your earlier messages, the model’s earlier replies, and your new message are all joined into one long row of IDs, with special tokens marking who said what. The model reads that whole row every time.</p>
+        <p><b>Why this matters for cost.</b> Usage limits, prices and the longest conversation a model can handle are all counted in tokens, not words. That is the subject of part 14 of the series.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>Why a model can miscount letters</h2>
+      <p>Ask a model how many letter r’s are in “strawberry” and older models often got it wrong. Now you can see one big reason. The model does not receive the letters s-t-r-a-w-b-e-r-r-y. It receives a few token IDs, and an ID is just a number. To count letters it would have to have learned, separately, how each of its tokens is spelled.</p>
+      <div class="box">
+        <small>“strawberry”, the way a model receives it</small>
+        <div class="two" style="margin-top:12px">
+          <div><span class="cap">What you see</span><div class="chips" id="sbLetters"></div></div>
+          <div><span class="cap">What the model gets (this page’s tokenizer)</span><div class="chips" id="sbTokens"></div></div>
+        </div>
+        <p class="readout" id="sbNote"></p>
+      </div>
+      <p>The same blind spot explains other old stumbles: spelling a word backwards, finding rhymes, and arithmetic on long numbers, which can be cut into odd chunks like “123” and “4567”. Newer models do much better, because they have learned a lot about spelling and some can work step by step (part 16). But the root cause is the cutting.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">Not all text is equal</p>
+      <h2>The same message can cost very different amounts</h2>
+      <p>A piece list is built from its sample text, so it is efficient for whatever that sample had most of. Text it saw rarely gets cut into many small pieces. Here is this page’s tokenizer, trained only on English, cutting the same short greeting in different forms:</p>
+      <div class="box">
+        <small>Tokens needed, this page’s tokenizer at 1,256 pieces</small>
+        <div class="bars" id="costBars"></div>
+        <p class="readout">The gap here is exaggerated, because this tokenizer saw no Hindi at all.</p>
+      </div>
+      <p>Real tokenizers learn from many languages, which narrows the gap but does not close it. A 2023 study found the same text could need up to 15 times more tokens in some languages than in English <span class="tag">public</span>. That matters, because people pay per token, wait per token, and hit length limits counted in tokens.</p>
+      <details class="trace"><summary>Go deeper: turning tokens into money</summary>
+        <p><b>A rule of thumb for English.</b> 1,000 words is roughly 1,300 tokens. An API priced at $3 per million input tokens <span class="tag">example</span> would charge about 0.4 cents to read a 1,000-word document.</p>
+        <p><b>Why tokenizers keep growing.</b> Part of the reason Llama 3’s list grew to 128,256 pieces <span class="tag">public</span> was to give more languages and code their own common pieces, so they take fewer tokens.</p>
+      </details>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">Half done</p>
+      <h2>An ID is a name tag, not a meaning</h2>
+      <p>Cutting text and numbering the pieces solves the first job. But an ID is like a locker number. Locker 902 and locker 903 are neighbours, and what is inside them has nothing to do with each other. In the same way, “cat” might be ID 902 and “kitten” ID 74,311, even though they mean nearly the same thing.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="ID numbers are like locker numbers: neighbouring lockers hold unrelated things, and related words can have far-apart numbers">
+          <g id="lockers"></g>
+          <text x="40" y="200" fill="#ec6a94" font-size="17">Wrong intuition: close ID numbers mean close meanings.</text>
+          <text x="40" y="230" fill="#f1eee8" font-size="17">They do not. The model needs numbers where similar meanings are similar.</text>
+        </svg>
+      </figure>
+      <p>If the model did arithmetic on the IDs themselves, it would believe “cat” (902) is almost the same as whatever happens to be 903. So the second job is to swap each ID for numbers that do carry meaning.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>A map of meaning</h2>
+      <p>Imagine placing every token on a map, so that tokens used in similar ways sit close together. Animals end up in one corner, foods in another, vehicles in a third. Now a token’s numbers are simply its <b>position on the map</b>: how far across, how far up. “cat” and “kitten” get almost the same numbers, because they sit side by side.</p>
+      <p>Tap any word to see its three nearest neighbours.</p>
+      <figure class="fit">
+        <svg id="mapSvg" viewBox="0 0 800 460" role="img" aria-label="A two-dimensional map of example words in clusters: animals, foods, vehicles, people, places and verbs. Selecting a word draws lines to its three nearest neighbours"></svg>
+      </figure>
+      <p class="readout" id="mapNote"></p>
+      <p><b>Mapping it back.</b> The map is the model’s table of numbers; a word’s spot is its list of numbers; distance on the map is how different two meanings are. <b>Where the analogy breaks:</b> this map has two directions, across and up. A real model’s map has thousands, which no one can picture. The positions here are hand-placed <span class="tag">example</span> values.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">Thousands of directions</p>
+      <h2>Each token gets a long list of numbers</h2>
+      <p>Two numbers can only separate a few kinds of meaning. Real models give every token a list of thousands: 4,096 numbers in Llama 3 8B, 12,288 in GPT-3 <span class="tag">public</span>. Each number is one direction on the map. The list is called the token’s <b>embedding</b>: the word is “embedded” as a point in a space with thousands of directions.</p>
+      <p>Below, each bar is one number in a 48-number list <span class="tag">example</span>; up is positive, down is negative. Similar words get similar patterns.</p>
+      <figure class="fit">
+        <svg id="fpSvg" viewBox="0 0 800 330" role="img" aria-label="Three rows of 48 bars: cat and kitten have very similar patterns, car has a different pattern"></svg>
+      </figure>
+      <p>No single number cleanly means “is an animal” or “is plural”. Meaning is spread across many of them at once, the way a face is not stored in one pixel. That is one reason models are hard to look inside.</p>
+      <details class="trace"><summary>Go deeper: how many numbers, and why</summary>
+        <p><b>Sizes in public models.</b> <span class="tag">public</span> GPT-2 small: 768 numbers per token. Llama 3 8B: 4,096; Llama 3 70B: 8,192. GPT-3: 12,288. More numbers give room to separate more shades of meaning, at the cost of more memory and arithmetic everywhere in the model.</p>
+        <p><b>Precision.</b> Each number is usually stored with 16 bits (2 bytes). A token’s list of 4,096 numbers is therefore 8 KB.</p>
+      </details>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">Directions carry meaning</p>
+      <h2>Arithmetic on meaning</h2>
+      <p>Something surprising happens on these maps. The step from “man” to “woman” points in roughly the same direction as the step from “king” to “queen”. So you can do sums with meaning: start at <b>king</b>, subtract <b>man</b>, add <b>woman</b>, and you land near <b>queen</b>. This was shown with an early word map called word2vec in 2013 <span class="tag">public</span>.</p>
+      <div class="pick" id="anaPick" data-kind="choice" role="group" aria-label="Choose a word sum"><span>CHOOSE A SUM</span>
+        <button type="button" class="secondary" data-v="0" aria-pressed="true">king − man + woman</button><button type="button" class="secondary" data-v="1" aria-pressed="false">Paris − France + Italy</button><button type="button" class="secondary" data-v="2" aria-pressed="false">walked − walk + swim</button>
+      </div>
+      <figure class="fit">
+        <svg id="anaSvg" viewBox="0 0 800 400" role="img" aria-label="Arrows on the example map: the step between two words is copied from a third word and lands near the answer"></svg>
+      </figure>
+      <p class="readout" id="anaNote"></p>
+      <p><b>The honest version.</b> It works for famous examples and fails for many others. Usually the nearest point to the sum is one of the words you started with, so those are ruled out by convention. It is a real tendency, not a law. But it shows that directions, not just positions, carry meaning: one direction roughly means “female version of”, another “capital city of”, another “past tense of”.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">Measuring closeness</p>
+      <h2>How a model compares two lists of numbers</h2>
+      <p>Think of each list as an arrow from the centre of the map to the word’s spot. Two arrows pointing the same way mean similar meanings. Arrows at right angles mean unrelated. Opposite arrows mean opposite. Turn one arrow and watch the score:</p>
+      <div class="box">
+        <div class="pick" id="angPick" role="group" aria-label="Angle between the arrows"><span>ANGLE BETWEEN THE ARROWS</span>
+          <button type="button" data-v="0" aria-pressed="false">0°</button><button type="button" data-v="20" aria-pressed="true">20°</button><button type="button" data-v="45" aria-pressed="false">45°</button><button type="button" data-v="70" aria-pressed="false">70°</button><button type="button" data-v="90" aria-pressed="false">90°</button><button type="button" data-v="120" aria-pressed="false">120°</button><button type="button" data-v="150" aria-pressed="false">150°</button><button type="button" data-v="180" aria-pressed="false">180°</button>
+        </div>
+        <svg id="angSvg" viewBox="0 0 800 260" role="img" aria-label="Two arrows from one point at the chosen angle, and a score from minus one to plus one" style="display:block;width:100%;height:auto;margin-top:16px"></svg>
+      </div>
+      <p>The way to get that score from two lists is pure arithmetic: multiply the two first numbers together, the two second numbers together, and so on, then add everything up. Matching signs push the total up, clashing signs pull it down. This is called the <b>dot product</b>. Scaled so the result runs from −1 to +1, it is called <b>cosine similarity</b>. The same multiply-and-add appears again in part 7, where it is how each word decides which other words to pay attention to.</p>
+      <details class="trace"><summary>Go deeper: the sum, worked out</summary>
+        <p>Take three-number lists <span class="tag">example</span>: cat = (0.8, 0.1, 0.5), kitten = (0.7, 0.2, 0.6), car = (−0.2, 0.9, 0.1).</p>
+        <span class="eq">cat · kitten = 0.8×0.7 + 0.1×0.2 + 0.5×0.6 = 0.56 + 0.02 + 0.30 = 0.88
+cat · car    = 0.8×(−0.2) + 0.1×0.9 + 0.5×0.1 = −0.16 + 0.09 + 0.05 = −0.02</span>
+        <p>Cat and kitten score high; cat and car score about zero. Cosine similarity divides the dot product by the two arrows’ lengths, so only the direction counts, not how long the arrows are.</p>
+        <p><b>Where else it is used.</b> Search engines and “find similar documents” features turn text into lists of numbers this way and compare them with exactly this score.</p>
+      </details>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">Where the map comes from</p>
+      <h2>Nobody draws the map. Training does.</h2>
+      <p>No person decides where “kitten” goes. Every token’s list starts as random numbers, so the map starts as a meaningless scatter. During training (part 6), the model reads enormous amounts of text and keeps being nudged to guess the next word better. Words that appear in similar sentences get nudged towards similar positions, because that helps the guessing. Slide to watch a scatter settle into a map:</p>
+      <div class="pick" id="trPick" role="group" aria-label="Amount of training"><span>AMOUNT OF TRAINING</span>
+        <button type="button" data-v="0" aria-pressed="true">none</button><button type="button" data-v="0.25" aria-pressed="false">a little</button><button type="button" data-v="0.5" aria-pressed="false">some</button><button type="button" data-v="0.75" aria-pressed="false">a lot</button><button type="button" data-v="1" aria-pressed="false">finished</button>
+      </div>
+      <figure class="fit">
+        <svg id="trSvg" viewBox="0 0 800 460" role="img" aria-label="Example words move from random positions into clusters of similar meaning as training progresses"></svg>
+      </figure>
+      <p>This is an illustration <span class="tag">example</span>: real training moves thousands of numbers per token at once, over weeks. But the principle is old. In 1957 the linguist J. R. Firth wrote, “You shall know a word by the company it keeps.” <span class="tag">public</span> A model learns a word’s meaning only from which words keep turning up around it.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">The lookup table</p>
+      <h2>One row of numbers per token</h2>
+      <p>Inside the model, the map is stored as a giant table, the <b>embedding table</b>. It has one row for every token in the vocabulary, and each row is that token’s list of numbers. The very first thing a model does with your message is look up the row for each ID. That is the whole of step one: no thinking, just looking up.</p>
+      <figure>
+        <svg id="tblSvg" viewBox="0 0 800 300" role="img" aria-label="A table with one row per token ID; the row for ID 902 is highlighted and copied out as that token's list of numbers"></svg>
+      </figure>
+      <div class="tiles">
+        <div><b>128,256</b><span>rows: one per token in Llama 3’s list <span class="tag">public</span></span></div>
+        <div><b>4,096</b><span>numbers in each row, Llama 3 8B <span class="tag">public</span></span></div>
+        <div><b>525 million</b><span>numbers in the table (rows × numbers per row)</span></div>
+        <div><b>about 1 GB</b><span>at 2 bytes per number; about 6.5% of the whole 8-billion-number model</span></div>
+      </div>
+      <details class="trace"><summary>Go deeper: the table appears twice</summary>
+        <p><b>At the end, too.</b> When the model finishes its calculation, it has to score every token in the list as the possible next word (part 2). That needs another table of the same shape. Some models, GPT-2 among them <span class="tag">public</span>, simply reuse the same table for both ends to save memory.</p>
+        <p><b>Why vocabulary size costs memory.</b> Doubling the list from 64,000 to 128,000 pieces doubles both tables. That is one reason lists are not made endlessly long.</p>
+      </details>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">The limitation</p>
+      <h2>One word, many meanings</h2>
+      <p>The table gives each token one fixed row. But “bank” in “the river bank” and “bank” in “bank account” are the same token, so they start from exactly the same numbers. The table cannot tell them apart.</p>
+      <figure>
+        <svg id="bankSvg" viewBox="0 0 800 320" role="img" aria-label="The word bank starts at one fixed point between a nature cluster and a money cluster; the surrounding words pull it towards river or towards money"></svg>
+      </figure>
+      <p>Fixing this is the job of the rest of the model. Layer by layer, each token’s list is adjusted using the tokens around it, so “bank” next to “river” drifts towards water and “bank” next to “account” drifts towards money. How the words share that information is part 7, attention. The table is only the starting point.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">One more missing piece</p>
+      <h2>Order matters, and the table ignores it</h2>
+      <p>“Dog bites man” and “man bites dog” contain exactly the same three tokens, so the table hands back exactly the same three lists. Yet the meanings are opposite. So the model also needs to know <b>where</b> each token sits in the row.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Dog bites man and man bites dog look up the same three rows; position labels one, two and three tell them apart">
+          <g font-size="18" text-anchor="middle">
+            <rect x="40" y="40" width="90" height="40" fill="#f5c76a"/><rect x="136" y="40" width="90" height="40" fill="#d9a94e"/><rect x="232" y="40" width="90" height="40" fill="#f5c76a"/>
+            <text x="85" y="67" fill="#20140a">dog</text><text x="181" y="67" fill="#20140a">␣bites</text><text x="277" y="67" fill="#20140a">␣man</text>
+            <rect x="440" y="40" width="90" height="40" fill="#f5c76a"/><rect x="536" y="40" width="90" height="40" fill="#d9a94e"/><rect x="632" y="40" width="90" height="40" fill="#f5c76a"/>
+            <text x="485" y="67" fill="#20140a">man</text><text x="581" y="67" fill="#20140a">␣bites</text><text x="677" y="67" fill="#20140a">␣dog</text>
+          </g>
+          <g id="ordBars"></g>
+          <g font-size="14" fill="#c3b8ff" text-anchor="middle"><text x="85" y="186">position 1</text><text x="181" y="186">2</text><text x="277" y="186">3</text><text x="485" y="186">position 1</text><text x="581" y="186">2</text><text x="677" y="186">3</text></g>
+          <text x="40" y="232" fill="#f1eee8" font-size="17">Same rows from the table. Only the positions tell the two sentences apart.</text>
+        </svg>
+      </figure>
+      <p>Modern models mix position into the calculation, so a token “knows” it is first, second or third. The common method today does it by gently rotating the numbers by an amount that depends on position. That is covered properly in part 7, next to attention, because that is where position is used.</p>
+    </section>
+
+    <!-- 19 -->
+    <section class="panel">
+      <p class="kicker">The whole trip</p>
+      <h2>From your message to the model’s first numbers</h2>
+      <p>Put together, everything in this part happens before the model does any real work, in a few thousandths of a second:</p>
+      <figure>
+        <svg viewBox="0 0 800 260" role="img" aria-label="Five stages: text, tokens, IDs, table lookup, and one list of numbers per token, ready for the model">
+          <defs><marker id="ar19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
+          <g font-size="15" fill="#a5a29c" text-anchor="middle"><text x="90" y="36">1 · TEXT</text><text x="245" y="36">2 · TOKENS</text><text x="400" y="36">3 · IDs</text><text x="555" y="36">4 · LOOK UP</text><text x="710" y="36">5 · LISTS</text></g>
+          <text x="90" y="110" fill="#f5c76a" font-size="20" text-anchor="middle">The cat sat</text>
+          <rect x="200" y="56" width="90" height="28" fill="#f5c76a"/><rect x="200" y="90" width="90" height="28" fill="#d9a94e"/><rect x="200" y="124" width="90" height="28" fill="#f5c76a"/>
+          <g font-size="15" fill="#20140a" text-anchor="middle"><text x="245" y="76">The</text><text x="245" y="110">␣cat</text><text x="245" y="144">␣sat</text></g>
+          <g font-size="16" fill="#76d5c1" text-anchor="middle" font-family="monospace"><text x="400" y="76">271</text><text x="400" y="110">902</text><text x="400" y="144">1,044</text></g>
+          <g fill="#76d5c1" opacity=".18"><rect x="505" y="56" width="100" height="98"/></g>
+          <g stroke="#76d5c1" stroke-opacity=".5"><path d="M505 72 H605 M505 88 H605 M505 104 H605 M505 120 H605 M505 136 H605"/></g>
+          <rect x="505" y="98" width="100" height="14" fill="#76d5c1"/>
+          <g id="lists19"></g>
+          <path d="M150 104 H192" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar19)"/><path d="M300 104 H350" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar19)"/><path d="M450 104 H497" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar19)"/><path d="M612 104 H650" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar19)"/>
+          <text x="40" y="206" fill="#f1eee8" font-size="17">Out comes one list of thousands of numbers per token, in order.</text>
+          <text x="40" y="234" fill="#a5a29c" font-size="16">That grid of numbers is what the model actually reads. Part 2: what it does with it.</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- Field guide -->
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <p>A lot of everyday AI behaviour follows straight from this part.</p>
+      <div class="field-grid">
+        <div><b>Prices and limits are in tokens</b><span>You pay per token, and the longest chat a model can handle is a token count, because tokens are all the model sees.</span><em>chapters 7, 9</em></div>
+        <div><b>Letter puzzles trip models up</b><span>Counting letters or reversing words is hard when you receive word pieces, not letters.</span><em>chapter 8</em></div>
+        <div><b>Some languages cost more</b><span>Text the tokenizer saw less of is cut into more pieces, so it is slower and pricier.</span><em>chapter 9</em></div>
+        <div><b>Typos rarely break it</b><span>A misspelled word is still spelled out from smaller pieces, and nearby pieces carry the meaning.</span><em>chapters 4, 6</em></div>
+        <div><b>Emoji are expensive</b><span>One emoji can take several tokens, because it is several bytes the list may not have glued together.</span><em>chapters 2, 6</em></div>
+        <div><b>It handles words it never saw</b><span>New names and slang still get through as pieces, so the model can work with them and even invent words.</span><em>chapter 4</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Token</b><span>One piece of text from the model’s list: a word, part of a word, or a single byte.</span></div>
+        <div><b>Vocabulary</b><span>The model’s full list of tokens, usually tens of thousands long.</span></div>
+        <div><b>Tokenizer</b><span>The program that cuts text into tokens and turns them into ID numbers, and back.</span></div>
+        <div><b>Token ID</b><span>A token’s position in the list. A name tag, with no meaning in itself.</span></div>
+        <div><b>Byte-pair encoding</b><span>Building the list by gluing the most common neighbouring pair, over and over.</span></div>
+        <div><b>Unicode, UTF-8</b><span>The agreed numbers for every character, and the way they are stored as bytes.</span></div>
+        <div><b>Embedding</b><span>A token’s list of numbers: its position on the map of meaning.</span></div>
+        <div><b>Embedding table</b><span>The table holding one embedding per token. The model’s first step looks rows up in it.</span></div>
+        <div><b>Dimension</b><span>One direction on the map, so one number in each embedding.</span></div>
+        <div><b>Dot product</b><span>Multiply two lists number by number and add it all up. Big when they point the same way.</span></div>
+        <div><b>Cosine similarity</b><span>The dot product scaled to run from −1 (opposite) to +1 (same direction).</span></div>
+        <div><b>Position</b><span>Where a token sits in the row. Added separately, because the table ignores order.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>Unicode and UTF-8. Byte-pair encoding and how it works. Vocabulary sizes and embedding sizes of GPT-2, GPT-3 and Llama. The word2vec word sums. Studies of token costs across languages.</span><em>standards, papers, model cards</em></div>
+        <div><b>Example</b><span>The four-word glue demo, the hand-placed word maps, the 48-number bar patterns, the ID numbers in the drawings, and the training animation.</span><em>made up to show the idea</em></div>
+        <div><b>Not public</b><span>Claude’s tokenizer, its vocabulary size and its embedding size.</span><em>Anthropic has not said</em></div>
+      </div>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A model never reads words. It reads lists of numbers, placed so that words used in similar ways sit close together.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const C={gold:'#f5c76a',gold2:'#d9a94e',teal:'#76d5c1',coral:'#ff8059',purple:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#2f2d2a',line:'#57534f',ink:'#20140a'};
+      const fmt=n=>n.toLocaleString('en-US');
+      const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+      const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+      function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+      // A control group: ordered choices become a stepped slider with clickable tick labels; data-kind="choice" stays as buttons.
+      function pick(id,cb){
+        const g=$(id),bs=[...g.querySelectorAll('button')];
+        if(g.dataset.kind==='choice'){
+          bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
+          return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+        }
+        const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
+        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        head.append(out);
+        Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
+        r.setAttribute('aria-label',g.getAttribute('aria-label'));
+        ticks.className='ticks';ticks.setAttribute('aria-hidden','true');
+        const ts=labs.map((l,i)=>{const t=document.createElement('span');t.textContent=l;t.style.left=(i/(n-1)*100)+'%';
+          t.className=i===0?'first':i===n-1?'last':'';t.addEventListener('click',()=>{r.value=i;sync();cb();});ticks.appendChild(t);return t;});
+        function sync(){const i=+r.value;out.textContent=labs[i];r.setAttribute('aria-valuetext',labs[i]);
+          r.style.setProperty('--fill',(i/(n-1)*100)+'%');ts.forEach((t,j)=>t.classList.toggle('on',j===i));}
+        r.addEventListener('input',()=>{sync();cb();});
+        g.classList.add('slide');g.replaceChildren(head,r,ticks);sync();
+        return ()=>vals[+r.value];
+      }
+      const presets=(id,input,cb)=>$(id).querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{$(input).value=b.dataset.t;cb();}));
+
+      /* 1: a photo is numbers */
+      (()=>{const g=$('pix'),r=rng(7);for(let y=0;y<7;y++)for(let x=0;x<7;x++){const d=Math.hypot(x-3,y-3.4),v=Math.max(0,1-d/4.2);
+        S(g,'rect',{x:40+x*24,y:52+y*24,width:22,height:22,fill:`rgb(${Math.round(60+180*v+r()*15)},${Math.round(70+60*v)},${Math.round(90-30*v)})`});}})();
+
+      /* 2: letters as numbers */
+      const enc=new TextEncoder();
+      function drawCodes(){
+        const s=$('codeIn').value.slice(0,40),chars=[...s];let bytes=0;
+        $('codes').innerHTML=chars.map(ch=>{const cp=ch.codePointAt(0),b=[...enc.encode(ch)];bytes+=b.length;
+          const shown=ch===' '?'␣':ch===' '?'␣':ch==='\n'?'↵':ch;
+          return `<div class="code"><b>${esc(shown)}</b><span>${fmt(cp)}</span><em>${b.length} byte${b.length>1?'s':''}</em></div>`;}).join('');
+        $('codeNote').textContent=chars.length?`${chars.length} character${chars.length>1?'s':''}, stored as ${bytes} byte${bytes>1?'s':''}.`+(bytes>chars.length?' Characters outside plain English take more than one byte each.':''):'Type something above.';
+      }
+      $('codeIn').addEventListener('input',drawCodes);presets('codePre','codeIn',drawCodes);drawCodes();
+
+      /* 5: byte-pair encoding on four words */
+      const BW=[['low',5],['lower',2],['newest',6],['widest',3]];
+      function bpeSteps(maxK){
+        let words=BW.map(([w,c])=>({sym:[...w],c})),vocab=[...new Set(BW.flatMap(([w])=>[...w]))].sort();const steps=[];
+        for(let k=0;k<=maxK;k++){
+          const counts=new Map();
+          words.forEach(w=>{for(let i=0;i<w.sym.length-1;i++){const key=w.sym[i]+'\u0000'+w.sym[i+1];counts.set(key,(counts.get(key)||0)+w.c);}});
+          const ranked=[...counts].sort((a,b)=>b[1]-a[1]);
+          steps.push({words:words.map(w=>({sym:[...w.sym],c:w.c})),ranked,vocab:[...vocab]});
+          if(!ranked.length)break;
+          const [a,b]=ranked[0][0].split('\u0000'),m=a+b;vocab.push(m);
+          words.forEach(w=>{const out=[];for(let i=0;i<w.sym.length;i++){if(i<w.sym.length-1&&w.sym[i]===a&&w.sym[i+1]===b){out.push(m);i++;}else out.push(w.sym[i]);}w.sym=out;});
+        }
+        return steps;
+      }
+      const BPE=bpeSteps(10),bpeK=pick('bpeK',drawBpe);
+      function drawBpe(){
+        const k=Math.min(bpeK(),BPE.length-1),st=BPE[k],top=st.ranked[0],[ta,tb]=top?top[0].split('\u0000'):[];
+        $('bpeWords').innerHTML=st.words.map(w=>{const hit=new Set();for(let i=0;i<w.sym.length-1;i++)if(w.sym[i]===ta&&w.sym[i+1]===tb&&!hit.has(i)){hit.add(i);hit.add(i+1);}
+          return `<div class="bpe-word"><em>×${w.c}</em>${w.sym.map((s,i)=>`<span class="tk"><b class="${hit.has(i)?'hit':''}">${esc(s)}</b></span>`).join('')}</div>`;}).join('');
+        $('bpePairs').innerHTML=st.ranked.slice(0,5).map(([key,c],i)=>`<span class="${i?'':'top'}">${esc(key.replace('\u0000',' + '))}</span><span class="${i?'':'top'}">${c} times</span>`).join('');
+        const base=BPE[0].vocab.length;
+        $('bpeVocab').innerHTML=st.vocab.map((v,i)=>`<span class="${i>=base?'new':''}">${esc(v)}</span>`).join('');
+        $('bpeNote').textContent=k===0?`Start: every letter is its own piece. The most common pair is “${ta}” then “${tb}”, appearing ${top[1]} times.`:
+          top?`After ${k} glue step${k>1?'s':''} the list has ${st.vocab.length} pieces. Next to glue: “${ta}” + “${tb}”, appearing ${top[1]} times.`:`Every word is now a single piece.`;
+      }
+      drawBpe();
+
+      /* 6: a byte-level BPE tokenizer trained in the browser on this page's own text */
+      const SPLIT=/ ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+/gu,MAXK=1000;
+      const TOK={merges:new Map(),pieces:[],ready:false};
+      for(let i=0;i<256;i++)TOK.pieces.push([i]);
+      function corpusWords(){
+        const text=[...document.querySelectorAll('main p, main li, main summary, main h2, main .field-grid span')].map(e=>e.textContent).join('\n');
+        const freq=new Map();for(const m of text.matchAll(SPLIT)){const w=m[0];if(/^\s+$/.test(w))continue;freq.set(w,(freq.get(w)||0)+1);}
+        $('corpusN').textContent='about '+fmt(Math.round([...freq.values()].reduce((a,b)=>a+b,0)/100)*100);
+        return [...freq].map(([w,c])=>({sym:[...enc.encode(w)],c}));
+      }
+      function train(){
+        const words=corpusWords();let k=0;
+        function chunk(){
+          const end=Math.min(MAXK,k+60);
+          for(;k<end;k++){
+            const counts=new Map();let best=-1,bestC=0;
+            for(const w of words){const s=w.sym;for(let i=0;i<s.length-1;i++){const key=s[i]*65536+s[i+1],c=(counts.get(key)||0)+w.c;counts.set(key,c);if(c>bestC||(c===bestC&&key<best)){bestC=c;best=key;}}}
+            if(bestC<2)break;
+            const a=Math.floor(best/65536),b=best%65536,id=256+k;
+            TOK.merges.set(best,k);TOK.pieces.push([...TOK.pieces[a],...TOK.pieces[b]]);
+            for(const w of words){const s=w.sym;if(s.length<2)continue;const o=[];for(let i=0;i<s.length;i++){if(i<s.length-1&&s[i]===a&&s[i+1]===b){o.push(id);i++;}else o.push(s[i]);}w.sym=o;}
+          }
+          $('tkStatus').textContent=k<MAXK&&bestRemains(words)?`Training the tokenizer on this page… ${k} pieces glued`:'';
+          if(k<MAXK&&bestRemains(words))setTimeout(chunk,0);else{TOK.ready=true;TOK.learned=k;afterTrain();}
+        }
+        chunk();
+      }
+      function bestRemains(words){return words.some(w=>w.sym.length>1);}
+      function encode(text,K){
+        const out=[];
+        for(const m of text.matchAll(SPLIT)){let s=[...enc.encode(m[0])];
+          while(s.length>1){let bi=-1,br=Infinity;for(let i=0;i<s.length-1;i++){const r=TOK.merges.get(s[i]*65536+s[i+1]);if(r!==undefined&&r<K&&r<br){br=r;bi=i;}}
+            if(bi<0)break;const a=s[bi],b=s[bi+1],id=256+br,o=[];for(let i=0;i<s.length;i++){if(i<s.length-1&&s[i]===a&&s[i+1]===b){o.push(id);i++;}else o.push(s[i]);}s=o;}
+          out.push(...s);}
+        return out;
+      }
+      const dec=new TextDecoder('utf-8',{fatal:true});
+      function chip(id){
+        const bytes=Uint8Array.from(TOK.pieces[id]);let s;try{s=dec.decode(bytes);}catch{s=null;}
+        if(s===null)return `<span class="tk"><b class="raw">${[...bytes].map(b=>b.toString(16).toUpperCase().padStart(2,'0')).join(' ')}</b><i>${id}</i></span>`;
+        const vis=esc(s).replace(/^ /,'<span class="sp">␣</span>').replace(/\n/g,'↵');
+        return `<span class="tk"><b>${vis}</b><i>${fmt(id)}</i></span>`;
+      }
+      const tkK=pick('tkK',drawTok);
+      function drawTok(){
+        if(!TOK.ready)return;
+        const s=$('tkIn').value.slice(0,400),ids=encode(s,tkK()),chars=[...s].length;
+        $('tkOut').innerHTML=ids.map(chip).join('');
+        $('tkC').textContent=fmt(chars);$('tkT').textContent=fmt(ids.length);$('tkR').textContent=ids.length?(chars/ids.length).toFixed(1):'0';
+      }
+      $('tkIn').addEventListener('input',drawTok);presets('tkPre','tkIn',drawTok);
+
+      /* 8 and 9 use the trained tokenizer */
+      function afterTrain(){
+        drawTok();
+        const word='strawberry',ids=encode(word,MAXK);
+        $('sbLetters').innerHTML=[...word].map(ch=>`<span class="tk"><b${ch==='r'?' style="background:#ff8059"':''}>${ch}</b></span>`).join('');
+        $('sbTokens').innerHTML=ids.map(chip).join('');
+        $('sbNote').textContent=`You see 10 letters, three of them r. The model gets ${ids.length} ID number${ids.length>1?'s':''}: ${ids.map(fmt).join(', ')}. Nothing in those numbers says “r”.`;
+        const rows=[['English','Good morning, how are you?'],['Hindi','सुप्रभात, आप कैसे हैं?'],['English, shouting','GOOD MORNING, HOW ARE YOU?'],['Emoji','☀️👋🙂❓']];
+        const counts=rows.map(([,t])=>encode(t,MAXK).length),max=Math.max(...counts);
+        $('costBars').innerHTML=rows.map(([l,t],i)=>`<div class="bl">${esc(l)}<small>${esc(t)}</small></div><div class="bar"><i style="width:${(counts[i]/max*100*0.8).toFixed(1)}%"></i>${counts[i]} tokens</div>`).join('');
+      }
+      setTimeout(train,30);
+
+      /* 10: lockers */
+      (()=>{const g=$('lockers').ownerSVGElement,items=[[901,'pizza'],[902,'cat'],[903,'Tuesday'],[904,'blue']];
+        items.forEach(([n,w],i)=>{const x=40+i*130;S(g,'rect',{x,y:30,width:116,height:120,fill:C.box,stroke:C.line,'stroke-width':2});
+          S(g,'circle',{cx:x+100,cy:90,r:4,fill:C.mut});T(g,x+14,58,'#'+n,{fill:C.teal,'font-family':'monospace'});T(g,x+14,120,w,{fill:C.gold,'font-size':20});});
+        T(g,580,60,'cat',{fill:C.gold,'font-size':20});T(g,620,60,'→ ID 902',{fill:C.teal,'font-family':'monospace'});
+        T(g,580,110,'kitten',{fill:C.gold,'font-size':20});T(g,648,110,'→ ID 74,311',{fill:C.teal,'font-family':'monospace'});
+        T(g,580,146,'similar meaning, far-apart IDs',{fill:C.rose,'font-size':14});})();
+
+      /* 11, 13, 15: the example word map */
+      const W=[['cat',-6,5,'animal'],['kitten',-5.3,5.7,'animal'],['dog',-7.3,3.8,'animal'],['puppy',-6,3.4,'animal'],['lion',-7.8,6.1,'animal'],['tiger',-7.2,7,'animal'],
+        ['pizza',5,6,'food'],['bread',5.9,5.1,'food'],['apple',6.8,6.5,'food'],['rice',5.2,4.4,'food'],['cake',4.3,6.9,'food'],
+        ['car',5,-4,'vehicle'],['bus',5.9,-4.9,'vehicle'],['train',6.8,-3.7,'vehicle'],['bike',4.3,-5.4,'vehicle'],
+        ['man',-4,-3,'person'],['woman',-4,-6,'person'],['king',-1,-3,'person'],['queen',-1.2,-6.1,'person'],['boy',-5.6,-2.4,'person'],['girl',-5.6,-5.4,'person'],
+        ['France',1,3.6,'place'],['Paris',2.7,4.3,'place'],['Italy',1,1.6,'place'],['Rome',2.7,2.3,'place'],['Japan',1,-0.4,'place'],['Tokyo',2.7,0.3,'place'],
+        ['walk',-9,0.6,'verb'],['walked',-7.4,0.1,'verb'],['swim',-9,-1.2,'verb'],['swam',-7.4,-1.7,'verb']];
+      const GC={animal:C.gold,food:C.coral,vehicle:C.purple,person:C.teal,place:'#8fc9fb',verb:'#e6a6d0'};
+      const MX=x=>400+x*37,MY=y=>230-y*25;
+      const at=w=>W.find(e=>e[0]===w);
+      const dist=(a,b)=>Math.hypot(a[1]-b[1],a[2]-b[2]);
+      let sel='cat';
+      function drawMap(){
+        const svg=$('mapSvg');clear(svg);
+        S(svg,'line',{x1:40,y1:230,x2:760,y2:230,stroke:'#2a2927'});S(svg,'line',{x1:400,y1:20,x2:400,y2:440,stroke:'#2a2927'});
+        T(svg,760,250,'across',{fill:C.faint,'font-size':12,'text-anchor':'end'});T(svg,408,30,'up',{fill:C.faint,'font-size':12});
+        const s=at(sel),near=W.filter(e=>e!==s).map(e=>[e,dist(s,e)]).sort((a,b)=>a[1]-b[1]).slice(0,3);
+        near.forEach(([e])=>S(svg,'line',{x1:MX(s[1]),y1:MY(s[2]),x2:MX(e[1]),y2:MY(e[2]),stroke:C.purple,'stroke-width':2}));
+        W.forEach(e=>{const g=S(svg,'g',{style:'cursor:pointer',tabindex:0,role:'button','aria-label':e[0]});const on=e===s,nb=near.some(n=>n[0]===e);
+          S(g,'circle',{cx:MX(e[1]),cy:MY(e[2]),r:on?9:6,fill:GC[e[3]],opacity:on||nb?1:.8});
+          T(g,MX(e[1])+11,MY(e[2])+5,e[0],{'font-size':on?17:14,fill:on?C.fg:nb?C.fg:C.mut,'font-weight':on?600:400});
+          S(g,'circle',{cx:MX(e[1]),cy:MY(e[2]),r:16,fill:'transparent'});
+          const go=()=>{sel=e[0];drawMap();};g.addEventListener('click',go);g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go();}});});
+        $('mapNote').textContent=`“${sel}” sits at (${s[1]}, ${s[2]}). Nearest: ${near.map(([e,d])=>`${e[0]} (${d.toFixed(1)} away)`).join(', ')}.`;
+      }
+      drawMap();
+
+      /* 12: number patterns */
+      (()=>{const svg=$('fpSvg'),N=48,r=rng(11),base=Array.from({length:N},()=>r()*2-1),other=Array.from({length:N},()=>r()*2-1);
+        const cat=base.map(v=>v+(r()-.5)*.3),kit=base.map(v=>v+(r()-.5)*.45),car=other;
+        const cos=(a,b)=>{let d=0,x=0,y=0;for(let i=0;i<N;i++){d+=a[i]*b[i];x+=a[i]*a[i];y+=b[i]*b[i];}return d/Math.sqrt(x*y);};
+        [['cat',cat],['kitten',kit],['car',car]].forEach(([w,v],j)=>{const y0=60+j*95;T(svg,40,y0+5,w,{fill:C.gold,'font-size':18});
+          S(svg,'line',{x1:130,y1:y0,x2:760,y2:y0,stroke:'#3b3936'});
+          v.forEach((x,i)=>{const h=Math.max(-1,Math.min(1,x))*34;S(svg,'rect',{x:130+i*13,y:h>0?y0-h:y0,width:10,height:Math.abs(h)||1,fill:C.teal,opacity:h>0?1:.55});});});
+        T(svg,40,318,`closeness score: cat–kitten ${cos(cat,kit).toFixed(2)} · cat–car ${cos(cat,car).toFixed(2)} (chapter 14 explains the score)`,{fill:C.mut,'font-size':15});})();
+
+      /* 13: word sums */
+      const SUMS=[['king','man','woman'],['Paris','France','Italy'],['walked','walk','swim']];
+      const ana=pick('anaPick',drawAna);
+      function drawAna(){
+        const svg=$('anaSvg'),[a,b,c]=SUMS[ana()].map(at),rx=a[1]-b[1]+c[1],ry=a[2]-b[2]+c[2];clear(svg);
+        const ax=x=>400+x*37,ay=y=>200-y*23;
+        S(svg,'defs',{}).innerHTML=`<marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${C.purple}"/></marker>`;
+        W.forEach(e=>{S(svg,'circle',{cx:ax(e[1]),cy:ay(e[2]),r:4,fill:GC[e[3]],opacity:.35});});
+        const arrow=(p,q,dash)=>S(svg,'line',{x1:ax(p[0]),y1:ay(p[1]),x2:ax(q[0]),y2:ay(q[1]),stroke:C.purple,'stroke-width':3,'marker-end':'url(#arA)','stroke-dasharray':dash||''});
+        arrow([b[1],b[2]],[c[1],c[2]]);arrow([a[1],a[2]],[rx,ry],'6 5');
+        const res=W.filter(e=>![a,b,c].includes(e)).map(e=>[e,Math.hypot(e[1]-rx,e[2]-ry)]).sort((p,q)=>p[1]-q[1])[0][0];
+        [[a,C.fg],[b,C.fg],[c,C.fg],[res,C.gold]].forEach(([e,col])=>{S(svg,'circle',{cx:ax(e[1]),cy:ay(e[2]),r:7,fill:GC[e[3]]});T(svg,ax(e[1])+(e===res?22:12),ay(e[2])+5,e[0],{fill:col,'font-size':17,'font-weight':e===res?600:400});});
+        S(svg,'circle',{cx:ax(rx),cy:ay(ry),r:12,fill:'none',stroke:C.coral,'stroke-width':2});
+        T(svg,40,380,`the step from ${b[0]} to ${c[0]} (solid), copied onto ${a[0]} (dashed), lands at the orange ring`,{fill:C.mut,'font-size':15});
+        $('anaNote').textContent=`${a[0]} − ${b[0]} + ${c[0]}: the sum lands at (${rx.toFixed(1)}, ${ry.toFixed(1)}). The nearest word, not counting the three you started with, is “${res[0]}”.`;
+      }
+      drawAna();
+
+      /* 14: angle and score */
+      const ang=pick('angPick',drawAng);
+      function drawAng(){
+        const svg=$('angSvg'),d=ang(),t=d*Math.PI/180,cs=Math.cos(t);clear(svg);
+        S(svg,'defs',{}).innerHTML=[['arB1',C.teal],['arB2',C.gold]].map(([id,c])=>`<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${c}"/></marker>`).join('');
+        const ox=200,oy=150,L=130;
+        S(svg,'line',{x1:ox,y1:oy,x2:ox+L,y2:oy,stroke:C.teal,'stroke-width':4,'marker-end':'url(#arB1)'});
+        S(svg,'line',{x1:ox,y1:oy,x2:ox+L*Math.cos(t),y2:oy-L*Math.sin(t),stroke:C.gold,'stroke-width':4,'marker-end':'url(#arB2)'});
+        if(d>0){const r=40;S(svg,'path',{d:`M${ox+r} ${oy} A${r} ${r} 0 0 0 ${ox+r*Math.cos(t)} ${oy-r*Math.sin(t)}`,fill:'none',stroke:C.mut});}
+        T(svg,ox+L+14,oy+5,'word A',{fill:C.teal});T(svg,ox+(L+16)*Math.cos(t)-(d>100?50:0),oy-(L+16)*Math.sin(t)-6,'word B',{fill:C.gold});
+        const bx=470,bw=280,cx=bx+bw/2,sx=bx+(cs+1)/2*bw;
+        T(svg,bx,60,'CLOSENESS SCORE',{fill:C.mut,'font-size':14});
+        S(svg,'rect',{x:bx,y:80,width:bw,height:20,fill:'#2a2927'});
+        S(svg,'rect',{x:Math.min(cx,sx),y:80,width:Math.abs(sx-cx)||1,height:20,fill:C.coral});
+        S(svg,'line',{x1:cx,y1:74,x2:cx,y2:106,stroke:C.mut});
+        T(svg,bx,124,'−1',{fill:C.mut,'font-size':13});T(svg,cx,124,'0',{fill:C.mut,'font-size':13,'text-anchor':'middle'});T(svg,bx+bw,124,'+1',{fill:C.mut,'font-size':13,'text-anchor':'end'});
+        T(svg,bx,170,(cs>=0?'+':'')+cs.toFixed(2),{fill:C.coral,'font-size':34,'font-weight':600});
+        T(svg,bx,202,d<35?'pointing the same way: similar':d<80?'loosely related':d<=100?'at right angles: unrelated':d<150?'pointing apart':'opposite directions',{fill:C.fg});
+      }
+      drawAng();
+
+      /* 15: training settles the map */
+      const tr=pick('trPick',drawTr),R0=(()=>{const r=rng(3),cells=[];for(let j=0;j<6;j++)for(let i=0;i<6;i++)cells.push([-9+i*3.3+r()*.8,7-j*2.6+r()*.6]);for(let i=cells.length-1;i>0;i--){const k=Math.floor(r()*(i+1));[cells[i],cells[k]]=[cells[k],cells[i]];}return W.map((_,i)=>cells[i]);})();
+      function drawTr(){
+        const svg=$('trSvg'),p=tr(),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;clear(svg);
+        S(svg,'line',{x1:40,y1:230,x2:760,y2:230,stroke:'#2a2927'});S(svg,'line',{x1:400,y1:20,x2:400,y2:440,stroke:'#2a2927'});
+        W.forEach((w,i)=>{const x=R0[i][0]+(w[1]-R0[i][0])*e,y=R0[i][1]+(w[2]-R0[i][1])*e;
+          S(svg,'circle',{cx:MX(x),cy:MY(y),r:6,fill:GC[w[3]]});T(svg,MX(x)+10,MY(y)+5,w[0],{fill:C.mut,'font-size':13});});
+        T(svg,40,452,p===0?'start: random numbers, so a meaningless scatter':p<1?'nudged a little more each time it guesses a word':'finished: words used alike sit together',{fill:C.fg,'font-size':15});
+      }
+      drawTr();
+
+      /* 16: lookup table */
+      (()=>{const svg=$('tblSvg'),r=rng(5);T(svg,40,30,'EMBEDDING TABLE · one row per token ID',{fill:C.mut,'font-size':15});
+        const ids=['0','1','…','901','902','903','…','128,255'],y0=48;
+        ids.forEach((id,j)=>{const y=y0+j*26,hi=id==='902';T(svg,110,y+18,id,{fill:hi?C.teal:C.mut,'font-size':14,'text-anchor':'end','font-family':'monospace'});
+          if(id==='…'){T(svg,260,y+18,'⋮',{fill:C.mut});return;}
+          for(let k=0;k<16;k++){const v=r();S(svg,'rect',{x:122+k*20,y:y+3,width:18,height:20,fill:C.teal,opacity:hi?.3+.7*v:.08+.2*v});}
+          if(hi)S(svg,'rect',{x:120,y:y+1,width:322,height:24,fill:'none',stroke:C.teal,'stroke-width':2});});
+        T(svg,122,y0+8*26+18,'16 of 4,096 columns drawn',{fill:C.faint,'font-size':13});
+        S(svg,'path',{d:'M450 165 C520 165 520 120 580 120',fill:'none',stroke:C.mut,'stroke-width':2});
+        T(svg,580,100,'“␣cat” = ID 902',{fill:C.gold});T(svg,580,144,'its row: its list of numbers',{fill:C.teal,'font-size':15});
+        T(svg,580,168,'(0.82, −0.14, 0.37, …)',{fill:C.teal,'font-size':15,'font-family':'monospace'});})();
+
+      /* 17: bank */
+      (()=>{const svg=$('bankSvg');
+        S(svg,'defs',{}).innerHTML=`<marker id="arK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${C.purple}"/></marker>`;
+        const nat=[['river',140,80],['water',80,130],['shore',150,160]],mon=[['money',620,90],['account',680,150],['loan',580,160]];
+        [...nat,...mon].forEach(([w,x,y])=>{S(svg,'circle',{cx:x,cy:y,r:6,fill:C.gold});T(svg,x+10,y+5,w,{fill:C.mut,'font-size':15});});
+        T(svg,110,50,'NATURE',{fill:C.faint,'font-size':13});T(svg,600,50,'MONEY',{fill:C.faint,'font-size':13});
+        S(svg,'circle',{cx:400,cy:130,r:10,fill:C.teal});T(svg,400,108,'bank',{fill:C.teal,'text-anchor':'middle','font-size':18});
+        T(svg,400,168,'one fixed row in the table',{fill:C.mut,'text-anchor':'middle','font-size':14});
+        S(svg,'line',{x1:388,y1:132,x2:250,y2:132,stroke:C.purple,'stroke-width':3,'marker-end':'url(#arK)','stroke-dasharray':'6 5'});
+        S(svg,'line',{x1:412,y1:132,x2:550,y2:132,stroke:C.purple,'stroke-width':3,'marker-end':'url(#arK)','stroke-dasharray':'6 5'});
+        T(svg,40,236,'“we sat on the river bank”',{fill:C.gold,'font-size':17});T(svg,40,262,'context pulls “bank” towards nature',{fill:C.purple,'font-size':15});
+        T(svg,470,236,'“open a bank account”',{fill:C.gold,'font-size':17});T(svg,470,262,'context pulls it towards money',{fill:C.purple,'font-size':15});
+        T(svg,40,304,'The pull comes later in the model (part 7). The table alone gives both the same start.',{fill:C.fg,'font-size':16});})();
+
+      /* 18: same rows, different order */
+      (()=>{const g=$('ordBars'),r=rng(9),rows={dog:[],bites:[],man:[]};Object.keys(rows).forEach(k=>{for(let i=0;i<8;i++)rows[k].push(.2+.8*r());});
+        [['dog','bites','man',40],['man','bites','dog',440]].forEach(([a,b,c,x0])=>[a,b,c].forEach((w,j)=>{rows[w].forEach((v,i)=>S(g,'rect',{x:x0+j*96+4+i*10.5,y:150-v*50,width:8,height:v*50,fill:C.teal}));}));
+        T(g.ownerSVGElement,40,96,'each looks up its row →',{fill:C.mut,'font-size':13});})();
+
+      /* 19: lists out */
+      (()=>{const g=$('lists19'),r=rng(4);for(let j=0;j<3;j++)for(let i=0;i<10;i++)S(g,'rect',{x:660+i*9,y:58+j*34,width:7,height:24,fill:C.teal,opacity:.3+.7*r()});})();
+    })();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
