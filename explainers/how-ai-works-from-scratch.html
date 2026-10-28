@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How AI works, from scratch — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. */
+    :root{--danger:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025);overflow-x:auto}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .keys div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .keys b{display:flex;align-items:center;gap:10px;color:var(--fg);font-weight:500;font-size:18px}
+    .keys b i{display:inline-block;width:14px;height:14px;flex:none}
+    .keys span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:6px}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    .reading{list-style:none;margin:22px 0 0;padding:1px;display:grid;gap:1px}
+    .reading li{display:grid;grid-template-columns:56px 1fr auto;gap:4px 16px;align-items:center;padding:16px 18px;background:var(--surface);outline:1px solid var(--border)}
+    .reading .no{font:600 22px/1 var(--font-mono);color:var(--faint)}
+    .reading .tr{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+    .reading b{display:block;font-size:18px;font-weight:500;color:var(--fg);line-height:1.35;margin-top:2px}
+    .reading span.bl{display:block;font-size:14px;line-height:1.5;color:var(--muted);margin-top:2px}
+    .reading .st{font:11px/1.4 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    .reading .st.soon{color:var(--faint)}
+    .reading li.live .no{color:var(--fg)}
+    .reading li.bonus{margin-top:14px}
+    @media (max-width:600px){.reading li{grid-template-columns:40px 1fr}.reading .st{grid-column:2}}
+    @media (max-width:700px){.panel figure{margin-left:-16px;margin-right:-16px;padding:12px;border-left:0;border-right:0}.panel figure svg{min-width:560px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="A series that builds AI up from nothing: the program, and the chips it runs on">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/how-ai-works-from-scratch">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="How AI works, from scratch: the series map">
+<meta property="og:description" content="A series that builds AI up from nothing: the program, and the chips it runs on">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/how-ai-works-from-scratch">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/how-ai-works-from-scratch.png?v=5c5eb40e">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="How AI works, from scratch: the series map">
+<meta property="article:published_time" content="2026-10-28">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="hub">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / SERIES MAP</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>How AI works, from scratch</h1>
+      <p class="lede">A series of studies that starts with no background at all and ends with a full picture of how an AI chatbot works: the program that writes the answers, and the chips it runs on. Each part builds on the one before, so you can read them in order and never meet a word you have not seen drawn first.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The plan</p>
+      <h2>Two tracks, one machine</h2>
+      <p>An AI chatbot is two things working together. The <b>LLM</b> (large language model) is the program: a huge pile of numbers that turns your message into an answer. The <b>chips</b> are the hardware that does the arithmetic those numbers need. The series follows both, and switches between them whenever one side needs the other to make sense.</p>
+      <p>Read along the line from left to right. A filled dot is published; a hollow one is coming.</p>
+      <figure><svg id="mapSvg" viewBox="0 0 800 300" role="img" aria-label="The reading order zig-zags between the LLM track and the chip track, ending with a bonus study on serving"></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How to read it</p>
+      <h2>The same colours mean the same things</h2>
+      <p>Every diagram in every part uses one colour key, so after a part or two you can read the drawings without a legend.</p>
+      <div class="keys">
+        <div><b><i style="background:var(--gold)"></i>Text and tokens</b><span>What people type and read: letters, words, and the pieces the model cuts them into.</span></div>
+        <div><b><i style="background:var(--teal)"></i>Stored numbers</b><span>Numbers the model keeps: what it learned in training, and what it remembers about a conversation.</span></div>
+        <div><b><i style="background:var(--accent)"></i>Arithmetic</b><span>Numbers being worked out right now: scores, sums, multiplications.</span></div>
+        <div><b><i style="background:var(--purple)"></i>Connections</b><span>Things linking to other things: words looking at words, wires between chips.</span></div>
+        <div><b><i style="background:var(--danger)"></i>The wrong intuition</b><span>What most people guess, shown so you can see exactly where it goes wrong.</span></div>
+      </div>
+      <p>Facts carry a tag. <span class="tag">public</span> means a published paper, spec sheet or plain arithmetic. <span class="tag">example</span> means a made-up but consistent number used to show how something works. <span class="tag np">not public</span> means the company has not said. Each part also has <b>Go deeper</b> boxes. They are optional: skip them on a first read and nothing later breaks.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The reading list</p>
+      <h2>Every study, in order</h2>
+      <p>Start at part 1. The early parts need no background; the later ones assume you have read the earlier ones.</p>
+      <ol class="reading" id="reading"></ol>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why switch tracks?</p>
+      <h2>Each side explains the other</h2>
+      <p>Training a model (part 6) is just an enormous amount of multiplying, which only makes sense once you know why a graphics card is good at multiplying (part 5). Why a model is slow to answer long questions (part 14) comes down to memory (part 8). So the order follows the questions you would naturally ask, not one subject at a time.</p>
+      <p>The bonus study, <b>Inside LLM serving</b>, is where the two tracks meet: one model on a group of chips answering millions of people at once. It is written to be read last, when every word in it is familiar.</p>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>An AI chatbot is a very large pile of numbers, and a very fast machine for multiplying them. Everything else is detail.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="../series.js"></script>
+  <script>
+    (function(){
+      const S=window.ELI5_SERIES,$=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const link=p=>`href="${esc(p.file)}" data-series-link="${esc(p.id)}"`;
+
+      // Reading list
+      $('reading').innerHTML=S.parts.map((p,i)=>{const t=S.tracks[p.track];
+        return `<li class="${p.file?'live':''}"><span class="no">${String(i+1).padStart(2,'0')}</span><div><span class="tr" style="color:${t.color}">${esc(t.name)}</span>${p.file?`<a ${link(p)}><b>${esc(p.title)}</b></a>`:`<b>${esc(p.title)}</b>`}<span class="bl">${esc(p.blurb)}</span></div><span class="st ${p.file?'':'soon'}">${p.file?`<a ${link(p)}>Read ↗</a>`:'Coming soon'}</span></li>`;}).join('')+
+        `<li class="bonus live"><span class="no">+</span><div><span class="tr" style="color:var(--gold)">Bonus deep dive</span><a ${link(S.bonus)}><b>${esc(S.bonus.title)}</b></a><span class="bl">${esc(S.bonus.blurb)}</span></div><span class="st"><a ${link(S.bonus)}>Read ↗</a></span></li>`;
+
+      // Track map: LLM lane on top, chip lane below, one dot per part in reading order
+      const svg=$('mapSvg'),n=S.parts.length,x0=60,dx=(700-x0)/n,Y={llm:110,chip:200};
+      const add=(tag,a,text)=>{const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;};
+      add('text',{x:20,y:Y.llm-38,fill:S.tracks.llm.color,'font-size':16},S.tracks.llm.name.toUpperCase());
+      add('text',{x:20,y:Y.chip+50,fill:S.tracks.chip.color,'font-size':16},S.tracks.chip.name.toUpperCase());
+      add('line',{x1:x0-20,y1:Y.llm,x2:x0+n*dx,y2:Y.llm,stroke:'#3b3936','stroke-width':2});
+      add('line',{x1:x0-20,y1:Y.chip,x2:x0+n*dx,y2:Y.chip,stroke:'#3b3936','stroke-width':2});
+      const pts=S.parts.map((p,i)=>[x0+i*dx,Y[p.track]]),bx=x0+n*dx+40,by=(Y.llm+Y.chip)/2;
+      add('path',{d:'M'+pts.map(q=>q.join(' ')).join(' L')+` L${bx} ${by}`,fill:'none',stroke:'#f1eee8','stroke-opacity':.35,'stroke-width':1.5,'stroke-dasharray':'4 4'});
+      S.parts.forEach((p,i)=>{const [x,y]=pts[i],c=S.tracks[p.track].color;
+        add('circle',{cx:x,cy:y,r:p.file?11:9,fill:p.file?c:'#161616',stroke:c,'stroke-width':2});
+        add('text',{x,y:y+(p.track==='llm'?-20:30),'text-anchor':'middle',fill:p.file?'#f1eee8':'#a5a29c','font-size':13},String(i+1));});
+      add('rect',{x:bx-12,y:by-12,width:24,height:24,fill:'#f5c76a',transform:`rotate(45 ${bx} ${by})`});
+      add('text',{x:bx,y:by+38,'text-anchor':'middle',fill:'#f5c76a','font-size':13},'bonus');
+      add('text',{x:20,y:286,fill:'#a5a29c','font-size':14},'filled = published · hollow = coming soon · the dashed line is the reading order');
+    })();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
