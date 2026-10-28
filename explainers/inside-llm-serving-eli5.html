@@ -14,32 +14,52 @@
     .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
     .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
     .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    :root{--danger:#ec6a94}
     .c-out{color:var(--accent)}.c-mem{color:var(--teal)}.c-wait{color:var(--gold)}.c-net{color:var(--purple)}.c-bad{color:var(--danger)}
-    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
-    #len{accent-color:var(--teal)}#max{accent-color:var(--gold)}#share{accent-color:var(--accent)}
+    /* One slider style for the whole page: a thin track filled up to the thumb (--fill is set by script) */
+    .eli5-study-container input[type=range]{--c:var(--teal);-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:6px 0 0;padding:0!important;border:0!important;background:transparent!important;cursor:pointer}
+    .eli5-study-container input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(90deg,var(--c) var(--fill,0%),var(--border) var(--fill,0%))}
+    .eli5-study-container input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-track{height:4px;background:var(--border)}
+    .eli5-study-container input[type=range]::-moz-range-progress{height:4px;background:var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]:focus-visible{outline:none}
+    .eli5-study-container input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px var(--c),0 0 0 5px rgba(118,213,193,.25)}
+    #len{--c:var(--teal)}#cap{--c:var(--accent)}#share{--c:var(--accent)}
+    /* The browser default (Arial 13px) otherwise wins on buttons */
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
     .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
     .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
     .lab output{color:var(--fg);font-weight:600}
-    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
-    .field-grid div{background:var(--surface);padding:16px 18px}
+    /* Grid lines are drawn as cell outlines, so an unfilled last row stays empty instead of showing a grey block */
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .field-grid div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
     .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
     .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
     .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
     .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
-    /* Small hands-on controls inside chapters (the main lab keeps the sliders) */
+    /* Small hands-on controls inside chapters: stepped sliders (built by pick()), or buttons for unordered choices */
     .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0}
     .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick.slide{display:block;max-width:520px;margin-top:20px}
+    .pick.slide>span{display:flex;gap:10px;align-items:baseline}
+    .pick.slide output{color:var(--teal);font-weight:600;letter-spacing:.02em}
+    .pick .ticks{position:relative;height:20px;margin:2px 9px 0;font:12px/1.4 var(--font-mono);color:var(--faint)}
+    .pick .ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;padding:2px 0;cursor:pointer}
+    .pick .ticks span.first{transform:translateX(-9px)}.pick .ticks span.last{transform:translateX(calc(9px - 100%))}
+    .pick .ticks span:hover{color:var(--fg)}.pick .ticks span.on{color:var(--teal)}
     .pick button{min-height:36px;padding:6px 12px}
     .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--teal)!important;color:var(--teal)!important;background:rgba(118,213,193,.1)!important}
-    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin-top:16px;background:var(--border);border:1px solid var(--border)}
-    .tiles div{background:var(--surface);padding:12px 14px}
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;padding:1px;margin:16px 0 22px}
+    .tiles div{background:var(--surface);outline:1px solid var(--border);padding:12px 14px}
     .tiles b{display:block;font-size:22px;line-height:1.2;color:var(--fg);font-weight:600}
     .tiles span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--muted)}
     .tiles .warn b{color:var(--danger)}
     .tiles.t3{grid-template-columns:repeat(3,1fr)}
     @media (max-width:700px){.tiles.t3{grid-template-columns:repeat(2,1fr)}}
     .readout{margin-top:12px;color:var(--muted);font-size:15px}
-    .tok-in{width:100%;min-height:84px;margin-top:16px;font:15px/1.5 var(--font-mono)}
+    .tok-in{width:100%;min-height:84px;margin-top:16px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
     details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
     details.trace .table-wrap{margin:12px 0}
     .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--teal);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
@@ -47,7 +67,8 @@
     .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
     /* Phones: keep diagram text readable by letting wide figures scroll sideways */
     .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
-    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+    /* Figures run edge to edge on phones so less of each one sits off-screen */
+    @media (max-width:700px){.panel figure{margin-left:-16px;margin-right:-16px;padding:12px;border-left:0;border-right:0}.panel figure svg{min-width:540px}.lab{margin-left:-16px;margin-right:-16px;padding:16px 12px!important;border-left:0!important;border-right:0!important}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
   </style>
 <!-- link-preview:start -->
 <meta name="description" content="One shared model copy, private memory per chat">
@@ -92,7 +113,7 @@
         <span><i style="background:#76d5c1"></i>memory &amp; the KV cache</span>
         <span><i style="background:#f5c76a"></i>waiting, waste, price</span>
         <span><i style="background:#c3b8ff"></i>wires and networks</span>
-        <span><i style="background:#f87171"></i>the wrong intuition</span>
+        <span><i style="background:#ec6a94"></i>the wrong intuition</span>
       </div>
     </section>
 
@@ -153,7 +174,7 @@
           <rect x="55" y="224" width="600" height="34" fill="#76d5c1"/>
           <text x="40" y="288" fill="#ff8059" font-size="16">0.3 s prefill</text>
           <text x="150" y="288" fill="#76d5c1" font-size="16">12 s decode · 600 tokens · 20 ms each</text>
-          <path d="M70 214 V222" stroke="#f1eee8" stroke-width="2"/><text x="78" y="214" fill="#f1eee8" font-size="14">first word</text>
+          <path d="M55 210 V224" stroke="#f1eee8" stroke-width="2"/><text x="62" y="214" fill="#f1eee8" font-size="14">first word</text>
         </svg>
       </figure>
       <details class="trace"><summary>Go deeper: where the time goes</summary>
@@ -268,31 +289,31 @@
       <p>Attention is how a token gathers context. The newest token asks a question, called the <b>query</b> (“what do I need?”). Every earlier token has already stored a label, its <b>key</b>, and some content, its <b>value</b>. The query is compared with every key; good matches get a bigger share. The result is a blend of the values, weighted by those shares.</p>
       <p>A token’s key and value depend only on the tokens before it, and those never change. So instead of recomputing them on every step, the replica saves them. That saved pile of keys and values is the <b>KV cache</b>, and it is the main subject of chapters 11 to 13.</p>
       <figure>
-        <svg viewBox="0 0 800 320" role="img" aria-label="The newest token's query compares with five earlier keys, and the result is a weighted blend of their values; earlier keys and values are saved">
-          <g text-anchor="middle" font-size="18" fill="#f1eee8">
-            <text x="80" y="40">The</text><text x="200" y="40">cat</text><text x="320" y="40">sat</text><text x="440" y="40">on</text><text x="560" y="40">the</text>
+        <svg viewBox="0 0 800 300" role="img" aria-label="The newest token's query compares with five earlier keys, and the result is a weighted blend of their values; earlier keys and values are saved">
+          <text x="40" y="30" fill="#a5a29c" font-size="16">line thickness = attention weight</text>
+          <g stroke="#c3b8ff" fill="none" stroke-linecap="round">
+            <path d="M697 120 Q389 -9 80 130" stroke-width="1.5"/><path d="M689 122 Q444 13 200 130" stroke-width="2.5"/><path d="M681 127 Q500 38 320 130" stroke-width="4.5"/><path d="M675 134 Q557 62 440 130" stroke-width="2.5"/><path d="M671 142 Q616 82 560 130" stroke-width="1.5"/>
           </g>
           <g fill="#ff8059">
-            <circle cx="80" cy="78" r="20"/><circle cx="200" cy="78" r="20"/><circle cx="320" cy="78" r="20"/><circle cx="440" cy="78" r="20"/><circle cx="560" cy="78" r="20"/>
+            <circle cx="80" cy="150" r="20"/><circle cx="200" cy="150" r="20"/><circle cx="320" cy="150" r="20"/><circle cx="440" cy="150" r="20"/><circle cx="560" cy="150" r="20"/>
           </g>
           <g text-anchor="middle" font-size="16" fill="#202020">
-            <text x="80" y="84">K</text><text x="200" y="84">K</text><text x="320" y="84">K</text><text x="440" y="84">K</text><text x="560" y="84">K</text>
+            <text x="80" y="156">K</text><text x="200" y="156">K</text><text x="320" y="156">K</text><text x="440" y="156">K</text><text x="560" y="156">K</text>
           </g>
           <g fill="#76d5c1">
-            <rect x="68" y="106" width="24" height="22"/><rect x="188" y="106" width="24" height="22"/><rect x="308" y="106" width="24" height="22"/><rect x="428" y="106" width="24" height="22"/><rect x="548" y="106" width="24" height="22"/>
+            <rect x="68" y="178" width="24" height="22"/><rect x="188" y="178" width="24" height="22"/><rect x="308" y="178" width="24" height="22"/><rect x="428" y="178" width="24" height="22"/><rect x="548" y="178" width="24" height="22"/>
           </g>
           <g text-anchor="middle" font-size="14" fill="#202020">
-            <text x="80" y="123">V</text><text x="200" y="123">V</text><text x="320" y="123">V</text><text x="440" y="123">V</text><text x="560" y="123">V</text>
+            <text x="80" y="195">V</text><text x="200" y="195">V</text><text x="320" y="195">V</text><text x="440" y="195">V</text><text x="560" y="195">V</text>
           </g>
-          <path d="M74 140 H566" stroke="#76d5c1" stroke-width="2"/><path d="M560 134 l12 6 -12 6" fill="#76d5c1"/>
-          <text x="320" y="166" text-anchor="middle" fill="#76d5c1" font-size="16">saved: keys and values</text>
-          <g stroke="#c3b8ff" fill="none">
-            <path d="M80 58 V52 H600 V190" stroke-width="1.5"/><path d="M200 58 V53 H610 V196" stroke-width="2.5"/><path d="M320 58 V54 H620 V202" stroke-width="4.5"/><path d="M440 58 V55 H630 V208" stroke-width="2.5"/><path d="M560 58 V56 H640 V214" stroke-width="1.5"/>
+          <g text-anchor="middle" font-size="18" fill="#f1eee8">
+            <text x="80" y="232">The</text><text x="200" y="232">cat</text><text x="320" y="232">sat</text><text x="440" y="232">on</text><text x="560" y="232">the</text>
           </g>
-          <circle cx="690" cy="230" r="34" fill="#f5c76a"/>
-          <text x="690" y="236" text-anchor="middle" font-size="18" fill="#202020">next</text>
-          <text x="690" y="292" text-anchor="middle" fill="#f5c76a" font-size="16">query</text>
-          <text x="120" y="292" fill="#a5a29c" font-size="16">line thickness = attention weight</text>
+          <path d="M74 252 H566" stroke="#76d5c1" stroke-width="2"/><path d="M560 246 l12 6 -12 6" fill="#76d5c1"/>
+          <text x="320" y="280" text-anchor="middle" fill="#76d5c1" font-size="16">saved: keys and values</text>
+          <circle cx="700" cy="150" r="30" fill="#f5c76a"/>
+          <text x="700" y="156" text-anchor="middle" font-size="18" fill="#202020">next</text>
+          <text x="700" y="206" text-anchor="middle" fill="#f5c76a" font-size="16">query</text>
         </svg>
       </figure>
       <details class="trace"><summary>Go deeper: heads, cost and order</summary>
@@ -321,7 +342,7 @@
         <svg id="wSvg" viewBox="0 0 800 160" role="img" aria-label="Chips needed to hold the chosen model, each column one chip filled with weights in teal up to its share"></svg>
       </figure>
       <div class="tiles"><div><b id="wGB"></b><span>of weights to store</span></div><div><b id="wN"></b><span>chips minimum, if weights fill at most 60% of each</span></div><div><b id="wG"></b><span>chips at the next common group size</span></div><div><b id="wRoom"></b><span>left for conversations in that group</span></div></div>
-      <p>The 8-chip example in later chapters uses more chips than capacity alone needs. Each extra chip also adds memory speed, which decides how fast a step runs (chapter 9). <span class="tag np">not public</span> Anthropic has not published the size of any Claude model. The buttons build intuition; they are not a guess.</p>
+      <p>The 8-chip example in later chapters uses more chips than capacity alone needs. Each extra chip also adds memory speed, which decides how fast a step runs (chapter 9). <span class="tag np">not public</span> Anthropic has not published the size of any Claude model. The controls build intuition; they are not a guess.</p>
       <details class="trace"><summary>Go deeper: why 60%, why groups, real chips</summary>
         <code class="eq">weight bytes = parameters × bytes per parameter</code>
         <p>200 billion parameters at 1 byte each (8-bit) is 200 GB. At 2 bytes (16-bit) it is 400 GB. At half a byte (4-bit) it is 100 GB. Lower precision trades a little accuracy for a lot of memory and speed (chapter 19).</p>
@@ -425,7 +446,7 @@
           <rect x="40" y="60" width="90" height="70" fill="#76d5c1" opacity=".22"/>
           <text x="85" y="100" text-anchor="middle" fill="#76d5c1" font-size="16">weights</text>
           <line x1="136" y1="95" x2="238" y2="95" stroke="#f5c76a" stroke-width="6" marker-end="url(#arw10)"/>
-          <text x="187" y="82" text-anchor="middle" fill="#f5c76a" font-size="15">200 GB read</text>
+          <text x="187" y="68" text-anchor="middle" fill="#f5c76a" font-size="15">200 GB read</text>
           <rect x="250" y="60" width="100" height="70" fill="#ff8059" opacity=".25"/>
           <text x="300" y="90" text-anchor="middle" fill="#f1eee8" font-size="16">compute</text>
           <text x="300" y="114" text-anchor="middle" fill="#ff8059" font-size="16">1 token</text>
@@ -433,7 +454,7 @@
           <rect x="40" y="200" width="90" height="70" fill="#76d5c1" opacity=".22"/>
           <text x="85" y="240" text-anchor="middle" fill="#76d5c1" font-size="16">weights</text>
           <line x1="136" y1="235" x2="238" y2="235" stroke="#f5c76a" stroke-width="6" marker-end="url(#arw10)"/>
-          <text x="187" y="222" text-anchor="middle" fill="#f5c76a" font-size="15">same 200 GB</text>
+          <text x="187" y="208" text-anchor="middle" fill="#f5c76a" font-size="15">same 200 GB</text>
           <rect x="250" y="200" width="100" height="70" fill="#ff8059" opacity=".25"/>
           <text x="300" y="230" text-anchor="middle" fill="#f1eee8" font-size="16">compute</text>
           <text x="300" y="254" text-anchor="middle" fill="#ff8059" font-size="16">230 tokens</text>
@@ -486,7 +507,7 @@
     <section class="panel">
       <p class="kicker">The KV cache</p>
       <h2>The KV cache: what each person owns</h2>
-      <p>Instead of recomputing the key and value of every earlier token on every step, the replica saves them. In the drawing, each row is one step of writing and each cell is one token’s key and value. Without a cache, every step rebuilds all of them (teal). With a cache, each step builds just one new pair and reads the rest back from memory (gold).</p>
+      <p>Instead of recomputing the key and value of every earlier token on every step, the replica saves them. In the drawing, each row is one step of writing and each cell is one token’s key and value. Without a cache, every step rebuilds all of them (orange). With a cache, each step builds just one new pair and reads the rest back from memory (teal).</p>
       <p>That saved pile is private to each conversation, and it grows with every token. Pick a conversation length to see how big one pile gets and how many such conversations fit beside the weights in the <span class="tag">example</span> system, which has 1,182 GB spare after the weights.</p>
       <div class="pick" id="kvPick" role="group" aria-label="Conversation length"><span>CONVERSATION LENGTH</span>
         <button type="button" class="secondary" data-v="1000" aria-pressed="false">1k</button><button type="button" class="secondary" data-v="4000" aria-pressed="false">4k</button><button type="button" class="secondary" data-v="8000" aria-pressed="true">8k</button><button type="button" class="secondary" data-v="32000" aria-pressed="false">32k</button><button type="button" class="secondary" data-v="128000" aria-pressed="false">128k</button><button type="button" class="secondary" data-v="200000" aria-pressed="false">200k</button><button type="button" class="secondary" data-v="1000000" aria-pressed="false">1M</button>
@@ -632,12 +653,12 @@
       <p class="kicker">Many chips</p>
       <h2>Four ways to cut a model</h2>
       <p>One chip cannot hold the model, so it is cut up. How it is cut decides what has to travel between chips, and how fast the wires must be. There are four basic cuts, and real systems combine several. Tap one to highlight it:</p>
-      <div class="pick" id="cutPick" role="group" aria-label="Way to split the model"><span>FOUR WAYS TO CUT</span>
+      <div class="pick" id="cutPick" data-kind="choice" role="group" aria-label="Way to split the model"><span>FOUR WAYS TO CUT</span>
         <button type="button" class="secondary" data-v="0" aria-pressed="true">Slice each table</button><button type="button" class="secondary" data-v="1" aria-pressed="false">Split by layers</button><button type="button" class="secondary" data-v="2" aria-pressed="false">Split experts</button><button type="button" class="secondary" data-v="3" aria-pressed="false">Copy everything</button>
       </div>
       <p class="readout" id="cutNote"></p>
       <figure>
-        <svg viewBox="0 0 800 360" role="img" aria-label="Four cuts: tensor slices every matrix, pipeline puts layer groups in stages, experts spread across chips, and replication copies the whole model">
+        <svg viewBox="0 0 800 380" role="img" aria-label="Four cuts: tensor slices every matrix, pipeline puts layer groups in stages, experts spread across chips, and replication copies the whole model">
           <g id="cut0"><text x="40" y="38" fill="#ff8059" font-size="16">TENSOR</text>
           <g>
             <rect x="60" y="54" width="67" height="22" fill="#ff8059"/><rect x="131" y="54" width="67" height="22" fill="#ff8059" opacity=".8"/><rect x="202" y="54" width="67" height="22" fill="#ff8059" opacity=".6"/><rect x="273" y="54" width="67" height="22" fill="#ff8059" opacity=".4"/>
@@ -664,7 +685,7 @@
           <g fill="#2f2d2a"><rect x="520" y="230" width="50" height="22"/><rect x="520" y="260" width="50" height="22"/><rect x="520" y="290" width="50" height="22"/></g>
           <g fill="#f1eee8" font-size="14" text-anchor="middle"><text x="545" y="245">full</text><text x="545" y="275">full</text><text x="545" y="305">full</text></g>
           <g stroke="#c3b8ff" stroke-width="2" fill="none"><path d="M474 270 L520 241"/><path d="M474 270 L520 271"/><path d="M474 270 L520 301"/></g></g>
-          <text x="40" y="350" fill="#f1eee8" font-size="15">real systems mix all four</text>
+          <text x="40" y="370" fill="#f1eee8" font-size="15">real systems mix all four</text>
         </svg>
       </figure>
       <details class="trace"><summary>Go deeper: what travels, and how cuts combine</summary>
@@ -992,11 +1013,11 @@
           <g fill="#f1eee8" font-size="15" text-anchor="middle">
             <text x="95" y="87">ok</text><text x="175" y="87">ok</text><text x="255" y="87">ok</text><text x="95" y="141">ok</text><text x="255" y="141">ok</text>
           </g>
-          <rect x="140" y="114" width="70" height="44" fill="#f87171" opacity=".3"/>
-          <text x="175" y="141" fill="#f87171" font-size="15" text-anchor="middle">failed</text>
-          <rect x="360" y="60" width="70" height="98" fill="#76d5c1" opacity=".18" stroke="#76d5c1" stroke-width="2"/>
-          <text x="395" y="100" text-anchor="middle" fill="#76d5c1" font-size="15">spare</text>
-          <text x="395" y="124" text-anchor="middle" fill="#76d5c1" font-size="15">takes over</text>
+          <rect x="140" y="114" width="70" height="44" fill="#ec6a94" opacity=".3"/>
+          <text x="175" y="141" fill="#ec6a94" font-size="15" text-anchor="middle">failed</text>
+          <rect x="360" y="60" width="100" height="98" fill="#76d5c1" opacity=".18" stroke="#76d5c1" stroke-width="2"/>
+          <text x="410" y="100" text-anchor="middle" fill="#76d5c1" font-size="15">spare</text>
+          <text x="410" y="124" text-anchor="middle" fill="#76d5c1" font-size="15">takes over</text>
           <path d="M300 127 H352" stroke="#76d5c1" stroke-width="3" marker-end="url(#arw24)"/>
           <text x="40" y="220" fill="#f5c76a" font-size="16">466 interruptions in 54 days</text>
           <text x="40" y="248" fill="#a5a29c" font-size="15">about one every three hours</text>
@@ -1130,7 +1151,7 @@
       const paged=Math.floor(ROOM/per);
       const shared=share>=1?0:Math.floor((ROOM-per*share)/(per*(1-share)));
       return {truth:shared,
-        rows:[['reserved maximum',reserved,'#f87171'],['paged on demand',paged,'#f5c76a'],['paged + shared',shared,'#ff8059']],
+        rows:[['reserved maximum',reserved,'#ec6a94'],['paged on demand',paged,'#f5c76a'],['paged + shared',shared,'#ff8059']],
         ledger:[
           ['KV room','1,182 GB'],
           ['cache per token','160 KB'],
@@ -1162,7 +1183,7 @@
       $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
       const clipped=rows.map(r=>Math.abs(r[1])>m), truthClipped=Math.abs(truth)>m;
       // Axis and truth lines are drawn per row band so they never cross the row labels above each bar.
-      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">truth ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">best case ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
       rows.forEach(([name,val,col],i)=>{
         const y=80+i*82,x=sx(val);
         s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><line x1="${sx(truth)}" y1="${y-4}" x2="${sx(truth)}" y2="${y+30}" stroke="#f1eee8" stroke-dasharray="5 5"/>`;
@@ -1170,20 +1191,22 @@
         if(clipped[i]){const d=val>0?1:-1;s+=`<path class="overflow-marker" d="M${x-d*9} ${y+3} L${x} ${y+13} L${x-d*9} ${y+23}" fill="none" stroke="#f1eee8" stroke-width="3"/>`;}
       });
       s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
-      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Dashed line: best case, paged + shared.'}</text>`;
       $('labChart').innerHTML=s;
       $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
       window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
     }
-    ids.forEach(id=>$(id).addEventListener('input',update));
-    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
-    update();
+    // Slider track fill (styling only)
+    const fill=()=>ids.forEach(id=>{const r=$(id);r.style.setProperty('--fill',(r.value-r.min)/(r.max-r.min)*100+'%');});
+    ids.forEach(id=>$(id).addEventListener('input',()=>{fill();update();}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);fill();update()}));
+    fill();update();
   </script>
   <script>
     // Chapter controls. Example system from chapter 10; formulas as stated in the study.
     (function(){
       const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
-      const C={teal:'#76d5c1',coral:'#ff8059',gold:'#f5c76a',red:'#f87171',fg:'#f1eee8',mut:'#a5a29c',box:'#2f2d2a',line:'#57534f'};
+      const C={teal:'#76d5c1',coral:'#ff8059',gold:'#f5c76a',red:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',box:'#2f2d2a',line:'#57534f'};
       const fmt=(n,d=0)=>n.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
       const bytes=b=>b>=1e12?fmt(b/1e12,2)+' TB':b>=1e10?fmt(b/1e9)+' GB':b>=1e9?fmt(b/1e9,2)+' GB':b>=1e6?fmt(b/1e6,1)+' MB':fmt(b/1e3)+' KB';
       const gb=g=>g>=1000?fmt(g/1000,2)+' TB':fmt(g)+' GB';
@@ -1191,11 +1214,27 @@
       function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
       const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
       const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
-      // A button group: returns a getter for the pressed value and calls cb on change.
+      // A control group: returns a getter for the chosen value and calls cb on change.
+      // Ordered choices become a stepped slider with clickable tick labels; data-kind="choice" stays as buttons.
       function pick(id,cb){
-        const bs=[...$(id).querySelectorAll('button')];
-        bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
-        return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+        const g=$(id),bs=[...g.querySelectorAll('button')];
+        if(g.dataset.kind==='choice'){
+          bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
+          return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+        }
+        const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
+        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        head.append(out);
+        Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
+        r.setAttribute('aria-label',g.getAttribute('aria-label'));
+        ticks.className='ticks';ticks.setAttribute('aria-hidden','true');
+        const ts=labs.map((l,i)=>{const t=document.createElement('span');t.textContent=l;t.style.left=(i/(n-1)*100)+'%';
+          t.className=i===0?'first':i===n-1?'last':'';t.addEventListener('click',()=>{r.value=i;sync();cb();});ticks.appendChild(t);return t;});
+        function sync(){const i=+r.value;out.textContent=labs[i];r.setAttribute('aria-valuetext',labs[i]);
+          r.style.setProperty('--fill',(i/(n-1)*100)+'%');ts.forEach((t,j)=>t.classList.toggle('on',j===i));}
+        r.addEventListener('input',()=>{sync();cb();});
+        g.classList.add('slide');g.replaceChildren(head,r,ticks);sync();
+        return ()=>vals[+r.value];
       }
       const SYS={P:200e9,L:80,D:12288,chips:8,mem:192e9,kv:163840,over:0.002};
       SYS.bw=SYS.chips*8e12*0.6; SYS.fl=SYS.chips*4.5e15*0.5;
@@ -1231,7 +1270,7 @@
       function drawW(){
         const GB=wPar()*wPrec(),chip=wChip(),n=Math.max(1,Math.ceil(GB/(0.6*chip))),grp=GROUPS.find(g=>g>=n)||n,room=grp*chip-GB,f=Math.min(1,GB/grp/chip);
         $('wGB').textContent=gb(GB);$('wN').textContent=fmt(n);$('wG').textContent=fmt(grp);$('wRoom').textContent=gb(room);
-        const svg=$('wSvg'),show=Math.min(grp,72),cols=Math.min(18,show),rows=Math.ceil(show/cols),pitch=40,cw=32,ch=56,x0=40;clear(svg);
+        const svg=$('wSvg'),show=Math.min(grp,72),big=show<=9,cols=Math.min(18,show),rows=Math.ceil(show/cols),pitch=big?80:40,cw=big?64:32,ch=big?104:56,x0=40;clear(svg);
         for(let i=0;i<show;i++){const x=x0+(i%cols)*pitch,y=12+Math.floor(i/cols)*(ch+10);
           S(svg,'rect',{x,y,width:cw,height:ch,fill:C.box,stroke:C.gold,'stroke-width':2});
           S(svg,'rect',{x:x+2,y:y+ch-2-f*(ch-4),width:cw-4,height:Math.max(0,f*(ch-4)),fill:C.teal});}
@@ -1272,7 +1311,7 @@
         const n=kvP(),svg=$('kvSvg');clear(svg);
         [[40,false,'without a cache','36 pairs rebuilt'],[230,true,'with a cache','8 built, 28 read']].forEach(([x0,cached,h,f])=>{
           T(svg,x0,34,h,{fill:C.fg});
-          for(let r=0;r<8;r++)for(let c=0;c<=r;c++){const built=!cached||c===r;S(svg,'rect',{x:x0+c*19,y:50+r*19,width:16,height:16,fill:built?C.teal:C.gold,opacity:built?0.9:0.6});}
+          for(let r=0;r<8;r++)for(let c=0;c<=r;c++){const built=!cached||c===r;S(svg,'rect',{x:x0+c*19,y:50+r*19,width:16,height:16,fill:built?C.coral:C.teal,opacity:built?0.9:0.5});}
           T(svg,x0,226,f,{fill:C.mut,'font-size':15});});
         T(svg,40,262,'row = one writing step',{fill:C.mut,'font-size':14});
         T(svg,430,34,'PEOPLE PER REPLICA · LOG SCALE',{fill:C.mut,'font-size':15});
@@ -1287,7 +1326,7 @@
       /* 14: four cuts */
       const CUTS=['Tensor parallelism slices every weight table into pieces, one per chip. Each chip reads a quarter of the weights, so a step is faster. Cost: two all-reduces per layer, so it needs the fastest wires.','Pipeline parallelism gives each chip a block of layers, like an assembly line. Only a small list of numbers per token moves between stages, so slower links are fine. But each token still passes every stage in turn, so it is not faster, and stages sit idle in “bubbles”.','Expert parallelism gives each chip a few experts (chapter 16); tokens travel to the chips holding the experts they chose, then results come back and are blended. A chip reads only the experts it holds.','Replicas are whole copies of the model behind a router, each serving its own people. This adds capacity for more people, not room for a bigger model. It is how a fleet scales (chapter 23).'];
       const cut=pick('cutPick',drawCut);
-      function drawCut(){const v=cut();[0,1,2,3].forEach(i=>$('cut'+i).setAttribute('opacity',i===v?1:0.25));$('cutNote').textContent=CUTS[v];}
+      function drawCut(){const v=cut();[0,1,2,3].forEach(i=>$('cut'+i).setAttribute('opacity',i===v?1:0.4));$('cutNote').textContent=CUTS[v];}
       drawCut();
 
       /* 16: mixture of experts (fixed pseudo-random routing) */
