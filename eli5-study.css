@@ -949,3 +949,68 @@ body {
     min-width: 620px;
   }
 }
+
+/* ==========================================================================
+   SERIES NAVIGATION (rendered by eli5-study.js from series.js)
+   ========================================================================== */
+.series-strip[data-series="top"]:not(:empty) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin: 0 0 28px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.025);
+  font: 11px/1.5 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.series-strip .series-name { color: var(--teal); }
+.series-strip .series-here::before { content: '/'; margin-right: 14px; color: var(--faint); }
+.series-strip[data-series="top"] a { margin-left: auto; }
+
+.series-strip[data-series="end"]:not(:empty) { margin: 48px 0 0; }
+.series-end-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font: 11px/1.5 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+.series-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  padding: 1px;
+}
+.series-card {
+  display: block;
+  min-height: 96px;
+  padding: 16px 18px;
+  background: var(--surface);
+  outline: 1px solid var(--border);
+  color: var(--fg);
+}
+a.series-card:hover { background: var(--raised); color: var(--fg); }
+.series-card small {
+  display: block;
+  margin-bottom: 6px;
+  font: 11px/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.series-card b { display: block; font-size: 18px; font-weight: 500; line-height: 1.35; }
+.series-card em { display: block; margin-top: 6px; font: normal 11px/1.4 var(--font-mono); letter-spacing: 0.06em; color: var(--gold); }
+.series-card.soon b { color: var(--muted); }
+.series-cards > :last-child { text-align: right; }
+@media (max-width: 600px) {
+  .series-cards { grid-template-columns: 1fr; }
+  .series-cards > :last-child { text-align: left; }
+  .series-cards > span:empty { display: none; }
+}

@@ -85,7 +85,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <!-- link-preview:end -->
 </head>
-<body>
+<body data-series-id="inside-llm-serving-eli5">
   <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
   <header class="study-masthead">
     <div class="masthead-inner">
@@ -106,6 +106,7 @@
     <section class="hero">
       <h1>Inside LLM serving: one model, millions of chats</h1>
       <p class="lede">A frontier AI model is one read-only copy of hundreds of gigabytes of numbers, shared by everyone who uses it. Each chat owns only a small, growing pile of memory. Nearly every odd thing about AI products, from pricing to slow first words, follows from those two facts. This page walks through all 25 chapters of the original study, with its hands-on controls.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
       <p class="source-note">Built from the study “Inside LLM Serving” (shared by the reader, Oct 2026; author not named), facts checked against the papers and spec sheets it cites</p>
       <p>Three kinds of numbers appear below. <span class="tag">public</span> means a published spec sheet, paper or plain arithmetic. <span class="tag">example</span> means one made-up but self-consistent system (set out in chapter 10) used to show how things work. <span class="tag np">not public</span> means Anthropic has not said; nothing here claims to be the real size or setup of any Claude model.</p>
       <div class="legend" aria-label="Colour key">
@@ -1130,6 +1131,8 @@
       <p>Sources the study names: PagedAttention (vLLM), FlashAttention, speculative decoding (two papers), grouped-query and multi-query attention, DeepSeek-V2 and V3, Splitwise, DistServe, Mooncake, Llama 3, and NVIDIA’s published specifications for H100, H200 and B200.</p>
     </section>
 
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
     <div class="eli5-takeaway-card">
       <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
       <blockquote>Every trick in LLM serving does one of two things: share a read of the weights, or stop reserving memory you are not using.</blockquote>
@@ -1394,6 +1397,7 @@
       drawF();
     })();
   </script>
+  <script src="../series.js"></script>
   <script src="../eli5-study.js"></script>
 </body>
 </html>
