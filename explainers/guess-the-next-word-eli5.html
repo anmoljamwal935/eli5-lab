@@ -124,6 +124,10 @@
     @keyframes blink{50%{opacity:0}}
     @media (prefers-reduced-motion:reduce){.doc .cur{animation:none}}
     @media (max-width:600px){.row:has(.x){grid-template-columns:minmax(64px,84px) 1fr 58px}.row .x{grid-column:1/-1;order:9}.row{grid-template-columns:minmax(64px,84px) 1fr 58px}.wide .row{grid-template-columns:minmax(64px,84px) 1fr 112px}}
+      /* Drawings inside boxes keep readable text on phones by scrolling sideways, like figures */
+    .sx{overflow-x:auto;margin-top:16px;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    .sx>svg{margin-top:0!important}
+    @media (max-width:700px){.sx>svg{min-width:540px}.sx::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
   </style>
 <!-- link-preview:start -->
 <meta name="description" content="Part 2: how a chatbot writes by guessing one token, adding it, and guessing again">
@@ -524,7 +528,7 @@
         <div class="pick" id="lPick" role="group" aria-label="Chance given to the real next word"><span>CHANCE THE MODEL GAVE THE REAL NEXT WORD</span>
           <button type="button" data-v="0.9" aria-pressed="false">90%</button><button type="button" data-v="0.5" aria-pressed="true">50%</button><button type="button" data-v="0.25" aria-pressed="false">25%</button><button type="button" data-v="0.1" aria-pressed="false">10%</button><button type="button" data-v="0.01" aria-pressed="false">1%</button><button type="button" data-v="0.001" aria-pressed="false">0.1%</button>
         </div>
-        <svg id="lSvg" viewBox="0 0 800 150" role="img" aria-label="A penalty bar that grows as the chance given to the real next word shrinks" style="display:block;width:100%;height:auto;margin-top:16px"></svg>
+        <div class="sx"><svg id="lSvg" viewBox="0 0 800 150" role="img" aria-label="A penalty bar that grows as the chance given to the real next word shrinks" style="display:block;width:100%;height:auto;margin-top:16px"></svg></div>
         <p class="readout" id="lNote"></p>
       </div>
       <p>The penalty counts how many times you would have to halve 100% to reach the chance it gave, so it stays small for good guesses and grows fast for bad ones. Averaged over billions of tokens, it is called the <b>loss</b>, and it is the one number training tries to push down. Part 6 shows how: every learned number gets nudged in whichever direction makes this penalty a little smaller.</p>

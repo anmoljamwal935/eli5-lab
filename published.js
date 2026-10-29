@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "what-a-chip-is-eli5",
+    "title": "What a chip actually is",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 3: how billions of tiny switches, wired the right way, do arithmetic",
+    "bullets": [
+      "From one switch to binary, logic gates, adders and multipliers",
+      "Clocks, memory, Moore's law, heat, and why clock speeds stopped rising"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SWITCHES",
+      "GATES",
+      "ADDERS"
+    ],
+    "file": "explainers/what-a-chip-is-eli5.html",
+    "date": "2026-10-29",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Eight switches, some on, spell the number 42 in binary\"><g font-family=\"monospace\" font-size=\"16\" text-anchor=\"middle\"><rect x=\"18\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"33\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"52\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"67\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"86\" y=\"34\" width=\"30\" height=\"40\" fill=\"#76d5c1\"/><text x=\"101\" y=\"60\" fill=\"#0d2622\">1</text><rect x=\"120\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"135\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"154\" y=\"34\" width=\"30\" height=\"40\" fill=\"#76d5c1\"/><text x=\"169\" y=\"60\" fill=\"#0d2622\">1</text><rect x=\"188\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"203\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"222\" y=\"34\" width=\"30\" height=\"40\" fill=\"#76d5c1\"/><text x=\"237\" y=\"60\" fill=\"#0d2622\">1</text><rect x=\"256\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"271\" y=\"60\" fill=\"#a5a29c\">0</text></g><g font-family=\"monospace\" font-size=\"9\" fill=\"#73706a\" text-anchor=\"middle\"><text x=\"33\" y=\"88\">128</text><text x=\"67\" y=\"88\">64</text><text x=\"101\" y=\"88\">32</text><text x=\"135\" y=\"88\">16</text><text x=\"169\" y=\"88\">8</text><text x=\"203\" y=\"88\">4</text><text x=\"237\" y=\"88\">2</text><text x=\"271\" y=\"88\">1</text></g><text x=\"18\" y=\"118\" font-size=\"18\" fill=\"#f1eee8\">= 42</text><text x=\"80\" y=\"118\" font-size=\"12\" fill=\"#a5a29c\">32 + 8 + 2</text><text x=\"18\" y=\"146\" font-size=\"12\" fill=\"#c3b8ff\">PART 3 · THE CHIP TRACK BEGINS</text></svg>",
+    "part": 3
+  },
+  {
     "id": "guess-the-next-word-eli5",
     "title": "The only job: guess the next word",
     "category": "AI & Frontier",

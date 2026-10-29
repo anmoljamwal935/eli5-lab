@@ -101,6 +101,10 @@
     /* Phones: wide drawings scroll sideways, edge to edge */
     .panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
     @media (max-width:700px){.panel figure,.box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}.panel figure svg{min-width:540px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}.panel figure.fit svg{min-width:0}.panel figure.fit::after{display:none}.bars{grid-template-columns:minmax(0,120px) 1fr}}
+      /* Drawings inside boxes keep readable text on phones by scrolling sideways, like figures */
+    .sx{overflow-x:auto;margin-top:16px;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    .sx>svg{margin-top:0!important}
+    @media (max-width:700px){.sx>svg{min-width:540px}.sx::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
   </style>
 <!-- link-preview:start -->
 <meta name="description" content="Part 1: how text is cut into tokens and turned into a map of meaning">
@@ -427,7 +431,7 @@
         <div class="pick" id="angPick" role="group" aria-label="Angle between the arrows"><span>ANGLE BETWEEN THE ARROWS</span>
           <button type="button" data-v="0" aria-pressed="false">0°</button><button type="button" data-v="20" aria-pressed="true">20°</button><button type="button" data-v="45" aria-pressed="false">45°</button><button type="button" data-v="70" aria-pressed="false">70°</button><button type="button" data-v="90" aria-pressed="false">90°</button><button type="button" data-v="120" aria-pressed="false">120°</button><button type="button" data-v="150" aria-pressed="false">150°</button><button type="button" data-v="180" aria-pressed="false">180°</button>
         </div>
-        <svg id="angSvg" viewBox="0 0 800 260" role="img" aria-label="Two arrows from one point at the chosen angle, and a score from minus one to plus one" style="display:block;width:100%;height:auto;margin-top:16px"></svg>
+        <div class="sx"><svg id="angSvg" viewBox="0 0 800 260" role="img" aria-label="Two arrows from one point at the chosen angle, and a score from minus one to plus one" style="display:block;width:100%;height:auto;margin-top:16px"></svg></div>
       </div>
       <p>The way to get that score from two lists is pure arithmetic: multiply the two first numbers together, the two second numbers together, and so on, then add everything up. Matching signs push the total up, clashing signs pull it down. This is called the <b>dot product</b>. Scaled so the result runs from −1 to +1, it is called <b>cosine similarity</b>. The same multiply-and-add appears again in part 7, where it is how each word decides which other words to pay attention to.</p>
       <details class="trace"><summary>Go deeper: the sum, worked out</summary>
