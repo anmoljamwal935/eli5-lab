@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "guess-the-next-word-eli5",
+    "title": "The only job: guess the next word",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 2: how a chatbot writes by guessing one token, adding it, and guessing again",
+    "bullets": [
+      "Scores become chances; a weighted die and temperature pick one",
+      "Why the same question gets different, and sometimes wrong, answers"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SCORES",
+      "CHANCES",
+      "PICK"
+    ],
+    "file": "explainers/guess-the-next-word-eli5.html",
+    "date": "2026-10-29",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"After the cat sat on the, the model gives each next word a chance and one is picked\"><text x=\"18\" y=\"30\" font-size=\"14\" fill=\"#f5c76a\">The cat sat on the …</text><g font-size=\"12\"><text x=\"18\" y=\"58\" fill=\"#f5c76a\">mat</text><rect x=\"80\" y=\"48\" width=\"150\" height=\"13\" fill=\"#ff8059\"/><text x=\"238\" y=\"59\" fill=\"#a5a29c\">42%</text><text x=\"18\" y=\"80\" fill=\"#f5c76a\">floor</text><rect x=\"80\" y=\"70\" width=\"75\" height=\"13\" fill=\"#ff8059\" opacity=\".75\"/><text x=\"163\" y=\"81\" fill=\"#a5a29c\">21%</text><text x=\"18\" y=\"102\" fill=\"#f5c76a\">couch</text><rect x=\"80\" y=\"92\" width=\"54\" height=\"13\" fill=\"#ff8059\" opacity=\".75\"/><text x=\"142\" y=\"103\" fill=\"#a5a29c\">15%</text><text x=\"18\" y=\"124\" fill=\"#f5c76a\">moon</text><rect x=\"80\" y=\"114\" width=\"3\" height=\"13\" fill=\"#ff8059\" opacity=\".75\"/><text x=\"91\" y=\"125\" fill=\"#a5a29c\">0.5%</text></g><rect x=\"14\" y=\"45\" width=\"256\" height=\"20\" fill=\"none\" stroke=\"#c3b8ff\"/><text x=\"18\" y=\"148\" font-size=\"12\" fill=\"#ff8059\">PART 2 · HOW AI WORKS, FROM SCRATCH</text></svg>",
+    "part": 2
+  },
+  {
     "id": "text-becomes-numbers-eli5",
     "title": "Text becomes numbers",
     "category": "AI & Frontier",
