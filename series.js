@@ -10,7 +10,7 @@ window.ELI5_SERIES = {
   },
   parts: [
     { id: 'text-becomes-numbers-eli5', track: 'llm', title: 'Text becomes numbers', blurb: 'Tokens, the word list, and meaning as a position on a map', file: 'text-becomes-numbers-eli5.html' },
-    { id: 'guess-the-next-word-eli5', track: 'llm', title: 'The only job: guess the next word', blurb: 'Scores, chances, temperature, and why it writes one piece at a time' },
+    { id: 'guess-the-next-word-eli5', track: 'llm', title: 'The only job: guess the next word', blurb: 'Scores, chances, temperature, and why it writes one piece at a time', file: 'guess-the-next-word-eli5.html' },
     { id: 'what-a-chip-is-eli5', track: 'chip', title: 'What a chip actually is', blurb: 'Billions of tiny switches, and how switches add numbers' },
     { id: 'the-cpu-eli5', track: 'chip', title: 'The CPU: the chip in your laptop', blurb: 'A few very clever workers doing one task after another' },
     { id: 'the-gpu-eli5', track: 'chip', title: 'The GPU: thousands of simple workers', blurb: 'Why drawing a game screen and running AI need the same thing' },

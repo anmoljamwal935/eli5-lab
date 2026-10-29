@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The only job: guess the next word — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Series colour key:
+       gold = text and tokens, teal = stored numbers, orange = arithmetic, purple = connections, rose = the wrong intuition */
+    :root{--danger:#ec6a94}
+    .panel figure{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .c-tok{color:var(--gold)}.c-num{color:var(--teal)}.c-calc{color:var(--accent)}.c-link{color:var(--purple)}.c-bad{color:var(--danger)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    details.trace .table-wrap{margin:12px 0}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+
+    /* Sliders (stepped ones are built by pick()) */
+    .eli5-study-container input[type=range]{--c:var(--teal);-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:6px 0 0;padding:0!important;border:0!important;background:transparent!important;cursor:pointer}
+    .eli5-study-container input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(90deg,var(--c) var(--fill,0%),var(--border) var(--fill,0%))}
+    .eli5-study-container input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-track{height:4px;background:var(--border)}
+    .eli5-study-container input[type=range]::-moz-range-progress{height:4px;background:var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]:focus-visible{outline:none}
+    .eli5-study-container input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px var(--c),0 0 0 5px rgba(118,213,193,.25)}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--gold)!important;color:var(--gold)!important;background:rgba(245,199,106,.1)!important}
+    .pick.slide{display:block;max-width:520px;margin-top:20px}
+    .pick.slide>span{display:flex;gap:10px;align-items:baseline}
+    .pick.slide output{color:var(--teal);font-weight:600;letter-spacing:.02em}
+    .pick .ticks{position:relative;height:20px;margin:2px 9px 0;font:12px/1.4 var(--font-mono);color:var(--faint)}
+    .pick .ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;padding:2px 0;cursor:pointer}
+    .pick .ticks span.first{transform:translateX(-9px)}.pick .ticks span.last{transform:translateX(calc(9px - 100%))}
+    .pick .ticks span:hover{color:var(--fg)}.pick .ticks span.on{color:var(--teal)}
+
+    /* Number tiles and card grids (outlines, so an unfilled last row stays empty) */
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;padding:1px;margin:16px 0 22px}
+    .tiles div{background:var(--surface);outline:1px solid var(--border);padding:12px 14px}
+    .tiles b{display:block;font-size:22px;line-height:1.2;color:var(--fg);font-weight:600}
+    .tiles span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--muted)}
+    .tiles span .tag{display:inline-block;margin:0 0 0 2px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .field-grid div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+
+    /* Text pieces drawn as HTML so they wrap on any screen */
+    .box{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .box>small,.cap{display:block;font:12px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .cap{margin-top:14px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px 4px;margin-top:12px}
+    .tk{display:inline-flex;flex-direction:column;align-items:center;min-width:28px}
+    .tk b{display:block;padding:4px 7px;font:500 18px/1.3 var(--font-sans);white-space:pre;color:#20140a;background:var(--gold)}
+    .tk:nth-child(even) b{background:#d9a94e}
+    .tk b.raw{background:transparent;color:var(--gold);outline:1px dashed var(--gold);font:13px/1.9 var(--font-mono)}
+    .tk i{display:block;margin-top:3px;font:normal 11px/1.2 var(--font-mono);color:var(--teal)}
+    .sp{color:rgba(32,20,10,.45)}
+    .codes{display:flex;flex-wrap:wrap;gap:10px 6px;margin-top:12px}
+    .code{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:8px 6px;border:1px solid var(--border);background:var(--surface)}
+    .code b{font:500 26px/1.2 var(--font-sans);color:var(--gold)}
+    .code span{font:12px/1.5 var(--font-mono);color:var(--teal)}
+    .code em{font:normal 11px/1.4 var(--font-mono);color:var(--muted)}
+    .tok-in{width:100%;min-height:72px;margin-top:14px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
+    .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .presets button{min-height:34px;padding:5px 12px}
+    .bpe-words{display:grid;gap:10px;margin-top:12px}
+    .bpe-word{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+    .bpe-word>em{width:44px;font:normal 12px/1 var(--font-mono);color:var(--muted)}
+    .bpe-word .tk b{font-size:20px}
+    .tk b.hit{background:var(--accent)!important;color:#20120c}
+    .pairs{display:grid;grid-template-columns:auto auto;gap:2px 18px;justify-content:start;margin-top:10px;font:13px/1.7 var(--font-mono);color:var(--muted)}
+    .pairs .top{color:var(--accent)}
+    .vocab{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .vocab span{padding:1px 7px;font:13px/1.7 var(--font-mono);border:1px solid var(--border);color:var(--muted)}
+    .vocab span.new{border-color:var(--gold);color:var(--gold)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media (max-width:700px){.two{grid-template-columns:1fr}}
+    .bars{display:grid;grid-template-columns:minmax(0,180px) 1fr;gap:10px 14px;align-items:center;margin-top:14px;font-size:15px}
+    .bars .bl{color:var(--fg)}.bars .bl small{display:block;color:var(--muted);font:11px/1.4 var(--font-mono)}
+    .bars .bar{display:flex;align-items:center;gap:10px;font:13px var(--font-mono);color:var(--muted)}
+    .bars .bar i{display:block;height:22px;background:var(--gold);min-width:2px}
+    .status{font:12px/1.5 var(--font-mono);color:var(--muted);margin-top:10px}
+
+    /* Phones: wide drawings scroll sideways, edge to edge */
+    .panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure,.box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}.panel figure svg{min-width:540px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}.panel figure.fit svg{min-width:0}.panel figure.fit::after{display:none}.bars{grid-template-columns:minmax(0,120px) 1fr}}
+    /* Part 2: chance rows, the writing box, the chat transcript */
+    .soft,.rows{display:grid;gap:6px;margin-top:14px}
+    .row{display:grid;grid-template-columns:minmax(72px,110px) 1fr 64px;align-items:center;gap:10px;font-size:15px}
+    .row:has(.x){grid-template-columns:minmax(72px,110px) 130px 1fr 64px}
+    .wide .row{grid-template-columns:minmax(72px,110px) 1fr 132px}
+    .row .w{color:var(--gold);font-weight:500;overflow-wrap:anywhere}
+    .row .x{font:12px/1.3 var(--font-mono);color:var(--muted)}.row .x b{color:var(--accent);font-weight:600}
+    .row .bar{position:relative;height:20px;background:#1d1c1b}
+    .row .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);opacity:.75}
+    .row .bar i.neg{background:var(--danger)}
+    .row .bar u{position:absolute;left:0;top:-3px;bottom:-3px;border-right:2px solid var(--fg);text-decoration:none}
+    .row .v{font:13px var(--font-mono);color:var(--muted);text-align:right;white-space:nowrap}
+    .row.hi .w{color:var(--fg)}.row.hi .bar i{opacity:1}.row.hi{outline:1px solid var(--accent);outline-offset:3px}
+    .row.off{opacity:.4}
+    .sample{margin:6px 0 0;font-size:18px;color:var(--gold)!important}
+    .start-in{display:block;width:100%;max-width:520px;margin-top:8px;padding:10px 12px;font:15px var(--font-mono)}
+    .gen{margin-top:16px;padding:14px 16px;min-height:72px;border:1px solid var(--border);background:var(--surface);font-size:18px;line-height:1.8;color:var(--fg);overflow-wrap:anywhere}
+    .gen .st{color:var(--gold)}.gen .nw{background:var(--accent);color:#20120c;padding:0 4px}
+    .doc{margin-top:12px;padding:14px 16px;background:#0c0f12;border:1px solid var(--border);font:14px/1.7 var(--font-mono);color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+    .doc .m{color:var(--purple)}.doc .cur{color:var(--accent);animation:blink 1s steps(2) infinite}
+    @keyframes blink{50%{opacity:0}}
+    @media (prefers-reduced-motion:reduce){.doc .cur{animation:none}}
+    @media (max-width:600px){.row:has(.x){grid-template-columns:minmax(64px,84px) 1fr 58px}.row .x{grid-column:1/-1;order:9}.row{grid-template-columns:minmax(64px,84px) 1fr 58px}.wide .row{grid-template-columns:minmax(64px,84px) 1fr 112px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 2: how a chatbot writes by guessing one token, adding it, and guessing again">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/guess-the-next-word-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="The only job: guess the next word">
+<meta property="og:description" content="Part 2: how a chatbot writes by guessing one token, adding it, and guessing again">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/guess-the-next-word-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/guess-the-next-word-eli5.png?v=940704fe">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The only job: guess the next word">
+<meta property="article:published_time" content="2026-10-29">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="guess-the-next-word-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>The only job: guess the next word</h1>
+      <p class="lede">An AI chatbot does exactly one thing. It looks at all the text so far and guesses which piece of text should come next. Then it adds that piece and guesses again. Every answer, poem and line of code it writes is that one step, repeated. This part shows how the guess is made, how one is picked, and why such a simple loop can write anything at all.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Part 1 showed how text becomes tokens: pieces of words, each with an ID number. This part starts where Part 1 ended, with the model holding one list of numbers per token. Facts carry a tag: <span class="tag">public</span> means a published paper or plain arithmetic, <span class="tag">example</span> means a made-up number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:var(--gold)"></i>text and tokens</span>
+        <span><i style="background:var(--teal)"></i>stored numbers</span>
+        <span><i style="background:var(--accent)"></i>arithmetic</span>
+        <span><i style="background:var(--purple)"></i>connections</span>
+        <span><i style="background:var(--danger)"></i>the wrong intuition</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The whole job</p>
+      <h2>Guess the next piece. Add it. Repeat.</h2>
+      <p>Give the model “The cat sat on the” and it does not write a sentence. It produces one guess for the single next token, say “ mat”. That token is stuck onto the end of the text, and the whole, slightly longer text goes back in for the next guess. Round and round, one token per lap, until the answer is finished.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Text goes into the model, one next token comes out, it is added to the end of the text, and the longer text goes back in">
+          <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
+          <text x="40" y="36" fill="#a5a29c" font-size="15">THE TEXT SO FAR</text>
+          <g font-size="17" text-anchor="middle">
+            <rect x="40" y="52" width="52" height="38" fill="#f5c76a"/><text x="66" y="77" fill="#20140a">The</text>
+            <rect x="96" y="52" width="52" height="38" fill="#d9a94e"/><text x="122" y="77" fill="#20140a">␣cat</text>
+            <rect x="152" y="52" width="52" height="38" fill="#f5c76a"/><text x="178" y="77" fill="#20140a">␣sat</text>
+            <rect x="208" y="52" width="52" height="38" fill="#d9a94e"/><text x="234" y="77" fill="#20140a">␣on</text>
+            <rect x="264" y="52" width="52" height="38" fill="#f5c76a"/><text x="290" y="77" fill="#20140a">␣the</text>
+          </g>
+          <path d="M330 71 H410" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar1)"/>
+          <rect x="420" y="40" width="160" height="62" fill="#ff8059" opacity=".2" stroke="#ff8059"/>
+          <text x="500" y="68" text-anchor="middle" fill="#f1eee8" font-size="18">the model</text>
+          <text x="500" y="90" text-anchor="middle" fill="#ff8059" font-size="14">one big calculation</text>
+          <path d="M590 71 H650" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar1)"/>
+          <rect x="660" y="52" width="70" height="38" fill="#f5c76a" stroke="#ff8059" stroke-width="3"/><text x="695" y="77" text-anchor="middle" fill="#20140a" font-size="17">␣mat</text>
+          <text x="695" y="122" text-anchor="middle" fill="#a5a29c" font-size="14">one token</text>
+          <path d="M695 140 V190 H340 V108" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar1)"/>
+          <text x="420" y="214" fill="#c3b8ff" font-size="15">stuck onto the end, and everything goes back in</text>
+          <text x="40" y="262" fill="#f1eee8" font-size="17">An answer of 300 tokens is this loop run 300 times, one lap after another.</text>
+        </svg>
+      </figure>
+      <p>That sounds far too simple to write an essay. The rest of this part is about why it is not: what goes into one guess, how the guess is turned into a choice, and what has to be going on inside for the guesses to be good.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>Your phone’s keyboard, scaled up enormously</h2>
+      <p>You already use a next-word guesser. When you type “see you”, your phone’s keyboard offers three suggestions, like “tomorrow”, “soon” and “later”. It learned them from what people usually type next. Tap the middle one over and over and it writes a whole sentence, usually a silly one.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="A phone keyboard suggests three next words from the last word or two; a language model scores every token in its list using the whole conversation">
+          <rect x="40" y="40" width="300" height="200" rx="18" fill="#202020" stroke="#57534f" stroke-width="2"/>
+          <text x="64" y="86" fill="#f1eee8" font-size="17">see you</text><rect x="132" y="70" width="2" height="22" fill="#f5c76a"/>
+          <g font-size="15" text-anchor="middle"><rect x="56" y="120" width="86" height="34" fill="#2f2d2a"/><text x="99" y="142" fill="#f5c76a">tomorrow</text>
+          <rect x="147" y="120" width="86" height="34" fill="#2f2d2a"/><text x="190" y="142" fill="#f5c76a">soon</text>
+          <rect x="238" y="120" width="86" height="34" fill="#2f2d2a"/><text x="281" y="142" fill="#f5c76a">later</text></g>
+          <text x="64" y="190" fill="#a5a29c" font-size="14">looks at the last word or two</text>
+          <text x="64" y="212" fill="#a5a29c" font-size="14">suggests 3 words</text>
+          <text x="400" y="70" fill="#f1eee8" font-size="17">An AI model does the same job, but:</text>
+          <text x="400" y="110" fill="#c3b8ff" font-size="16">looks at the whole conversation,</text>
+          <text x="400" y="132" fill="#a5a29c" font-size="15">often many thousands of tokens back</text>
+          <text x="400" y="172" fill="#ff8059" font-size="16">scores every token in its list,</text>
+          <text x="400" y="194" fill="#a5a29c" font-size="15">around 100,000 of them, every time</text>
+          <text x="400" y="234" fill="#76d5c1" font-size="16">uses billions of learned numbers</text>
+          <text x="400" y="256" fill="#a5a29c" font-size="15">where a keyboard uses a small table</text>
+        </svg>
+      </figure>
+      <p><b>Mapping it back:</b> the suggestions are the model’s guesses; tapping one is picking a token; tapping again and again is the loop from chapter 1. <b>Where the analogy breaks:</b> a keyboard looks only at the last word or two, so it loses the thread almost at once. A large model keeps the whole conversation in view, which is the difference between a silly sentence and a useful answer. Chapter 10 shows why that matters so much.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">What comes out</p>
+      <h2>A score for every token in the list</h2>
+      <p>At the end of its calculation the model does not output a word. It outputs a <b>score</b> for every single token in its list: one number each, around 100,000 numbers in all. A high score means “this fits well here”. A low or negative score means “this would be strange”. The scores are raw arithmetic results, so they can be any size and do not add up to anything in particular.</p>
+      <div class="box">
+        <small>Scores after “The cat sat on the” (example)</small>
+        <div class="rows" id="scoreRows"></div>
+        <p class="readout">Eight tokens are shown. The other 99,992 get scores too, nearly all of them very low.</p>
+      </div>
+      <details class="trace"><summary>Go deeper: where the scores come from</summary>
+        <p><b>The last step.</b> After all its layers (parts 7 and 9), the model holds one long list of numbers for the newest position. It compares that list with every token’s row in a big table, the same multiply-and-add closeness score from Part 1, chapter 14. Tokens whose rows point the same way as the model’s list get high scores.</p>
+        <p><b>The same table again.</b> That table has one row per token, like the lookup table at the start (Part 1, chapter 16). Some models reuse the exact same table at both ends.</p>
+        <p><b>The name.</b> These raw scores are often called <b>logits</b> in papers and code.</p>
+      </details>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">Scores into chances</p>
+      <h2>Turn the scores into chances that add up to 100%</h2>
+      <p>Scores are hard to use directly: some are negative, and they add up to nothing in particular. So they go through a fixed recipe that turns them into chances. First, every score is made positive by raising a special number, about 2.718, to the power of the score. That also stretches the gaps: a score 1 higher becomes about 2.7 times bigger. Then everything is divided by the total, so the results add up to 100%.</p>
+      <p>Slide the score of “moon” and watch what happens to every chance, not just its own:</p>
+      <div class="box">
+        <div class="pick" id="moonPick" role="group" aria-label="Score for moon"><span>SCORE FOR “MOON”</span>
+          <button type="button" data-v="-2" aria-pressed="false">−2</button><button type="button" data-v="0.2" aria-pressed="true">0.2</button><button type="button" data-v="2" aria-pressed="false">2</button><button type="button" data-v="4" aria-pressed="false">4</button><button type="button" data-v="5" aria-pressed="false">5</button><button type="button" data-v="6" aria-pressed="false">6</button>
+        </div>
+        <div class="soft" id="softRows"></div>
+        <p class="readout" id="softNote"></p>
+      </div>
+      <p>Because everything is divided by one shared total, the chances compete. When “moon” rises, every other word loses a little, even though its own score never changed. This recipe is called <b>softmax</b>. It is used in this exact form by essentially every language model <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: the recipe as a formula</summary>
+        <span class="eq">chance(token) = e^score(token) ÷ (sum of e^score over every token in the list)</span>
+        <p>Here e is the number 2.718…, chosen because it makes the maths of training (part 6) neat. Adding the same amount to every score changes nothing, because it multiplies the top and the bottom of the fraction by the same amount. Only the gaps between scores matter.</p>
+      </details>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Making a choice</p>
+      <h2>Pick by rolling a weighted die</h2>
+      <p>Now there is a chance for every token. The usual way to choose is to roll a weighted die: a token with a 42% chance comes up about 42 times in 100 rolls, one with 2% about twice. Most of the time the favourite wins, but not always. Roll it yourself:</p>
+      <div class="box">
+        <div class="presets"><button type="button" class="secondary" id="roll1">Pick once</button><button type="button" class="secondary" id="roll100">Pick 100 times</button><button type="button" class="secondary" id="rollReset">Start over</button></div>
+        <div class="soft wide" id="dieRows"></div>
+        <p class="readout" id="dieNote"></p>
+      </div>
+      <p>The outline shows each token’s chance; the filled bar shows how often it has actually come up. After a few hundred picks the two match closely. This kind of picking is called <b>sampling</b>: each new token is a sample drawn from the chances.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The obvious shortcut</p>
+      <h2>Why not always take the favourite?</h2>
+      <p>It seems wasteful to roll a die. Why not always take the token with the highest chance? That is a real option, called <b>greedy</b> picking, and it gives the same answer every time. But for writing, it tends to go wrong in a particular way: it gets stuck in loops.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Always picking the top token can fall into a repeating loop of the same phrase, while rolling the die keeps text varied">
+          <text x="40" y="36" fill="#ec6a94" font-size="16">ALWAYS THE FAVOURITE</text>
+          <text x="40" y="66" fill="#f5c76a" font-size="17">I think the answer is that the answer is that the answer is that the answer…</text>
+          <path d="M318 80 C340 104 470 104 492 80" fill="none" stroke="#ec6a94" stroke-width="2"/><text x="320" y="122" fill="#ec6a94" font-size="14">the same phrase keeps being the most likely next step</text>
+          <text x="40" y="172" fill="#76d5c1" font-size="16">ROLLING THE DIE</text>
+          <text x="40" y="202" fill="#f5c76a" font-size="17">I think the answer depends on what you mean by “fast”.</text>
+          <text x="40" y="236" fill="#a5a29c" font-size="14">Both lines are made-up examples of a common pattern.</text>
+        </svg>
+      </figure>
+      <p>Each step on its own is the most likely one, but a whole text made of only the most likely steps is not likely-looking text at all. Real human writing contains plenty of less-likely words. A 2019 study named this problem and showed that rolling the die, with the long tail trimmed (chapter 8), produces far more natural text <span class="tag">public</span>. Greedy picking is still useful when you want the same answer every time, for example when extracting a date from a document.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The dial</p>
+      <h2>Temperature: how adventurous the die is</h2>
+      <p>Before the die is rolled, the scores can be stretched or squashed. Divide every score by a number called the <b>temperature</b>. A low temperature makes the gaps bigger, so the favourite wins almost every time. A high temperature shrinks the gaps, so unlikely tokens get a real chance. Temperature 0 means greedy: always the favourite.</p>
+      <div class="box">
+        <div class="pick" id="tPick" role="group" aria-label="Temperature"><span>TEMPERATURE</span>
+          <button type="button" data-v="0" aria-pressed="false">0</button><button type="button" data-v="0.3" aria-pressed="false">0.3</button><button type="button" data-v="0.7" aria-pressed="false">0.7</button><button type="button" data-v="1" aria-pressed="true">1</button><button type="button" data-v="1.5" aria-pressed="false">1.5</button><button type="button" data-v="2" aria-pressed="false">2</button>
+        </div>
+        <div class="soft" id="tRows"></div>
+        <span class="cap">A typical sentence at this setting (example)</span>
+        <p class="sample" id="tSample"></p>
+      </div>
+      <p>Apps choose this setting for you. Low suits facts and code, where you want the most likely answer. Higher suits brainstorming and stories, where surprise is the point. Too high and the text falls apart into nonsense, because rare, wrong tokens start winning. Developers can set it themselves: Anthropic’s API accepts 0 to 1, OpenAI’s 0 to 2 <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: temperature in the formula</summary>
+        <span class="eq">chance(token) = e^(score ÷ T) ÷ (sum of e^(score ÷ T) over every token)</span>
+        <p>At T = 1 the chances are the model’s own. As T shrinks towards 0, the top token’s chance heads towards 100%. As T grows, all chances head towards equal, which for a list of 100,000 tokens means near-random gibberish.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Trimming the tail</p>
+      <h2>Throw away the long tail before rolling</h2>
+      <p>Even a tiny chance adds up when there are 100,000 tokens. If each of 99,000 unlikely tokens has a chance of one in a million, together they still come up about one roll in ten, and one bad token can derail a whole answer. So before rolling, servers usually keep only the most likely tokens.</p>
+      <p>The most common rule keeps the smallest group of top tokens whose chances add up to some share, like 90%, and throws the rest away. Slide the share:</p>
+      <div class="box">
+        <div class="pick" id="pPick" role="group" aria-label="Share of chance to keep"><span>KEEP THE TOP TOKENS THAT ADD UP TO</span>
+          <button type="button" data-v="0.5" aria-pressed="false">50%</button><button type="button" data-v="0.8" aria-pressed="false">80%</button><button type="button" data-v="0.9" aria-pressed="true">90%</button><button type="button" data-v="0.95" aria-pressed="false">95%</button><button type="button" data-v="1" aria-pressed="false">100%</button>
+        </div>
+        <div class="soft wide" id="pRows"></div>
+        <p class="readout" id="pNote"></p>
+      </div>
+      <p>The kept tokens’ chances are scaled back up to add to 100%, then the die is rolled as usual. This rule is called <b>top-p</b> or nucleus sampling, from that 2019 study <span class="tag">public</span>. A simpler rule, <b>top-k</b>, keeps just the k best tokens: the famous 2019 GPT-2 sample texts kept the top 40 <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>A word guesser, trained on this page</h2>
+      <p>When this page opened, your browser read its own text, <span id="corpusN">a few thousand</span> words, and counted which word follows which. That is a real next-word guesser, of the oldest and simplest kind. It cannot understand anything; it only knows what followed these exact words on this page. Pick how many words back it may look, set the temperature, and let it write.</p>
+      <div class="box">
+        <div class="pick" id="gN" role="group" aria-label="Words it can see"><span>WORDS IT CAN SEE</span>
+          <button type="button" data-v="1" aria-pressed="false">1</button><button type="button" data-v="2" aria-pressed="true">2</button><button type="button" data-v="3" aria-pressed="false">3</button><button type="button" data-v="4" aria-pressed="false">4</button>
+        </div>
+        <div class="pick" id="gT" role="group" aria-label="Temperature for the guesser"><span>TEMPERATURE</span>
+          <button type="button" data-v="0" aria-pressed="false">0</button><button type="button" data-v="0.5" aria-pressed="false">0.5</button><button type="button" data-v="1" aria-pressed="true">1</button><button type="button" data-v="1.5" aria-pressed="false">1.5</button>
+        </div>
+        <span class="cap">Start with</span>
+        <input class="start-in" id="gStart" value="the model" aria-label="Starting words">
+        <div class="presets" id="gPre"><button type="button" class="secondary" data-t="the model">the model</button><button type="button" class="secondary" data-t="a token">a token</button><button type="button" class="secondary" data-t="every answer">every answer</button><button type="button" class="secondary" data-t="the cat sat on the">the cat sat on the</button></div>
+        <div class="presets"><button type="button" id="gStep">Guess one word</button><button type="button" id="gRun">Write 25 words</button><button type="button" class="secondary" id="gReset">Start over</button></div>
+        <div class="gen" id="gOut" aria-live="polite"></div>
+        <span class="cap" id="gWhy">The last guess</span>
+        <div class="soft wide" id="gCand"></div>
+        <div class="tiles">
+          <div><b id="gLen">0</b><span>words written</span></div>
+          <div><b id="gCopy">0</b><span>longest stretch copied word for word from this page</span></div>
+        </div>
+      </div>
+      <p>With one word of view, the text wanders: each word fits the one before it and nothing else. With two or three it starts to sound like this page. Watch the “copied” tile, though: chapter 11 is about what happens at four.</p>
+      <details class="trace"><summary>Go deeper: what this guesser is, and is not</summary>
+        <p><b>Counting, not learning.</b> It keeps a table: after these words, this word came next this many times. Its chances are those counts, made into shares. A real model has no such table; it computes scores from billions of learned numbers (part 6), so it can handle word combinations it has never seen.</p>
+        <p><b>When it is stuck.</b> If the words in view never appeared together on this page, it looks at fewer words, then at the single last word, then at how common each word is overall. The panel says when that happens.</p>
+        <p><b>An old idea.</b> In 1948 Claude Shannon, who founded information theory, built text this way by hand, from tables of which words follow which <span class="tag">public</span>. It is called an n-gram model.</p>
+      </details>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">Why view matters</p>
+      <h2>The clue is often far back</h2>
+      <p>Try guessing the last word here: “I grew up in a small village in France, and moved to London when I was twenty, so today I speak fluent ___.” The words right before the gap, “speak fluent”, could end in any language. The clue that decides it, “France”, is sixteen words earlier.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="A guesser that sees only the last two words cannot use the word France sixteen words earlier; a model that sees the whole sentence can">
+          <text x="40" y="44" fill="#f5c76a" font-size="16">I grew up in a small village in <tspan fill="#c3b8ff" font-weight="600">France</tspan>, and moved to London when I was twenty,</text>
+          <text x="40" y="72" fill="#f5c76a" font-size="16">so today I <tspan fill="#ec6a94" text-decoration="underline">speak fluent</tspan> <tspan fill="#ff8059">___</tspan></text>
+          <text x="40" y="122" fill="#ec6a94" font-size="16">SEES 2 WORDS</text><text x="190" y="122" fill="#a5a29c" font-size="15">“speak fluent” → English? Spanish? Hindi? any language at all</text>
+                    <text x="40" y="190" fill="#76d5c1" font-size="16">SEES IT ALL</text><text x="190" y="190" fill="#a5a29c" font-size="15">“France” sixteen words back → French, with a high chance</text>
+          <text x="40" y="244" fill="#f1eee8" font-size="17">Good guesses need the whole context, not just the last few words.</text>
+        </svg>
+      </figure>
+      <p>Real conversations are full of this: a name mentioned once at the start, a rule set three messages ago, a variable defined at the top of a file. So instead of a few words, modern models see the entire conversation at once, up to hundreds of thousands of tokens. The mechanism that lets every token look back at every earlier token is <b>attention</b>, the subject of part 7. How much a model can see at once, and what it costs, is part 14.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>Seeing more is not enough. Copying is easy.</h2>
+      <p>Set the guesser in chapter 9 to four words and press “Write 25 words”. The text suddenly looks fluent, and the “copied” tile jumps. It is not being clever. With four words of view, almost every four-word run on this page was followed by exactly one thing, so it can only recite the page back.</p>
+      <figure>
+        <svg viewBox="0 0 800 230" role="img" aria-label="A guesser with a short view writes nonsense; one with a long view but no understanding copies its training text; a real model must generalise in between">
+          <g font-size="16">
+            <rect x="40" y="40" width="220" height="120" fill="#ec6a94" opacity=".12" stroke="#ec6a94"/>
+            <text x="56" y="70" fill="#ec6a94" font-size="13">SHORT VIEW</text><text x="56" y="98" fill="#f1eee8">nonsense</text><text x="56" y="124" fill="#a5a29c" font-size="14">each word fits only its</text><text x="56" y="142" fill="#a5a29c" font-size="14">neighbour</text>
+            <rect x="290" y="40" width="220" height="120" fill="#ec6a94" opacity=".12" stroke="#ec6a94"/>
+            <text x="306" y="70" fill="#ec6a94" font-size="13">LONG VIEW, ONLY COUNTING</text><text x="306" y="98" fill="#f1eee8">copying</text><text x="306" y="124" fill="#a5a29c" font-size="14">every long run of words</text><text x="306" y="142" fill="#a5a29c" font-size="14">was seen only once</text>
+            <rect x="540" y="40" width="220" height="120" fill="#76d5c1" opacity=".12" stroke="#76d5c1"/>
+            <text x="556" y="70" fill="#76d5c1" font-size="13">WHAT A REAL MODEL DOES</text><text x="556" y="98" fill="#f1eee8">generalises</text><text x="556" y="124" fill="#a5a29c" font-size="14">new sentences built from</text><text x="556" y="142" fill="#a5a29c" font-size="14">learned patterns</text>
+          </g>
+          <text x="40" y="206" fill="#f1eee8" font-size="17">The hard part is not seeing far back. It is making good guesses about text never seen before.</text>
+        </svg>
+      </figure>
+      <p>Most of what you will ever type to a chatbot has never been written before in exactly that form, so a table of counts would have nothing to look up. A real model has to turn the text into meaning, as Part 1’s map began to show, and reason from patterns it has learned. That is why it needs billions of learned numbers rather than a table. Real models can still memorise passages they saw many times, which is a known issue <span class="tag">public</span>, but that is the exception, not how they work.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">The cost of one token</p>
+      <h2>Every new token is a full run of the model</h2>
+      <p>Each lap of the loop is a complete pass through the whole model: every layer, all its billions of numbers, just to produce one token. The laps cannot overlap, because lap 501 needs the token that lap 500 produced. So a 1,000-token answer is 1,000 full passes, one strictly after another.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="A timeline of full passes through the model, one token each, which is why answers appear on screen one piece at a time">
+          <text x="40" y="36" fill="#a5a29c" font-size="15">ONE ANSWER, OVER TIME</text>
+          <g id="lapBars"></g>
+          <text x="40" y="150" fill="#f1eee8" font-size="16">each block: one full pass through the model, one token out</text>
+          <text x="40" y="180" fill="#a5a29c" font-size="15">a large model might take around 20 to 50 thousandths of a second per lap <tspan fill="#73706a">(example)</tspan></text>
+          <text x="40" y="226" fill="#f1eee8" font-size="17">This is why answers appear on screen piece by piece: each piece is sent the moment it exists.</text>
+        </svg>
+      </figure>
+      <p>It is also why long answers cost more than long questions. A question can be read in one big go, because all of its tokens are already known. An answer can only be written lap by lap. The bonus study, <a href="inside-llm-serving-eli5.html" data-series-link="inside-llm-serving-eli5">Inside LLM serving</a>, is about exactly this cost and how companies cope with it.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">No backspace</p>
+      <h2>Once a token is written, it stays</h2>
+      <p>The loop only ever adds to the end. There is no step that goes back and changes an earlier token. If an unlucky roll puts a wrong word in the middle of a sentence, every later guess has to build on top of it, because that wrong word is now part of the text the model reads.</p>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="An unlucky token early in a sentence cannot be undone, so the rest of the answer is built on top of it">
+          <g font-size="17">
+            <text x="40" y="50" fill="#f5c76a">The capital of Australia is</text>
+            <rect x="262" y="30" width="78" height="30" fill="#ec6a94" opacity=".25" stroke="#ec6a94"/><text x="301" y="51" fill="#f1eee8" text-anchor="middle">Sydney</text>
+            <text x="350" y="50" fill="#f5c76a">, which is also home to its parliament…</text>
+          </g>
+          <text x="262" y="88" fill="#ec6a94" font-size="14">one unlucky pick</text>
+          <path d="M350 62 C420 110 600 110 700 70" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="420" y="124" fill="#c3b8ff" font-size="14">later words stay consistent with the mistake</text>
+          <text x="40" y="170" fill="#f1eee8" font-size="17">The real capital is Canberra. The text after a bad pick tends to defend it.</text>
+          <text x="40" y="200" fill="#a5a29c" font-size="14">An example of a real failure pattern, not output from a particular model.</text>
+        </svg>
+      </figure>
+      <p>Newer “thinking” models soften this by writing a private draft first: they reason step by step, can notice a mistake and say “wait, that is wrong”, and only then write the answer you see. Even then, the draft itself is written one token at a time with no backspace. That is part 16.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">Is it just autocomplete?</p>
+      <h2>Simple job, hard to do well</h2>
+      <p>“It just predicts the next word” is true about the job, and misleading about what the job takes. Think about what it would take to guess the next word well in every kind of text. In a maths textbook, the next token after “so x equals” is the answer to the problem. In a detective novel, the next word after “the murderer was” needs the whole plot. In code, the next line has to actually work.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Guessing the next word well in a maths book, a mystery novel and a program requires solving the sum, following the plot and writing working code">
+          <g font-size="16">
+            <rect x="40" y="30" width="230" height="140" fill="#202020" stroke="#57534f"/>
+            <text x="56" y="60" fill="#a5a29c" font-size="13">MATHS BOOK</text><text x="56" y="92" fill="#f5c76a">…so 17 × 23 equals</text><text x="56" y="130" fill="#ff8059">needs: doing the sum</text>
+            <rect x="285" y="30" width="230" height="140" fill="#202020" stroke="#57534f"/>
+            <text x="301" y="60" fill="#a5a29c" font-size="13">MYSTERY NOVEL</text><text x="301" y="92" fill="#f5c76a">…the murderer was</text><text x="301" y="130" fill="#ff8059">needs: following the plot</text>
+            <rect x="530" y="30" width="230" height="140" fill="#202020" stroke="#57534f"/>
+            <text x="546" y="60" fill="#a5a29c" font-size="13">A PROGRAM</text><text x="546" y="92" fill="#f5c76a">…return total /</text><text x="546" y="130" fill="#ff8059">needs: knowing the code</text>
+          </g>
+          <text x="40" y="214" fill="#f1eee8" font-size="17">To guess well everywhere, a model is pushed to learn how the world works.</text>
+        </svg>
+      </figure>
+      <p>So the simple job puts enormous pressure on what happens inside. And the model does more than look one token ahead. In 2025 Anthropic published research that looked inside a Claude model writing rhyming poetry: before writing a line, it had already picked the rhyming word it was heading for, and wrote the line to land on it <span class="tag">public</span>. The output is one token at a time; the calculation behind each token can plan further.</p>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">Where the assistant comes from</p>
+      <h2>A chat is a document the model continues</h2>
+      <p>If the model only continues text, how does it hold a conversation? The app turns the chat into one long document, with markers for who is speaking, and leaves it open at the start of the assistant’s turn. After a question, the most likely continuation of an open assistant turn is an answer to it. So the model “answers” by continuing the document.</p>
+      <div class="box">
+        <small>What the model actually reads (simplified example)</small>
+        <pre class="doc" id="docBox"><span class="m">[system]</span> You are a helpful assistant. Be concise.
+<span class="m">[user]</span> What is a token?
+<span class="m">[assistant]</span> A token is a small piece of text, such as a word or part of a word.
+<span class="m">[user]</span> Why not use whole words?
+<span class="m">[assistant]</span><span class="cur">▍</span></pre>
+        <p class="readout">The markers are special tokens (Part 1, chapter 4). The model writes from the cursor until it decides the assistant’s turn is over.</p>
+      </div>
+      <p>A raw model trained only on internet text would continue this in odd ways: it might write the user’s next question too, or wander off into a forum thread. Making it reliably behave like a helpful assistant, and stop at the end of its turn, takes a second round of training. That is part 13.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">Knowing when to stop</p>
+      <h2>Stopping is just another guess</h2>
+      <p>The token list includes special tokens that are not text, such as one meaning “end of my turn”. The model is trained so that, when an answer is complete, that token gets the highest score. When it is picked, the loop stops. So stopping is not a separate decision; it is one more next-token guess.</p>
+      <div class="field-grid">
+        <div><b>The end token wins</b><span>The usual way. The answer feels finished, so “end of turn” is the most likely next token.</span></div>
+        <div><b>A length limit is reached</b><span>Apps set a maximum number of tokens per answer. Hit it and the answer is cut off, sometimes mid-sentence.</span></div>
+        <div><b>A stop phrase appears</b><span>Developers can name text that ends the answer early, such as a closing tag in a structured reply.</span></div>
+      </div>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">Different every time</p>
+      <h2>Why the same question gets different answers</h2>
+      <p>Ask the same thing twice and you often get two different answers. Now you can see why. The die is rolled at every token, and an early difference sends everything after it down a different path, because each guess builds on what came before.</p>
+      <figure>
+        <svg id="treeSvg" viewBox="0 0 800 330" role="img" aria-label="A tree of possible continuations: one early pick branches the answer into different directions, each with its own chance"></svg>
+      </figure>
+      <p>Across a 500-token answer the number of possible paths is astronomically large, so two identical answers are rare unless the temperature is set to 0. That variety is usually a feature, not a bug: it is why “try again” gives you a fresh attempt.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">The honest limitation</p>
+      <h2>Likely is not the same as true</h2>
+      <p>A chance measures how well a token fits <b>text like this</b>, based on everything the model learned. It is not a measure of truth. Usually the two line up, because true statements are common in good text. But where a wrong answer is common, or the model learned too little about something, a false token can get a high chance and be written just as confidently as a true one.</p>
+      <div class="box">
+        <small>After “The capital of Australia is” (example chances from a weak model)</small>
+        <div class="soft" id="ausRows"></div>
+        <p class="readout">“Sydney” fits the pattern “famous Australian city”, so a model that learned little can rank it close to the right answer.</p>
+      </div>
+      <p>The model has no separate fact-checking step inside this loop. Better training, larger models and tools like web search (part 16) all reduce the problem, and part 15 is entirely about why models make things up and how that is fought.</p>
+    </section>
+
+    <!-- 19 -->
+    <section class="panel">
+      <p class="kicker">How a guess is graded</p>
+      <h2>Good guessers give the real next word a high chance</h2>
+      <p>How do you measure whether a guesser is any good? Take some real text, hide each next token, and look at the chance the model gave to the token that really came next. A high chance is good. A tiny chance means the model was badly surprised.</p>
+      <div class="box">
+        <div class="pick" id="lPick" role="group" aria-label="Chance given to the real next word"><span>CHANCE THE MODEL GAVE THE REAL NEXT WORD</span>
+          <button type="button" data-v="0.9" aria-pressed="false">90%</button><button type="button" data-v="0.5" aria-pressed="true">50%</button><button type="button" data-v="0.25" aria-pressed="false">25%</button><button type="button" data-v="0.1" aria-pressed="false">10%</button><button type="button" data-v="0.01" aria-pressed="false">1%</button><button type="button" data-v="0.001" aria-pressed="false">0.1%</button>
+        </div>
+        <svg id="lSvg" viewBox="0 0 800 150" role="img" aria-label="A penalty bar that grows as the chance given to the real next word shrinks" style="display:block;width:100%;height:auto;margin-top:16px"></svg>
+        <p class="readout" id="lNote"></p>
+      </div>
+      <p>The penalty counts how many times you would have to halve 100% to reach the chance it gave, so it stays small for good guesses and grows fast for bad ones. Averaged over billions of tokens, it is called the <b>loss</b>, and it is the one number training tries to push down. Part 6 shows how: every learned number gets nudged in whichever direction makes this penalty a little smaller.</p>
+    </section>
+
+    <!-- 20 -->
+    <section class="panel">
+      <p class="kicker">The whole loop</p>
+      <h2>One token, start to finish</h2>
+      <p>Everything in this part, in the order it happens, every single time a token is written:</p>
+      <figure>
+        <svg viewBox="0 0 800 260" role="img" aria-label="Six steps per token: read the whole text, compute scores, turn them into chances, trim and adjust with temperature, roll the die, add the token and repeat">
+          <defs><marker id="ar20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
+          <g id="loopSteps"></g>
+          <path d="M700 150 V200 H100 V164" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar20)"/>
+          <text x="300" y="228" fill="#c3b8ff" font-size="15">repeat until the end-of-turn token is picked</text>
+        </svg>
+      </figure>
+      <p>Steps 3 to 5 take a tiny share of the time. Nearly all the work is step 2, the model’s huge calculation, and the rest of the series is about what happens inside it: how it learned its numbers (part 6), how words look at each other (part 7), and how the layers fit together (part 9).</p>
+    </section>
+
+    <!-- Field guide -->
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>Answers stream in word by word</b><span>Each token exists only after its own full pass, and is sent as soon as it does.</span><em>chapters 1, 12</em></div>
+        <div><b>“Try again” gives a new answer</b><span>The die is rolled at every token, and early differences grow.</span><em>chapters 5, 17</em></div>
+        <div><b>A creativity or temperature setting</b><span>It stretches or flattens the chances before each roll.</span><em>chapter 7</em></div>
+        <div><b>Long answers cost more than long questions</b><span>A question is read in one go; an answer is written one full pass per token.</span><em>chapter 12</em></div>
+        <div><b>Confident but wrong</b><span>A token’s chance measures fit, not truth, and there is no backspace.</span><em>chapters 13, 18</em></div>
+        <div><b>Answers cut off mid-sentence</b><span>The length limit was reached before the end-of-turn token won.</span><em>chapter 16</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Next-token prediction</b><span>The model’s one job: give every possible next token a chance.</span></div>
+        <div><b>Score (logit)</b><span>The raw number the model gives each token. Higher fits better.</span></div>
+        <div><b>Softmax</b><span>The recipe that turns scores into chances adding up to 100%.</span></div>
+        <div><b>Sampling</b><span>Picking the next token by rolling a die weighted by the chances.</span></div>
+        <div><b>Greedy</b><span>Always picking the top token. Same answer every time; prone to loops.</span></div>
+        <div><b>Temperature</b><span>A dial that sharpens (low) or flattens (high) the chances before picking.</span></div>
+        <div><b>Top-p, top-k</b><span>Rules that throw away unlikely tokens before the roll.</span></div>
+        <div><b>Context</b><span>All the text the model can see when it makes a guess.</span></div>
+        <div><b>End-of-turn token</b><span>A special token that means “I am done”. Picking it stops the loop.</span></div>
+        <div><b>n-gram model</b><span>An old guesser that only counts which words followed the last few words.</span></div>
+        <div><b>Loss</b><span>The average penalty for giving the real next token a low chance. Training lowers it.</span></div>
+        <div><b>Pass</b><span>One full run through the model, producing one token.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>Softmax, sampling, temperature, top-p and top-k. The 2019 study on repetitive text. API temperature ranges. Shannon’s 1948 word tables. Anthropic’s 2025 poetry-planning research.</span><em>papers, API documentation</em></div>
+        <div><b>Example</b><span>The scores and chances for “The cat sat on the”, the sample sentences, the Australia chances, the timings, and the branching tree.</span><em>made up to show the idea</em></div>
+        <div><b>Not public</b><span>The exact picking settings, trimming rules and end-of-turn handling inside Claude’s apps.</span><em>Anthropic has not said</em></div>
+      </div>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A chatbot writes by guessing one token, adding it, and guessing again. The job is simple; guessing well is what takes billions of numbers.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const C={gold:'#f5c76a',gold2:'#d9a94e',teal:'#76d5c1',coral:'#ff8059',purple:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#2f2d2a',line:'#57534f'};
+      const fmt=n=>n.toLocaleString('en-US');
+      const pct=p=>p>=.095?Math.round(p*100)+'%':p>=.0095?(p*100).toFixed(1)+'%':(p*100).toFixed(2)+'%';
+      const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+
+      // A control group: ordered choices become a stepped slider with clickable tick labels; data-kind="choice" stays as buttons.
+      function pick(id,cb){
+        const g=$(id),bs=[...g.querySelectorAll('button')];
+        if(g.dataset.kind==='choice'){
+          bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
+          return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+        }
+        const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
+        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        head.append(out);
+        Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
+        r.setAttribute('aria-label',g.getAttribute('aria-label'));
+        ticks.className='ticks';ticks.setAttribute('aria-hidden','true');
+        const ts=labs.map((l,i)=>{const t=document.createElement('span');t.textContent=l;t.style.left=(i/(n-1)*100)+'%';
+          t.className=i===0?'first':i===n-1?'last':'';t.addEventListener('click',()=>{r.value=i;sync();cb();});ticks.appendChild(t);return t;});
+        function sync(){const i=+r.value;out.textContent=labs[i];r.setAttribute('aria-valuetext',labs[i]);
+          r.style.setProperty('--fill',(i/(n-1)*100)+'%');ts.forEach((t,j)=>t.classList.toggle('on',j===i));}
+        r.addEventListener('input',()=>{sync();cb();});
+        g.classList.add('slide');g.replaceChildren(head,r,ticks);sync();
+        return ()=>vals[+r.value];
+      }
+
+      // Example candidates after "The cat sat on the" (made-up scores)
+      const W=[['mat',4.6],['floor',3.9],['couch',3.6],['bed',3.3],['roof',2.5],['keyboard',2.0],['table',1.4],['moon',0.2]];
+      const soft=(sc,t=1)=>{if(t===0){const m=Math.max(...sc);const c=sc.filter(s=>s===m).length;return sc.map(s=>s===m?1/c:0);}
+        const mx=Math.max(...sc),ex=sc.map(s=>Math.exp((s-mx)/t)),sum=ex.reduce((a,b)=>a+b,0);return ex.map(e=>e/sum);};
+      // One row per token: label, optional extra column, a chance bar (filled), optional outline marker
+      function rows(el,items,{max=1,extra,outline,dim}={}){
+        $(el).innerHTML=items.map((it,i)=>{const w=Math.min(100,it.p/max*100),o=outline?Math.min(100,outline[i]/max*100):null;
+          return `<div class="row${dim&&dim[i]?' off':''}${it.hi?' hi':''}"><span class="w">${esc(it.w)}</span>${extra?`<span class="x">${extra[i]}</span>`:''}<span class="bar"><i style="width:${w.toFixed(1)}%"></i>${o!=null?`<u style="width:${o.toFixed(1)}%"></u>`:''}</span><span class="v">${it.label??pct(it.p)}</span></div>`;}).join('');
+      }
+
+      /* 3: raw scores */
+      (()=>{const max=5;$('scoreRows').innerHTML=W.map(([w,s])=>`<div class="row"><span class="w">${w}</span><span class="bar"><i class="sc" style="width:${(s/max*100).toFixed(1)}%"></i></span><span class="v">${s.toFixed(1)}</span></div>`).join('')+
+        `<div class="row off"><span class="w">aardvark</span><span class="bar"><i class="sc neg" style="width:4%"></i></span><span class="v">−3.1</span></div>`;})();
+
+      /* 4: softmax with an adjustable score */
+      const moon=pick('moonPick',drawSoft);
+      function drawSoft(){
+        const sc=W.map(([w,s])=>w==='moon'?moon():s),p=soft(sc),ex=sc.map(s=>Math.exp(s)),tot=ex.reduce((a,b)=>a+b,0);
+        rows('softRows',W.map(([w],i)=>({w,p:p[i],hi:w==='moon'})),{max:Math.max(...p),extra:sc.map((s,i)=>`<b>${s.toFixed(1)}</b> → ${ex[i]>=100?fmt(Math.round(ex[i])):ex[i].toFixed(1)}`)});
+        $('softNote').textContent=`Total of the positive numbers: ${fmt(Math.round(tot))}. Each chance is its number divided by that total. “mat” now has ${pct(p[0])}; “moon” has ${pct(p[7])}.`;
+      }
+      drawSoft();
+
+      /* 5: the weighted die */
+      const P1=soft(W.map(w=>w[1])),tally=W.map(()=>0);let rolls=0,last=-1;
+      const roll=()=>{let r=Math.random(),i=0;for(;i<P1.length-1;i++){r-=P1[i];if(r<0)break;}tally[i]++;rolls++;last=i;};
+      function drawDie(){const mx=Math.max(...P1);
+        rows('dieRows',W.map(([w],i)=>({w,p:rolls?tally[i]/rolls:0,hi:i===last,label:rolls?`${tally[i]} of ${rolls}`:pct(P1[i])})),{max:mx*1.15,outline:P1.map(p=>p)});
+        $('dieNote').textContent=rolls?`Last pick: “${W[last][0]}”. ${rolls} pick${rolls>1?'s':''} so far.`:'Nothing picked yet. Outlines show each token’s chance.';}
+      $('roll1').onclick=()=>{roll();drawDie();};$('roll100').onclick=()=>{for(let k=0;k<100;k++)roll();drawDie();};$('rollReset').onclick=()=>{tally.fill(0);rolls=0;last=-1;drawDie();};drawDie();
+
+      /* 7: temperature */
+      const tP=pick('tPick',drawT);
+      const SAMPLES=[[0,'The cat sat on the mat. The cat sat on the mat. The cat sat on the mat.'],[0.5,'The cat sat on the mat and watched the rain.'],[1.2,'The cat sat on the couch, tail flicking, deciding whether to forgive us.'],[1.7,'The cat sat on the keyboard and typed a stern letter to the moon.'],[9,'The cat sat on the moon purple seventeen quietly invoice the.']];
+      function drawT(){const t=tP(),p=soft(W.map(w=>w[1]),t);rows('tRows',W.map(([w],i)=>({w,p:p[i]})),{max:1});
+        $('tSample').textContent=SAMPLES.find(([lim])=>t<=lim)[1];}
+      drawT();
+
+      /* 8: top-p */
+      const pP=pick('pPick',drawP);
+      function drawP(){const keep=pP(),p=P1;let acc=0,n=0;for(;n<p.length;n++){if(acc>=keep-1e-9)break;acc+=p[n];}
+        const kept=p.slice(0,n).reduce((a,b)=>a+b,0),q=p.map((v,i)=>i<n?v/kept:0);
+        rows('pRows',W.map(([w],i)=>({w,p:q[i],label:i<n?`${pct(p[i])} → ${pct(q[i])}`:'thrown away'})),{max:Math.max(...q),dim:q.map(v=>v===0)});
+        $('pNote').textContent=n===p.length?'Nothing is thrown away: every token keeps its chance.':`The top ${n} token${n>1?'s':''} reach ${pct(kept)} together, so the other ${p.length-n} here (and the 99,992 not shown) are thrown away before the roll.`;}
+      drawP();
+
+      /* 9: an n-gram word guesser trained on this page */
+      const corpus=[...document.querySelectorAll('main p, main li, main .field-grid span, main h2')].map(e=>{const t=e.textContent.trim();return /[.!?:]$/.test(t)?t:t+' .';}).join(' ');
+      const CW=(corpus.toLowerCase().replace(/’/g,"'").match(/[a-z0-9]+(?:['-][a-z0-9]+)*|[.,!?;:]/g)||[]);
+      $('corpusN').textContent='about '+fmt(Math.round(CW.filter(w=>/\w/.test(w)).length/100)*100);
+      const TAB=[new Map()];for(let n=1;n<=4;n++)TAB.push(new Map());
+      for(let i=0;i<CW.length;i++){const nx=CW[i];TAB[0].set('',TAB[0].get('')||new Map());const u=TAB[0].get('');u.set(nx,(u.get(nx)||0)+1);
+        for(let n=1;n<=4&&i-n>=0;n++){const key=CW.slice(i-n,i).join(' ');if(!TAB[n].has(key))TAB[n].set(key,new Map());const m=TAB[n].get(key);m.set(nx,(m.get(nx)||0)+1);}}
+      const CSTR=' '+CW.join(' ')+' ';
+      const gN=pick('gN',()=>{}),gT=pick('gT',()=>{});
+      let seq=[],startLen=0,lastStep=null;
+      const words=s=>(s.toLowerCase().replace(/’/g,"'").match(/[a-z0-9]+(?:['-][a-z0-9]+)*|[.,!?;:]/g)||[]);
+      function reset(){seq=words($('gStart').value).slice(0,12);startLen=seq.length;lastStep=null;drawGen();}
+      function step(){
+        const n=gN(),t=gT();let used=0,m=null;
+        for(let k=Math.min(n,seq.length);k>=1;k--){const key=seq.slice(-k).join(' ');if(TAB[k].has(key)){used=k;m=TAB[k].get(key);break;}}
+        if(!m)m=TAB[0].get('');
+        const cand=[...m].sort((a,b)=>b[1]-a[1]),tot=cand.reduce((a,c)=>a+c[1],0);
+        let w=cand.map(c=>t===0?0:Math.pow(c[1],1/t));
+        if(t===0)w=cand.map((c,i)=>i===0?1:0);
+        const ws=w.reduce((a,b)=>a+b,0);let r=Math.random()*ws,i=0;for(;i<w.length-1;i++){r-=w[i];if(r<0)break;}
+        seq.push(cand[i][0]);lastStep={cand,w,ws,pick:i,used,n,tot};
+      }
+      function longestCopy(){let best=0;for(let e=1;e<=seq.length;e++)for(let L=e;L>best;L--){if(CSTR.includes(' '+seq.slice(e-L,e).join(' ')+' ')){best=L;break;}}return best;}
+      function drawGen(){
+        $('gOut').innerHTML=seq.map((w,i)=>`<span class="${i<startLen?'st':i===seq.length-1&&lastStep?'nw':''}">${esc(w)}</span>`).join(' ');
+        const gen=seq.length-startLen;$('gLen').textContent=fmt(gen);$('gCopy').textContent=gen?longestCopy()+' words':'0';
+        if(!lastStep){$('gWhy').textContent='The last guess';$('gCand').innerHTML='<p class="readout">Press “Guess one word” to see what it considers.</p>';return;}
+        const L=lastStep,ctx=seq.slice(0,-1).slice(-L.used).join(' ');
+        $('gWhy').textContent=L.used===0?'The last guess: it had never seen these words, so it used how common each word is overall':
+          `The last guess: it looked at “${ctx}”${L.used<L.n?` (only ${L.used} word${L.used>1?'s':''}: the longer run never appeared on this page)`:''} and saw these next words`;
+        const top=L.cand.slice(0,6).map((c,i)=>({w:c[0],p:L.w[i]/L.ws,hi:i===L.pick,label:`${pct(L.w[i]/L.ws)} · seen ${c[1]}×`}));
+        if(L.pick>=6)top.push({w:L.cand[L.pick][0],p:L.w[L.pick]/L.ws,hi:true,label:`${pct(L.w[L.pick]/L.ws)} · seen ${L.cand[L.pick][1]}×`});
+        rows('gCand',top,{max:Math.max(...top.map(x=>x.p))});
+        if(L.cand.length>top.length)$('gCand').insertAdjacentHTML('beforeend',`<p class="readout">${fmt(L.cand.length-top.length)} other possible next words not shown.</p>`);
+      }
+      $('gStep').onclick=()=>{if(!seq.length)reset();step();drawGen();};
+      $('gRun').onclick=()=>{if(!seq.length)reset();for(let k=0;k<25&&seq.length<200;k++)step();drawGen();};
+      $('gReset').onclick=reset;$('gStart').addEventListener('change',reset);
+      $('gPre').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('gStart').value=b.dataset.t;reset();});
+      reset();
+
+      /* 12: laps */
+      (()=>{const g=$('lapBars').ownerSVGElement;for(let i=0;i<24;i++){S(g,'rect',{x:40+i*30,y:56,width:26,height:40,fill:C.coral,opacity:.35+.65*((i%2)?.7:1)});}
+        T(g,40,120,'pass 1',{fill:C.mut,'font-size':13});T(g,760,120,'pass 24 …',{fill:C.mut,'font-size':13,'text-anchor':'end'});
+        ['The','␣cat','␣sat','␣on','␣the','␣mat'].forEach((w,i)=>T(g,53+i*30,50,w,{fill:C.gold,'font-size':11,'text-anchor':'middle'}));})();
+
+      /* 17: branching tree */
+      (()=>{const svg=$('treeSvg');
+        const L1=[['mat','42%',70],['floor','21%',165],['couch','15%',260]];
+        const L2={mat:[['and watched the rain.','40%'],['. Then it slept.','25%']],floor:[['by the open door.','35%'],[', waiting for dinner.','30%']],couch:[['as if it owned it.','45%'],['and refused to move.','20%']]};
+        T(svg,40,174,'The cat sat on the',{fill:C.gold,'font-size':17});
+        L1.forEach(([w,p,y])=>{S(svg,'path',{d:`M190 168 C230 168 240 ${y} 280 ${y}`,fill:'none',stroke:C.purple,'stroke-width':2});
+          T(svg,288,y+6,w,{fill:C.gold,'font-size':17});T(svg,288,y+24,p,{fill:C.mut,'font-size':12});
+          L2[w].forEach(([t,q],j)=>{const y2=y-20+j*40;S(svg,'path',{d:`M350 ${y} C390 ${y} 400 ${y2} 440 ${y2}`,fill:'none',stroke:C.purple,'stroke-width':1.5,'stroke-opacity':.7});
+            T(svg,448,y2+5,t,{fill:C.fg,'font-size':15});T(svg,700,y2+5,q,{fill:C.mut,'font-size':12,'text-anchor':'end'});});});
+        T(svg,40,318,'Each fork is one roll of the die. The chances shown are example values.',{fill:C.mut,'font-size':14});})();
+
+      /* 18: Australia */
+      (()=>{const sc=[['Canberra',3.0],['Sydney',2.7],['Melbourne',1.6],['a',1.0],['located',0.6]],p=soft(sc.map(s=>s[1]));
+        rows('ausRows',sc.map(([w],i)=>({w,p:p[i],hi:w==='Sydney'})),{max:Math.max(...p)});})();
+
+      /* 19: loss */
+      const lP=pick('lPick',drawL);
+      function drawL(){const p=lP(),pen=-Math.log2(p),svg=$('lSvg');while(svg.firstChild)svg.removeChild(svg.firstChild);
+        T(svg,40,30,'PENALTY FOR THIS GUESS',{fill:C.mut,'font-size':14});
+        S(svg,'rect',{x:40,y:46,width:700,height:30,fill:'#2a2927'});S(svg,'rect',{x:40,y:46,width:Math.max(2,pen/10*700),height:30,fill:C.coral});
+        [0,2,4,6,8,10].forEach(v=>T(svg,40+v*70,100,String(v),{fill:C.mut,'font-size':13,'text-anchor':'middle'}));
+        T(svg,40,136,`${pen.toFixed(2)} points: about ${pen<1?'less than one halving':Math.round(pen)+' halving'+(Math.round(pen)===1?'':'s')} of 100% to reach ${pct(p)}`,{fill:C.fg,'font-size':16});
+        $('lNote').textContent=p>=.8?'A confident, correct guess costs almost nothing.':p>=.25?'A fair guess: the real word was a strong candidate.':p>=.05?'A so-so guess: the real word was in the running, but far from the favourite.':'A bad surprise: the model thought the real word very unlikely.';}
+      drawL();
+
+      /* 20: the loop */
+      (()=>{const g=$('loopSteps').ownerSVGElement,st=[['1','read all','the text so far',C.gold],['2','compute','a score per token',C.coral],['3','softmax','scores → chances',C.coral],['4','trim + temp','adjust chances',C.coral],['5','roll','pick one token',C.purple],['6','add it','to the end',C.gold]];
+        st.forEach(([n,a,b,c],i)=>{const x=40+i*122;S(g,'rect',{x,y:60,width:110,height:90,fill:c,opacity:.14,stroke:c});
+          T(g,x+12,84,n,{fill:c,'font-size':13,'font-family':'monospace'});T(g,x+12,110,a,{fill:C.fg,'font-size':16});T(g,x+12,132,b,{fill:C.mut,'font-size':12});
+          if(i<5)S(g,'path',{d:`M${x+112} 105 H${x+120}`,stroke:C.mut,'stroke-width':2});});
+        T(g,40,40,'EVERY TOKEN, EVERY TIME',{fill:C.mut,'font-size':14});})();
+    })();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
