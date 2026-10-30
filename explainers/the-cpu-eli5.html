@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The CPU: the chip in your laptop — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Series colour key:
+       gold = text and tokens, teal = stored numbers, orange = arithmetic, purple = connections, rose = the wrong intuition */
+    :root{--danger:#ec6a94}
+    .panel figure{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .c-tok{color:var(--gold)}.c-num{color:var(--teal)}.c-calc{color:var(--accent)}.c-link{color:var(--purple)}.c-bad{color:var(--danger)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    details.trace .table-wrap{margin:12px 0}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+
+    /* Sliders (stepped ones are built by pick()) */
+    .eli5-study-container input[type=range]{--c:var(--teal);-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:6px 0 0;padding:0!important;border:0!important;background:transparent!important;cursor:pointer}
+    .eli5-study-container input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(90deg,var(--c) var(--fill,0%),var(--border) var(--fill,0%))}
+    .eli5-study-container input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-track{height:4px;background:var(--border)}
+    .eli5-study-container input[type=range]::-moz-range-progress{height:4px;background:var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]:focus-visible{outline:none}
+    .eli5-study-container input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px var(--c),0 0 0 5px rgba(118,213,193,.25)}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--gold)!important;color:var(--gold)!important;background:rgba(245,199,106,.1)!important}
+    .pick.slide{display:block;max-width:520px;margin-top:20px}
+    .pick.slide>span{display:flex;gap:10px;align-items:baseline}
+    .pick.slide output{color:var(--teal);font-weight:600;letter-spacing:.02em}
+    .pick .ticks{position:relative;height:20px;margin:2px 9px 0;font:12px/1.4 var(--font-mono);color:var(--faint)}
+    .pick .ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;padding:2px 0;cursor:pointer}
+    .pick .ticks span.first{transform:translateX(-9px)}.pick .ticks span.last{transform:translateX(calc(9px - 100%))}
+    .pick .ticks span:hover{color:var(--fg)}.pick .ticks span.on{color:var(--teal)}
+
+    /* Number tiles and card grids (outlines, so an unfilled last row stays empty) */
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;padding:1px;margin:16px 0 22px}
+    .tiles div{background:var(--surface);outline:1px solid var(--border);padding:12px 14px}
+    .tiles b{display:block;font-size:22px;line-height:1.2;color:var(--fg);font-weight:600}
+    .tiles span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--muted)}
+    .tiles span .tag{display:inline-block;margin:0 0 0 2px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .field-grid div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+
+    /* Text pieces drawn as HTML so they wrap on any screen */
+    .box{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .box>small,.cap{display:block;font:12px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .cap{margin-top:14px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px 4px;margin-top:12px}
+    .tk{display:inline-flex;flex-direction:column;align-items:center;min-width:28px}
+    .tk b{display:block;padding:4px 7px;font:500 18px/1.3 var(--font-sans);white-space:pre;color:#20140a;background:var(--gold)}
+    .tk:nth-child(even) b{background:#d9a94e}
+    .tk b.raw{background:transparent;color:var(--gold);outline:1px dashed var(--gold);font:13px/1.9 var(--font-mono)}
+    .tk i{display:block;margin-top:3px;font:normal 11px/1.2 var(--font-mono);color:var(--teal)}
+    .sp{color:rgba(32,20,10,.45)}
+    .codes{display:flex;flex-wrap:wrap;gap:10px 6px;margin-top:12px}
+    .code{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:8px 6px;border:1px solid var(--border);background:var(--surface)}
+    .code b{font:500 26px/1.2 var(--font-sans);color:var(--gold)}
+    .code span{font:12px/1.5 var(--font-mono);color:var(--teal)}
+    .code em{font:normal 11px/1.4 var(--font-mono);color:var(--muted)}
+    .tok-in{width:100%;min-height:72px;margin-top:14px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
+    .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .presets button{min-height:34px;padding:5px 12px}
+    .bpe-words{display:grid;gap:10px;margin-top:12px}
+    .bpe-word{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+    .bpe-word>em{width:44px;font:normal 12px/1 var(--font-mono);color:var(--muted)}
+    .bpe-word .tk b{font-size:20px}
+    .tk b.hit{background:var(--accent)!important;color:#20120c}
+    .pairs{display:grid;grid-template-columns:auto auto;gap:2px 18px;justify-content:start;margin-top:10px;font:13px/1.7 var(--font-mono);color:var(--muted)}
+    .pairs .top{color:var(--accent)}
+    .vocab{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .vocab span{padding:1px 7px;font:13px/1.7 var(--font-mono);border:1px solid var(--border);color:var(--muted)}
+    .vocab span.new{border-color:var(--gold);color:var(--gold)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media (max-width:700px){.two{grid-template-columns:1fr}}
+    .bars{display:grid;grid-template-columns:minmax(0,180px) 1fr;gap:10px 14px;align-items:center;margin-top:14px;font-size:15px}
+    .bars .bl{color:var(--fg)}.bars .bl small{display:block;color:var(--muted);font:11px/1.4 var(--font-mono)}
+    .bars .bar{display:flex;align-items:center;gap:10px;font:13px var(--font-mono);color:var(--muted)}
+    .bars .bar i{display:block;height:22px;background:var(--gold);min-width:2px}
+    .status{font:12px/1.5 var(--font-mono);color:var(--muted);margin-top:10px}
+
+    /* Phones: wide drawings scroll sideways, edge to edge */
+    .panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure,.box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}.panel figure svg{min-width:540px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}.panel figure.fit svg{min-width:0}.panel figure.fit::after{display:none}.bars{grid-template-columns:minmax(0,120px) 1fr}}
+    /* Part 2: chance rows, the writing box, the chat transcript */
+    .soft,.rows{display:grid;gap:6px;margin-top:14px}
+    .row{display:grid;grid-template-columns:minmax(72px,110px) 1fr 64px;align-items:center;gap:10px;font-size:15px}
+    .row:has(.x){grid-template-columns:minmax(72px,110px) 130px 1fr 64px}
+    .wide .row{grid-template-columns:minmax(72px,110px) 1fr 132px}
+    .row .w{color:var(--gold);font-weight:500;overflow-wrap:anywhere}
+    .row .x{font:12px/1.3 var(--font-mono);color:var(--muted)}.row .x b{color:var(--accent);font-weight:600}
+    .row .bar{position:relative;height:20px;background:#1d1c1b}
+    .row .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);opacity:.75}
+    .row .bar i.neg{background:var(--danger)}
+    .row .bar u{position:absolute;left:0;top:-3px;bottom:-3px;border-right:2px solid var(--fg);text-decoration:none}
+    .row .v{font:13px var(--font-mono);color:var(--muted);text-align:right;white-space:nowrap}
+    .row.hi .w{color:var(--fg)}.row.hi .bar i{opacity:1}.row.hi{outline:1px solid var(--accent);outline-offset:3px}
+    .row.off{opacity:.4}
+    .sample{margin:6px 0 0;font-size:18px;color:var(--gold)!important}
+    .start-in{display:block;width:100%;max-width:520px;margin-top:8px;padding:10px 12px;font:15px var(--font-mono)}
+    .gen{margin-top:16px;padding:14px 16px;min-height:72px;border:1px solid var(--border);background:var(--surface);font-size:18px;line-height:1.8;color:var(--fg);overflow-wrap:anywhere}
+    .gen .st{color:var(--gold)}.gen .nw{background:var(--accent);color:#20120c;padding:0 4px}
+    .doc{margin-top:12px;padding:14px 16px;background:#0c0f12;border:1px solid var(--border);font:14px/1.7 var(--font-mono);color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+    .doc .m{color:var(--purple)}.doc .cur{color:var(--accent);animation:blink 1s steps(2) infinite}
+    @keyframes blink{50%{opacity:0}}
+    @media (prefers-reduced-motion:reduce){.doc .cur{animation:none}}
+    @media (max-width:600px){.row:has(.x){grid-template-columns:minmax(64px,84px) 1fr 58px}.row .x{grid-column:1/-1;order:9}.row{grid-template-columns:minmax(64px,84px) 1fr 58px}.wide .row{grid-template-columns:minmax(64px,84px) 1fr 112px}}
+    /* Part 3: switches, bits, the adder grid */
+    .bits{display:flex;flex-wrap:wrap;gap:8px 6px;margin-top:14px}
+    .bit{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .eli5-study-container .bit button{width:48px;height:60px;padding:0;font:600 22px var(--font-mono)}
+    .eli5-study-container .bit button[aria-pressed=true],.eli5-study-container .sw[aria-pressed=true]{background:var(--teal)!important;color:#0d2622!important;border-color:var(--teal)!important}
+    .bit small{font:11px var(--font-mono);color:var(--muted)}
+    .big{margin-top:14px;font:600 44px/1.1 var(--font-sans);color:var(--fg)}.big small{font:400 16px var(--font-mono);color:var(--muted);margin-left:8px}
+    .toggles{display:flex;flex-wrap:wrap;gap:10px}
+    .eli5-study-container .sw{min-width:110px;min-height:42px;font:600 15px var(--font-mono)}
+    .adder{display:grid;grid-template-columns:86px repeat(5,44px);gap:6px;margin-top:20px;align-items:center}
+    .adder .al{font:13px var(--font-mono);color:var(--muted)}
+    .adder .c{display:grid;place-items:center;height:40px;border:1px solid var(--border);font:600 18px var(--font-mono);color:var(--muted)}
+    .adder .c.on{background:var(--teal);border-color:var(--teal);color:#0d2622}
+    .adder .c.carry{height:26px;font-size:13px;border-style:dashed}.adder .c.carry.on{background:var(--accent);border-color:var(--accent);color:#20120c}
+    .adder .c.sum{border-color:var(--gold)}.adder .c.sum.on{background:var(--gold);border-color:var(--gold);color:#20140a}
+    .adder .c.ghost{border:0}
+    .adder .pl{text-align:center;font:11px var(--font-mono);color:var(--faint)}
+    @media (max-width:420px){.eli5-study-container .bit button{width:36px;height:52px;font-size:18px}.adder{grid-template-columns:70px repeat(5,38px)}}
+      /* Drawings inside boxes keep readable text on phones by scrolling sideways, like figures */
+    .sx{overflow-x:auto;margin-top:16px;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    .sx>svg{margin-top:0!important}
+    @media (max-width:700px){.sx>svg{min-width:540px}.sx::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+    /* Part 4: instruction encoding, the tiny CPU, the area bar */
+    .enc{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;padding:1px;margin-top:12px}
+    .enc>div{background:var(--surface);outline:1px solid var(--border);padding:14px 16px}
+    .enc b{display:block;margin:6px 0 4px;font:600 20px/1.3 var(--font-mono);color:var(--gold)}
+    .enc .nums i{display:inline-block;min-width:30px;margin-right:4px;padding:2px 6px;font-style:normal;text-align:center;background:var(--teal);color:#0d2622}
+    .enc .bin{font-size:13px;color:var(--teal);overflow-wrap:anywhere}
+    .enc .hint{display:block;font-size:13px;color:var(--muted)}
+    @media (max-width:700px){.enc{grid-template-columns:1fr}}
+    .cpu-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:22px}
+    @media (max-width:700px){.cpu-grid{grid-template-columns:1fr}}
+    .prog{display:grid;gap:4px;margin-top:8px}
+    .prog .pl{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);background:var(--surface);font:14px var(--font-mono)}
+    .prog .n{color:var(--faint)}.prog .t{color:var(--gold)}.prog .c{color:var(--teal);font-size:12px}
+    .prog .pl.cur{border-color:var(--gold);box-shadow:inset 4px 0 0 var(--gold)}
+    .prog .pl.cur.ph1{border-color:var(--purple);box-shadow:inset 4px 0 0 var(--purple)}
+    .prog .pl.cur.ph2{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+    .regs{display:flex;gap:8px;margin-top:8px}
+    .reg{flex:1;padding:10px 12px;border:1px solid var(--border);background:var(--surface)}
+    .reg span{display:block;font:12px var(--font-mono);color:var(--muted)}.reg b{font:600 26px var(--font-mono);color:var(--teal)}
+    .reg.ch{border-color:var(--accent);background:rgba(255,128,89,.12)}
+    .mem{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+    .mem span{display:flex;flex-direction:column;align-items:center;padding:4px 0;border:1px solid var(--border);font:600 15px var(--font-mono);color:var(--muted)}
+    .mem small{font:10px var(--font-mono);color:var(--faint)}
+    .mem span.set{color:var(--teal);border-color:var(--teal)}.mem span.ch{background:rgba(255,128,89,.12);border-color:var(--accent)}
+    .phase{margin:16px 0 0;padding:12px 14px;border-left:3px solid var(--gold);background:rgba(255,255,255,.03);font-size:16px;color:var(--fg)}
+    .phase b{display:block;font:12px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+    .eli5-study-container button:disabled{opacity:.4;cursor:default}
+    .area{display:flex;height:34px;margin-top:14px;border:1px solid var(--border)}
+    .area i{display:block;height:100%;opacity:.85}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 4: how a CPU follows instructions, and why it spends most of its effort waiting">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/the-cpu-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="The CPU: the chip in your laptop">
+<meta property="og:description" content="Part 4: how a CPU follows instructions, and why it spends most of its effort waiting">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/the-cpu-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/the-cpu-eli5.png?v=2ad15b83">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The CPU: the chip in your laptop">
+<meta property="article:published_time" content="2026-10-30">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="the-cpu-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>The CPU: the chip in your laptop</h1>
+      <p class="lede">Part 3 built adders and multipliers out of switches. But your laptop does not only add: it runs a browser, plays video, checks spelling and a thousand other jobs, all on the same chip. The chip that makes that possible is the CPU, the computer’s main brain. This part shows how it follows instructions, why it spends most of its effort waiting, and why it is brilliant at everyday work yet only so-so at AI.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on Part 3: switches, adders, the clock and memory. Facts carry a tag: <span class="tag">public</span> means a published spec sheet, paper or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:var(--gold)"></i>instructions, inputs and outputs</span>
+        <span><i style="background:var(--teal)"></i>stored values and memory</span>
+        <span><i style="background:var(--accent)"></i>arithmetic</span>
+        <span><i style="background:var(--purple)"></i>connections and jumps</span>
+        <span><i style="background:var(--danger)"></i>the wrong intuition, waiting</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>One chip, any job</h2>
+      <p>An adder can only add. To make one chip do any job at all, you need something that reads a list of steps and carries them out one by one: “fetch this number, add that one, if the result is zero go back three steps”. Change the list and the same chip does a completely different job. That list is a <b>program</b>, and the part of the chip that follows it is the <b>CPU</b>, short for central processing unit.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Different programs, a browser, a game and a spreadsheet, all run on the same CPU, which follows each one's list of steps">
+          <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
+          <g font-size="16">
+            <rect x="40" y="30" width="170" height="44" fill="#f5c76a" opacity=".15" stroke="#f5c76a"/><text x="56" y="58" fill="#f5c76a">web browser</text>
+            <rect x="40" y="96" width="170" height="44" fill="#f5c76a" opacity=".15" stroke="#f5c76a"/><text x="56" y="124" fill="#f5c76a">video game</text>
+            <rect x="40" y="162" width="170" height="44" fill="#f5c76a" opacity=".15" stroke="#f5c76a"/><text x="56" y="190" fill="#f5c76a">spreadsheet</text>
+          </g>
+          <path d="M215 52 C300 52 300 118 380 118" fill="none" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar1)"/>
+          <path d="M215 118 H380" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar1)"/>
+          <path d="M215 184 C300 184 300 118 380 118" fill="none" stroke="#a5a29c" stroke-width="2" marker-end="url(#ar1)"/>
+          <rect x="390" y="70" width="170" height="96" fill="#ff8059" opacity=".18" stroke="#ff8059"/>
+          <text x="475" y="112" text-anchor="middle" fill="#f1eee8" font-size="20">the CPU</text>
+          <text x="475" y="138" text-anchor="middle" fill="#ff8059" font-size="14">follows any list of steps</text>
+          <text x="590" y="108" fill="#a5a29c" font-size="15">same switches,</text>
+          <text x="590" y="130" fill="#a5a29c" font-size="15">different program</text>
+          <text x="40" y="238" fill="#f1eee8" font-size="17">The program decides what the chip does. The chip just follows steps, very fast.</text>
+        </svg>
+      </figure>
+      <p>This idea, that the program is just data the machine reads like any other numbers, was laid out in 1945 and is still how every computer works <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>A chef following a recipe</h2>
+      <p>Picture a chef with a recipe book. The chef reads one step, does it, and moves to the next. A few ingredients are in the chef’s hands. More are on the counter. Most are in the pantry, and some are in a warehouse across town. The chef is incredibly fast with a knife, but every trip to fetch an ingredient takes time.</p>
+      <figure>
+        <svg viewBox="0 0 800 280" role="img" aria-label="A chef reads recipe steps one by one, with ingredients in hand, on the counter, in the pantry and in a distant warehouse, mapped onto a CPU core, registers, caches and memory">
+          <g font-size="16">
+            <text x="40" y="34" fill="#a5a29c" font-size="14">THE KITCHEN</text><text x="430" y="34" fill="#a5a29c" font-size="14">THE CPU</text>
+            <g id="mapRows"></g>
+          </g>
+        </svg>
+      </figure>
+      <p><b>Mapping it back:</b> the recipe is the program, each step is an <b>instruction</b>, the chef is a <b>core</b>, the hands are <b>registers</b>, the counter and pantry are <b>caches</b>, and the warehouse is the main memory, the RAM. <b>Where the analogy breaks:</b> a real chef could never do three billion steps a second, and never has to wait hundreds of steps for an ingredient. A CPU does both, which is what most of this part is about.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">Instructions</p>
+      <h2>A program is a list of numbered steps</h2>
+      <p>A CPU understands only a small, fixed set of very simple instructions: put a number in a register, add two registers, copy a value to memory, jump to another step. Each instruction is stored as numbers, like everything else (Part 3, chapter 3). The first number says which kind of instruction it is; the rest say which registers or values to use.</p>
+      <div class="box">
+        <small>One instruction, as you would write it and as the chip stores it</small>
+        <div class="enc">
+          <div><span class="cap">Written</span><b class="ins">ADD A, B</b><span class="hint">add box B into box A</span></div>
+          <div><span class="cap">Stored</span><b class="nums"><i>2</i><i>0</i><i>1</i></b><span class="hint">2 means “add”, 0 means A, 1 means B</span></div>
+          <div><span class="cap">In switches</span><b class="bin">00000010 00000000 00000001</b><span class="hint">the same three numbers in binary</span></div>
+        </div>
+      </div>
+      <p>Programmers rarely write instructions directly. They write in languages like Python or JavaScript, and other programs translate that into millions of these tiny steps. A single click in a web browser can run hundreds of millions of instructions.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>A tiny CPU you can step through</h2>
+      <p>Here is a complete program, seven instructions long, that adds up 5 + 4 + 3 + 2 + 1. Every instruction goes through the same three phases. <b>Fetch</b>: read the instruction the program counter points at. <b>Decode</b>: work out what it means. <b>Execute</b>: do it. Press “Next step” and watch:</p>
+      <div class="box cpu">
+        <div class="cpu-grid">
+          <div>
+            <span class="cap">The program, stored in memory</span>
+            <div class="prog" id="prog"></div>
+          </div>
+          <div>
+            <span class="cap">Registers: the core’s hands</span>
+            <div class="regs" id="regs"></div>
+            <span class="cap">Memory cells</span>
+            <div class="mem" id="mem"></div>
+            <div class="tiles">
+              <div><b id="cTicks">0</b><span>steps taken</span></div>
+              <div><b id="cDone">0</b><span>instructions finished</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="phase" id="phase"></p>
+        <div class="presets"><button type="button" id="cStep">Next step</button><button type="button" class="secondary" id="cIns">Next instruction</button><button type="button" class="secondary" id="cRun">Run to the end</button><button type="button" class="secondary" id="cReset">Start over</button></div>
+      </div>
+      <p>The whole job takes 19 instructions and 57 steps, because instructions 2 to 4 repeat five times. A real CPU runs exactly this kind of loop, only with billions of steps per second and a few hundred different kinds of instruction.</p>
+      <details class="trace"><summary>Go deeper: what real instruction sets look like</summary>
+        <p><b>Two big families.</b> Most laptops and servers use instructions from the x86 family (Intel and AMD). Phones, Apple’s Macs and many newer servers use the Arm family <span class="tag">public</span>. A program translated for one family will not run directly on the other, which is why apps sometimes come in two versions.</p>
+        <p><b>The program counter.</b> The box called PC in the simulator is real: every core has one register that holds the address of the next instruction. A jump is nothing more than writing a new number into it.</p>
+      </details>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Registers</p>
+      <h2>A few boxes right next to the arithmetic</h2>
+      <p>The adders can only work on numbers that are right next to them. Those numbers sit in <b>registers</b>: a small set of storage boxes inside the core, built from the switch loops of Part 3, chapter 10. A modern core has a few dozen of them for ordinary numbers <span class="tag">public</span>. Reading a register takes less than one clock tick.</p>
+      <p>That is fast, but there are very few. Everything else, every web page, photo and program, lives further away, and has to be brought in before the core can touch it. How far away, and how long that takes, is the single most important fact about a CPU.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">Decisions</p>
+      <h2>Jumps make loops and choices</h2>
+      <p>Instruction 4 in the tiny CPU is the clever one. It says: if B is not zero yet, set the program counter back to step 2. That one jump turns a straight list into a <b>loop</b>. A jump that depends on a value is also how a program makes a <b>choice</b>: if the password is right go here, otherwise go there.</p>
+      <figure>
+        <svg viewBox="0 0 800 230" role="img" aria-label="Without jumps a program runs straight down once; with a conditional jump it can loop back or skip ahead depending on a value">
+          <defs><marker id="ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#c3b8ff"/></marker></defs>
+          <g font-size="15">
+            <text x="40" y="30" fill="#a5a29c" font-size="14">STRAIGHT LINE</text>
+            <g id="straight"></g>
+            <text x="430" y="30" fill="#a5a29c" font-size="14">WITH A JUMP</text>
+            <g id="looped"></g>
+          </g>
+        </svg>
+      </figure>
+      <p>Loops and choices are what make a CPU able to run any program at all. They are also what makes its job hard: until the value is known, the CPU does not know which instruction comes next. Chapter 10 shows how it copes.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The real problem</p>
+      <h2>Memory is very, very far away</h2>
+      <p>Main memory, the RAM, sits on separate chips a few centimetres from the CPU. Fetching one number from it takes around 80 to 100 billionths of a second <span class="tag">public</span>. That sounds instant, but at 3 GHz it is about 300 clock ticks: 300 steps the core could have taken. To feel the gap, pretend one tick lasts one second:</p>
+      <div class="box">
+        <div class="pick" id="lat" role="group" aria-label="Where the number is"><span>THE NUMBER IS IN</span>
+          <button type="button" data-v="0" aria-pressed="true">reg</button><button type="button" data-v="1">L1</button><button type="button" data-v="2">L2</button><button type="button" data-v="3">L3</button><button type="button" data-v="4">RAM</button><button type="button" data-v="5">SSD</button><button type="button" data-v="6">disk</button><button type="button" data-v="7">web</button>
+        </div>
+        <div class="sx"><svg id="latSvg" viewBox="0 0 800 220" role="img" aria-label="Bars on a ten-times-per-gridline scale showing how long a fetch takes from each kind of storage, if one clock tick took one second" style="display:block;width:100%;height:auto;margin-top:16px"></svg></div>
+        <div class="tiles">
+          <div><b id="latH"></b><span>if one tick took one second</span></div>
+          <div><b id="latR"></b><span>real time</span></div>
+          <div><b id="latK"></b><span>in the kitchen</span></div>
+        </div>
+      </div>
+      <p>On that scale, one trip to RAM is a five-minute walk for a number the core could add in one second. A core that waited for memory on every step would spend over 99% of its life standing still. Real CPUs avoid that with two tricks: keeping copies close by (chapter 8), and finding other work to do while they wait (chapter 11).</p>
+      <details class="trace"><summary>Go deeper: where these times come from</summary>
+        <p>The times are typical, rounded values for a modern desktop chip at 3 GHz <span class="tag">example</span>: about 1 ns for the first-level cache, 4 ns for the second, 15 ns for the third, 90 ns for RAM, 80 microseconds for a fast SSD, 8 milliseconds for a spinning hard disk, and 150 milliseconds for a round trip across an ocean. Real chips vary, but the ladder, each rung roughly ten times slower, holds everywhere.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Caches</p>
+      <h2>Keep copies close to the stove</h2>
+      <p>A sensible chef keeps the ingredients used most often on the counter, not in the warehouse. A CPU does the same with <b>caches</b>: small, fast memories built right onto the chip, holding copies of whatever was used recently. When the core needs a number, it checks the nearest, smallest cache first, then the next, and only goes to RAM if none of them has it.</p>
+      <figure>
+        <svg viewBox="0 0 800 280" role="img" aria-label="Nested caches around a core: a tiny fast L1, a larger L2, a large shared L3, then RAM off the chip; nearer means smaller and faster">
+          <rect x="40" y="40" width="460" height="200" fill="#76d5c1" opacity=".05" stroke="#76d5c1" stroke-dasharray="5 4"/>
+          <text x="54" y="62" fill="#76d5c1" font-size="14">L3 · shared by all cores · tens of MB · ~15 ns</text>
+          <rect x="70" y="80" width="300" height="140" fill="#76d5c1" opacity=".08" stroke="#76d5c1"/>
+          <text x="84" y="102" fill="#76d5c1" font-size="14">L2 · per core · about 1 to 3 MB · ~4 ns</text>
+          <rect x="100" y="118" width="170" height="86" fill="#76d5c1" opacity=".14" stroke="#76d5c1"/>
+          <text x="112" y="138" fill="#76d5c1" font-size="13">L1 · tens of KB · ~1 ns</text>
+          <rect x="130" y="150" width="110" height="42" fill="#ff8059" opacity=".3" stroke="#ff8059"/>
+          <text x="185" y="176" text-anchor="middle" fill="#f1eee8" font-size="15">core</text>
+          <rect x="560" y="80" width="200" height="140" fill="#2f2d2a" stroke="#57534f"/>
+          <text x="660" y="140" text-anchor="middle" fill="#f1eee8" font-size="17">RAM</text>
+          <text x="660" y="164" text-anchor="middle" fill="#a5a29c" font-size="14">many GB · ~90 ns</text>
+          <path d="M500 150 H560" stroke="#c3b8ff" stroke-width="3"/>
+          <text x="512" y="140" fill="#c3b8ff" font-size="12">off the chip</text>
+          <text x="40" y="268" fill="#f1eee8" font-size="16">Nearer is smaller and faster. Sizes and times are typical <tspan fill="#a5a29c">(example)</tspan>.</text>
+        </svg>
+      </figure>
+      <p>This works because programs are predictable in one way: they use the same few numbers, and numbers stored next to each other, over and over. In everyday programs the first cache already has the right number more than 90% of the time <span class="tag">example</span>. Caches are why your laptop feels fast even though its memory is hundreds of ticks away.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">An assembly line</p>
+      <h2>Start the next instruction before this one finishes</h2>
+      <p>In the tiny CPU, each instruction did fetch, decode and execute before the next one began. Real cores work like an assembly line instead: while one instruction is being executed, the next is being decoded and the one after that fetched. Each instruction still takes several steps, but a new one finishes on nearly every tick.</p>
+      <figure>
+        <svg id="pipeSvg" viewBox="0 0 800 270" role="img" aria-label="Without a pipeline, each instruction finishes before the next starts; with a pipeline, fetch, decode and execute overlap, so one instruction finishes per tick"></svg>
+      </figure>
+      <p>This overlap is called <b>pipelining</b>. Real pipelines have ten to twenty stages <span class="tag">public</span>, which is how a core can finish billions of instructions a second without each one being done in a single tick.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">Guessing</p>
+      <h2>At every fork, guess which way</h2>
+      <p>The assembly line has a problem with jumps. The line must start fetching the next instructions before the jump has even been worked out. So which ones? The CPU guesses, using a small memory of what this jump did the last few times. A loop that ran a thousand times will probably run again.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="At a conditional jump the CPU guesses a path and keeps working; a right guess costs nothing, a wrong guess throws away about fifteen to twenty ticks of work">
+          <defs><marker id="ar10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#c3b8ff"/></marker></defs>
+          <rect x="40" y="100" width="130" height="50" fill="#c3b8ff" opacity=".15" stroke="#c3b8ff"/><text x="105" y="131" text-anchor="middle" fill="#f1eee8" font-size="16">a jump: if…</text>
+          <path d="M170 125 C230 125 240 60 300 60" fill="none" stroke="#76d5c1" stroke-width="3" marker-end="url(#ar10)"/>
+          <path d="M170 125 C230 125 240 190 300 190" fill="none" stroke="#57534f" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ar10)"/>
+          <text x="310" y="54" fill="#76d5c1" font-size="16">guessed this way, kept working</text>
+          <text x="310" y="78" fill="#a5a29c" font-size="14">right: no time lost at all</text>
+          <text x="310" y="184" fill="#ec6a94" font-size="16">wrong: throw that work away</text>
+          <text x="310" y="208" fill="#a5a29c" font-size="14">start again down the other road, about 15 to 20 ticks lost</text>
+          <text x="40" y="240" fill="#f1eee8" font-size="16">Modern guessers are right far more than 95% of the time on everyday programs.</text>
+        </svg>
+      </figure>
+      <p>This is called <b>branch prediction</b>, and modern predictors are remarkably good <span class="tag">public</span>. A wrong guess costs about 15 to 20 ticks of thrown-away work <span class="tag">public</span>, so a program with jumps that are truly random, which no guesser can predict, can run several times slower than the same work without them.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">Never idle</p>
+      <h2>Do something else while you wait</h2>
+      <p>A good chef who is waiting for the oven chops the onions for the next dish. Modern cores do the same. They look a few hundred instructions ahead, find ones that do not depend on the number still being fetched, and do those first. Results are then put back in the right order so the program never notices.</p>
+      <figure>
+        <svg viewBox="0 0 800 240" role="img" aria-label="Instruction 2 waits for memory; instructions 3 and 4 do not depend on it, so the core runs them first and keeps busy">
+          <g font-size="15">
+            <text x="40" y="30" fill="#a5a29c" font-size="14">IN THE PROGRAM’S ORDER</text>
+            <rect x="40" y="44" width="170" height="36" fill="#f5c76a" opacity=".15" stroke="#f5c76a"/><text x="52" y="68" fill="#f5c76a">1 · load x from RAM</text>
+            <rect x="40" y="88" width="170" height="36" fill="#ec6a94" opacity=".15" stroke="#ec6a94"/><text x="52" y="112" fill="#ec6a94">2 · add 1 to x (waits)</text>
+            <rect x="40" y="132" width="170" height="36" fill="#f5c76a" opacity=".15" stroke="#f5c76a"/><text x="52" y="156" fill="#f5c76a">3 · y = y × 2</text>
+            <rect x="40" y="176" width="170" height="36" fill="#f5c76a" opacity=".15" stroke="#f5c76a"/><text x="52" y="200" fill="#f5c76a">4 · z = z + 5</text>
+            <text x="300" y="30" fill="#a5a29c" font-size="14">WHAT THE CORE ACTUALLY DOES, TICK BY TICK</text>
+            <g id="oooBars"></g>
+          </g>
+        </svg>
+      </figure>
+      <p>This is called <b>out-of-order execution</b>. Combined with having several adders and other units side by side, a modern core can finish four to eight instructions in a single tick when it finds enough independent work <span class="tag">public</span>. Every bit of this cleverness takes switches, though, and that is the gotcha in chapter 12.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>Most of a CPU is not doing sums</h2>
+      <p>You might expect a chip that “computes” to be mostly arithmetic. A CPU is the opposite. The adders and multipliers are a small part of each core. Most of the space goes to caches, the guessing machinery, the reordering machinery and the control that keeps it all straight.</p>
+      <div class="box">
+        <small>Where a CPU core’s space goes, roughly (example, varies a lot by design)</small>
+        <div class="area" id="areaBar"></div>
+        <div class="soft wide" id="areaRows"></div>
+        <p class="readout">“Control” covers fetching, decoding, guessing at jumps and reordering. “Arithmetic” is the adders and multipliers. “The rest” is wiring and connections.</p>
+      </div>
+      <p>That is a deliberate trade. Everyday programs are full of jumps, waits and unpredictable steps, so it pays to spend switches on never standing still. But an AI model is the opposite kind of work: the same multiply-and-add, billions of times, in a completely predictable order. For that, a CPU’s cleverness is mostly wasted space. Part 5 shows the chip that makes the other trade.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">Many cores</p>
+      <h2>More chefs in the same kitchen</h2>
+      <p>Part 3 showed that clock speeds stopped rising around 2005 (Part 3, chapter 16). Since then, chips have grown by adding more complete cores, each with its own registers, caches and cleverness, side by side on one chip. Your laptop probably has around 8 to 16 cores. The largest server chips have nearly 200 <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="coresSvg" viewBox="0 0 800 220" role="img" aria-label="One core in 2004, a laptop chip with eight to sixteen cores today, and a server chip with nearly two hundred cores"></svg>
+      </figure>
+      <p>Each core runs its own list of instructions, so a computer can run several programs truly at the same time, or split one big job into pieces. That last part sounds like an easy win. Chapter 14 shows why it often is not.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">The limit</p>
+      <h2>More cores do not always mean faster</h2>
+      <p>If ten cooks share a recipe, chopping can be split between them, but the steps that must happen in order, like waiting for the cake to bake, cannot. However many cooks you hire, the in-order part takes just as long. In 1967 Gene Amdahl turned this into a simple rule <span class="tag">public</span>. Set how much of a job can be split, and how many cores share it:</p>
+      <div class="box">
+        <div class="pick" id="amP" role="group" aria-label="Share of the job that can be split"><span>SHARE OF THE JOB THAT CAN BE SPLIT</span>
+          <button type="button" data-v="0.5">50%</button><button type="button" data-v="0.75">75%</button><button type="button" data-v="0.9" aria-pressed="true">90%</button><button type="button" data-v="0.95">95%</button><button type="button" data-v="0.99">99%</button><button type="button" data-v="0.9999">99.99%</button>
+        </div>
+        <div class="pick" id="amN" role="group" aria-label="Number of cores"><span>CORES</span>
+          <button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="4">4</button><button type="button" data-v="8">8</button><button type="button" data-v="16" aria-pressed="true">16</button><button type="button" data-v="64">64</button><button type="button" data-v="1000">1,000</button><button type="button" data-v="10000">10,000</button>
+        </div>
+        <div class="sx"><svg id="amSvg" viewBox="0 0 800 260" role="img" aria-label="Speed-up against the number of cores: it rises at first, then flattens at a ceiling set by the part of the job that cannot be split"></svg></div>
+        <div class="tiles">
+          <div><b id="amS"></b><span>faster than one core</span></div>
+          <div><b id="amM"></b><span>the ceiling, even with endless cores</span></div>
+        </div>
+      </div>
+      <p>With 90% splittable, no number of cores can make the job more than 10 times faster. That is why everyday programs rarely use many cores well. But some jobs are 99.99% splittable: every pixel of a game frame, or every multiply in an AI model, can be done independently. Slide to 99.99% and 10,000 cores, and you are looking at the reason GPUs exist.</p>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">One step further</p>
+      <h2>One instruction, many numbers</h2>
+      <p>CPU makers saw this coming. Modern cores have special wide instructions that do the same sum on a whole row of numbers at once: one instruction adds eight pairs, or sixteen. It is like a chef with a knife that cuts eight carrots in one stroke.</p>
+      <figure>
+        <svg viewBox="0 0 800 260" role="img" aria-label="An ordinary instruction adds one pair of numbers; a wide instruction adds eight pairs in the same tick">
+          <text x="40" y="34" fill="#a5a29c" font-size="14">ORDINARY: ONE PAIR PER INSTRUCTION</text>
+          <g id="simd1"></g>
+          <text x="40" y="134" fill="#a5a29c" font-size="14">WIDE: EIGHT PAIRS, SAME INSTRUCTION, SAME TICK</text>
+          <g id="simd8"></g>
+          <text x="40" y="250" fill="#f1eee8" font-size="16">Same work, a fraction of the instructions. Ideal for long rows of numbers.</text>
+        </svg>
+      </figure>
+      <p>This is called <b>SIMD</b>: single instruction, multiple data. Intel’s widest version works on 512 bits at a time, sixteen ordinary-sized numbers per instruction <span class="tag">public</span>. It is the CPU borrowing a GPU’s main idea, and it is why CPUs can run small AI models at all.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">Back to AI</p>
+      <h2>How fast is a CPU at AI maths?</h2>
+      <p>Put it together: cores, ticks per second, and how many numbers each instruction handles. Part 3, chapter 18, showed that an 8-billion-number model needs about 16 billion sums per token. How many tokens a second could your laptop’s CPU manage, if arithmetic were the only limit?</p>
+      <div class="box">
+        <div class="pick" id="pC" role="group" aria-label="Cores"><span>CORES</span><button type="button" data-v="2">2</button><button type="button" data-v="4">4</button><button type="button" data-v="8" aria-pressed="true">8</button><button type="button" data-v="16">16</button></div>
+        <div class="pick" id="pG" role="group" aria-label="Clock speed"><span>CLOCK SPEED</span><button type="button" data-v="2">2 GHz</button><button type="button" data-v="3" aria-pressed="true">3 GHz</button><button type="button" data-v="4">4 GHz</button><button type="button" data-v="5">5 GHz</button></div>
+        <div class="pick" id="pW" role="group" aria-label="Numbers per instruction"><span>NUMBERS PER INSTRUCTION</span><button type="button" data-v="1">1</button><button type="button" data-v="4">4</button><button type="button" data-v="8" aria-pressed="true">8</button><button type="button" data-v="16">16</button></div>
+        <div class="tiles">
+          <div><b id="pS"></b><span>sums per second</span></div>
+          <div><b id="pT"></b><span>tokens per second, 8-billion-number model, arithmetic only</span></div>
+          <div><b id="pX"></b><span>slower than an AI chip doing a thousand trillion sums per second <span class="tag">example</span></span></div>
+        </div>
+      </div>
+      <p>This assumes one multiply-and-add per number per tick on every core, a simplification <span class="tag">example</span>. In practice a laptop CPU running an 8-billion-number model writes only a handful to a couple of dozen tokens a second, because, as Part 8 will show, feeding the numbers in from memory is slower still. Usable for a small model on your own machine; far too slow to serve millions of people.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">What it is for</p>
+      <h2>Brilliant at messy, everyday work</h2>
+      <p>None of this makes the CPU a bad chip. It is the best chip ever built for work that is unpredictable, full of decisions, and has to be done in order.</p>
+      <div class="field-grid">
+        <div><b>Great at</b><span>Running the operating system, web pages, spreadsheets, games’ logic, databases, and anything with lots of “if this, then that”.</span><em>chapters 6, 10, 11</em></div>
+        <div><b>Good at</b><span>Juggling many separate programs at once, thanks to many cores.</span><em>chapter 13</em></div>
+        <div><b>So-so at</b><span>Huge piles of identical sums, like AI or video effects. Wide instructions help, but most of the chip is not arithmetic.</span><em>chapters 12, 15, 16</em></div>
+      </div>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">In an AI data centre</p>
+      <h2>The CPU is the manager, not the worker</h2>
+      <p>Even in a server built for AI, there are CPUs. They run the operating system, receive requests from the network, prepare data, and hand the heavy maths to the AI chips, then collect the results. For example, NVIDIA’s DGX B200 server pairs 2 CPUs with 8 GPUs <span class="tag">public</span>.</p>
+      <figure>
+        <svg viewBox="0 0 800 240" role="img" aria-label="In an AI server, two CPUs handle requests and coordination while eight GPUs do the heavy arithmetic">
+          <defs><marker id="ar18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#c3b8ff"/></marker></defs>
+          <text x="40" y="34" fill="#a5a29c" font-size="14">ONE AI SERVER</text>
+          <rect x="40" y="50" width="200" height="140" fill="#f5c76a" opacity=".1" stroke="#f5c76a"/>
+          <text x="140" y="80" text-anchor="middle" fill="#f5c76a" font-size="16">2 CPUs</text>
+          <text x="140" y="108" text-anchor="middle" fill="#a5a29c" font-size="13">requests in, answers out</text>
+          <text x="140" y="128" text-anchor="middle" fill="#a5a29c" font-size="13">prepare work, coordinate</text>
+          <text x="140" y="148" text-anchor="middle" fill="#a5a29c" font-size="13">run the operating system</text>
+          <path d="M248 120 H312" stroke="#c3b8ff" stroke-width="3" marker-end="url(#ar18)"/>
+          <g id="gpus8"></g>
+          <text x="40" y="226" fill="#f1eee8" font-size="16">The CPUs manage. The GPUs do almost all of the arithmetic.</text>
+        </svg>
+      </figure>
+      <p>So when you ask a chatbot something, CPUs do touch your request at the edges. But almost every one of the trillions of sums happens on the other kind of chip.</p>
+    </section>
+
+    <!-- 19 -->
+    <section class="panel">
+      <p class="kicker">The whole picture</p>
+      <h2>A few brilliant workers who hate waiting</h2>
+      <p>A CPU core reads instructions one after another, keeps copies of what it needs close by, guesses ahead at every fork, works on whatever is ready while it waits, and does it all billions of times a second. A laptop has a handful to a dozen or so of these cores. That design is perfect for messy work and a poor fit for AI, which is one simple sum repeated beyond counting.</p>
+      <p>The obvious question is: what would a chip look like if you threw away the cleverness and filled the space with arithmetic instead? That chip exists, it was invented for video games, and it is part 5.</p>
+    </section>
+
+    <!-- Field guide -->
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>“8 cores, 16 threads”</b><span>Eight real cores, each able to juggle two instruction lists to stay busy while one waits.</span><em>chapters 11, 13</em></div>
+        <div><b>Cache sizes on spec sheets</b><span>“L3: 32 MB” is the shared pantry. Bigger usually means fewer trips to RAM.</span><em>chapter 8</em></div>
+        <div><b>Apps for Intel and for Apple chips</b><span>Different instruction families: x86 and Arm need separately translated programs.</span><em>chapter 4</em></div>
+        <div><b>A program uses only one core</b><span>Its work cannot be split well, so extra cores sit idle.</span><em>chapter 14</em></div>
+        <div><b>Local AI is slow on a laptop</b><span>A CPU does far fewer sums per second than an AI chip, and memory slows it further.</span><em>chapter 16</em></div>
+        <div><b>A fast chip still waits</b><span>Spinning disks and network calls take millions of ticks each.</span><em>chapter 7</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>CPU</b><span>The chip that follows a program’s instructions. The computer’s main brain.</span></div>
+        <div><b>Core</b><span>One complete instruction-follower. A CPU has several.</span></div>
+        <div><b>Instruction</b><span>One tiny step a CPU knows how to do, stored as numbers.</span></div>
+        <div><b>Program counter</b><span>The register holding where the next instruction is.</span></div>
+        <div><b>Register</b><span>A storage box inside the core, right next to the arithmetic.</span></div>
+        <div><b>Fetch, decode, execute</b><span>Read the instruction, work out what it means, do it.</span></div>
+        <div><b>Cache (L1, L2, L3)</b><span>Small fast memories on the chip holding copies of recently used data.</span></div>
+        <div><b>RAM</b><span>The computer’s main memory: big, but hundreds of ticks away.</span></div>
+        <div><b>Pipelining</b><span>Overlapping instructions like an assembly line.</span></div>
+        <div><b>Branch prediction</b><span>Guessing which way a jump will go, to keep the line full.</span></div>
+        <div><b>Out-of-order execution</b><span>Doing ready instructions first while others wait.</span></div>
+        <div><b>SIMD</b><span>One instruction doing the same sum on a whole row of numbers.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>The stored-program idea (1945), pipelining, branch prediction, out-of-order execution, caches and SIMD are textbook. Core counts, instruction widths and server configurations come from makers’ spec sheets. Amdahl’s 1967 rule.</span><em>textbooks, spec sheets</em></div>
+        <div><b>Example</b><span>The tiny CPU’s instruction set, the latency times, the cache hit rate, the area breakdown and the CPU speed calculator are rounded or simplified to show the idea.</span><em>simplified to show the idea</em></div>
+        <div><b>Not public</b><span>Exact internal designs of commercial cores, such as predictor details and true area splits.</span><em>companies have not said</em></div>
+      </div>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A CPU spends most of its switches on not waiting. That makes it brilliant at messy work, and a poor fit for one simple sum repeated a trillion times.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const C={gold:'#f5c76a',teal:'#76d5c1',coral:'#ff8059',purple:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#2f2d2a',line:'#57534f'};
+      const fmt=n=>n.toLocaleString('en-US');
+      const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+      const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+      const big=n=>{const u=[[1e15,'quadrillion'],[1e12,'trillion'],[1e9,'billion'],[1e6,'million']];for(const [v,w] of u)if(n>=v){const x=n/v;return (x>=100?fmt(Math.round(x)):x>=10?x.toFixed(0):x.toFixed(1).replace(/\.0$/,''))+' '+w;}return fmt(Math.round(n));};
+      const human=s=>{const m=60,h=3600,d=86400,y=31557600;if(s<m)return s.toFixed(s<10?0:0)+' second'+(Math.round(s)===1?'':'s');if(s<h)return (s/m).toFixed(1).replace(/\.0$/,'')+' minutes';if(s<d)return (s/h).toFixed(1).replace(/\.0$/,'')+' hours';if(s<y)return (s/d).toFixed(s/d<10?1:0).replace(/\.0$/,'')+' days';return (s/y).toFixed(s/y<10?1:0).replace(/\.0$/,'')+' years';};
+
+      // A control group: ordered choices become a stepped slider with clickable tick labels; data-kind="choice" stays as buttons.
+      function pick(id,cb){
+        const g=$(id),bs=[...g.querySelectorAll('button')];
+        if(g.dataset.kind==='choice'){
+          bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
+          return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+        }
+        const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
+        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        head.append(out);
+        Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
+        r.setAttribute('aria-label',g.getAttribute('aria-label'));
+        ticks.className='ticks';ticks.setAttribute('aria-hidden','true');
+        const ts=labs.map((l,i)=>{const t=document.createElement('span');t.textContent=l;t.style.left=(i/(n-1)*100)+'%';
+          t.className=i===0?'first':i===n-1?'last':'';t.addEventListener('click',()=>{r.value=i;sync();cb();});ticks.appendChild(t);return t;});
+        function sync(){const i=+r.value;out.textContent=labs[i];r.setAttribute('aria-valuetext',labs[i]);
+          r.style.setProperty('--fill',(i/(n-1)*100)+'%');ts.forEach((t,j)=>t.classList.toggle('on',j===i));}
+        r.addEventListener('input',()=>{sync();cb();});
+        g.classList.add('slide');g.replaceChildren(head,r,ticks);sync();
+        return ()=>vals[+r.value];
+      }
+      function rows(el,items,max){$(el).innerHTML=items.map(it=>`<div class="row${it.hi?' hi':''}"><span class="w">${esc(it.w)}</span><span class="bar"><i style="width:${Math.min(100,it.p/max*100).toFixed(1)}%${it.c?';background:'+it.c:''}"></i></span><span class="v">${esc(it.label)}</span></div>`).join('');}
+
+      /* 2: kitchen to CPU mapping */
+      (()=>{const g=$('mapRows').ownerSVGElement,R=[['recipe book','program',C.gold],['one recipe step','instruction',C.gold],['the chef','a core',C.coral],['in the chef’s hands','registers',C.teal],['counter and pantry','caches',C.teal],['warehouse across town','RAM (main memory)',C.teal]];
+        R.forEach(([a,b,c],i)=>{const y=62+i*36;T(g,40,y,a,{fill:C.fg});S(g,'path',{d:`M260 ${y-5} H410`,stroke:C.purple,'stroke-width':1.5,'stroke-dasharray':'4 4'});T(g,430,y,b,{fill:c});});
+        T(g,40,274,'Left: the analogy. Right: the real part. Colours follow the key above.',{fill:C.mut,'font-size':14});})();
+
+      /* 4: the tiny CPU */
+      const PROG=[
+        {t:'SET A, 0',c:[1,0,0],say:'Put 0 in register A. A will hold the running total.'},
+        {t:'SET B, 5',c:[1,1,5],say:'Put 5 in register B. B counts down: 5, 4, 3, 2, 1.'},
+        {t:'ADD A, B',c:[2,0,1],say:'Add B into A. This is the actual sum.'},
+        {t:'SUB B, 1',c:[3,1,1],say:'Take 1 away from B.'},
+        {t:'JUMP IF B ≠ 0 → 2',c:[4,1,2],say:'If B is not 0 yet, set the program counter back to 2. This makes the loop.'},
+        {t:'STORE A → cell 0',c:[5,0,0],say:'Copy the total from A into memory cell 0, so it is kept.'},
+        {t:'STOP',c:[0,0,0],say:'The program is finished.'}];
+      let st;
+      function reset(){st={pc:0,phase:0,A:0,B:0,mem:[0,0,0,0,0,0,0,0],ticks:0,done:0,halted:false,changed:null,msg:'Ready. The program counter (PC) points at instruction 0. Press “Next step”.'};drawCpu();}
+      function stepPhase(){
+        if(st.halted)return;
+        const ins=PROG[st.pc];st.ticks++;st.changed=null;
+        if(st.phase===0){st.msg=`Fetch: read instruction ${st.pc} from memory. It is stored as the numbers ${ins.c.join(', ')}.`;st.phase=1;}
+        else if(st.phase===1){st.msg=`Decode: ${ins.c[0]} means “${ins.t.split(/[ ,]/)[0]}”. ${ins.say}`;st.phase=2;}
+        else{let next=st.pc+1;
+          switch(ins.c[0]){case 1:st[ins.c[1]?'B':'A']=ins.c[2];st.changed=ins.c[1]?'B':'A';break;
+            case 2:st.A+=st.B;st.changed='A';break;case 3:st.B-=1;st.changed='B';break;
+            case 4:if(st.B!==0){next=2;}st.changed='PC';break;case 5:st.mem[0]=st.A;st.changed='m0';break;case 0:st.halted=true;break;}
+          st.msg=ins.c[0]===4?(st.B!==0?`Execute: B is ${st.B}, not 0, so jump: the PC is set back to 2.`:'Execute: B is 0 now, so no jump. Carry on to instruction 5.'):
+            ins.c[0]===0?`Execute: stop. Memory cell 0 holds ${st.mem[0]}, which is 5 + 4 + 3 + 2 + 1.`:`Execute: done. ${ins.c[0]===2?`A is now ${st.A}.`:ins.c[0]===3?`B is now ${st.B}.`:ins.c[0]===5?`Cell 0 now holds ${st.mem[0]}.`:''}`;
+          st.done++;st.phase=0;if(!st.halted)st.pc=next;}
+        drawCpu();
+      }
+      function drawCpu(){
+        const ph=['fetch','decode','execute'];
+        $('prog').innerHTML=PROG.map((p,i)=>`<div class="pl${i===st.pc&&!st.halted?' cur ph'+st.phase:''}"><span class="n">${i}</span><span class="t">${esc(p.t)}</span><span class="c">${p.c.join(' ')}</span></div>`).join('');
+        const reg=(n,v)=>`<div class="reg${st.changed===n?' ch':''}"><span>${n}</span><b>${v}</b></div>`;
+        $('regs').innerHTML=reg('A',st.A)+reg('B',st.B)+reg('PC',st.pc);
+        $('mem').innerHTML=st.mem.map((v,i)=>`<span class="${i===0&&st.changed==='m0'?'ch':''}${i===0&&v?' set':''}"><small>${i}</small>${v}</span>`).join('');
+        $('cTicks').textContent=st.ticks;$('cDone').textContent=st.done;
+        $('phase').innerHTML=`<b>${st.halted?'stopped':'next: '+ph[st.phase]}</b> ${esc(st.msg)}`;
+        ['cStep','cIns','cRun'].forEach(id=>$(id).disabled=st.halted);
+      }
+      $('cStep').onclick=stepPhase;$('cIns').onclick=()=>{do stepPhase();while(st.phase!==0&&!st.halted);};
+      $('cRun').onclick=()=>{let k=0;while(!st.halted&&k++<500)stepPhase();};$('cReset').onclick=reset;reset();
+
+      /* 6: straight vs looped */
+      (()=>{const sv=$('straight').ownerSVGElement;
+        for(let i=0;i<5;i++){S(sv,'rect',{x:40,y:44+i*34,width:150,height:26,fill:C.gold,opacity:.15,stroke:C.gold});T(sv,52,62+i*34,'step '+i,{fill:C.gold,'font-size':14});}
+        for(let i=0;i<5;i++){S(sv,'rect',{x:430,y:44+i*34,width:150,height:26,fill:i===3?C.purple:C.gold,opacity:.15,stroke:i===3?C.purple:C.gold});T(sv,442,62+i*34,i===3?'step 3: jump to 1?':'step '+i,{fill:i===3?C.purple:C.gold,'font-size':14});}
+        S(sv,'path',{d:'M584 159 H640 V91 H588',fill:'none',stroke:C.purple,'stroke-width':2.5,'marker-end':'url(#ar6)'});T(sv,650,130,'loop back',{fill:C.purple,'font-size':14});
+        T(sv,40,222,'runs once, top to bottom',{fill:C.mut,'font-size':14});T(sv,430,222,'repeats until the job is done',{fill:C.mut,'font-size':14});})();
+
+      /* 7: latency ladder, 1 tick = 1 second */
+      const LAT=[['a register',1,'0.3 ns','in the chef’s hand'],['the L1 cache',3,'1 ns','on the chopping board'],['the L2 cache',12,'4 ns','on the counter'],['the L3 cache',45,'15 ns','in the kitchen pantry'],['RAM',270,'90 ns','a walk to the store room'],['a fast SSD',240000,'80 µs','a trip to another city'],['a hard disk',2.4e7,'8 ms','a long voyage'],['a server across an ocean',4.5e8,'150 ms','longer than school takes']];
+      const lat=pick('lat',drawLat);
+      function drawLat(){const i=lat(),svg=$('latSvg');clear(svg);const lx=v=>200+Math.log10(v)/9*560;
+        for(let p=0;p<=9;p++){S(svg,'line',{x1:lx(10**p),y1:20,x2:lx(10**p),y2:186,stroke:'#2a2927'});}
+        LAT.forEach(([n,t],j)=>{const y=24+j*20,on=j===i;T(svg,190,y+12,n,{fill:on?C.fg:C.mut,'font-size':13,'text-anchor':'end'});
+          S(svg,'rect',{x:200,y,width:Math.max(3,lx(t)-200),height:14,fill:j>=4?C.rose:C.teal,opacity:on?1:.35});});
+        ['1 s','10 s','100 s','17 min','3 h','1 day','12 days','4 mo','3 yr','32 yr'].forEach((l,p)=>T(svg,lx(10**p),206,l,{fill:C.faint,'font-size':11,'text-anchor':'middle'}));
+        $('latH').textContent=human(LAT[i][1]);$('latR').textContent=LAT[i][2];$('latK').textContent=LAT[i][3];}
+      drawLat();
+
+      /* 9: pipeline */
+      (()=>{const svg=$('pipeSvg'),cols=[C.gold,C.purple,C.coral],nm=['fetch','decode','execute'],w=40;
+        T(svg,40,26,'ONE AT A TIME: 3 instructions take 9 ticks',{fill:C.mut,'font-size':14});
+        for(let k=0;k<3;k++)for(let s=0;s<3;s++){const x=160+(k*3+s)*w;S(svg,'rect',{x,y:38+k*26,width:w-4,height:22,fill:cols[s],opacity:.6});}
+        ['instr 1','instr 2','instr 3'].forEach((l,k)=>T(svg,40,54+k*26,l,{fill:C.mut,'font-size':13}));
+        T(svg,40,150,'ASSEMBLY LINE: the same 3 take 5 ticks, then one finishes every tick',{fill:C.mut,'font-size':14});
+        for(let k=0;k<5;k++)for(let s=0;s<3;s++){const x=160+(k+s)*w;S(svg,'rect',{x,y:162+k*20,width:w-4,height:17,fill:cols[s],opacity:.6});}
+        ['instr 1','instr 2','instr 3','instr 4','instr 5'].forEach((l,k)=>T(svg,40,175+k*20,l,{fill:C.mut,'font-size':12}));
+        nm.forEach((n,s)=>{S(svg,'rect',{x:600,y:40+s*24,width:14,height:14,fill:cols[s],opacity:.6});T(svg,622,52+s*24,n,{fill:C.fg,'font-size':13});});})();
+
+      /* 11: out-of-order */
+      (()=>{const g=$('oooBars').ownerSVGElement,B=[[0,6,'1 · load x (waiting for RAM…)',C.teal],[1,1,'3 · y × 2',C.coral],[2,1,'4 · z + 5',C.coral],[6,1.7,'2 · x + 1',C.coral]];
+        B.forEach(([s,l,n,c],i)=>{const x=300+s*62,y=44+i*42;S(g,'rect',{x,y,width:l*62-6,height:32,fill:c,opacity:.25,stroke:c});T(g,x+8,y+21,n,{fill:C.fg,'font-size':13});});
+        for(let t=0;t<8;t++)T(g,300+t*62+28,226,'tick '+(t+1),{fill:C.faint,'font-size':11,'text-anchor':'middle'});})();
+
+      /* 12: area */
+      const AR=[['caches',38,C.teal],['control',30,C.purple],['arithmetic',15,C.coral],['registers',7,'#8fc9fb'],['the rest',10,C.mut]];
+      $('areaBar').innerHTML=AR.map(([n,v,c])=>`<i style="width:${v}%;background:${c}" title="${esc(n)}"></i>`).join('');
+      rows('areaRows',AR.map(([w,p,c])=>({w,p,c,label:'about '+p+'%',hi:w.startsWith('arith')})),40);
+
+      /* 13: cores */
+      (()=>{const svg=$('coresSvg');const grid=(x0,n,cols,sz,lab,sub)=>{for(let i=0;i<n;i++){S(svg,'rect',{x:x0+(i%cols)*(sz+3),y:40+Math.floor(i/cols)*(sz+3),width:sz,height:sz,fill:C.coral,opacity:.75});}
+          T(svg,x0,190,lab,{fill:C.fg,'font-size':15});T(svg,x0,210,sub,{fill:C.mut,'font-size':13});};
+        grid(40,1,1,60,'2004','one core');grid(220,12,4,30,'a laptop today','around 8 to 16 cores');grid(440,192,16,6,'a big server chip','nearly 200 cores');
+        T(svg,40,26,'CORES ON ONE CHIP (each square is a core)',{fill:C.mut,'font-size':14});})();
+
+      /* 14: Amdahl */
+      const amP=pick('amP',drawAm),amN=pick('amN',drawAm);
+      function drawAm(){const p=amP(),n=amN(),sp=1/((1-p)+p/n),mx=1/(1-p),svg=$('amSvg');clear(svg);
+        const X=c=>80+Math.log10(c)/4*660,Y=v=>230-Math.log10(v)/4*200;
+        [1,10,100,1000,10000].forEach(v=>{S(svg,'line',{x1:80,y1:Y(v),x2:740,y2:Y(v),stroke:'#2a2927'});T(svg,72,Y(v)+4,fmt(v)+'×',{fill:C.faint,'font-size':11,'text-anchor':'end'});
+          T(svg,X(v),250,fmt(v),{fill:C.faint,'font-size':11,'text-anchor':'middle'});});
+        S(svg,'line',{x1:X(1),y1:Y(1),x2:X(1e4),y2:Y(1e4),stroke:C.mut,'stroke-dasharray':'4 4'});T(svg,X(30),Y(30)-8,'perfect: twice the cores, twice as fast',{fill:C.mut,'font-size':12,transform:`rotate(-17 ${X(30)} ${Y(30)-8})`});
+        let d='';for(let k=0;k<=80;k++){const c=10**(k/20),v=1/((1-p)+p/c);d+=(k?' L':'M')+X(c).toFixed(1)+' '+Y(v).toFixed(1);}
+        S(svg,'path',{d,fill:'none',stroke:C.coral,'stroke-width':3});
+        if(mx<1e4){S(svg,'line',{x1:80,y1:Y(mx),x2:740,y2:Y(mx),stroke:C.rose,'stroke-dasharray':'6 4'});T(svg,736,Y(mx)-6,'ceiling: '+fmt(Math.round(mx))+'×',{fill:C.rose,'font-size':12,'text-anchor':'end'});}
+        S(svg,'circle',{cx:X(n),cy:Y(sp),r:7,fill:C.coral});T(svg,80,22,'SPEED-UP · each gridline = 10×',{fill:C.mut,'font-size':13});T(svg,740,22,'cores →',{fill:C.mut,'font-size':13,'text-anchor':'end'});
+        $('amS').textContent=(sp<10?sp.toFixed(1):fmt(Math.round(sp)))+'×';$('amM').textContent=fmt(Math.round(mx))+'×';}
+      drawAm();
+
+      /* 15: SIMD */
+      (()=>{const g=$('simd1').ownerSVGElement;const pair=(x,y,a,b)=>{S(g,'rect',{x,y,width:40,height:26,fill:C.teal,opacity:.25,stroke:C.teal});T(g,x+20,y+18,String(a),{fill:C.fg,'font-size':13,'text-anchor':'middle'});
+          S(g,'rect',{x,y:y+30,width:40,height:26,fill:C.teal,opacity:.25,stroke:C.teal});T(g,x+20,y+48,String(b),{fill:C.fg,'font-size':13,'text-anchor':'middle'});};
+        pair(40,46,3,4);T(g,100,82,'3 + 4 = 7',{fill:C.coral,'font-size':17});T(g,200,82,'1 instruction, 1 sum',{fill:C.mut,'font-size':14});
+        const A=[3,1,4,1,5,9,2,6],Bv=[2,7,1,8,2,8,1,8];A.forEach((a,i)=>pair(40+i*46,146,a,Bv[i]));
+        S(g,'rect',{x:34,y:140,width:46*8+2,height:68,fill:'none',stroke:C.coral,'stroke-width':2});T(g,424,172,'1 instruction, 8 sums:',{fill:C.coral,'font-size':15});T(g,424,194,A.map((a,i)=>a+Bv[i]).join(', '),{fill:C.coral,'font-size':15});})();
+
+      /* 16: CPU speed */
+      const pC=pick('pC',drawP),pG=pick('pG',drawP),pW=pick('pW',drawP);
+      function drawP(){const s=pC()*pG()*1e9*pW()*2,tok=16e9;$('pS').textContent=big(s);const t=s/tok;$('pT').textContent=t>=10?fmt(Math.round(t)):t.toFixed(1);$('pX').textContent=fmt(Math.round(1e15/s))+'×';}
+      drawP();
+
+      /* 18: eight GPUs */
+      (()=>{const g=$('gpus8').ownerSVGElement;for(let i=0;i<8;i++){const x=320+(i%4)*112,y=50+Math.floor(i/4)*72;S(g,'rect',{x,y,width:100,height:60,fill:C.coral,opacity:.2,stroke:C.coral});T(g,x+50,y+36,'GPU',{fill:C.coral,'font-size':15,'text-anchor':'middle'});}})();
+    })();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
