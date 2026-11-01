@@ -3,13 +3,13 @@
 .series-band{--sb-bg:var(--bg);--sb-fg:var(--fg);--sb-muted:var(--muted);--sb-line:var(--line);--sb-gold:#f5c76a;
   display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr);gap:40px;align-items:center;
   margin:0 0 90px;padding:44px 44px 36px;background:var(--bg);color:var(--fg);border:1px solid var(--line)}
-/* Light theme: deeper versions of the series colours so they stay readable on a pale page. */
+/* Node, lane-name and legend colours come in as --cd (dark theme) and --cl (light theme) from series-ui.js. */
+.sb-node,.sb-lane-name,.sb-legend{--c:var(--cd)}
 body.light .series-band{--sb-gold:#b07d1e}
-body.light .sb-node[data-track="llm"]{--c:#23927c!important}
-body.light .sb-node[data-track="chip"]{--c:#6c5bd0!important}
-body.light .sb-lane-name[data-track="llm"]{fill:#23927c}
-body.light .sb-lane-name[data-track="chip"]{fill:#6c5bd0}
-body.light .sb-legend i{border-color:#23927c}body.light .sb-legend .lg-live{background:#23927c40}body.light .sb-legend .lg-read{background:#23927c}
+body.light .sb-node,body.light .sb-lane-name,body.light .sb-legend{--c:var(--cl,var(--cd))}
+.sb-lane-name{fill:var(--c)}
+.series-bands{display:grid;gap:28px;margin:0 0 90px}
+.series-bands .series-band{margin:0}
 .series-band:empty{display:none}
 .sb-kicker{display:flex;align-items:center;gap:12px;margin:0 0 22px;font:11px/1.4 monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--sb-gold)}
 .sb-kicker i{flex:0 0 28px;height:1px;background:var(--sb-line)}
@@ -50,9 +50,9 @@ body.light .sb-legend i{border-color:#23927c}body.light .sb-legend .lg-live{back
 .sb-caption em{font-style:normal;font:11px monospace;letter-spacing:.06em;color:var(--sb-gold);margin-left:8px;white-space:nowrap}
 .sb-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 0;font:11px monospace;color:var(--sb-muted)}
 .sb-legend span{display:inline-flex;align-items:center;gap:7px}
-.sb-legend i{width:11px;height:11px;border-radius:50%;border:2px solid #76d5c1}
-.sb-legend .lg-live{background:#76d5c140}.sb-legend .lg-read{background:#76d5c1}.sb-legend .lg-soon{border-style:dashed;opacity:.6}
+.sb-legend i{width:11px;height:11px;border-radius:50%;border:2px solid var(--c)}
+.sb-legend .lg-live{background:color-mix(in srgb,var(--c) 25%,transparent)}.sb-legend .lg-read{background:var(--c)}.sb-legend .lg-soon{border-style:dashed;opacity:.6}
 @media(max-width:1000px){.series-band{grid-template-columns:1fr;gap:28px;padding:32px 28px 28px}}
-@media(max-width:760px){.series-band{margin:0 0 70px;padding:26px 18px 22px}.series-band h2{font-size:34px}.sb-lede{font-size:15px;margin:14px 0 22px}
+@media(max-width:760px){.series-bands{margin:0 0 70px;gap:20px}.series-band{padding:26px 18px 22px}.series-band h2{font-size:34px}.sb-lede{font-size:15px;margin:14px 0 22px}
   .sb-svg{min-width:640px}.sb-actions button{padding:12px 18px;font-size:14px}.sb-actions{gap:8px}.sb-caption{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.sb-halo{animation:none;opacity:.5}}
