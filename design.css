@@ -314,3 +314,17 @@ footer .footer-brand .brand-dot { margin: 0 2px; color: #ff8059; }
 }
 @media(prefers-reduced-motion:reduce){.hero-stage,.hero-kicker,.hero-title-row h1 span,.hero-title-row h1 em,.hero-copy-row,.hero-bottom,.hero-glow,.hn-ring{animation:none!important}}
 .hn-wp{animation:none;fill:none}
+/* Catalogue start: one tile per topic with its count; a tile opens that topic's full list (app.js topicTiles). */
+.topic-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:24px;background:var(--line);border:1px solid var(--line)}
+.topic-tile{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;min-height:230px;padding:28px 30px 24px;background:var(--surface);cursor:pointer;transition:background .3s}
+.topic-tile:hover,.topic-tile:focus-visible{background:var(--raised)}
+.topic-tile:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tt-count{display:flex;align-items:baseline;gap:8px;font:400 44px/1 Outfit,Arial,sans-serif;letter-spacing:-.04em;color:var(--accent)}
+.tt-count small{font:11px monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.topic-tile b{font-weight:400;font-size:clamp(24px,2.2vw,32px);line-height:1.15;letter-spacing:-.04em;color:var(--fg)}
+.tt-shelves{font-size:14px;line-height:1.5;color:var(--muted)}
+.tt-foot{display:flex;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font:11px monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tt-foot i{font-style:normal;color:var(--fg)}
+.topic-tile:hover .tt-foot i{color:var(--accent)}
+@media(max-width:1000px){.topic-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.topic-tiles{grid-template-columns:1fr}.topic-tile{min-height:0;padding:22px 20px 18px}.tt-count{font-size:36px}}
