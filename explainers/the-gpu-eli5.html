@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The GPU: thousands of simple workers — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Series colour key:
+       gold = text and tokens, teal = stored numbers, orange = arithmetic, purple = connections, rose = the wrong intuition */
+    :root{--danger:#ec6a94}
+    .panel figure{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .c-tok{color:var(--gold)}.c-num{color:var(--teal)}.c-calc{color:var(--accent)}.c-link{color:var(--purple)}.c-bad{color:var(--danger)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    details.trace .table-wrap{margin:12px 0}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+
+    /* Sliders (stepped ones are built by pick()) */
+    .eli5-study-container input[type=range]{--c:var(--teal);-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:6px 0 0;padding:0!important;border:0!important;background:transparent!important;cursor:pointer}
+    .eli5-study-container input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(90deg,var(--c) var(--fill,0%),var(--border) var(--fill,0%))}
+    .eli5-study-container input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-track{height:4px;background:var(--border)}
+    .eli5-study-container input[type=range]::-moz-range-progress{height:4px;background:var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]:focus-visible{outline:none}
+    .eli5-study-container input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px var(--c),0 0 0 5px rgba(118,213,193,.25)}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--gold)!important;color:var(--gold)!important;background:rgba(245,199,106,.1)!important}
+    .pick.slide{display:block;max-width:520px;margin-top:20px}
+    .pick.slide>span{display:flex;gap:10px;align-items:baseline}
+    .pick.slide output{color:var(--teal);font-weight:600;letter-spacing:.02em}
+    .pick .ticks{position:relative;height:20px;margin:2px 9px 0;font:12px/1.4 var(--font-mono);color:var(--faint)}
+    .pick .ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;padding:2px 0;cursor:pointer}
+    .pick .ticks span.first{transform:translateX(-9px)}.pick .ticks span.last{transform:translateX(calc(9px - 100%))}
+    .pick .ticks span:hover{color:var(--fg)}.pick .ticks span.on{color:var(--teal)}
+
+    /* Number tiles and card grids (outlines, so an unfilled last row stays empty) */
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;padding:1px;margin:16px 0 22px}
+    .tiles div{background:var(--surface);outline:1px solid var(--border);padding:12px 14px}
+    .tiles b{display:block;font-size:22px;line-height:1.2;color:var(--fg);font-weight:600}
+    .tiles span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--muted)}
+    .tiles span .tag{display:inline-block;margin:0 0 0 2px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .field-grid div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+
+    /* Text pieces drawn as HTML so they wrap on any screen */
+    .box{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .box>small,.cap{display:block;font:12px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .cap{margin-top:14px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px 4px;margin-top:12px}
+    .tk{display:inline-flex;flex-direction:column;align-items:center;min-width:28px}
+    .tk b{display:block;padding:4px 7px;font:500 18px/1.3 var(--font-sans);white-space:pre;color:#20140a;background:var(--gold)}
+    .tk:nth-child(even) b{background:#d9a94e}
+    .tk b.raw{background:transparent;color:var(--gold);outline:1px dashed var(--gold);font:13px/1.9 var(--font-mono)}
+    .tk i{display:block;margin-top:3px;font:normal 11px/1.2 var(--font-mono);color:var(--teal)}
+    .sp{color:rgba(32,20,10,.45)}
+    .codes{display:flex;flex-wrap:wrap;gap:10px 6px;margin-top:12px}
+    .code{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:8px 6px;border:1px solid var(--border);background:var(--surface)}
+    .code b{font:500 26px/1.2 var(--font-sans);color:var(--gold)}
+    .code span{font:12px/1.5 var(--font-mono);color:var(--teal)}
+    .code em{font:normal 11px/1.4 var(--font-mono);color:var(--muted)}
+    .tok-in{width:100%;min-height:72px;margin-top:14px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
+    .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .presets button{min-height:34px;padding:5px 12px}
+    .bpe-words{display:grid;gap:10px;margin-top:12px}
+    .bpe-word{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+    .bpe-word>em{width:44px;font:normal 12px/1 var(--font-mono);color:var(--muted)}
+    .bpe-word .tk b{font-size:20px}
+    .tk b.hit{background:var(--accent)!important;color:#20120c}
+    .pairs{display:grid;grid-template-columns:auto auto;gap:2px 18px;justify-content:start;margin-top:10px;font:13px/1.7 var(--font-mono);color:var(--muted)}
+    .pairs .top{color:var(--accent)}
+    .vocab{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .vocab span{padding:1px 7px;font:13px/1.7 var(--font-mono);border:1px solid var(--border);color:var(--muted)}
+    .vocab span.new{border-color:var(--gold);color:var(--gold)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media (max-width:700px){.two{grid-template-columns:1fr}}
+    .bars{display:grid;grid-template-columns:minmax(0,180px) 1fr;gap:10px 14px;align-items:center;margin-top:14px;font-size:15px}
+    .bars .bl{color:var(--fg)}.bars .bl small{display:block;color:var(--muted);font:11px/1.4 var(--font-mono)}
+    .bars .bar{display:flex;align-items:center;gap:10px;font:13px var(--font-mono);color:var(--muted)}
+    .bars .bar i{display:block;height:22px;background:var(--gold);min-width:2px}
+    .status{font:12px/1.5 var(--font-mono);color:var(--muted);margin-top:10px}
+
+    /* Phones: wide drawings scroll sideways, edge to edge */
+    .panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure,.box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}.panel figure svg{min-width:540px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}.panel figure.fit svg{min-width:0}.panel figure.fit::after{display:none}.bars{grid-template-columns:minmax(0,120px) 1fr}}
+    /* Part 2: chance rows, the writing box, the chat transcript */
+    .soft,.rows{display:grid;gap:6px;margin-top:14px}
+    .row{display:grid;grid-template-columns:minmax(72px,110px) 1fr 64px;align-items:center;gap:10px;font-size:15px}
+    .row:has(.x){grid-template-columns:minmax(72px,110px) 130px 1fr 64px}
+    .wide .row{grid-template-columns:minmax(72px,110px) 1fr 132px}
+    .row .w{color:var(--gold);font-weight:500;overflow-wrap:anywhere}
+    .row .x{font:12px/1.3 var(--font-mono);color:var(--muted)}.row .x b{color:var(--accent);font-weight:600}
+    .row .bar{position:relative;height:20px;background:#1d1c1b}
+    .row .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);opacity:.75}
+    .row .bar i.neg{background:var(--danger)}
+    .row .bar u{position:absolute;left:0;top:-3px;bottom:-3px;border-right:2px solid var(--fg);text-decoration:none}
+    .row .v{font:13px var(--font-mono);color:var(--muted);text-align:right;white-space:nowrap}
+    .row.hi .w{color:var(--fg)}.row.hi .bar i{opacity:1}.row.hi{outline:1px solid var(--accent);outline-offset:3px}
+    .row.off{opacity:.4}
+    .sample{margin:6px 0 0;font-size:18px;color:var(--gold)!important}
+    .start-in{display:block;width:100%;max-width:520px;margin-top:8px;padding:10px 12px;font:15px var(--font-mono)}
+    .gen{margin-top:16px;padding:14px 16px;min-height:72px;border:1px solid var(--border);background:var(--surface);font-size:18px;line-height:1.8;color:var(--fg);overflow-wrap:anywhere}
+    .gen .st{color:var(--gold)}.gen .nw{background:var(--accent);color:#20120c;padding:0 4px}
+    .doc{margin-top:12px;padding:14px 16px;background:#0c0f12;border:1px solid var(--border);font:14px/1.7 var(--font-mono);color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+    .doc .m{color:var(--purple)}.doc .cur{color:var(--accent);animation:blink 1s steps(2) infinite}
+    @keyframes blink{50%{opacity:0}}
+    @media (prefers-reduced-motion:reduce){.doc .cur{animation:none}}
+    @media (max-width:600px){.row:has(.x){grid-template-columns:minmax(64px,84px) 1fr 58px}.row .x{grid-column:1/-1;order:9}.row{grid-template-columns:minmax(64px,84px) 1fr 58px}.wide .row{grid-template-columns:minmax(64px,84px) 1fr 112px}}
+    /* Part 3: switches, bits, the adder grid */
+    .bits{display:flex;flex-wrap:wrap;gap:8px 6px;margin-top:14px}
+    .bit{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .eli5-study-container .bit button{width:48px;height:60px;padding:0;font:600 22px var(--font-mono)}
+    .eli5-study-container .bit button[aria-pressed=true],.eli5-study-container .sw[aria-pressed=true]{background:var(--teal)!important;color:#0d2622!important;border-color:var(--teal)!important}
+    .bit small{font:11px var(--font-mono);color:var(--muted)}
+    .big{margin-top:14px;font:600 44px/1.1 var(--font-sans);color:var(--fg)}.big small{font:400 16px var(--font-mono);color:var(--muted);margin-left:8px}
+    .toggles{display:flex;flex-wrap:wrap;gap:10px}
+    .eli5-study-container .sw{min-width:110px;min-height:42px;font:600 15px var(--font-mono)}
+    .adder{display:grid;grid-template-columns:86px repeat(5,44px);gap:6px;margin-top:20px;align-items:center}
+    .adder .al{font:13px var(--font-mono);color:var(--muted)}
+    .adder .c{display:grid;place-items:center;height:40px;border:1px solid var(--border);font:600 18px var(--font-mono);color:var(--muted)}
+    .adder .c.on{background:var(--teal);border-color:var(--teal);color:#0d2622}
+    .adder .c.carry{height:26px;font-size:13px;border-style:dashed}.adder .c.carry.on{background:var(--accent);border-color:var(--accent);color:#20120c}
+    .adder .c.sum{border-color:var(--gold)}.adder .c.sum.on{background:var(--gold);border-color:var(--gold);color:#20140a}
+    .adder .c.ghost{border:0}
+    .adder .pl{text-align:center;font:11px var(--font-mono);color:var(--faint)}
+    @media (max-width:420px){.eli5-study-container .bit button{width:36px;height:52px;font-size:18px}.adder{grid-template-columns:70px repeat(5,38px)}}
+      /* Drawings inside boxes keep readable text on phones by scrolling sideways, like figures */
+    .sx{overflow-x:auto;margin-top:16px;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    .sx>svg{margin-top:0!important}
+    @media (max-width:700px){.sx>svg{min-width:540px}.sx::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+    /* Part 4: instruction encoding, the tiny CPU, the area bar */
+    .enc{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;padding:1px;margin-top:12px}
+    .enc>div{background:var(--surface);outline:1px solid var(--border);padding:14px 16px}
+    .enc b{display:block;margin:6px 0 4px;font:600 20px/1.3 var(--font-mono);color:var(--gold)}
+    .enc .nums i{display:inline-block;min-width:30px;margin-right:4px;padding:2px 6px;font-style:normal;text-align:center;background:var(--teal);color:#0d2622}
+    .enc .bin{font-size:13px;color:var(--teal);overflow-wrap:anywhere}
+    .enc .hint{display:block;font-size:13px;color:var(--muted)}
+    @media (max-width:700px){.enc{grid-template-columns:1fr}}
+    .cpu-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:22px}
+    @media (max-width:700px){.cpu-grid{grid-template-columns:1fr}}
+    .prog{display:grid;gap:4px;margin-top:8px}
+    .prog .pl{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);background:var(--surface);font:14px var(--font-mono)}
+    .prog .n{color:var(--faint)}.prog .t{color:var(--gold)}.prog .c{color:var(--teal);font-size:12px}
+    .prog .pl.cur{border-color:var(--gold);box-shadow:inset 4px 0 0 var(--gold)}
+    .prog .pl.cur.ph1{border-color:var(--purple);box-shadow:inset 4px 0 0 var(--purple)}
+    .prog .pl.cur.ph2{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+    .regs{display:flex;gap:8px;margin-top:8px}
+    .reg{flex:1;padding:10px 12px;border:1px solid var(--border);background:var(--surface)}
+    .reg span{display:block;font:12px var(--font-mono);color:var(--muted)}.reg b{font:600 26px var(--font-mono);color:var(--teal)}
+    .reg.ch{border-color:var(--accent);background:rgba(255,128,89,.12)}
+    .mem{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+    .mem span{display:flex;flex-direction:column;align-items:center;padding:4px 0;border:1px solid var(--border);font:600 15px var(--font-mono);color:var(--muted)}
+    .mem small{font:10px var(--font-mono);color:var(--faint)}
+    .mem span.set{color:var(--teal);border-color:var(--teal)}.mem span.ch{background:rgba(255,128,89,.12);border-color:var(--accent)}
+    .phase{margin:16px 0 0;padding:12px 14px;border-left:3px solid var(--gold);background:rgba(255,255,255,.03);font-size:16px;color:var(--fg)}
+    .phase b{display:block;font:12px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+    .eli5-study-container button:disabled{opacity:.4;cursor:default}
+    .area{display:flex;height:34px;margin-top:14px;border:1px solid var(--border)}
+    .area i{display:block;height:100%;opacity:.85}
+    /* Part 5: the painting canvas and the grid multiply */
+    #paint{display:block;width:100%;height:auto;margin-top:14px;border:1px solid var(--border);background:#1d1c1b;image-rendering:pixelated}
+    .mm{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin-top:10px}
+    .mm .op{font:400 26px var(--font-sans);color:var(--muted)}
+    .mm .g{display:grid;grid-template-columns:repeat(4,38px);gap:3px;margin-top:6px}
+    .mm .g span{display:grid;place-items:center;height:38px;border:1px solid var(--border);background:var(--surface);font:600 16px var(--font-mono);color:var(--muted)}
+    .mm .g.a span.on,.mm .g.b span.on{background:rgba(118,213,193,.25);border-color:var(--teal);color:var(--fg)}
+    .mm .g.res span{cursor:pointer;color:var(--fg)}.mm .g.res span:hover{border-color:var(--accent)}
+    .mm .g.res span.on{background:var(--accent);border-color:var(--accent);color:#20120c}
+    .mm .readout b{color:var(--accent)}
+    #mmNote b{color:var(--accent)}
+    @media (max-width:420px){.mm .g{grid-template-columns:repeat(4,32px)}.mm .g span{height:32px;font-size:14px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 5: how a chip built for games became the engine of AI">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/the-gpu-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="The GPU: thousands of simple workers">
+<meta property="og:description" content="Part 5: how a chip built for games became the engine of AI">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/the-gpu-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/the-gpu-eli5.png?v=7ff366de">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The GPU: thousands of simple workers">
+<meta property="article:published_time" content="2026-11-01">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="the-gpu-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>The GPU: thousands of simple workers</h1>
+      <p class="lede">Part 4 ended with a question: what if a chip threw away the CPU’s cleverness and filled the space with arithmetic instead? That chip exists. It was built to draw video games, it is called a GPU, and by luck its design turned out to be almost exactly what AI needs. This part shows how it works, what it gives up, and why nearly every AI model today runs on one.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on Parts 3 and 4: switches, the clock, cores, caches and waiting for memory. Facts carry a tag: <span class="tag">public</span> means a published spec sheet, paper or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:var(--gold)"></i>inputs, pixels, instructions</span>
+        <span><i style="background:var(--teal)"></i>stored values and memory</span>
+        <span><i style="background:var(--accent)"></i>arithmetic, workers busy</span>
+        <span><i style="background:var(--purple)"></i>connections and groups</span>
+        <span><i style="background:var(--danger)"></i>the wrong intuition, waiting</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>A game screen is millions of tiny sums</h2>
+      <p>Your screen is a grid of dots called <b>pixels</b>. An ordinary HD screen has 1,920 across and 1,080 down: about 2 million pixels. A game redraws every one of them 60 times a second, and working out each pixel’s colour (light, shadow, texture) takes dozens to hundreds of sums.</p>
+      <div class="box">
+        <div class="pick" id="resP" role="group" aria-label="Screen size"><span>SCREEN</span>
+          <button type="button" data-v="0">phone game</button><button type="button" data-v="1" aria-pressed="true">HD</button><button type="button" data-v="2">4K</button>
+        </div>
+        <div class="pick" id="fpsP" role="group" aria-label="Frames per second"><span>FRAMES PER SECOND</span>
+          <button type="button" data-v="30">30</button><button type="button" data-v="60" aria-pressed="true">60</button><button type="button" data-v="120">120</button>
+        </div>
+        <div class="tiles">
+          <div><b id="pxF"></b><span>pixels in one frame</span></div>
+          <div><b id="pxS"></b><span>pixel colours every second</span></div>
+          <div><b id="pxM"></b><span>sums per second, at 100 sums per pixel <span class="tag">example</span></span></div>
+        </div>
+      </div>
+      <p>The striking thing is not the size of the number. It is that every pixel’s colour is worked out with <b>the same recipe</b>, just on different inputs. Pixel 1 and pixel 2 million do not need each other’s answer. That is the shape of work Part 4, chapter 14, called almost perfectly splittable.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>One professor, or a stadium of students</h2>
+      <p>You have a million simple sums to do. You could hire one brilliant professor who works very fast and handles any problem you throw at them. Or you could fill a stadium with ten thousand students who can each only do simple sums, all following the same instruction read out over a loudspeaker. For a million identical sums, the stadium wins easily.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="A few clever professors stand for CPU cores; a stadium of students following one loudspeaker stands for GPU workers following one instruction">
+          <text x="40" y="34" fill="#a5a29c" font-size="14">A CPU: A FEW CLEVER PROFESSORS</text>
+          <g id="profs"></g>
+          <text x="40" y="196" fill="#f1eee8" font-size="15">each can do anything, fast</text>
+          <text x="40" y="218" fill="#a5a29c" font-size="14">but there are only a handful</text>
+          <text x="330" y="34" fill="#a5a29c" font-size="14">A GPU: A STADIUM OF STUDENTS</text>
+          <g id="studs"></g>
+          <text x="330" y="196" fill="#f1eee8" font-size="15">each only does simple sums, all following one loudspeaker</text>
+          <text x="330" y="218" fill="#a5a29c" font-size="14">but there are thousands of them</text>
+          <text x="40" y="256" fill="#f1eee8" font-size="16">Different tools for different jobs. For piles of identical sums, numbers win.</text>
+        </svg>
+      </figure>
+      <p><b>Mapping it back:</b> the professors are CPU cores, the students are a GPU’s many small arithmetic units, and the loudspeaker is one instruction shared by a whole group. <b>Where the analogy breaks:</b> a GPU’s students are not stupid; each can do any sum. They are just poor at going their own way, which chapter 6 shows.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Paint a picture with more and more workers</h2>
+      <p>Here is a small picture of 1,296 pixels. Each pixel’s colour comes from the same little formula. On each tick, every worker paints one pixel. Choose how many workers you have and press “Paint”:</p>
+      <div class="box">
+        <div class="pick" id="wkP" role="group" aria-label="Workers"><span>WORKERS</span>
+          <button type="button" data-v="1">1</button><button type="button" data-v="8" aria-pressed="true">8</button><button type="button" data-v="64">64</button><button type="button" data-v="324">324</button><button type="button" data-v="1296">1,296</button>
+        </div>
+        <canvas id="paint" width="960" height="540" aria-label="A picture being painted pixel by pixel" role="img"></canvas>
+        <div class="presets"><button type="button" id="paintGo">Paint</button><button type="button" class="secondary" id="paintClear">Clear</button></div>
+        <div class="tiles">
+          <div><b id="pT">0</b><span>ticks so far</span></div>
+          <div><b id="pNeed"></b><span>ticks needed with this many workers</span></div>
+        </div>
+      </div>
+      <p>With one worker the picture takes 1,296 ticks. With 1,296 workers it takes one. That is the entire idea of a GPU: when every piece of work is independent, more workers means proportionally faster. A big data-centre GPU has about 17,000 of these simple workers <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The trade</p>
+      <h2>Throw away the cleverness, fill the space with arithmetic</h2>
+      <p>Part 4, chapter 12, showed that most of a CPU core is not arithmetic: it is caches, guessing machinery and reordering machinery, all there so one stream of instructions never waits. A GPU makes the opposite trade. It keeps the arithmetic, shrinks almost everything else, and repeats that tiny design thousands of times.</p>
+      <figure>
+        <svg id="areaSvg" viewBox="0 0 800 300" role="img" aria-label="A CPU chip has a few large cores mostly filled with cache and control; a GPU chip has many small blocks mostly filled with arithmetic units"></svg>
+      </figure>
+      <p>A GPU worker cannot guess ahead, run instructions out of order or keep much in a cache of its own. On its own it would be slow at everyday work. But it is small and cheap, so thousands fit, and for work like painting pixels, that is a far better use of the same silicon.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Marching together</p>
+      <h2>Workers come in groups that share one instruction</h2>
+      <p>Even simple workers each need someone to tell them what to do. Giving every one its own fetch-and-decode machinery (Part 4, chapter 4) would waste the space just saved. So workers are bundled into groups of 32 that all receive the same instruction at the same moment and do it on their own numbers, like a marching band all taking the same step.</p>
+      <figure>
+        <svg id="warpSvg" viewBox="0 0 800 230" role="img" aria-label="One instruction, multiply by two, goes to a group of 32 workers at once; each multiplies its own number"></svg>
+      </figure>
+      <p>NVIDIA calls such a group a <b>warp</b>, after the threads on a loom <span class="tag">public</span>. Part 4’s wide CPU instructions (chapter 15) were the same idea in a small dose: one instruction, many numbers. A GPU is built around it from top to bottom.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>When workers disagree, they take turns</h2>
+      <p>What happens if a program says “if this pixel is in shadow, do extra work”? Some workers in a group need the extra steps and some do not. But they share one instruction. So the group runs the extra steps for the ones that need them while the others stand idle, then everyone carries on together.</p>
+      <div class="box">
+        <div class="pick" id="dvP" role="group" aria-label="Share of pixels in shadow"><span>SHARE OF PIXELS IN SHADOW (NEED 6 EXTRA STEPS)</span>
+          <button type="button" data-v="0">0%</button><button type="button" data-v="0.05">5%</button><button type="button" data-v="0.25" aria-pressed="true">25%</button><button type="button" data-v="0.5">50%</button><button type="button" data-v="0.75">75%</button><button type="button" data-v="1">100%</button>
+        </div>
+        <div class="pick" id="dvM" data-kind="choice" role="group" aria-label="How shadow pixels are arranged"><span>SHADOW PIXELS ARE</span>
+          <button type="button" class="secondary" data-v="0" aria-pressed="true">scattered at random</button><button type="button" class="secondary" data-v="1">bunched together</button>
+        </div>
+        <div class="sx"><svg id="dvSvg" viewBox="0 0 800 250" role="img" aria-label="Thirty-two workers over time: workers needing the extra steps are busy while the rest sit idle in the same group"></svg></div>
+        <div class="tiles">
+          <div><b id="dvE"></b><span>of worker time doing useful work</span></div>
+          <div><b id="dvG"></b><span>of groups had to run the extra steps</span></div>
+        </div>
+      </div>
+      <p>This is called <b>divergence</b>. With shadows scattered at random, even 5% of shadow pixels means most groups contain at least one, so most groups pay for the extra steps. Bunch the same pixels together and only a few groups pay. GPU programmers spend a lot of effort arranging work so that neighbours take the same path. AI maths, happily, has almost no “if” at all.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">Hiding the wait</p>
+      <h2>No time to wait? Switch to another group.</h2>
+      <p>A GPU worker has to fetch numbers from memory just like a CPU, and it waits hundreds of ticks too (Part 4, chapter 7). It cannot guess ahead or reorder. Its trick is simpler: keep many groups ready at once. When one group is waiting for memory, switch to another that is ready, instantly, on the next tick.</p>
+      <figure>
+        <svg id="hideSvg" viewBox="0 0 800 260" role="img" aria-label="Four groups take turns: whenever one waits for memory, another computes, so the arithmetic units are almost never idle"></svg>
+      </figure>
+      <p>Switching costs nothing, because each group keeps its own registers on the chip the whole time. A data-centre GPU like NVIDIA’s H100 can keep up to 2,048 workers ready per block of the chip, and over 270,000 across the whole chip <span class="tag">public</span>. CPUs spend switches on not waiting. GPUs spend registers on having something else to do.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Feeding the stadium</p>
+      <h2>A motorway, not a sports car</h2>
+      <p>Ten thousand workers eat numbers very quickly, so a GPU’s memory is built differently. A CPU’s memory is tuned for getting one number back soon. A GPU’s is tuned for moving enormous amounts at once, even if each trip is no faster. Think of a sports car versus a 32-lane motorway: the car is quicker for one trip, the motorway moves far more traffic per hour.</p>
+      <div class="box">
+        <small>How many bytes per second the chip can read from its main memory</small>
+        <div class="soft wide" id="bwRows"></div>
+      </div>
+      <p>The amount of data moved per second is called <b>bandwidth</b>. Data-centre GPUs get theirs from <b>HBM</b>, “high-bandwidth memory”: memory chips stacked on top of each other and placed right next to the GPU in the same package <span class="tag">public</span>. Part 8 is entirely about why, for AI, this bandwidth often matters more than the arithmetic.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">A lucky accident</p>
+      <h2>Built for games, adopted by AI</h2>
+      <p>GPUs were not designed for AI. For two decades they were built to draw games, and they got faster every year because gamers kept buying them. Then researchers noticed that the sums inside a neural network look a lot like the sums for drawing pixels.</p>
+      <figure>
+        <svg id="histSvg" viewBox="0 0 800 220" role="img" aria-label="A timeline: graphics chips in the 1990s, programmable shaders in the early 2000s, CUDA in 2007, AlexNet trained on two gaming GPUs in 2012, and data-centre AI GPUs today"></svg>
+      </figure>
+      <p>In 2007 NVIDIA released <b>CUDA</b>, a way to program its graphics cards for any maths, not just pictures <span class="tag">public</span>. In 2012 a neural network called AlexNet, trained on two ordinary gaming GPUs, won a famous image-recognition contest by a wide margin <span class="tag">public</span>. That result kicked off the modern AI boom, and GPUs have been its engine ever since.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">Why AI fits</p>
+      <h2>AI is mostly one shape of sum: the grid multiply</h2>
+      <p>Almost all of a language model’s work is one operation: multiplying two grids of numbers, called a <b>matrix multiply</b>. Each number in the answer is made by taking one row of the first grid and one column of the second, multiplying them pair by pair and adding up: the same multiply-and-add score as Part 1, chapter 14. Tap any cell of the answer:</p>
+      <div class="box">
+        <div class="mm" id="mm"></div>
+        <p class="readout" id="mmNote"></p>
+      </div>
+      <p>Look at what that means. Every cell of the answer needs only its own row and column, so all 16 cells can be worked out at the same time by 16 workers. In a real model the grids have thousands of rows and columns, giving millions of independent cells. No “if”, no waiting on each other: the perfect stadium job.</p>
+      <details class="trace"><summary>Go deeper: how big the grids are</summary>
+        <p>In a model whose tokens each have 4,096 numbers (Part 1, chapter 12), one of the weight grids in each layer is 4,096 by 4,096: about 16.8 million learned numbers. Multiplying one token’s list by it takes about 16.8 million multiply-and-adds, and every one of the 4,096 answers is independent. A model has hundreds of such grids. Part 9 shows how they fit together.</p>
+      </details>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">Built for grids</p>
+      <h2>Tensor cores: a whole block per step</h2>
+      <p>Once AI became the main customer, GPU makers added units built only for grid multiplies. Instead of one multiply-and-add per worker per tick, one of these units multiplies two small blocks of numbers and adds the result in a single step. NVIDIA calls them <b>tensor cores</b>, and its first ones, in 2017, did a 4-by-4 block per step: 64 multiply-and-adds at once <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="tcSvg" viewBox="0 0 800 240" role="img" aria-label="An ordinary worker does one multiply-and-add per tick; a tensor core multiplies two four-by-four blocks, sixty-four multiply-and-adds, in one step"></svg>
+      </figure>
+      <p>The gain is huge. NVIDIA’s H100 does about 67 trillion sums per second with its ordinary workers, but about 990 trillion with its tensor cores, roughly 15 times more <span class="tag">public</span>. On an AI GPU today, the “thousands of simple workers” mostly handle the odd jobs, and the tensor cores do the heavy lifting.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">Smaller numbers</p>
+      <h2>Fewer bits, more sums</h2>
+      <p>A number stored with 16 bits takes a multiplier about four times the switches of an 8-bit one, since every bit of one number meets every bit of the other (Part 3, chapter 8). So the same chip can do more small-number sums than big-number ones. AI models turn out to work well with surprisingly rough numbers, so newer GPUs offer smaller and smaller formats:</p>
+      <div class="box">
+        <div class="pick" id="prP" role="group" aria-label="Bits per number"><span>BITS PER NUMBER (NVIDIA B200, DENSE)</span>
+          <button type="button" data-v="0">32</button><button type="button" data-v="1">16</button><button type="button" data-v="2" aria-pressed="true">8</button><button type="button" data-v="3">4</button>
+        </div>
+        <div class="soft wide" id="prRows"></div>
+        <p class="readout" id="prNote"></p>
+      </div>
+      <p>Smaller numbers also take less memory and less bandwidth: an 8-billion-number model is 16 GB at 16 bits, 8 GB at 8 bits and 4 GB at 4 bits. The cost is rounding error, which the bonus study, <a href="inside-llm-serving-eli5.html" data-series-link="inside-llm-serving-eli5">Inside LLM serving</a>, looks at closely.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">Head to head</p>
+      <h2>How many tokens a second, and what limits it?</h2>
+      <p>Time to compare. For one person chatting with an 8-billion-number model at 16 bits, a chip has to do about 16 billion sums per token (Part 3, chapter 18) <b>and</b> read all 16 GB of numbers from memory for every token (chapter 12). Whichever takes longer sets the speed. Pick a chip:</p>
+      <div class="box">
+        <div class="pick" id="chP" data-kind="choice" role="group" aria-label="Chip"><span>CHIP</span>
+          <button type="button" class="secondary" data-v="0">laptop CPU</button><button type="button" class="secondary" data-v="1">gaming GPU</button><button type="button" class="secondary" data-v="2" aria-pressed="true">H100</button><button type="button" class="secondary" data-v="3">B200</button>
+        </div>
+        <div class="sx"><svg id="hhSvg" viewBox="0 0 800 230" role="img" aria-label="Tokens per second allowed by arithmetic and by memory for the chosen chip, on a ten-times-per-gridline scale"></svg></div>
+        <p class="readout" id="hhNote"></p>
+      </div>
+      <p>Two surprises. A data-centre GPU does about 2,600 times more sums per second than a laptop CPU. And for a single person, arithmetic is <b>not</b> the limit at all: the chip could do the sums for tens of thousands of tokens a second, but can only read the model from memory a few hundred times. The fix, serving many people from one read, is the heart of the bonus study, and memory itself is Part 8.</p>
+      <details class="trace"><summary>Go deeper: the numbers used</summary>
+        <p><span class="tag">public</span> spec-sheet figures, rounded: a laptop CPU about 0.38 trillion sums per second (Part 4’s calculator) and about 100 GB/s of memory; an RTX 4090 gaming GPU about 165 trillion sums per second at 16 bits and 1,008 GB/s; an H100 about 990 trillion and 3,350 GB/s; a B200 about 2,250 trillion and 8,000 GB/s. Real speeds land below both limits, because no chip runs at its peak.</p>
+      </details>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">The other catches</p>
+      <h2>What a GPU is bad at</h2>
+      <p>None of this makes the GPU better in general. It is a specialist, and it gives things up:</p>
+      <div class="field-grid">
+        <div><b>One long chain of steps</b><span>If each step needs the last one’s answer, thousands of workers cannot help. A single GPU worker is far slower than a CPU core.</span><em>chapters 2, 4</em></div>
+        <div><b>Lots of “if”</b><span>Groups that disagree take turns, so branchy code wastes most of the workers.</span><em>chapter 6</em></div>
+        <div><b>Small jobs</b><span>Handing work over to a GPU takes time. A job of a few hundred sums is done faster on the CPU than it takes to ship it across.</span><em>chapter 15</em></div>
+        <div><b>Running the computer</b><span>A GPU cannot run the operating system or talk to the network on its own. It always works for a CPU.</span><em>Part 4, chapter 18</em></div>
+      </div>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">Working together</p>
+      <h2>The CPU hands work over a narrow bridge</h2>
+      <p>In most computers the GPU is a separate card with its own memory. The CPU prepares the data, sends it across a connection called <b>PCIe</b>, tells the GPU what to run, and collects the result. That bridge is much slower than the GPU’s own memory, so good programs send data across once and keep it on the GPU.</p>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="The CPU with its RAM on one side, the GPU with its fast memory on the other, and a slower PCIe link between them">
+          <rect x="40" y="50" width="200" height="110" fill="#f5c76a" opacity=".1" stroke="#f5c76a"/><text x="140" y="96" text-anchor="middle" fill="#f5c76a" font-size="18">CPU + RAM</text><text x="140" y="122" text-anchor="middle" fill="#a5a29c" font-size="13">about 100 GB/s</text>
+          <path d="M240 105 H540" stroke="#c3b8ff" stroke-width="4" stroke-dasharray="8 6"/>
+          <text x="390" y="92" text-anchor="middle" fill="#c3b8ff" font-size="15">PCIe link · about 64 GB/s</text>
+          <text x="390" y="132" text-anchor="middle" fill="#a5a29c" font-size="13">the narrow bridge</text>
+          <rect x="540" y="40" width="220" height="130" fill="#ff8059" opacity=".14" stroke="#ff8059"/><text x="650" y="92" text-anchor="middle" fill="#ff8059" font-size="18">GPU + HBM</text><text x="650" y="118" text-anchor="middle" fill="#a5a29c" font-size="13">about 3,350 GB/s (H100)</text>
+          <text x="40" y="206" fill="#f1eee8" font-size="16">Load the model once, then keep it on the GPU. Shipping it every time would be 50 times slower.</text>
+        </svg>
+      </figure>
+      <p>Laptops and phones often take a different route: the GPU sits on the same chip as the CPU and shares one pool of memory. Apple’s M-series chips work this way <span class="tag">public</span>. There is no bridge to cross, but the shared memory is slower than a big GPU’s own.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">Family tree</p>
+      <h2>Your laptop’s GPU and a data-centre GPU</h2>
+      <p>They are the same kind of chip, at very different scales:</p>
+      <div class="field-grid">
+        <div><b>Built into a laptop</b><span>A small GPU sharing the CPU’s chip and memory. Enough for video and light games.</span><em>tens of watts</em></div>
+        <div><b>Gaming card (RTX 4090)</b><span>16,384 simple workers, 24 GB of memory at about 1 TB/s <span class="tag">public</span>.</span><em>about 450 W</em></div>
+        <div><b>Data centre (H100)</b><span>16,896 simple workers plus 528 tensor cores, 80 GB of HBM at 3.35 TB/s <span class="tag">public</span>.</span><em>about 700 W</em></div>
+        <div><b>Data centre (B200)</b><span>Two large dies joined as one GPU, 192 GB of HBM at 8 TB/s, 208 billion transistors <span class="tag">public</span>.</span><em>about 1,000 W</em></div>
+      </div>
+      <p>Phones and new laptops also carry a smaller relative called an <b>NPU</b>, a neural processing unit: a tiny block built only for AI grid multiplies, sipping very little power. Part 10 compares the whole family, including Google’s TPUs and Amazon’s Trainium, which are not GPUs at all.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">The software moat</p>
+      <h2>Why it is mostly one company’s GPUs</h2>
+      <p>A chip is only useful if programs can use it. CUDA, NVIDIA’s programming system, has been around since 2007, and almost every AI tool was written for it first. Other companies make capable chips, AMD among them, but software built for CUDA has to be adapted to run on them, and that takes time and effort <span class="tag">public</span>.</p>
+      <p>This is why people say NVIDIA’s real advantage is software as much as silicon. It is also why the biggest AI companies design or buy other chips too: Anthropic, for example, has said it uses Google TPUs and Amazon Trainium alongside NVIDIA GPUs <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">Back to AI</p>
+      <h2>What a GPU does while writing one token</h2>
+      <p>Put Parts 2 to 5 together. Each new token (Part 2) means one full pass through the model. That pass is a long series of grid multiplies, one after another, layer by layer. Within each one, the GPU spreads millions of independent multiply-and-adds across its tensor cores, keeping many groups ready so nobody waits on memory for long. Then the next grid, and the next. At the end out comes one list of scores, and one token.</p>
+      <figure>
+        <svg id="tokSvg" viewBox="0 0 800 220" role="img" aria-label="One token: a series of layers, each a grid multiply spread across the whole GPU, one after another"></svg>
+      </figure>
+      <p>Two limits remain. The layers must happen in order, so even a perfect GPU takes some time per token. And the numbers have to come from memory every time. Those two limits are why the chip track continues: Part 8 is memory, Part 10 is chips designed only for AI, and Part 12 is how thousands of GPUs are wired together to train a model.</p>
+    </section>
+
+    <!-- 19 -->
+    <section class="panel">
+      <p class="kicker">The whole picture</p>
+      <h2>Thousands of simple workers, marching in step</h2>
+      <p>A GPU takes the switches a CPU spends on cleverness and spends them on arithmetic instead. Its workers march in groups of 32, hide waits by switching groups, eat data from very wide memory, and, on AI chips, hand the heaviest work to tensor cores that do whole blocks at once. It is poor at chains of decisions and brilliant at piles of identical sums. AI, it turned out, is almost nothing but piles of identical sums.</p>
+    </section>
+
+    <!-- Field guide -->
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>“CUDA cores” on spec sheets</b><span>NVIDIA’s name for its simple workers. Thousands, not a handful.</span><em>chapters 3, 16</em></div>
+        <div><b>AI runs better on a gaming PC</b><span>A gaming GPU does hundreds of times more sums per second than the CPU beside it.</span><em>chapter 13</em></div>
+        <div><b>Graphics cards are expensive and hot</b><span>Thousands of workers flipping switches draw hundreds of watts.</span><em>chapter 16</em></div>
+        <div><b>NVIDIA dominates AI</b><span>Its chips are good, and CUDA software has had a long head start.</span><em>chapter 17</em></div>
+        <div><b>Models are “quantized” to 8 or 4 bits</b><span>Smaller numbers mean more sums per second and less memory.</span><em>chapter 12</em></div>
+        <div><b>“NPU” on new laptops and phones</b><span>A small block built only for AI maths, using little power.</span><em>chapter 16</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>GPU</b><span>Graphics processing unit: a chip with thousands of simple workers.</span></div>
+        <div><b>Pixel</b><span>One dot of a screen. Its colour is a few numbers.</span></div>
+        <div><b>Warp</b><span>A group of 32 workers that share one instruction.</span></div>
+        <div><b>Divergence</b><span>Workers in one group needing different steps, so they take turns.</span></div>
+        <div><b>Bandwidth</b><span>How many bytes per second can be moved. Lanes on a motorway.</span></div>
+        <div><b>HBM</b><span>High-bandwidth memory: stacked memory chips right beside the GPU.</span></div>
+        <div><b>Matrix multiply</b><span>Multiplying two grids of numbers. Most of an AI model’s work.</span></div>
+        <div><b>Tensor core</b><span>A unit that multiplies whole small blocks of numbers in one step.</span></div>
+        <div><b>CUDA</b><span>NVIDIA’s system for programming its GPUs for any kind of maths.</span></div>
+        <div><b>PCIe</b><span>The connection between a CPU and a separate GPU card.</span></div>
+        <div><b>NPU</b><span>A small, low-power block built only for AI maths.</span></div>
+        <div><b>Precision</b><span>How many bits each number uses. Fewer bits, more sums.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>Worker counts, memory sizes, bandwidths, power and sums per second come from NVIDIA’s spec sheets. Warps, divergence and switching between groups are documented. CUDA (2007) and AlexNet (2012) are history.</span><em>spec sheets, papers</em></div>
+        <div><b>Example</b><span>The sums per pixel, the painting demo, the divergence costs, the chip areas, and the rounded laptop numbers.</span><em>simplified to show the idea</em></div>
+        <div><b>Not public</b><span>Which GPUs and settings run any particular Claude model, and how many.</span><em>Anthropic has not said</em></div>
+      </div>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A GPU swaps cleverness for numbers: thousands of simple workers doing the same sum at once. AI is almost nothing but the same sum, done at once.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const C={gold:'#f5c76a',teal:'#76d5c1',coral:'#ff8059',purple:'#c3b8ff',rose:'#ec6a94',blue:'#8fc9fb',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#2f2d2a',line:'#57534f'};
+      const fmt=n=>n.toLocaleString('en-US');
+      const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+      const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+      const big=n=>{const u=[[1e15,'quadrillion'],[1e12,'trillion'],[1e9,'billion'],[1e6,'million']];for(const [v,w] of u)if(n>=v){const x=n/v;return (x>=100?fmt(Math.round(x)):x>=10?x.toFixed(0):x.toFixed(1).replace(/\.0$/,''))+' '+w;}return fmt(Math.round(n));};
+      const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // A control group: ordered choices become a stepped slider with clickable tick labels; data-kind="choice" stays as buttons.
+      function pick(id,cb){
+        const g=$(id),bs=[...g.querySelectorAll('button')];
+        if(g.dataset.kind==='choice'){
+          bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
+          return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+        }
+        const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
+        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        head.append(out);
+        Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
+        r.setAttribute('aria-label',g.getAttribute('aria-label'));
+        ticks.className='ticks';ticks.setAttribute('aria-hidden','true');
+        const ts=labs.map((l,i)=>{const t=document.createElement('span');t.textContent=l;t.style.left=(i/(n-1)*100)+'%';
+          t.className=i===0?'first':i===n-1?'last':'';t.addEventListener('click',()=>{r.value=i;sync();cb();});ticks.appendChild(t);return t;});
+        function sync(){const i=+r.value;out.textContent=labs[i];r.setAttribute('aria-valuetext',labs[i]);
+          r.style.setProperty('--fill',(i/(n-1)*100)+'%');ts.forEach((t,j)=>t.classList.toggle('on',j===i));}
+        r.addEventListener('input',()=>{sync();cb();});
+        g.classList.add('slide');g.replaceChildren(head,r,ticks);sync();
+        return ()=>vals[+r.value];
+      }
+      function rows(el,items,max){$(el).innerHTML=items.map(it=>`<div class="row${it.hi?' hi':''}"><span class="w">${esc(it.w)}</span><span class="bar"><i style="width:${Math.min(100,Math.max(.4,it.p/max*100)).toFixed(1)}%${it.c?';background:'+it.c:''}"></i></span><span class="v">${esc(it.label)}</span></div>`).join('');}
+
+      /* 1: pixels */
+      const RES=[[1080,2400],[1920,1080],[3840,2160]];
+      const resP=pick('resP',drawPx),fpsP=pick('fpsP',drawPx);
+      function drawPx(){const [w,h]=RES[resP()],f=w*h,s=f*fpsP();$('pxF').textContent=big(f);$('pxS').textContent=big(s);$('pxM').textContent=big(s*100);}
+      drawPx();
+
+      /* 2: professors and students */
+      (()=>{const g=$('profs').ownerSVGElement;for(let i=0;i<4;i++){const x=60+(i%2)*90,y=60+Math.floor(i/2)*60;S(g,'circle',{cx:x,cy:y,r:20,fill:C.gold});S(g,'rect',{x:x-24,y:y+22,width:48,height:22,rx:6,fill:C.gold,opacity:.6});}
+        for(let r=0;r<9;r++)for(let c=0;c<30;c++){S(g,'circle',{cx:340+c*15,cy:58+r*14,r:4.5,fill:C.coral,opacity:.85});}
+        S(g,'path',{d:'M790 40 l-16 8 v16 l16 8 z',fill:C.purple});})();
+
+      /* 3: painting race on a canvas */
+      const cv=$('paint'),cx=cv.getContext('2d'),GW=48,GH=27,N=GW*GH,cw=cv.width/GW,ch=cv.height/GH;
+      const col=(x,y)=>{const u=x/(GW-1),v=y/(GH-1),d=Math.hypot(u-.72,v-.32),sun=Math.max(0,1-d*3.2),hill=v>0.62+0.12*Math.sin(u*7)?1:0;
+        if(hill)return `rgb(${40+40*u|0},${90+50*(1-v)|0},${80})`;return `rgb(${Math.min(255,70+185*sun+60*v)|0},${Math.min(255,60+150*sun+30*v)|0},${Math.min(255,110-40*v+20*sun)|0})`;};
+      const wkP=pick('wkP',()=>{stop();clearPaint();});
+      let done=0,ticks=0,timer=null;
+      function clearPaint(){done=0;ticks=0;cx.fillStyle='#1d1c1b';cx.fillRect(0,0,cv.width,cv.height);upd();}
+      function upd(){$('pT').textContent=fmt(ticks);$('pNeed').textContent=fmt(Math.ceil(N/wkP()));}
+      function tick(){const w=wkP();for(let k=0;k<w&&done<N;k++,done++){const x=done%GW,y=Math.floor(done/GW);cx.fillStyle=col(x,y);cx.fillRect(x*cw,y*ch,cw-1,ch-1);}ticks++;upd();if(done>=N)stop();}
+      function stop(){if(timer){cancelAnimationFrame(timer);timer=null;}}
+      $('paintGo').onclick=()=>{stop();if(done>=N)clearPaint();if(reduced){while(done<N)tick();return;}const step=()=>{for(let i=0;i<3&&done<N;i++)tick();if(done<N)timer=requestAnimationFrame(step);};timer=requestAnimationFrame(step);};
+      $('paintClear').onclick=()=>{stop();clearPaint();};clearPaint();
+
+      /* 4: chip area comparison */
+      (()=>{const svg=$('areaSvg');T(svg,40,30,'A CPU CHIP (example)',{fill:C.mut,'font-size':14});T(svg,430,30,'A GPU CHIP (example)',{fill:C.mut,'font-size':14});
+        S(svg,'rect',{x:40,y:44,width:330,height:200,fill:'#202020',stroke:C.line});
+        for(let i=0;i<4;i++){const x=52+(i%2)*158,y=56+Math.floor(i/2)*94;S(svg,'rect',{x,y,width:146,height:84,fill:C.purple,opacity:.35});S(svg,'rect',{x:x+6,y:y+6,width:40,height:24,fill:C.coral});S(svg,'rect',{x:x+80,y:y+6,width:60,height:72,fill:C.teal,opacity:.5});}
+        S(svg,'rect',{x:430,y:44,width:330,height:200,fill:'#202020',stroke:C.line});
+        for(let r=0;r<8;r++)for(let c=0;c<12;c++){const x=440+c*26.5,y=54+r*23.5;S(svg,'rect',{x,y,width:24,height:21,fill:C.purple,opacity:.3});S(svg,'rect',{x:x+2,y:y+2,width:20,height:12,fill:C.coral});}
+        [[C.coral,'arithmetic'],[C.teal,'cache'],[C.purple,'control']].forEach(([c,n],i)=>{S(svg,'rect',{x:40+i*140,y:262,width:14,height:14,fill:c});T(svg,62+i*140,274,n,{fill:C.fg,'font-size':14});});
+        T(svg,430,274,'many small blocks, mostly arithmetic',{fill:C.mut,'font-size':14});})();
+
+      /* 5: one instruction, a group of 32 */
+      (()=>{const svg=$('warpSvg');S(svg,'rect',{x:40,y:30,width:200,height:44,fill:C.gold,opacity:.15,stroke:C.gold});T(svg,140,58,'× 2',{fill:C.gold,'font-size':20,'text-anchor':'middle'});T(svg,250,58,'one instruction, read out once',{fill:C.mut,'font-size':14});
+        for(let i=0;i<32;i++){const x=40+i*22.5;S(svg,'path',{d:`M140 76 L${x+9} 112`,stroke:C.purple,'stroke-opacity':.35});const v=(i*7)%10;
+          S(svg,'rect',{x,y:114,width:19,height:28,fill:C.teal,opacity:.3});T(svg,x+9.5,133,String(v),{fill:C.fg,'font-size':12,'text-anchor':'middle'});
+          S(svg,'rect',{x,y:150,width:19,height:28,fill:C.coral,opacity:.6});T(svg,x+9.5,169,String(v*2),{fill:C.fg,'font-size':11,'text-anchor':'middle'});}
+        T(svg,40,206,'32 workers, 32 different numbers, the same step, the same tick.',{fill:C.fg,'font-size':15});})();
+
+      /* 6: divergence */
+      const dvP=pick('dvP',drawDv),dvM=pick('dvM',drawDv);
+      function lcg(s){return()=>(s=(s*1664525+1013904223)>>>0)/4294967296;}
+      function drawDv(){const p=dvP(),mode=dvM(),r=lcg(7),G=200,W=32,BASE=4,EXTRA=6;
+        let useful=0,total=0,paid=0;
+        const shadowCount=Math.round(p*G*W);
+        for(let g=0;g<G;g++){const ls=[];for(let l=0;l<W;l++){const idx=g*W+l;ls.push(mode===1?idx<shadowCount:r()<p);}
+          const any=ls.some(Boolean),n=ls.filter(Boolean).length;const t=BASE+(any?EXTRA:0);total+=t*W;useful+=BASE*W+n*EXTRA;if(any)paid++;}
+        // The group drawn: the first one for scattered shadows, the last group touched by shadow when bunched
+        const gShow=mode===1?Math.max(0,Math.ceil(shadowCount/W)-1):0,r2=lcg(7),show=[];
+        for(let l=0;l<W;l++)show.push(mode===1?gShow*W+l<shadowCount:r2()<p);
+        const svg=$('dvSvg');clear(svg);const any=show.some(Boolean),steps=BASE+(any?EXTRA:0),sw=600/(BASE+EXTRA);
+        T(svg,40,24,'ONE GROUP OF 32 WORKERS, OVER TIME →',{fill:C.mut,'font-size':13});
+        show.forEach((sh,l)=>{const y=34+l*5.6;S(svg,'rect',{x:150,y,width:BASE*sw-2,height:4.6,fill:C.coral,opacity:.85});
+          if(any)S(svg,'rect',{x:150+BASE*sw,y,width:EXTRA*sw-2,height:4.6,fill:sh?C.coral:C.rose,opacity:sh?.85:.25});});
+        T(svg,140,60,'common steps',{fill:C.fg,'font-size':12,'text-anchor':'end'});T(svg,140,80,'(everyone)',{fill:C.mut,'font-size':11,'text-anchor':'end'});
+        if(any){T(svg,150+BASE*sw+EXTRA*sw/2,226,'extra steps: shadow workers busy, the rest wait (pale)',{fill:C.mut,'font-size':12,'text-anchor':'middle'});}
+        else T(svg,150+BASE*sw+20,130,'no worker in this group needs the extra steps',{fill:C.mut,'font-size':13});
+        $('dvE').textContent=Math.round(useful/total*100)+'%';$('dvG').textContent=Math.round(paid/G*100)+'%';}
+      drawDv();
+
+      /* 7: hiding the wait */
+      (()=>{const svg=$('hideSvg');T(svg,40,24,'FOUR GROUPS SHARE ONE SET OF ARITHMETIC UNITS (time →)',{fill:C.mut,'font-size':13});
+        const P=[[[0,2,'c'],[2,10,'w'],[10,12,'c'],[12,20,'w']],[[0,2,'r'],[2,4,'c'],[4,12,'w'],[12,14,'c'],[14,20,'w']],[[0,4,'r'],[4,6,'c'],[6,14,'w'],[14,16,'c']],[[0,6,'r'],[6,8,'c'],[8,16,'w'],[16,18,'c']]];
+        const X=t=>130+t*31;
+        P.forEach((segs,g)=>{const y=40+g*40;T(svg,120,y+21,'group '+(g+1),{fill:C.fg,'font-size':13,'text-anchor':'end'});
+          segs.forEach(([a,b,k])=>{S(svg,'rect',{x:X(a),y,width:(b-a)*31-2,height:28,fill:k==='c'?C.coral:k==='w'?C.teal:'#2a2927',opacity:k==='c'?.9:k==='w'?.25:1});if(k==='w'&&b-a>=6)T(svg,X(a)+8,y+19,'waiting for memory',{fill:C.teal,'font-size':12});});});
+        const busy=[[0,18]];S(svg,'rect',{x:X(0),y:208,width:18*31-2,height:16,fill:C.coral,opacity:.9});T(svg,120,221,'arithmetic',{fill:C.fg,'font-size':13,'text-anchor':'end'});
+        T(svg,X(0),246,'Orange is computing. While any group waits, another one computes, so the arithmetic is busy almost all the time.',{fill:C.mut,'font-size':13});})();
+
+      /* 8: bandwidth */
+      rows('bwRows',[{w:'laptop RAM',p:100,label:'about 100 GB/s',c:C.teal},{w:'gaming GPU',p:1008,label:'about 1,000 GB/s',c:C.teal},{w:'H100 (HBM)',p:3350,label:'3,350 GB/s',c:C.teal,hi:true},{w:'B200 (HBM)',p:8000,label:'8,000 GB/s',c:C.teal}],8000);
+
+      /* 9: history */
+      (()=>{const svg=$('histSvg'),E=[[1999,'first chips sold as “GPUs”',C.gold],[2001,'programmable shaders',C.gold],[2007,'CUDA: GPUs for any maths',C.purple],[2012,'AlexNet on 2 gaming GPUs',C.coral],[2017,'tensor cores',C.coral],[2024,'208-billion-transistor B200',C.coral]];
+        const X=y=>60+(y-1997)/(2026-1997)*680;S(svg,'line',{x1:50,y1:110,x2:760,y2:110,stroke:C.line,'stroke-width':2});
+        E.forEach(([y,n,c],i)=>{const x=X(y),up=i%2===0;S(svg,'circle',{cx:x,cy:110,r:7,fill:c});S(svg,'line',{x1:x,y1:up?100:120,x2:x,y2:up?66:154,stroke:c,'stroke-opacity':.5});
+          T(svg,x,up?58:172,String(y),{fill:c,'font-size':14,'text-anchor':'middle'});T(svg,Math.min(Math.max(x,90),710),up?40:192,n,{fill:C.fg,'font-size':13,'text-anchor':'middle'});});})();
+
+      /* 10: matrix multiply */
+      const A=[[1,2,0,1],[3,1,2,0],[0,1,1,2],[2,0,1,1]],B=[[2,1,0,3],[1,0,2,1],[0,3,1,0],[1,2,1,1]],R=A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+      let sel=[1,2];
+      function drawMm(){const [i,j]=sel;
+        const grid=(M,cls,fn)=>`<div class="g ${cls}">${M.map((r,a)=>r.map((v,b)=>`<span class="${fn(a,b)}" ${cls==='res'?`role="button" tabindex="0" data-c="${a},${b}" aria-label="Answer cell row ${a+1}, column ${b+1}"`:''}>${v}</span>`).join('')).join('')}</div>`;
+        $('mm').innerHTML=`<div><span class="cap">First grid</span>${grid(A,'a',(a)=>a===i?'on':'')}</div><b class="op">×</b><div><span class="cap">Second grid</span>${grid(B,'b',(a,b)=>b===j?'on':'')}</div><b class="op">=</b><div><span class="cap">Answer (tap a cell)</span>${grid(R,'res',(a,b)=>a===i&&b===j?'on':'')}</div>`;
+        const terms=A[i].map((v,k)=>`${v}×${B[k][j]}`);
+        $('mmNote').innerHTML=`Row ${i+1} times column ${j+1}: ${terms.join(' + ')} = <b>${R[i][j]}</b>. Four multiplies and their sum, using nothing but that one row and that one column.`;
+        $('mm').querySelectorAll('.res span').forEach(s=>{const go=()=>{sel=s.dataset.c.split(',').map(Number);drawMm();};s.onclick=go;s.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});}
+      drawMm();
+
+      /* 11: tensor core */
+      (()=>{const svg=$('tcSvg');T(svg,40,26,'ORDINARY WORKER',{fill:C.mut,'font-size':13});
+        S(svg,'rect',{x:40,y:40,width:30,height:30,fill:C.coral});T(svg,84,62,'1 multiply-and-add',{fill:C.fg,'font-size':15});T(svg,84,82,'per step',{fill:C.mut,'font-size':13});
+        T(svg,330,26,'TENSOR CORE: TWO 4×4 BLOCKS IN ONE STEP',{fill:C.mut,'font-size':13});
+        const blk=(x0,y0,c)=>{for(let r=0;r<4;r++)for(let k=0;k<4;k++)S(svg,'rect',{x:x0+k*20,y:y0+r*20,width:18,height:18,fill:c,opacity:.55});};
+        blk(330,44,C.teal);T(svg,428,90,'×',{fill:C.fg,'font-size':22});blk(452,44,C.teal);T(svg,550,90,'=',{fill:C.fg,'font-size':22});blk(574,44,C.coral);
+        T(svg,330,152,'64 multiply-and-adds in a single step (the 2017 design)',{fill:C.coral,'font-size':15});
+        T(svg,40,206,'Newer tensor cores handle bigger blocks and smaller numbers, so the gap has kept growing.',{fill:C.fg,'font-size':15});})();
+
+      /* 12: precision */
+      const PR=[['32 bits',0.075,'75 trillion'],['16 bits',2.25,'2,250 trillion'],['8 bits',4.5,'4,500 trillion'],['4 bits',9,'9,000 trillion']];
+      const prP=pick('prP',drawPr);
+      function drawPr(){const i=prP();rows('prRows',PR.map(([w,p,l],k)=>({w,p,label:l,hi:k===i,c:k===i?C.coral:undefined})),9);
+        $('prNote').textContent=`At ${PR[i][0]}: about ${PR[i][2]} sums per second.${i===0?' 32-bit sums run on the ordinary workers, not the tensor cores.':` Each halving of the bits roughly doubles the sums.`}`;}
+      drawPr();
+
+      /* 13: head to head */
+      const CH=[['laptop CPU',0.384e12,100e9],['gaming GPU (RTX 4090)',165e12,1008e9],['H100',990e12,3350e9],['B200',2250e12,8000e9]];
+      const chP=pick('chP',drawHh);
+      function drawHh(){const i=chP(),svg=$('hhSvg');clear(svg);const lx=v=>230+Math.log10(v)/6*540;
+        for(let p=0;p<=6;p++){S(svg,'line',{x1:lx(10**p),y1:30,x2:lx(10**p),y2:196,stroke:'#2a2927'});T(svg,lx(10**p),214,fmt(10**p),{fill:C.faint,'font-size':11,'text-anchor':'middle'});}
+        T(svg,230,20,'TOKENS PER SECOND FOR ONE PERSON · each gridline = 10×',{fill:C.mut,'font-size':12});
+        CH.forEach(([n,f,b],j)=>{const ar=f/16e9,me=b/16e9,y=36+j*40,on=j===i;T(svg,220,y+14,n,{fill:on?C.fg:C.mut,'font-size':13,'text-anchor':'end'});
+          S(svg,'rect',{x:230,y,width:Math.max(2,lx(ar)-230),height:14,fill:C.coral,opacity:on?1:.3});S(svg,'rect',{x:230,y:y+17,width:Math.max(2,lx(me)-230),height:14,fill:C.teal,opacity:on?1:.3});
+          if(on){T(svg,lx(ar)+6,y+12,fmt(Math.round(ar))+' (sums)',{fill:C.coral,'font-size':11});T(svg,lx(me)+6,y+29,fmt(Math.round(me))+' (memory)',{fill:C.teal,'font-size':11});}});
+        const [n,f,b]=CH[i],ar=f/16e9,me=b/16e9;
+        $('hhNote').textContent=`${n}: arithmetic alone would allow about ${fmt(Math.round(ar))} tokens a second, but reading 16 GB from memory each time allows only about ${fmt(Math.round(me))}. Memory is the limit, by about ${fmt(Math.round(ar/me))} times.`;}
+      drawHh();
+
+      /* 18: one token */
+      (()=>{const svg=$('tokSvg');T(svg,40,24,'ONE TOKEN = ONE PASS = MANY GRID MULTIPLIES, ONE AFTER ANOTHER',{fill:C.mut,'font-size':13});
+        for(let l=0;l<8;l++){const x=40+l*88;S(svg,'rect',{x,y:40,width:80,height:110,fill:'#202020',stroke:C.line});
+          for(let r=0;r<6;r++)for(let c=0;c<5;c++)S(svg,'rect',{x:x+6+c*14.5,y:48+r*16,width:12,height:13,fill:C.coral,opacity:.35+.5*((r+c+l)%3)/2});
+          T(svg,x+40,168,'layer '+(l+1),{fill:C.mut,'font-size':12,'text-anchor':'middle'});
+          if(l<7)T(svg,x+84,100,'→',{fill:C.mut,'font-size':14,'text-anchor':'middle'});}
+        T(svg,40,204,'Inside a layer: everything at once. Between layers: strictly in order.',{fill:C.fg,'font-size':15});})();
+    })();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

@@ -14,7 +14,7 @@ window.ELI5_SERIES = {
     { id: 'guess-the-next-word-eli5', track: 'llm', title: 'The only job: guess the next word', blurb: 'Scores, chances, temperature, and why it writes one piece at a time', file: 'guess-the-next-word-eli5.html' },
     { id: 'what-a-chip-is-eli5', track: 'chip', title: 'What a chip actually is', blurb: 'Billions of tiny switches, and how switches add numbers', file: 'what-a-chip-is-eli5.html' },
     { id: 'the-cpu-eli5', track: 'chip', title: 'The CPU: the chip in your laptop', blurb: 'A few very clever workers doing one task after another', file: 'the-cpu-eli5.html' },
-    { id: 'the-gpu-eli5', track: 'chip', title: 'The GPU: thousands of simple workers', blurb: 'Why drawing a game screen and running AI need the same thing' },
+    { id: 'the-gpu-eli5', track: 'chip', title: 'The GPU: thousands of simple workers', blurb: 'Why drawing a game screen and running AI need the same thing', file: 'the-gpu-eli5.html' },
     { id: 'learning-is-nudging-numbers-eli5', track: 'llm', title: 'Learning is nudging numbers', blurb: 'Training from two knobs to billions: error, slope, and the walk downhill' },
     { id: 'attention-eli5', track: 'llm', title: 'Attention: words looking at words', blurb: 'How each word gathers meaning from the words before it' },
     { id: 'memory-bottleneck-eli5', track: 'chip', title: 'Memory: the real bottleneck', blurb: 'Why moving numbers costs more than doing maths on them' },
