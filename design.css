@@ -327,4 +327,4 @@ footer .footer-brand .brand-dot { margin: 0 2px; color: #ff8059; }
 .tt-foot i{font-style:normal;color:var(--fg)}
 .topic-tile:hover .tt-foot i{color:var(--accent)}
 @media(max-width:1000px){.topic-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.topic-tiles{grid-template-columns:1fr}.topic-tile{min-height:0;padding:22px 20px 18px}.tt-count{font-size:36px}}
+@media(max-width:560px){.topic-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.topic-tile{min-height:0;gap:6px;padding:18px 16px}.tt-count{font-size:32px}.topic-tile b{font-size:19px}.tt-shelves,.tt-foot{display:none}}
