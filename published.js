@@ -1,5 +1,51 @@
 window.PUBLISHED = [
   {
+    "id": "the-cpu-eli5",
+    "title": "The CPU: the chip in your laptop",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 4: how a CPU follows instructions, and why it spends most of its effort waiting",
+    "bullets": [
+      "Step through a tiny CPU: fetch, decode, execute, registers and jumps",
+      "Caches, guessing and many cores, and why that makes AI a poor fit"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "INSTRUCTIONS",
+      "CACHES",
+      "CORES"
+    ],
+    "file": "explainers/the-cpu-eli5.html",
+    "date": "2026-10-30",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A CPU core surrounded by layers of cache, with main memory far away\"><rect x=\"18\" y=\"24\" width=\"190\" height=\"100\" fill=\"#76d5c1\" fill-opacity=\".06\" stroke=\"#76d5c1\" stroke-dasharray=\"4 3\"/><rect x=\"34\" y=\"40\" width=\"130\" height=\"70\" fill=\"#76d5c1\" fill-opacity=\".1\" stroke=\"#76d5c1\"/><rect x=\"50\" y=\"56\" width=\"70\" height=\"40\" fill=\"#ff8059\" fill-opacity=\".35\" stroke=\"#ff8059\"/><text x=\"85\" y=\"81\" text-anchor=\"middle\" font-size=\"13\" fill=\"#f1eee8\">core</text><text x=\"132\" y=\"104\" font-size=\"10\" fill=\"#76d5c1\">L1 L2</text><text x=\"176\" y=\"118\" font-size=\"10\" fill=\"#76d5c1\">L3</text><path d=\"M210 74 H244\" stroke=\"#c3b8ff\" stroke-width=\"2\" stroke-dasharray=\"3 3\"/><rect x=\"248\" y=\"50\" width=\"56\" height=\"48\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"276\" y=\"79\" text-anchor=\"middle\" font-size=\"12\" fill=\"#f1eee8\">RAM</text><text x=\"226\" y=\"66\" text-anchor=\"middle\" font-size=\"9\" fill=\"#ec6a94\">300 ticks</text><text x=\"18\" y=\"148\" font-size=\"12\" fill=\"#c3b8ff\">PART 4 · HOW CHIPS WORK</text></svg>",
+    "part": 4
+  },
+  {
+    "id": "what-a-chip-is-eli5",
+    "title": "What a chip actually is",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 3: how billions of tiny switches, wired the right way, do arithmetic",
+    "bullets": [
+      "From one switch to binary, logic gates, adders and multipliers",
+      "Clocks, memory, Moore's law, heat, and why clock speeds stopped rising"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SWITCHES",
+      "GATES",
+      "ADDERS"
+    ],
+    "file": "explainers/what-a-chip-is-eli5.html",
+    "date": "2026-10-29",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Eight switches, some on, spell the number 42 in binary\"><g font-family=\"monospace\" font-size=\"16\" text-anchor=\"middle\"><rect x=\"18\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"33\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"52\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"67\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"86\" y=\"34\" width=\"30\" height=\"40\" fill=\"#76d5c1\"/><text x=\"101\" y=\"60\" fill=\"#0d2622\">1</text><rect x=\"120\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"135\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"154\" y=\"34\" width=\"30\" height=\"40\" fill=\"#76d5c1\"/><text x=\"169\" y=\"60\" fill=\"#0d2622\">1</text><rect x=\"188\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"203\" y=\"60\" fill=\"#a5a29c\">0</text><rect x=\"222\" y=\"34\" width=\"30\" height=\"40\" fill=\"#76d5c1\"/><text x=\"237\" y=\"60\" fill=\"#0d2622\">1</text><rect x=\"256\" y=\"34\" width=\"30\" height=\"40\" fill=\"#2f2d2a\" stroke=\"#57534f\"/><text x=\"271\" y=\"60\" fill=\"#a5a29c\">0</text></g><g font-family=\"monospace\" font-size=\"9\" fill=\"#73706a\" text-anchor=\"middle\"><text x=\"33\" y=\"88\">128</text><text x=\"67\" y=\"88\">64</text><text x=\"101\" y=\"88\">32</text><text x=\"135\" y=\"88\">16</text><text x=\"169\" y=\"88\">8</text><text x=\"203\" y=\"88\">4</text><text x=\"237\" y=\"88\">2</text><text x=\"271\" y=\"88\">1</text></g><text x=\"18\" y=\"118\" font-size=\"18\" fill=\"#f1eee8\">= 42</text><text x=\"80\" y=\"118\" font-size=\"12\" fill=\"#a5a29c\">32 + 8 + 2</text><text x=\"18\" y=\"146\" font-size=\"12\" fill=\"#c3b8ff\">PART 3 · THE CHIP TRACK BEGINS</text></svg>",
+    "part": 3
+  },
+  {
     "id": "guess-the-next-word-eli5",
     "title": "The only job: guess the next word",
     "category": "AI & Frontier",
