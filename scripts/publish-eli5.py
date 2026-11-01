@@ -19,7 +19,7 @@ PREFIX = 'window.PUBLISHED = '
 a = argparse.ArgumentParser()
 a.add_argument('file')
 a.add_argument('--title', required=True)
-a.add_argument('--category', required=True, choices=CATEGORIES)
+a.add_argument('--category', required=True, help='a topic already on the site (CATEGORIES or any category in published.js); a brand-new topic also needs --new-category')
 a.add_argument('--minutes', required=True, type=int)
 a.add_argument('--summary', required=True)
 a.add_argument('--bullet', action='append', required=True)
@@ -30,6 +30,7 @@ a.add_argument('--subcategory', help='catalogue sub-heading inside the category,
 a.add_argument('--date', type=datetime.date.fromisoformat, help='publication date; default today for a new explainer, kept on update')
 a.add_argument('--card-svg', type=pathlib.Path, help='catalogue card drawing, one <svg viewBox="0 0 320 155"> file; required for a new explainer, kept on update')
 a.add_argument('--part', type=int, help='position inside its series sub-heading (the catalogue lists series parts in this order); kept on update')
+a.add_argument('--new-category', action='store_true', help='allow --category to be a topic the site does not have yet (Title Case, 1-3 words); it appears as a new topic tile')
 a.add_argument('--dry-run', action='store_true', help='update published.js but skip git')
 args = a.parse_args()
 
@@ -45,6 +46,17 @@ items = json.loads(pub.read_text().strip().removeprefix(PREFIX).removesuffix(';'
 head = subprocess.run(['git', '-C', str(ROOT), 'show', 'HEAD:published.js'], capture_output=True, text=True).stdout
 committed = json.loads(head.strip().removeprefix(PREFIX).removesuffix(';')) if head else items
 prev = next((e for e in committed if e['id'] == html.stem), None)
+# Topics: the six built-in ones plus any topic already published. A new one must be asked for explicitly,
+# so a typo can't create a topic by accident. The home page adds unknown topics as tiles after the built-in six.
+known = list(dict.fromkeys(CATEGORIES + [e['category'] for e in items]))
+if args.category not in known:
+    if not args.new_category:
+        sys.exit(f'unknown --category {args.category!r}; use one of {known}, or pass --new-category to start a new topic')
+    if not re.fullmatch(r"[A-Z][A-Za-z]*(?: (?:&|[A-Z][A-Za-z]*)){0,3}", args.category) or len(args.category.replace('&', '').split()) > 3:
+        sys.exit('a new topic is Title Case, 1-3 words (an ampersand is allowed), e.g. "Biology & Health"')
+    print(f'new topic: {args.category} (it gets its own tile on the home page)')
+elif args.new_category:
+    print(f'note: {args.category!r} already exists; --new-category ignored')
 if not prev and not (args.subcategory and args.card_svg):
     sys.exit('a new explainer needs --subcategory and --card-svg')
 
