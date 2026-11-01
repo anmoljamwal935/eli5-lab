@@ -34,6 +34,17 @@ if (backBtn && window.self !== window.top) {
     n.innerHTML = `<div class="series-end-head"><span>${esc(S.title)}</span><a href="${esc(S.hub)}" data-series-link="${esc(S.hub.replace(/\.html$/, ''))}">All ${all.length} studies ↗</a></div>` +
       `<div class="series-cards">${card(prev, '← Previous')}${card(next, 'Next →')}</div>`;
   });
+  // Reading progress, kept in this browser only: past 80% of a series study counts as read.
+  // (Inside the Lab's sandboxed reader storage is unavailable; the Lab records it from eli5-progress instead.)
+  if (id !== 'hub' && window.self === window.top) {
+    const mark = () => {
+      const d = document.documentElement, h = d.scrollHeight - d.clientHeight;
+      if (h > 0 && d.scrollTop / h < 0.8) return;
+      try { const k = 'eli5-series-read', s = new Set(JSON.parse(localStorage.getItem(k) || '[]')); if (!s.has(id)) { s.add(id); localStorage.setItem(k, JSON.stringify([...s])); } } catch {}
+      window.removeEventListener('scroll', mark);
+    };
+    window.addEventListener('scroll', mark, { passive: true });
+  }
   // Inside the Lab's reader, ask the Lab to open the study so its title and navigation follow along.
   if (window.self !== window.top) {
     document.addEventListener('click', e => {
