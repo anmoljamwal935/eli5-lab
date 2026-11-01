@@ -4,3 +4,4 @@ node_modules
 *.log
 .env*
 __pycache__/
+__pycache__/

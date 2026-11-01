@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "source": {},
+  "inventory": [],
+  "claims": [],
+  "panels": [],
+  "lab": {
+    "type": null,
+    "assumptions": [],
+    "units": {},
+    "independent_calculation_method": null,
+    "cases": [],
+    "invariants": [],
+    "tolerance": null,
+    "axis_and_clipping": null
+  },
+  "verification": {
+    "supplementary_checks": [],
+    "screenshots": [],
+    "coverage_review": "pending",
+    "semantic_review": "pending"
+  },
+  "publication": {
+    "status": "not-attempted",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
