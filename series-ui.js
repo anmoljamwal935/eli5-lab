@@ -49,7 +49,7 @@
     const x0 = 46, dx = (680 - x0) / (n - 1), Y = { llm: 72, chip: 158 };
     for (const t of ['llm', 'chip']) {
       add('line', { x1: 20, y1: Y[t], x2: 740, y2: Y[t], class: 'sb-lane' });
-      add('text', { x: 20, y: t === 'llm' ? Y[t] - 40 : Y[t] + 52, class: 'sb-lane-name', fill: S.tracks[t].color }, svg, S.tracks[t].name.toUpperCase());
+      add('text', { x: 20, y: t === 'llm' ? Y[t] - 40 : Y[t] + 52, class: 'sb-lane-name', 'data-track': t, fill: S.tracks[t].color }, svg, S.tracks[t].name.toUpperCase());
     }
     const pts = S.parts.map((p, i) => [x0 + i * dx, Y[p.track]]), bx = 724, by = (Y.llm + Y.chip) / 2;
     const lastLive = S.parts.reduce((k, p, i) => p.file ? i : k, -1);
@@ -64,6 +64,7 @@
       const g = p.file ? add('a', { href: '?id=' + encodeURIComponent(p.id), 'data-sb-open': p.id, 'aria-label': describe(p) }) : add('g', { tabindex: 0, role: 'img', 'aria-label': describe(p) });
       g.setAttribute('class', 'sb-node' + (p.file ? ' live' : ' soon') + (isRead ? ' read' : '') + (isNext ? ' next' : ''));
       g.style.setProperty('--c', c);
+      if (!bonus) g.setAttribute('data-track', p.track);
       if (isNext) add('circle', { cx: x, cy: y, r: 19, class: 'sb-halo' }, g);
       add('circle', { cx: x, cy: y, r: 22, class: 'sb-hit' }, g);
       if (bonus) add('path', { d: `M${x} ${y - 15}L${x + 15} ${y}L${x} ${y + 15}L${x - 15} ${y}Z`, class: 'sb-dot' }, g);

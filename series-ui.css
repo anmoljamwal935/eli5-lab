@@ -1,10 +1,15 @@
 /* "How AI works, from scratch" feature band on the home page (drawn by series-ui.js).
    Always dark, so the series colour key (teal, purple, gold) reads the same as inside the studies. */
-.series-band{--sb-bg:#151714;--sb-fg:#f1eee8;--sb-muted:#a5a29c;--sb-line:#34372f;--sb-gold:#f5c76a;
+.series-band{--sb-bg:var(--bg);--sb-fg:var(--fg);--sb-muted:var(--muted);--sb-line:var(--line);--sb-gold:#f5c76a;
   display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr);gap:40px;align-items:center;
-  margin:0 0 90px;padding:44px 44px 36px;background:var(--sb-bg);color:var(--sb-fg);border:1px solid var(--sb-line);
-  background-image:radial-gradient(#ffffff0a 1px,transparent 1px),radial-gradient(ellipse at 85% 30%,#76d5c114,transparent 55%),radial-gradient(ellipse at 70% 90%,#c3b8ff12,transparent 55%);
-  background-size:16px 16px,auto,auto}
+  margin:0 0 90px;padding:44px 44px 36px;background:var(--bg);color:var(--fg);border:1px solid var(--line)}
+/* Light theme: deeper versions of the series colours so they stay readable on a pale page. */
+body.light .series-band{--sb-gold:#b07d1e}
+body.light .sb-node[data-track="llm"]{--c:#23927c!important}
+body.light .sb-node[data-track="chip"]{--c:#6c5bd0!important}
+body.light .sb-lane-name[data-track="llm"]{fill:#23927c}
+body.light .sb-lane-name[data-track="chip"]{fill:#6c5bd0}
+body.light .sb-legend i{border-color:#23927c}body.light .sb-legend .lg-live{background:#23927c40}body.light .sb-legend .lg-read{background:#23927c}
 .series-band:empty{display:none}
 .sb-kicker{display:flex;align-items:center;gap:12px;margin:0 0 22px;font:11px/1.4 monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--sb-gold)}
 .sb-kicker i{flex:0 0 28px;height:1px;background:var(--sb-line)}
@@ -16,7 +21,7 @@
 .sb-actions .primary{background:#ff8059;color:#24120d;border:0;font-weight:600}
 .sb-actions .primary:hover{background:#ffa385;color:#20120c}
 .sb-actions .primary span{margin:0}
-.sb-map{color:var(--sb-fg);border:1px solid #ffffff38;background:transparent}
+.sb-map{color:var(--sb-fg);border:1px solid var(--line);background:transparent}
 .sb-map:hover{color:#ff8059;border-color:#ff8059}
 .sb-status{margin:20px 0 0;font:11px/1.6 monospace;letter-spacing:.06em;color:var(--sb-muted)}
 .sb-visual{min-width:0}
@@ -24,7 +29,7 @@
 .sb-svg{display:block;width:100%;height:auto;min-width:0;font-family:Outfit,Arial,sans-serif}
 .sb-lane{stroke:var(--sb-line);stroke-width:2}
 .sb-lane-name{font:600 12px monospace;letter-spacing:.12em}
-.sb-route{fill:none;stroke:#f1eee8;stroke-opacity:.22;stroke-width:1.5;stroke-dasharray:4 5}
+.sb-route{fill:none;stroke:var(--fg);stroke-opacity:.22;stroke-width:1.5;stroke-dasharray:4 5}
 .sb-route.lit{stroke-opacity:.75;stroke-dasharray:none;stroke-width:2}
 .sb-node{cursor:default;outline:none}
 .sb-node.live{cursor:pointer}
@@ -33,7 +38,7 @@
 .sb-node.soon .sb-dot{stroke-opacity:.55;stroke-dasharray:3 3}
 .sb-node.live .sb-dot{fill:var(--c);fill-opacity:.25}
 .sb-node.live.read .sb-dot{fill-opacity:1}
-.sb-tick{fill:none;stroke:#151714;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.sb-tick{fill:none;stroke:var(--bg);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .sb-num{font:12px monospace;text-anchor:middle;fill:var(--sb-muted)}
 .sb-node.live .sb-num{fill:var(--sb-fg)}
 .sb-node:hover .sb-dot,.sb-node:focus-visible .sb-dot{transform:scale(1.25)}
