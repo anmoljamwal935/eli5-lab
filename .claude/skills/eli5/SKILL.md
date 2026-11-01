@@ -170,7 +170,16 @@ cp $SKILL/template.html $SITE/explainers/<slug>-eli5.html
 
 **Hero:** a `CATEGORY / N MIN` kicker, the `<h1>`, a 1–2 sentence `.lede`, then the source line. Use `Watch the source ↗` for video and `Read the source ↗` for text, and link the real URL. If facts were checked, add "facts checked against <primary source>". If there's no URL, give an honest attribution with no link. Then the colour legend.
 
-**Category** must be exactly one of: `AI & Frontier`, `Monetary Architecture`, `Macroeconomics`, `Energy & Physics`, `Infrastructure`, `Distributed Systems`.
+**Category** (the home page calls it a *topic*) is normally one of the topics the site already has: `AI & Frontier`, `Monetary Architecture`, `Macroeconomics`, `Energy & Physics`, `Infrastructure`, `Distributed Systems`, plus any added later (list them with `grep -o '"category": "[^"]*"' $SITE/published.js | sort -u`). Reuse one whenever the explainer reasonably fits.
+
+**A new topic**, only when the subject truly fits none of them (e.g. a biology explainer on a site with no biology):
+- Name it like the others: Title Case, 1–3 words, an ampersand allowed ("Biology & Health", "Law & Policy"). It must name a broad shelf many future explainers could sit on, never this one explainer's subject ("Biology & Health", not "CRISPR").
+- Don't create a near-duplicate of an existing topic ("Economics" next to "Macroeconomics"). If in doubt, use the closest existing topic and pick a new subcategory instead (Step 8).
+- Use the new name in the masthead `topic-tag` and the hero kicker exactly as for any topic.
+- Publish with `--category "<New Topic>" --new-category` (Step 9). The publisher refuses an unknown topic without that flag, so a typo can't create one by accident.
+- Nothing else needs editing. The home page reads topics from `published.js`, so the new one gets its own tile after the built-in six, plus a footer link and a studio option.
+- Say in the reply that you created a new topic, and why none of the existing ones fit.
+- On the live check (Step 9), confirm the new tile shows the right name and count, and that clicking it lists the explainer.
 
 **Every panel:** `<p class="kicker">ROLE</p>`, `<h2>` (≤ 8 words), `<p>` (target ~25 words, up to ~45 when precision needs it), then `<figure><svg>`. Text panels without a drawing are allowed only for the field guide and "So what".
 
@@ -266,7 +275,7 @@ The supplied scripts are incomplete checks. Complete the supplementary checks in
 
 ### Step 8: Draw the catalogue card
 
-The homepage shows the **three newest explainers as cards**, each with a small drawing, then lists every explainer by date under **category → subcategory**. The card is the first thing a reader sees, so it gets the same care as a panel.
+The homepage shows the **three newest explainers as cards** (at most one per series), each with a small drawing. The catalogue then starts as **one tile per topic** with its count; a tile opens that topic's list, grouped by **subcategory** and sorted by date. The card is the first thing a reader sees, so it gets the same care as a panel.
 
 1. **Draw it.** `cp $SKILL/templates/card.svg $WORK/card.svg`, then draw a miniature of the page's central picture, the one that carries the main idea. Look at `examples/cards/`: the Oracle card is its J-curve, the GDP card is its sector lenses. Not labelled boxes, not the headline in text, not a new metaphor the page doesn't use.
 2. **Rules.** `viewBox="0 0 320 155"`, `role="img"` and a one-sentence `aria-label`. Transparent background (the card supplies it). The page's legend colours with the same meanings. 0–3 labels, each 1–3 CAPS words, `font-family="monospace" font-size="9"` on the text or a parent `<g>`. Every label 16+ units from every edge. Give every shape an explicit `fill` (`none` or a colour): the default black disappears on the dark card. No `<style>`, `<script>`, `<image>`, `<use>`, links or event handlers. The publisher rejects them because the card is inlined into the homepage.
@@ -282,18 +291,18 @@ The homepage shows the **three newest explainers as cards**, each with a small d
 
 ```bash
 python3.12 $SITE/scripts/publish-eli5.py $SITE/explainers/<slug>-eli5.html \
-  --title "<same as h1>" --category "<one of the six>" --minutes <read time> \
+  --title "<same as h1>" --category "<existing topic>" --minutes <read time> \
   --summary "<hook, ≤ 12 words>" \
   --bullet "<key idea 1>" --bullet "<key idea 2>" \
   --nodes "STAGE1,STAGE2,STAGE3" \
   --subcategory "<from Step 8>" \
   --card-svg "$WORK/card.svg"
 ```
-`--nodes` only feeds a fallback box drawing; the card replaces it. The date defaults to today (`--date YYYY-MM-DD` to override). A new explainer without `--subcategory` and `--card-svg` is refused.
+For a brand-new topic (Step 5), add `--new-category`. `--nodes` only feeds a fallback box drawing; the card replaces it. The date defaults to today (`--date YYYY-MM-DD` to override). A new explainer without `--subcategory` and `--card-svg` is refused.
 The publisher also writes the link preview: it renders `assets/og/<slug>-eli5.png` (title + card, 1200×630; needs Playwright and Google Chrome), puts preview tags into the explainer just before `</head>` between `link-preview` markers, and regenerates `sitemap.xml` and `feed.xml` (`scripts/site_meta.py`). Never hand-edit inside the markers. The block changes the file, so after the Step 8 dry run re-run the 7a check with `--audit <audit file>` to re-record the artifact hash; nothing outside the head changes, so other checks stand.
 First run the Git preflight in `references/reliability-gates.md`. The script commits selected paths but pushes all outgoing HEAD commits, and internally uses pull --rebase --autostash. Stop if unrelated work would be published or manipulated. Never clean/reset/discard changes to manufacture a safe state.
 
-After pushing, read back the exact live explainer and catalogue entry, verify reviewed content/assets, and exercise the live lab. On the live homepage, confirm the card is first under "Latest explainers" with its drawing and date, and that the explainer is listed under the right category and subcategory. Check that the live explainer's `og:image` URL returns 200. Use bounded retries for genuine deployment lag (e.g. route still 404 or server error), not for failed content assertions. Verify the deployed route after redirects (the site may canonicalize away `.html`) and record the final URL, HTTP status, lab result, and catalogue link in the audit. Assert the page's actual `<h1>` or canonical route for identity; `document.title` may append the site brand, so don't compare it to the unadorned catalogue title. Once the page returns 200, a failed assertion is a verification defect to diagnose immediately, not a reason to replay the whole retry loop. If deployment cannot be confirmed, report `pushed; deployment not verified`. On script failure inspect current Git/catalogue state before retrying; unchanged reruns can fail at commit. Never hand-edit `app.js` or publish unrelated work.
+After pushing, read back the exact live explainer and catalogue entry, verify reviewed content/assets, and exercise the live lab. On the live homepage, confirm the card is first under "Latest explainers" with its drawing and date, and that clicking its topic tile lists the explainer under the right subcategory (a series part sits inside its series' row). Check that the live explainer's `og:image` URL returns 200. Use bounded retries for genuine deployment lag (e.g. route still 404 or server error), not for failed content assertions. Verify the deployed route after redirects (the site may canonicalize away `.html`) and record the final URL, HTTP status, lab result, and catalogue link in the audit. Assert the page's actual `<h1>` or canonical route for identity; `document.title` may append the site brand, so don't compare it to the unadorned catalogue title. Once the page returns 200, a failed assertion is a verification defect to diagnose immediately, not a reason to replay the whole retry loop. If deployment cannot be confirmed, report `pushed; deployment not verified`. On script failure inspect current Git/catalogue state before retrying; unchanged reruns can fail at commit. Never hand-edit `app.js` or publish unrelated work.
 
 **Reply to the user with:**
 1. The live link: `https://eli5-seven-mu.vercel.app/explainers/<slug>-eli5` (the explainer's own page; it carries the link preview, `?id=` links preview as the homepage)
