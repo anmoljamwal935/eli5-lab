@@ -4,7 +4,7 @@ These are required agent checks, not claims that existing scripts enforce a comp
 
 ## 1. Durable evidence
 
-Create a unique run directory inside `/Users/anmoljamwal/.hermes/cache/scratch` (or the runtime's managed workspace). Keep source captures, screenshots, and independent test scripts there. Preserve the final audit at `~/.hermes/eli5-audits/<slug>-eli5.audit.json`, outside the public website repository. Use `templates/audit.json` to initialise it without overwriting an existing audit. Capture/checker tools can update their own sections via `--audit`; inspect their --help for exact options. Read existing files before editing. Keep source captures outside the site repository too. The capture helper preserves existing files; prefer a unique capture directory for each run.
+Create a unique run directory inside `~/.hermes/cache/scratch` (or the runtime's managed workspace, such as a cloud session's scratchpad). Keep source captures, screenshots, and independent test scripts there. Preserve the final audit at `~/.hermes/eli5-audits/<slug>-eli5.audit.json`, outside the public website repository. Use `templates/audit.json` to initialise it without overwriting an existing audit. Capture/checker tools can update their own sections via `--audit`; inspect their --help for exact options. Read existing files before editing. Keep source captures outside the site repository too. The capture helper preserves existing files; prefer a unique capture directory for each run.
 
 The JSON audit must contain these fields with real values:
 

@@ -98,6 +98,19 @@ LAB_JS = r"""(scenario) => {
 }"""
 
 
+
+def launch_chrome(p):
+    """Google Chrome if installed, else ELI5_CHROME or the Chromium preinstalled in cloud sessions."""
+    import glob, os
+    try:
+        return p.chromium.launch(channel='chrome')
+    except Exception:
+        exe = os.environ.get('ELI5_CHROME') or next(iter(sorted(glob.glob('/opt/pw-browsers/chromium-*/chrome-linux*/chrome'))), None)
+        if not exe:
+            raise
+        return p.chromium.launch(executable_path=exe)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('page', type=Path)
@@ -107,7 +120,7 @@ def main(argv=None):
     shots.mkdir(parents=True, exist_ok=True)
     errors, js_errors = [], []
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel='chrome')
+        browser = launch_chrome(p)
         page = browser.new_page(viewport={'width': 1280, 'height': 900})
         page.on('pageerror', lambda e: js_errors.append(str(e)))
         page.on('console', lambda m: m.type == 'error' and js_errors.append(m.text))

@@ -92,25 +92,47 @@ def check(path, html):
     nodes = list(root.descendants())
     errors, warnings = [], []
     err, warn = errors.append, warnings.append
-    if path.parent.name != 'explainers' or not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*-eli5\.html', path.name):
-        err('file must be explainers/<lowercase-kebab-slug>-eli5.html')
+    # Series pages (see references/series.md): a part has <body data-series-id="<part id>">,
+    # a series map has data-series-id="hub" and is checked as its own page type.
+    body = next((n for n in nodes if n.tag == 'body'), None)
+    series_id = (body.attrs.get('data-series-id', '') if body else '').strip()
+    hub = series_id == 'hub'
+    slug = r'[a-z0-9]+(?:-[a-z0-9]+)*' + ('' if hub else r'-eli5') + r'\.html'
+    if path.parent.name != 'explainers' or not re.fullmatch(slug, path.name):
+        err('file must be explainers/<lowercase-kebab-slug>' + ('' if hub else '-eli5') + '.html')
+    if series_id and not hub and path.stem != series_id:
+        err(f'data-series-id "{series_id}" must equal the file name without .html ({path.stem})')
     if '{{' in root.text() or any('{{' in v for n in nodes for v in n.attrs.values()):
         err('template placeholders {{...}} left in the file')
-    for name in ('study-masthead', 'eli5-study-container', 'eli5-takeaway-card', 'source-note', 'legend'):
+    for name in ('study-masthead', 'eli5-study-container', 'eli5-takeaway-card') + (() if hub else ('source-note', 'legend')):
         if not any(n.has_class(name) for n in nodes):
             err(f'missing class {name}')
     for tag, attr, asset in [('link', 'href', '../eli5-study.css'), ('script', 'src', '../eli5-study.js')]:
         if not any(n.tag == tag and n.attrs.get(attr) == asset for n in nodes):
             err(f'missing {asset}')
+    series_src = re.compile(r'\.\./series(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\.js')
+    if series_id:
+        srcs = [n.attrs['src'] for n in nodes if n.tag == 'script' and 'src' in n.attrs]
+        data = [k for k, src in enumerate(srcs) if series_src.fullmatch(src)]
+        if not data:
+            err('series page must load its series data (../series.js or ../series-<id>.js)')
+        elif '../eli5-study.js' in srcs and max(data) > srcs.index('../eli5-study.js'):
+            err('series data scripts must come before ../eli5-study.js')
+        slots = {n.attrs.get('data-series') for n in nodes if n.has_class('series-strip')}
+        for slot in (('top',) if hub else ('top', 'end')):
+            if slot not in slots:
+                err(f'series page needs <div class="series-strip" data-series="{slot}">')
+        if hub and not any(n.attrs.get('id') == 'reading' for n in nodes):
+            err('series map needs the reading list <ol id="reading">')
     for n in nodes:
         if n.tag == 'script' and 'src' in n.attrs:
-            if n.attrs['src'] != '../eli5-study.js':
+            if n.attrs['src'] != '../eli5-study.js' and not (series_id and series_src.fullmatch(n.attrs['src'])):
                 err(f"external stylesheet/script not allowed: {n.attrs['src']}")
         if n.tag == 'link' and 'stylesheet' in n.attrs.get('rel', '').lower().split():
             if n.attrs.get('href') != '../eli5-study.css':
                 err(f"external stylesheet/script not allowed: {n.attrs.get('href')}")
     svgs = [n for n in nodes if n.tag == 'svg']
-    if len(svgs) < 5:
+    if len(svgs) < 5 and not hub:
         err(f'only {len(svgs)} diagrams; an explainer needs a drawing in nearly every panel')
     boxy = 0
     for i, svg in enumerate(svgs, 1):
@@ -159,7 +181,7 @@ def check(path, html):
     panels = [n for n in nodes if n.tag == 'section' and n.has_class('panel')]
     if not panels:
         err('missing required section.panel elements')
-    if len(panels) < 6:
+    if len(panels) < 6 and not hub:
         warn(f'only {len(panels)} panels; verify teaching-inventory coverage')
     for i, panel in enumerate(panels, 1):
         children = [c for c in panel.children if isinstance(c, Node) or c.strip()]
@@ -173,13 +195,15 @@ def check(path, html):
         elif len(headings[0].text().split()) > 8:
             err(f'panel #{i}: heading exceeds 8 words')
         exception = re.sub(r'[^a-z]+', ' ', role.lower()).strip() in ('field guide', 'so what')
-        if not exception and not list(panel.descendants('svg')):
+        if not exception and not hub and not list(panel.descendants('svg')):
             err(f'panel #{i}: missing required drawing (only Field guide / So what may omit it)')
     notes = sum(n.has_class('note') for n in nodes)
     if notes > 2:
         err(f'{notes} caveat notes; max 2 per explainer')
     sliders = [n for n in nodes if n.tag == 'input' and n.attrs.get('type', '').lower() == 'range']
-    if not sliders:
+    if hub:
+        pass  # a series map has no lab; its controls are navigation, not experiments
+    elif not sliders:
         warn('no lab sliders; acceptable only with a documented not-applicable reason')
     else:
         if not 2 <= len(sliders) <= 4:

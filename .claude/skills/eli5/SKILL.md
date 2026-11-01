@@ -13,6 +13,17 @@ Turn a topic or a source (video, article, thread) into **one HTML explainer** in
 
 The reader is a smart adult with zero background in this topic, not a child. Never talk down, never use baby analogies, never trade truth for cuteness. They should leave with a **correct** mental model and every substantive teaching point within the declared scope. Five minutes is a target, not permission to omit ideas; use a longer honest reading time or clearly divided sections for long sources.
 
+## What to make: one standalone explainer, unless told otherwise
+
+**Default: every request makes one standalone explainer.** A link, a pasted article, a video, a thread or a bare topic becomes a single page that stands on its own, in its category and subcategory, built with the nine steps below. This holds even when:
+- the source is long. Use a longer honest reading time or clearly divided sections (see the scope rule above). Do not split it into several pages.
+- the topic sounds like it belongs in an existing series, or matches one of its planned parts. Build it standalone, and in the reply add one line saying it could become Part N of "<series title>" if the user wants.
+- the source itself is "part 3 of" someone else's series. That is their series, not one on this site.
+
+**Series work only on an explicit instruction**, such as "start a series on X", "make this Part 5 of How AI works", "add the next part" or "expand the series with a part on Y". Then follow **Series mode** below as well as the nine steps. If it is unclear whether the user wants a series, ask one short question before Step 4. Do not guess either way.
+
+**Changes to the site itself** (home page, reader, series UI, `app.js`, `index.html`, `design.css`, `eli5-study.*`, `series-ui.*`) are never part of publishing an explainer. Do them only when asked, on their own branch, and ask before merging to `main`.
+
 **Gold example:** `examples/real-gdp-eli5.html` in this skill's folder. It was built from a 10-minute Hindi YouTube video. Before you start, open it and read it end to end: the panels, the drawings, the lab, and the code. Copy its visual patterns, not its dated facts or unverified interpretations. It is a design reference, not an authority; apply all current checks to it.
 
 ## Files in this skill
@@ -29,8 +40,9 @@ The reader is a smart adult with zero background in this topic, not a child. Nev
 | `examples/cards/*.svg` | Finished cards: the J-curve (Oracle) and the sector lenses (GDP). Copy their approach. |
 | `scripts/check_card.py` | Card lint: shell, safety, labels, edges, palette, labelled boxes. Static only. |
 | `references/video-frames.md` | Concrete download, frame extraction, and inspection recipe. |
+| `references/series.md` | Series mechanics: the data file, the series map page, page wiring, the home page band, reading progress. Read it only in Series mode. |
 
-Paths below use `SKILL=~/.hermes/skills/eli5` and `SITE=/Users/anmoljamwal/myenv/eli5`.
+Paths below use `SKILL` for this skill's folder and `SITE` for the root of the site repository (the one with `published.js` and `explainers/`). On the owner's Mac that is `SKILL=~/.hermes/skills/eli5` and the local site checkout. Inside the site repository the skill lives at `SITE/.claude/skills/eli5`. In a cloud session, use the repository clone as `SITE`, the session's scratchpad for `WORK`, and `python3.12` with Python Playwright (`python3.12 -m pip install --user --break-system-packages playwright` if missing). The browser scripts fall back to the preinstalled Chromium when Google Chrome is absent (set `ELI5_CHROME` to choose another binary).
 
 ## Reliability contract — mandatory
 
@@ -310,6 +322,42 @@ The publisher only commits the explainer, `published.js` and the generated previ
 
 ---
 
+## Series mode
+
+Use this only on an explicit series instruction (see "What to make"). A series is an ordered set of explainers with one series map page, a strip at the top of each part ("Part 3 of 17 · Chip track"), previous/next cards at the end, and a band on the home page with a lane map and reading progress. All of that is drawn from one series data file, so publishing a part is mostly the nine steps plus a few series-specific changes. Read `references/series.md` for the mechanics before the first series task in a session.
+
+### Starting a new series
+
+1. **Plan first, then ask.** Before writing any page, send the user a plan: the series title, one-line tagline, 1–3 tracks (with name, short name and colour each), every planned part in reading order (title + one-line blurb + track), an optional bonus deep dive, and the shared colour key. Wait for approval. The plan is cheap to change. Published URLs are not.
+2. **Series colour key.** Pick it once for the whole series and write it into the series map page ("The same colours mean the same things") and as a comment in each part's `<style>`. Every part uses the same colour for the same concept, even where Step 4b would choose differently for a single page.
+3. **Data file.** `series.js` holds the first series and must keep its shape. Every later series gets its own `series-<id>.js` at the site root that pushes itself onto `window.ELI5_SERIES_LIST`, and is loaded in `index.html` after `series.js`. List every planned part with no `file` yet.
+4. **Series map page** (`explainers/<series-slug>.html`, published first, as `--part 0`). Copy the existing map page and adapt it as `references/series.md` describes. `check_explainer.py` checks it as a series map, not as an explainer.
+5. **Then Part 1**, as below.
+
+### Writing a part
+
+Run all nine steps. These are the differences:
+
+- **Step 1–2 scope.** The part's scope is its blurb in the series data. The inventory covers that scope. List terms earlier parts already taught: recap each in one line and link back, don't re-teach. List topics deferred to later parts and say so on the page ("Part 7 covers this").
+- **Step 4.** Use the series colour key. Carry the running example across parts when the topic allows, so readers meet familiar numbers.
+- **Step 5 page wiring** (checked by `check_explainer.py`):
+  - `<body data-series-id="<slug>-eli5">`, where the id equals the file name without `.html`.
+  - `<div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>` right after the hero's source note.
+  - The same with `data-series="end"` after the last panel, before the takeaway card.
+  - Before `../eli5-study.js`, load `<script src="../series.js"></script>`, plus `../series-<id>.js` for a later series.
+- **Fact tags.** Series parts are often built from topics rather than a single source. In the hero, explain the tags once (`<span class="tag">public</span>` for a published paper, spec sheet or plain arithmetic, `<span class="tag">example</span>` for a made-up but consistent number, `<span class="tag np">not public</span>` where a company has not said) and tag facts as you use them. This is on top of Step 3, not instead of it.
+- **Go deeper boxes.** Optional detail goes in `<details class="trace"><summary>Go deeper: …</summary>…</details>`. A reader who skips every one must still follow every later part.
+- **Hand-off.** The last panel before the takeaway names what the next part answers. The end cards link it automatically.
+- **Step 8 card.** Add the label `PART N · <TRACK NAME>` in the track's colour (still 0–3 labels).
+- **Step 9 publish.** Use `--subcategory "<series title>"` (exactly the series title, so the catalogue groups the parts) and `--part N`. Start `--summary` with `Part N: `. Before running the publisher, set `file: '<slug>-eli5.html'` on the part in the series data file and commit that change on its own, so the publisher's push carries both. Note it in the Git preflight as the one expected outgoing commit.
+- **Live checks, in addition to Step 9's.** The part's strip reads "Part N of M". The previous part's end card now links to it. Its dot on the home page band and the series map is lit, not dashed.
+
+### Expanding a series
+
+- **New parts:** add them to the data file's `parts` list first. Appending is safe. Inserting before an already-published part renumbers every later part, which changes "Part N" labels, summaries and cards that are already live. Ask before doing that, and if approved, re-publish each affected part with its new `--part` and summary.
+- **More tracks or a bonus:** add fields only. Never rename or remove fields in a series data file, because published pages read them.
+- **A part that is already live as a standalone explainer:** only when the user asks. Wire it in as above and re-publish with `--subcategory` and `--part` (Updating a published explainer). Keep the slug.
+
 ## Anti-patterns (each one has shipped before)
 
 - **Explaining the neatest sub-idea instead of the whole source.** An earlier GDP explainer explained double deflation well, but missed the video's main point (there is no single deflator) and its punchline (a method confused with a number). Step 2 exists to prevent this.
@@ -324,3 +372,6 @@ The publisher only commits the explainer, `published.js` and the generated previ
 - **Deleting template CSS** "because it looked unused": the field guide then rendered as plain stacked text.
 - **Several arrows in one `<path>`** (one arrowhead for three arrows), arrows drawn centre-to-centre through circles, and dashed rings running through node labels.
 - **Analogies that are load-bearing but false.** If the analogy breaks somewhere important, say so in one line.
+- **Starting a series nobody asked for**, or splitting one long source into "Part 1/2/3". The default is one standalone explainer.
+- **Series parts that skip the checkers.** Parts 1–4 of "How AI works" shipped with sentences inside drawings, 12px labels and panels without drawings. A series part goes through every gate a standalone explainer does.
+- **Re-teaching earlier parts at length**, or using a different colour for a concept the series already coloured.
