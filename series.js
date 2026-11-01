@@ -3,6 +3,7 @@
 window.ELI5_SERIES = {
   id: 'how-ai-works',
   title: 'How AI works, from scratch',
+  tagline: 'Start with no background at all. End with the whole picture: the program that writes the answers, and the chips it runs on.',
   hub: 'how-ai-works-from-scratch.html',
   tracks: {
     llm: { name: 'How LLMs work', short: 'LLM track', color: '#76d5c1' },

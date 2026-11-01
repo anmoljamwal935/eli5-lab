@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{TITLE}} — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">{{CATEGORY}}</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>{{CATEGORY_UPPER}} / {{MINUTES}} MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>{{TITLE}}</h1>
+      <p class="lede">{{ONE_OR_TWO_SENTENCES: THE CORE IDEA}}</p>
+      <p class="source-note">Built from {{SOURCE: author/channel + type, e.g. "Keshav Bedi's video (Hindi captions)"}}{{, facts checked against PRIMARY SOURCE}} · <a href="{{SOURCE_URL}}">{{Watch|Read}} the source ↗</a></p>
+      <!-- Colour key: one entry per colour you use. Same colour = same concept everywhere on the page. -->
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#ff8059"></i>{{THE THING BEING EXPLAINED}}</span>
+        <span><i style="background:#76d5c1"></i>{{SECOND CONCEPT}}</span>
+        <span><i style="background:#f87171"></i>wrong method / claim</span>
+      </div>
+    </section>
+
+    <!-- One <section class="panel"> per idea, in arc order. Every panel: kicker, h2, short <p>, figure.
+         SVG rules: viewBox 800 wide; font-size 16+ (never below 14); labels 1-5 words; no sentences inside SVG. -->
+    <section class="panel">
+      <p class="kicker">{{ROLE, e.g. The claim / The problem / The building block / The mechanism / The surprise / The common mistake / So what}}</p>
+      <h2>{{PANEL_HEADING ≤ 8 WORDS}}</h2>
+      <p>{{PANEL_BODY ~25-45 WORDS}}</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="{{WHAT THE DRAWING SHOWS, ONE SENTENCE}}"><!-- drawing --></svg>
+      </figure>
+    </section>
+
+    <!-- LAB: required when anything in the topic is a number. The truth is fixed by construction; methods compete against it. -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>{{LAB_HEADING}}</h2>
+      <p>{{SETUP THAT FIXES THE TRUE ANSWER, using the running example}}</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <!-- 2-4 sliders. ids must match the `ids` array in the script. -->
+          <div class="control"><label for="s1">{{SLIDER_1}} <output id="s1-o"></output></label><input id="s1" type="range" min="-20" max="20" value="0"></div>
+          <div class="control"><label for="s2">{{SLIDER_2}} <output id="s2-o"></output></label><input id="s2" type="range" min="-20" max="20" value="0"></div>
+          <div class="presets">
+            <!-- 2-4 presets. data-p = slider values in the same order as `ids`. -->
+            <button type="button" class="secondary" data-p="0,0">{{PRESET_NAME}}</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="{{WHAT THE BARS COMPARE}}"></svg></div>
+      </div></div>
+    </section>
+
+    <!-- Optional FIELD GUIDE for a family of related things:
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>{{HEADING}}</h2>
+      <div class="field-grid">
+        <div><b>{{NAME}}</b><span>{{WHAT IT TRACKS, ONE LINE}}</span><em>{{WHERE IT'S USED}}</em></div>
+      </div>
+    </section> -->
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>{{ONE_SENTENCE_TAKEAWAY}}</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Configure ids, labConfig and compute() only. Do not edit update(): check_render.py verifies its ticks and bars.
+    // Assumptions and expected results require independent verification.
+    const ids=['s1','s2'],$=id=>document.getElementById(id);
+    const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(1)+'%';
+    // compute(values) gets slider values in `ids` order (as numbers) and returns:
+    //   truth:  the correct answer (in %), drawn as a dashed line
+    //   rows:   [[method name, its answer in %, colour]]. Correct method coral #ff8059, wrong ones red #f87171 (or their legend colour)
+    //   ledger: [[label, value as text]]. The intermediate numbers, so the reader can check the maths
+    function compute(v){
+      const [a,b]=v;
+      return {truth:a, rows:[['{{CORRECT METHOD}}',a,'#ff8059'],['{{SHORTCUT}}',a+b,'#f87171']], ledger:[['{{STEP}}',a.toFixed(2)]]};
+    }
+    const labConfig={format:pct, sliderFormats:[], minSpan:10, maxSpan:200, step:10};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false}; // invalidate stale success before computation
+      $('labChart').innerHTML='';
+      $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value), fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=(labConfig.sliderFormats[i]||fmt)(v[i]));
+      const {truth,rows,ledger}=compute(v);
+      if(!Number.isFinite(truth)||!rows.length||rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned non-finite or missing results');
+      const {minSpan,maxSpan,step}=labConfig;
+      if(!(minSpan>0 && maxSpan>=minSpan && step>0)) throw new Error('Invalid lab axis configuration');
+      const m=Math.min(maxSpan,Math.max(minSpan,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/step)*step));
+      // Zero sits at the left edge unless some value is negative; never hand-place ticks or bars.
+      const neg=Math.min(truth,...rows.map(r=>r[1]))<0, x0=neg?260:60, span=neg?200:400;
+      const sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m, ticks=neg?[-m,0,m]:[0,m/2,m];
+      const bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      const clipped=rows.map(r=>Math.abs(r[1])>m), truthClipped=Math.abs(truth)>m;
+      // Axis and truth lines are drawn per row band so they never cross the row labels above each bar.
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">truth ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      rows.forEach(([name,val,col],i)=>{
+        const y=80+i*82,x=sx(val);
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><line x1="${sx(truth)}" y1="${y-4}" x2="${sx(truth)}" y2="${y+30}" stroke="#f1eee8" stroke-dasharray="5 5"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}${clipped[i]?' · off-scale':''}</text><rect data-v="${val}" x="${Math.min(x,x0)}" y="${y}" width="${Math.abs(x-x0)}" height="26" fill="${esc(col)}"/>`;
+        if(clipped[i]){const d=val>0?1:-1;s+=`<path class="overflow-marker" d="M${x-d*9} ${y+3} L${x} ${y+13} L${x-d*9} ${y+23}" fill="none" stroke="#f1eee8" stroke-width="3"/>`;}
+      });
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

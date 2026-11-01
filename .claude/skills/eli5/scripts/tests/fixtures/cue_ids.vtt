@@ -1,0 +1,21 @@
+WEBVTT
+Kind: captions
+Language: en
+
+NOTE this is not speech
+00:00.000 --> 00:99.000
+ignore this too
+
+STYLE
+::cue { color: lime; }
+
+REGION
+id:region1
+
+cue-001
+00:00.000 --> 00:02.500 align:start
+<v Speaker><c.green>Hello &amp; welcome</c></v>
+
+2
+00:00:02.500 --> 00:00:05.000
+Next <00:00:03.000>line
