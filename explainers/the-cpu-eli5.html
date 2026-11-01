@@ -821,7 +821,7 @@
         S(svg,'line',{x1:X(1),y1:Y(1),x2:X(1e4),y2:Y(1e4),stroke:C.mut,'stroke-dasharray':'4 4'});T(svg,630,58,'dashed: perfect, 2× cores = 2× speed',{fill:C.mut,'font-size':15,'text-anchor':'end'});
         let d='';for(let k=0;k<=80;k++){const c=10**(k/20),v=1/((1-p)+p/c);d+=(k?' L':'M')+X(c).toFixed(1)+' '+Y(v).toFixed(1);}
         S(svg,'path',{d,fill:'none',stroke:C.coral,'stroke-width':3});
-        if(mx<1e4){S(svg,'line',{x1:80,y1:Y(mx),x2:740,y2:Y(mx),stroke:C.rose,'stroke-dasharray':'6 4'});T(svg,736,Y(mx)-7,'ceiling: '+fmt(Math.round(mx))+'×',{fill:C.rose,'font-size':16,'text-anchor':'end'});}
+        if(mx<1e4){S(svg,'line',{x1:80,y1:Y(mx),x2:740,y2:Y(mx),stroke:C.rose,'stroke-dasharray':'6 4'});const gy=[1,10,100,1000,10000].map(Y),hit=gy.find(g=>g>Y(mx)-24&&g<Y(mx)-5),by=hit===undefined?Y(mx)-7:hit-4;T(svg,736,by,'ceiling: '+fmt(Math.round(mx))+'×',{fill:C.rose,'font-size':16,'text-anchor':'end'});}
         S(svg,'circle',{cx:X(n),cy:Y(sp),r:7,fill:C.coral});T(svg,80,20,'SPEED-UP · each gridline = 10×',{fill:C.mut,'font-size':14});T(svg,740,20,'cores →',{fill:C.mut,'font-size':14,'text-anchor':'end'});
         $('amS').textContent=(sp<10?sp.toFixed(1):fmt(Math.round(sp)))+'×';$('amM').textContent=fmt(Math.round(mx))+'×';}
       drawAm();
