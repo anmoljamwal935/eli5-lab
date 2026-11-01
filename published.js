@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "learning-is-nudging-numbers-eli5",
+    "title": "Learning is nudging numbers",
+    "category": "AI & Frontier",
+    "minutes": 30,
+    "summary": "Part 6: how training turns random numbers into a model, one tiny step downhill at a time",
+    "bullets": [
+      "One knob, then two: loss, slope and the walk downhill you can run yourself",
+      "Train a 729-knob letter model in your browser, and see what training costs"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "LOSS",
+      "SLOPE",
+      "STEP"
+    ],
+    "file": "explainers/learning-is-nudging-numbers-eli5.html",
+    "date": "2026-11-01",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Steps walking down a loss valley towards the bottom\"><path d=\"M20 30 C70 140 200 140 300 40\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"3\"/><g fill=\"#c3b8ff\"><circle cx=\"34\" cy=\"62\" r=\"4\"/><circle cx=\"68\" cy=\"100\" r=\"4\"/><circle cx=\"104\" cy=\"118\" r=\"4\"/><circle cx=\"134\" cy=\"123\" r=\"4\"/></g><path d=\"M34 62 L68 100 L104 118 L134 123\" fill=\"none\" stroke=\"#c3b8ff\" stroke-dasharray=\"3 3\"/><circle cx=\"158\" cy=\"124\" r=\"6\" fill=\"#76d5c1\"/><text x=\"196\" y=\"96\" font-size=\"12\" fill=\"#a5a29c\">loss</text><text x=\"18\" y=\"148\" font-size=\"12\" fill=\"#76d5c1\">PART 6 · HOW LLMS WORK</text></svg>",
+    "part": 6
+  },
+  {
     "id": "the-gpu-eli5",
     "title": "The GPU: thousands of simple workers",
     "category": "AI & Frontier",
