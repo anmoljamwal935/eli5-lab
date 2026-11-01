@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Learning is nudging numbers — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Series colour key:
+       gold = text and tokens, teal = stored numbers, orange = arithmetic, purple = connections, rose = the wrong intuition */
+    :root{--danger:#ec6a94}
+    .panel figure{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .c-tok{color:var(--gold)}.c-num{color:var(--teal)}.c-calc{color:var(--accent)}.c-link{color:var(--purple)}.c-bad{color:var(--danger)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    details.trace .table-wrap{margin:12px 0}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+
+    /* Sliders (stepped ones are built by pick()) */
+    .eli5-study-container input[type=range]{--c:var(--teal);-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:6px 0 0;padding:0!important;border:0!important;background:transparent!important;cursor:pointer}
+    .eli5-study-container input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(90deg,var(--c) var(--fill,0%),var(--border) var(--fill,0%))}
+    .eli5-study-container input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-track{height:4px;background:var(--border)}
+    .eli5-study-container input[type=range]::-moz-range-progress{height:4px;background:var(--c)}
+    .eli5-study-container input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--c)}
+    .eli5-study-container input[type=range]:focus-visible{outline:none}
+    .eli5-study-container input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px var(--c),0 0 0 5px rgba(118,213,193,.25)}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--gold)!important;color:var(--gold)!important;background:rgba(245,199,106,.1)!important}
+    .pick.slide{display:block;max-width:520px;margin-top:20px}
+    .pick.slide>span{display:flex;gap:10px;align-items:baseline}
+    .pick.slide output{color:var(--teal);font-weight:600;letter-spacing:.02em}
+    .pick .ticks{position:relative;height:20px;margin:2px 9px 0;font:12px/1.4 var(--font-mono);color:var(--faint)}
+    .pick .ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;padding:2px 0;cursor:pointer}
+    .pick .ticks span.first{transform:translateX(-9px)}.pick .ticks span.last{transform:translateX(calc(9px - 100%))}
+    .pick .ticks span:hover{color:var(--fg)}.pick .ticks span.on{color:var(--teal)}
+
+    /* Number tiles and card grids (outlines, so an unfilled last row stays empty) */
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;padding:1px;margin:16px 0 22px}
+    .tiles div{background:var(--surface);outline:1px solid var(--border);padding:12px 14px}
+    .tiles b{display:block;font-size:22px;line-height:1.2;color:var(--fg);font-weight:600}
+    .tiles span{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--muted)}
+    .tiles span .tag{display:inline-block;margin:0 0 0 2px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .field-grid div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+
+    /* Text pieces drawn as HTML so they wrap on any screen */
+    .box{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .box>small,.cap{display:block;font:12px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .cap{margin-top:14px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px 4px;margin-top:12px}
+    .tk{display:inline-flex;flex-direction:column;align-items:center;min-width:28px}
+    .tk b{display:block;padding:4px 7px;font:500 18px/1.3 var(--font-sans);white-space:pre;color:#20140a;background:var(--gold)}
+    .tk:nth-child(even) b{background:#d9a94e}
+    .tk b.raw{background:transparent;color:var(--gold);outline:1px dashed var(--gold);font:13px/1.9 var(--font-mono)}
+    .tk i{display:block;margin-top:3px;font:normal 11px/1.2 var(--font-mono);color:var(--teal)}
+    .sp{color:rgba(32,20,10,.45)}
+    .codes{display:flex;flex-wrap:wrap;gap:10px 6px;margin-top:12px}
+    .code{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:8px 6px;border:1px solid var(--border);background:var(--surface)}
+    .code b{font:500 26px/1.2 var(--font-sans);color:var(--gold)}
+    .code span{font:12px/1.5 var(--font-mono);color:var(--teal)}
+    .code em{font:normal 11px/1.4 var(--font-mono);color:var(--muted)}
+    .tok-in{width:100%;min-height:72px;margin-top:14px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
+    .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .presets button{min-height:34px;padding:5px 12px}
+    .bpe-words{display:grid;gap:10px;margin-top:12px}
+    .bpe-word{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+    .bpe-word>em{width:44px;font:normal 12px/1 var(--font-mono);color:var(--muted)}
+    .bpe-word .tk b{font-size:20px}
+    .tk b.hit{background:var(--accent)!important;color:#20120c}
+    .pairs{display:grid;grid-template-columns:auto auto;gap:2px 18px;justify-content:start;margin-top:10px;font:13px/1.7 var(--font-mono);color:var(--muted)}
+    .pairs .top{color:var(--accent)}
+    .vocab{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .vocab span{padding:1px 7px;font:13px/1.7 var(--font-mono);border:1px solid var(--border);color:var(--muted)}
+    .vocab span.new{border-color:var(--gold);color:var(--gold)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media (max-width:700px){.two{grid-template-columns:1fr}}
+    .bars{display:grid;grid-template-columns:minmax(0,180px) 1fr;gap:10px 14px;align-items:center;margin-top:14px;font-size:15px}
+    .bars .bl{color:var(--fg)}.bars .bl small{display:block;color:var(--muted);font:11px/1.4 var(--font-mono)}
+    .bars .bar{display:flex;align-items:center;gap:10px;font:13px var(--font-mono);color:var(--muted)}
+    .bars .bar i{display:block;height:22px;background:var(--gold);min-width:2px}
+    .status{font:12px/1.5 var(--font-mono);color:var(--muted);margin-top:10px}
+
+    /* Phones: wide drawings scroll sideways, edge to edge */
+    .panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure,.box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}.panel figure svg{min-width:540px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}.panel figure.fit svg{min-width:0}.panel figure.fit::after{display:none}.bars{grid-template-columns:minmax(0,120px) 1fr}}
+    /* Part 2: chance rows, the writing box, the chat transcript */
+    .soft,.rows{display:grid;gap:6px;margin-top:14px}
+    .row{display:grid;grid-template-columns:minmax(72px,110px) 1fr 64px;align-items:center;gap:10px;font-size:15px}
+    .row:has(.x){grid-template-columns:minmax(72px,110px) 130px 1fr 64px}
+    .wide .row{grid-template-columns:minmax(72px,110px) 1fr 132px}
+    .row .w{color:var(--gold);font-weight:500;overflow-wrap:anywhere}
+    .row .x{font:12px/1.3 var(--font-mono);color:var(--muted)}.row .x b{color:var(--accent);font-weight:600}
+    .row .bar{position:relative;height:20px;background:#1d1c1b}
+    .row .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);opacity:.75}
+    .row .bar i.neg{background:var(--danger)}
+    .row .bar u{position:absolute;left:0;top:-3px;bottom:-3px;border-right:2px solid var(--fg);text-decoration:none}
+    .row .v{font:13px var(--font-mono);color:var(--muted);text-align:right;white-space:nowrap}
+    .row.hi .w{color:var(--fg)}.row.hi .bar i{opacity:1}.row.hi{outline:1px solid var(--accent);outline-offset:3px}
+    .row.off{opacity:.4}
+    .sample{margin:6px 0 0;font-size:18px;color:var(--gold)!important}
+    .start-in{display:block;width:100%;max-width:520px;margin-top:8px;padding:10px 12px;font:15px var(--font-mono)}
+    .gen{margin-top:16px;padding:14px 16px;min-height:72px;border:1px solid var(--border);background:var(--surface);font-size:18px;line-height:1.8;color:var(--fg);overflow-wrap:anywhere}
+    .gen .st{color:var(--gold)}.gen .nw{background:var(--accent);color:#20120c;padding:0 4px}
+    .doc{margin-top:12px;padding:14px 16px;background:#0c0f12;border:1px solid var(--border);font:14px/1.7 var(--font-mono);color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+    .doc .m{color:var(--purple)}.doc .cur{color:var(--accent);animation:blink 1s steps(2) infinite}
+    @keyframes blink{50%{opacity:0}}
+    @media (prefers-reduced-motion:reduce){.doc .cur{animation:none}}
+    @media (max-width:600px){.row:has(.x){grid-template-columns:minmax(64px,84px) 1fr 58px}.row .x{grid-column:1/-1;order:9}.row{grid-template-columns:minmax(64px,84px) 1fr 58px}.wide .row{grid-template-columns:minmax(64px,84px) 1fr 112px}}
+    /* Part 3: switches, bits, the adder grid */
+    .bits{display:flex;flex-wrap:wrap;gap:8px 6px;margin-top:14px}
+    .bit{display:flex;flex-direction:column;align-items:center;gap:4px}
+    .eli5-study-container .bit button{width:48px;height:60px;padding:0;font:600 22px var(--font-mono)}
+    .eli5-study-container .bit button[aria-pressed=true],.eli5-study-container .sw[aria-pressed=true]{background:var(--teal)!important;color:#0d2622!important;border-color:var(--teal)!important}
+    .bit small{font:11px var(--font-mono);color:var(--muted)}
+    .big{margin-top:14px;font:600 44px/1.1 var(--font-sans);color:var(--fg)}.big small{font:400 16px var(--font-mono);color:var(--muted);margin-left:8px}
+    .toggles{display:flex;flex-wrap:wrap;gap:10px}
+    .eli5-study-container .sw{min-width:110px;min-height:42px;font:600 15px var(--font-mono)}
+    .adder{display:grid;grid-template-columns:86px repeat(5,44px);gap:6px;margin-top:20px;align-items:center}
+    .adder .al{font:13px var(--font-mono);color:var(--muted)}
+    .adder .c{display:grid;place-items:center;height:40px;border:1px solid var(--border);font:600 18px var(--font-mono);color:var(--muted)}
+    .adder .c.on{background:var(--teal);border-color:var(--teal);color:#0d2622}
+    .adder .c.carry{height:26px;font-size:13px;border-style:dashed}.adder .c.carry.on{background:var(--accent);border-color:var(--accent);color:#20120c}
+    .adder .c.sum{border-color:var(--gold)}.adder .c.sum.on{background:var(--gold);border-color:var(--gold);color:#20140a}
+    .adder .c.ghost{border:0}
+    .adder .pl{text-align:center;font:11px var(--font-mono);color:var(--faint)}
+    @media (max-width:420px){.eli5-study-container .bit button{width:36px;height:52px;font-size:18px}.adder{grid-template-columns:70px repeat(5,38px)}}
+      /* Drawings inside boxes keep readable text on phones by scrolling sideways, like figures */
+    .sx{overflow-x:auto;margin-top:16px;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    .sx>svg{margin-top:0!important}
+    @media (max-width:700px){.sx>svg{min-width:540px}.sx::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+    /* Part 4: instruction encoding, the tiny CPU, the area bar */
+    .enc{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;padding:1px;margin-top:12px}
+    .enc>div{background:var(--surface);outline:1px solid var(--border);padding:14px 16px}
+    .enc b{display:block;margin:6px 0 4px;font:600 20px/1.3 var(--font-mono);color:var(--gold)}
+    .enc .nums i{display:inline-block;min-width:30px;margin-right:4px;padding:2px 6px;font-style:normal;text-align:center;background:var(--teal);color:#0d2622}
+    .enc .bin{font-size:13px;color:var(--teal);overflow-wrap:anywhere}
+    .enc .hint{display:block;font-size:13px;color:var(--muted)}
+    @media (max-width:700px){.enc{grid-template-columns:1fr}}
+    .cpu-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:22px}
+    @media (max-width:700px){.cpu-grid{grid-template-columns:1fr}}
+    .prog{display:grid;gap:4px;margin-top:8px}
+    .prog .pl{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);background:var(--surface);font:14px var(--font-mono)}
+    .prog .n{color:var(--faint)}.prog .t{color:var(--gold)}.prog .c{color:var(--teal);font-size:12px}
+    .prog .pl.cur{border-color:var(--gold);box-shadow:inset 4px 0 0 var(--gold)}
+    .prog .pl.cur.ph1{border-color:var(--purple);box-shadow:inset 4px 0 0 var(--purple)}
+    .prog .pl.cur.ph2{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+    .regs{display:flex;gap:8px;margin-top:8px}
+    .reg{flex:1;padding:10px 12px;border:1px solid var(--border);background:var(--surface)}
+    .reg span{display:block;font:12px var(--font-mono);color:var(--muted)}.reg b{font:600 26px var(--font-mono);color:var(--teal)}
+    .reg.ch{border-color:var(--accent);background:rgba(255,128,89,.12)}
+    .mem{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+    .mem span{display:flex;flex-direction:column;align-items:center;padding:4px 0;border:1px solid var(--border);font:600 15px var(--font-mono);color:var(--muted)}
+    .mem small{font:10px var(--font-mono);color:var(--faint)}
+    .mem span.set{color:var(--teal);border-color:var(--teal)}.mem span.ch{background:rgba(255,128,89,.12);border-color:var(--accent)}
+    .phase{margin:16px 0 0;padding:12px 14px;border-left:3px solid var(--gold);background:rgba(255,255,255,.03);font-size:16px;color:var(--fg)}
+    .phase b{display:block;font:12px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+    .eli5-study-container button:disabled{opacity:.4;cursor:default}
+    .area{display:flex;height:34px;margin-top:14px;border:1px solid var(--border)}
+    .area i{display:block;height:100%;opacity:.85}
+    /* Part 5: the painting canvas and the grid multiply */
+    #paint{display:block;width:100%;height:auto;margin-top:14px;border:1px solid var(--border);background:#1d1c1b;image-rendering:pixelated}
+    .mm{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin-top:10px}
+    .mm .op{font:400 26px var(--font-sans);color:var(--muted)}
+    .mm .g{display:grid;grid-template-columns:repeat(4,38px);gap:3px;margin-top:6px}
+    .mm .g span{display:grid;place-items:center;height:38px;border:1px solid var(--border);background:var(--surface);font:600 16px var(--font-mono);color:var(--muted)}
+    .mm .g.a span.on,.mm .g.b span.on{background:rgba(118,213,193,.25);border-color:var(--teal);color:var(--fg)}
+    .mm .g.res span{cursor:pointer;color:var(--fg)}.mm .g.res span:hover{border-color:var(--accent)}
+    .mm .g.res span.on{background:var(--accent);border-color:var(--accent);color:#20120c}
+    .mm .readout b{color:var(--accent)}
+    #mmNote b{color:var(--accent)}
+    @media (max-width:420px){.mm .g{grid-template-columns:repeat(4,32px)}.mm .g span{height:32px;font-size:14px}}
+    /* Part 6: the contour map and the training panel */
+    #bowl{display:block;width:100%;height:auto;margin-top:14px;border:1px solid var(--border);cursor:crosshair}
+    .tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:14px}
+    @media (max-width:700px){.tr-grid{grid-template-columns:1fr}}
+    .tr-grid>div{min-width:0}
+    .eli5-study-container #afterPick button[aria-pressed=true]{border-color:var(--teal)!important;color:var(--teal)!important}
+    #trOut{font-family:var(--font-mono);font-size:16px;letter-spacing:.02em}
+    #afterPick{gap:8px}#afterPick button{min-height:34px;padding:4px 12px;font-size:13px}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 6: how training turns random numbers into a model, one tiny step downhill at a time">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/learning-is-nudging-numbers-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Learning is nudging numbers">
+<meta property="og:description" content="Part 6: how training turns random numbers into a model, one tiny step downhill at a time">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/learning-is-nudging-numbers-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/learning-is-nudging-numbers-eli5.png?v=d82b6f4f">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Learning is nudging numbers">
+<meta property="article:published_time" content="2026-11-01">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="learning-is-nudging-numbers-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 30 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>Learning is nudging numbers</h1>
+      <p class="lede">A language model is billions of numbers, and Parts 1 and 2 showed what it does with them. But nobody types those numbers in. They start out random, and a process called training nudges each one, a tiny bit at a time, until the model’s guesses get good. This part builds that process from a single knob, and then trains a small model right here in your browser.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on Part 2’s idea of grading a guess, and on Part 5’s GPUs, which do the heavy lifting. Facts carry a tag: <span class="tag">public</span> means a published paper, model card or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:var(--gold)"></i>data and examples</span>
+        <span><i style="background:var(--teal)"></i>the learned numbers (knobs)</span>
+        <span><i style="background:var(--accent)"></i>error and arithmetic</span>
+        <span><i style="background:var(--purple)"></i>the path downhill</span>
+        <span><i style="background:var(--danger)"></i>the wrong intuition, going wrong</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Billions of numbers, and nobody wrote them</h2>
+      <p>Part 1 showed each token’s list of numbers, and Part 2 showed the model turning numbers into scores for the next word. A large model has billions of these learned numbers. They are called <b>weights</b> or <b>parameters</b>. No engineer chose any of them. If you filled them with random values, the model would write random gibberish. Training is how random numbers become a model that writes.</p>
+      <figure>
+        <svg viewBox="0 0 800 240" role="img" aria-label="Random numbers produce gibberish; after training, the same numbers adjusted produce sensible text">
+          <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#c3b8ff"/></marker></defs>
+          <text x="40" y="34" fill="#a5a29c" font-size="14">BEFORE TRAINING</text>
+          <g id="rndKnobs"></g>
+          <text x="40" y="170" fill="#ec6a94" font-size="16">“qz the vmple oo xkk banana gr”</text>
+          <path d="M330 110 H440" stroke="#c3b8ff" stroke-width="3" marker-end="url(#ar1)"/>
+          <text x="385" y="98" text-anchor="middle" fill="#c3b8ff" font-size="14">training</text>
+          <text x="460" y="34" fill="#a5a29c" font-size="14">AFTER TRAINING</text>
+          <g id="trKnobs"></g>
+          <text x="460" y="170" fill="#76d5c1" font-size="16">“The cat sat on the mat.”</text>
+          <text x="40" y="222" fill="#f1eee8" font-size="16">Same model, same number of knobs. Only their settings changed.</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>Getting a shower to the right temperature</h2>
+      <p>You step into a shower that is too cold. You do not calculate anything. You feel how wrong it is, turn the tap a little towards hot, feel again, and repeat. If it overshoots and gets too hot, you turn back a little. After a few nudges it is right. Training is exactly this loop, done by arithmetic.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="A shower loop: feel the water, judge how far off it is, nudge the tap, repeat; mapped onto a model, its error, and nudging its numbers">
+          <g id="loopMap"></g>
+        </svg>
+      </figure>
+      <p><b>Mapping it back:</b> the tap is one learned number, the water temperature is the model’s answer, “too cold by this much” is the <b>error</b>, and the nudge is a small change to the number. <b>Where the analogy breaks:</b> a shower has one or two taps. A language model has billions, all affecting each other, and you get to nudge all of them at once. The rest of this part is about how that is possible.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The smallest model</p>
+      <h2>A model with one knob</h2>
+      <p>Start tiny. You have the distance and fare of ten taxi rides, and you want a model that guesses the fare from the distance. The simplest model is one number, the price per kilometre: fare = price × distance. That price is the model’s only knob. Turn it and watch how wrong the guesses are:</p>
+      <div class="box">
+        <div class="pick" id="k1" role="group" aria-label="Price per kilometre"><span>PRICE PER KM (THE KNOB)</span>
+          <button type="button" data-v="0.5">₹0.5</button><button type="button" data-v="1" aria-pressed="true">₹1</button><button type="button" data-v="1.5">₹1.5</button><button type="button" data-v="2">₹2</button><button type="button" data-v="2.5">₹2.5</button><button type="button" data-v="3">₹3</button><button type="button" data-v="3.5">₹3.5</button><button type="button" data-v="4">₹4</button>
+        </div>
+        <div class="sx"><svg id="fitSvg" viewBox="0 0 800 330" role="img" aria-label="Ten taxi rides as dots, the model's guess as a line through the origin, and the miss for each ride drawn as a red stick"></svg></div>
+        <div class="tiles">
+          <div><b id="fitE"></b><span>average miss, squared (the loss)</span></div>
+          <div><b id="fitN"></b><span>how it is doing</span></div>
+        </div>
+      </div>
+      <p>Too low, and every guess falls short. Too high, and every guess overshoots. Somewhere in between, the misses are as small as they can be. Finding that spot by hand is easy with one knob. The question is how to find it with a rule a computer can follow, because that same rule will then work for a billion knobs.</p>
+      <details class="trace"><summary>Go deeper: the fares are made up</summary>
+        <p>The ten rides are <span class="tag">example</span> data, made from a true price of about ₹2.6 per kilometre plus some random wobble, the way real fares wobble with traffic. A model never sees the true price; it only sees the rides.</p>
+      </details>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">Measuring wrongness</p>
+      <h2>One number that says how wrong the model is</h2>
+      <p>To improve, the model needs one number that says how bad it is right now. Take each ride’s miss (guess minus real fare), square it, and average them all. That is the <b>loss</b>. Part 2, chapter 19, used a different recipe for grading next-word guesses, but the job is the same: one number, lower is better.</p>
+      <div class="field-grid">
+        <div><b>Why square the miss?</b><span>A miss of −5 and a miss of +5 should not cancel out to “perfect”. Squaring makes every miss count as bad.</span></div>
+        <div><b>Why not just the size?</b><span>Squaring also makes big misses count much more than small ones: one miss of 10 costs as much as 100 misses of 1.</span></div>
+        <div><b>Why one number?</b><span>With one number you can always ask the only question training needs: did that nudge make things better or worse?</span></div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">The landscape</p>
+      <h2>Every knob setting has a height: the loss</h2>
+      <p>Try every possible price and plot the loss for each. You get a valley. Each position across is a setting of the knob; the height is how wrong that setting is. Training means walking to the bottom of the valley. The trouble is that the model cannot see the whole valley: working out the loss everywhere is far too expensive for a real model. It can only feel the ground where it is standing.</p>
+      <div class="box">
+        <div class="pick" id="k2" role="group" aria-label="Where you are standing"><span>PRICE PER KM (WHERE YOU STAND)</span>
+          <button type="button" data-v="0.5">₹0.5</button><button type="button" data-v="1">₹1</button><button type="button" data-v="1.5" aria-pressed="true">₹1.5</button><button type="button" data-v="2">₹2</button><button type="button" data-v="2.5">₹2.5</button><button type="button" data-v="3">₹3</button><button type="button" data-v="3.5">₹3.5</button><button type="button" data-v="4">₹4</button>
+        </div>
+        <div class="sx"><svg id="landSvg" viewBox="0 0 800 300" role="img" aria-label="A U-shaped curve of loss against price per kilometre, with a marker where you stand and a tangent line showing the slope there"></svg></div>
+        <p class="readout" id="landNote"></p>
+      </div>
+      <p>Feeling the ground means one thing: which way does it slope, and how steeply? That is the <b>slope</b>, drawn as the purple line. Here is the key fact of all machine learning: the slope can be worked out exactly, with arithmetic, from where you stand. And it points uphill. So you step the other way.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">Walking downhill</p>
+      <h2>Step against the slope, again and again</h2>
+      <p>The rule is short: work out the slope, take a step downhill whose size is the slope times a small number called the <b>learning rate</b>, and repeat. Steep ground gives a big step; nearly flat ground near the bottom gives a tiny one. Start at a bad guess and watch the steps. Then try different learning rates:</p>
+      <div class="box">
+        <div class="pick" id="lr1" role="group" aria-label="Learning rate"><span>LEARNING RATE</span>
+          <button type="button" data-v="0.02">tiny</button><button type="button" data-v="0.1">small</button><button type="button" data-v="0.4" aria-pressed="true">good</button><button type="button" data-v="0.9">too big</button><button type="button" data-v="1.1">far too big</button>
+        </div>
+        <div class="sx"><svg id="gdSvg" viewBox="0 0 800 300" role="img" aria-label="Steps of gradient descent drawn on the loss valley, starting from a bad guess"></svg></div>
+        <div class="presets"><button type="button" id="gd1">Take one step</button><button type="button" class="secondary" id="gd10">Take 10 steps</button><button type="button" class="secondary" id="gdR">Start over</button></div>
+        <div class="tiles">
+          <div><b id="gdS">0</b><span>steps taken</span></div>
+          <div><b id="gdW"></b><span>current price per km</span></div>
+          <div><b id="gdL"></b><span>current loss</span></div>
+        </div>
+      </div>
+      <p>A tiny learning rate creeps and wastes time. A good one gets close in a handful of steps. Too big, and each step jumps past the bottom and lands higher up the other side; far too big, and it climbs out of the valley altogether. This walk is called <b>gradient descent</b> (gradient is another word for slope), and picking the learning rate is one of the most important choices in training any model.</p>
+      <details class="trace"><summary>Go deeper: the slope, as a formula</summary>
+        <p>With one knob w, the loss is the average of (w × distance − fare)². Its slope is the average of 2 × (w × distance − fare) × distance. Each ride pushes w up if it was under-charged and down if it was over-charged, more strongly for long rides. Every step is just w ← w − learning rate × slope.</p>
+      </details>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">Two knobs</p>
+      <h2>Two knobs make a bowl</h2>
+      <p>Real taxi fares also have a fixed starting charge. Now the model has two knobs: fare = start charge + price × distance. Every pair of settings has a loss, so the landscape is a bowl seen from above, with darker meaning lower. The slope now has two parts, one per knob, and together they point straight uphill. Click anywhere to start there, then walk:</p>
+      <div class="box">
+        <div class="pick" id="lr2" role="group" aria-label="Learning rate for two knobs"><span>LEARNING RATE</span>
+          <button type="button" data-v="0.3">small</button><button type="button" data-v="1" aria-pressed="true">good</button><button type="button" data-v="2.08">too big</button>
+        </div>
+        <canvas id="bowl" width="800" height="440" role="img" aria-label="A contour map of loss over start charge and price per kilometre. Click to choose a start; the path shows each downhill step"></canvas>
+        <div class="presets"><button type="button" id="bw20">Walk 20 steps</button><button type="button" class="secondary" id="bw200">Walk 200 steps</button><button type="button" class="secondary" id="bw2k">Walk 2,000 steps</button><button type="button" class="secondary" id="bwR">Start over</button></div>
+        <p class="readout" id="bowlNote"></p>
+      </div>
+      <p>Notice the valley is a long, narrow trench, not a round bowl. The first step drops into the trench, then the walk creeps along its nearly flat floor. Raise the learning rate to hurry it and the steps start bouncing between the trench walls instead. Real loss landscapes are full of trenches like this, which is why training uses cleverer step rules than the plain one here (see Go deeper).</p>
+      <details class="trace"><summary>Go deeper: better ways to step</summary>
+        <p><b>Momentum.</b> Keep part of the previous step, like a ball rolling downhill. Bounces across the trench cancel out, and progress along it builds up speed.</p>
+        <p><b>Adam.</b> The most common rule for language models <span class="tag">public</span>. It keeps a running average of each knob’s slope and of its size, and gives every knob its own step size, so steep knobs take careful steps and flat ones take bigger ones.</p>
+        <p><b>Schedules.</b> Training usually starts with a small learning rate, warms up, then slowly lowers it towards the end so the final steps settle gently into the bottom.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Scaling up</p>
+      <h2>A billion knobs: same walk, no pictures</h2>
+      <p>One knob made a curve. Two made a bowl. A model with 8 billion knobs makes a landscape with 8 billion directions, which nobody can picture. But the rule does not care. Work out the slope for every knob, nudge every knob a little against its own slope, and repeat. Imagine a hiker in thick fog on a mountain range with a billion directions, who can only feel the ground under their feet. They keep stepping downhill, millions of times.</p>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="One knob gives a curve, two knobs a bowl, billions of knobs a landscape no one can draw, but the same rule applies">
+          <g id="dims"></g>
+        </svg>
+      </figure>
+      <p>Two things are surprising. First, that this works at all in so many directions, rather than getting stuck in some small dip. With billions of directions there is nearly always some direction that still leads down. Second, that the slope for every one of billions of knobs can be worked out at once, for only about twice the cost of the guess itself. That is the next chapter.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">Sharing the blame</p>
+      <h2>Work backwards to find each knob’s share of the blame</h2>
+      <p>A model is a chain: the input goes through one step, then another, then another, each with its own knobs, and out comes a guess. When the guess is wrong, each knob deserves some share of the blame. The trick is to work backwards from the error. The last step’s knobs get blamed first. Then that blame is passed back to the step before, scaled by how much that step affected the next, and so on, all the way to the start.</p>
+      <figure>
+        <svg id="bpSvg" viewBox="0 0 800 280" role="img" aria-label="A forward pass flows left to right through three steps to a guess; the error then flows right to left, assigning each knob its share of the blame"></svg>
+      </figure>
+      <p>Think of a relay team that lost a race: you look at the final runner first, then pass the question back down the line, asking each runner how much they changed the result. This backwards pass is called <b>backpropagation</b>, published in its modern form in 1986 <span class="tag">public</span>. It hands every knob its exact slope, all in one sweep.</p>
+      <details class="trace"><summary>Go deeper: the rule behind it</summary>
+        <p>Each step’s effect on the final error is the product of the effects of every step after it. If nudging knob A by a little changes step 1’s output by 3 times as much, and that changes the guess by 2 times as much, then nudging A changes the guess by 3 × 2 = 6 times as much. Multiplying these effects backwards along the chain is called the <b>chain rule</b>, from calculus. Backpropagation is the chain rule, done efficiently for every knob at once.</p>
+      </details>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The price of learning</p>
+      <h2>Learning costs three times as much as guessing</h2>
+      <p>Part 3, chapter 18, showed that one guess (one token) costs about 2 sums per learned number. Training needs the guess, then the backwards pass, which costs about twice as much again. So training on one token costs about 6 sums per learned number <span class="tag">public</span>.</p>
+      <figure>
+        <svg viewBox="0 0 800 200" role="img" aria-label="Forward pass two sums per number, backward pass four sums per number, total six sums per number per token of training">
+          <rect x="40" y="50" width="160" height="56" fill="#ff8059" opacity=".35" stroke="#ff8059"/><text x="120" y="78" text-anchor="middle" fill="#f1eee8" font-size="16">the guess</text><text x="120" y="98" text-anchor="middle" fill="#a5a29c" font-size="13">2 sums per number</text>
+          <rect x="204" y="50" width="320" height="56" fill="#c3b8ff" opacity=".3" stroke="#c3b8ff"/><text x="364" y="78" text-anchor="middle" fill="#f1eee8" font-size="16">sharing the blame, backwards</text><text x="364" y="98" text-anchor="middle" fill="#a5a29c" font-size="13">about 4 sums per number</text>
+          <text x="560" y="84" fill="#f1eee8" font-size="20">= 6 sums</text><text x="560" y="104" fill="#a5a29c" font-size="13">per number, per token</text>
+          <text x="40" y="156" fill="#f1eee8" font-size="16">Training is about three times the arithmetic of using the model, for every token of text read.</text>
+          <text x="40" y="182" fill="#a5a29c" font-size="14">Plus the nudge itself, which is cheap: one small update per knob per step.</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">Batches</p>
+      <h2>Don’t read the whole library before each step</h2>
+      <p>The true slope would use every example in the training data. For a language model that is trillions of tokens, so one step would take months. Instead, each step looks at a random handful, called a <b>batch</b>, and uses its slope as an estimate of the real one. The estimate is a bit noisy, but steps become millions of times cheaper, so the walk wobbles its way down far faster.</p>
+      <figure>
+        <svg id="batchSvg" viewBox="0 0 800 250" role="img" aria-label="A smooth path using all the data for each step, and a wobbly path using small batches, both reaching the bottom, the wobbly one far sooner in real time"></svg>
+      </figure>
+      <p>Language models typically use batches of a few million tokens per step <span class="tag">public</span>. The wobble even helps a little: it shakes the walk out of small, shallow dips that a perfectly smooth walk could settle into.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">The language version</p>
+      <h2>Every word in every sentence is a quiz</h2>
+      <p>For a language model, the guess is Part 2’s next-token guess, and the loss is Part 2’s penalty: how small a chance the model gave the token that really came next. The beauty is that any text at all is training data, with no labelling needed. Every position in a sentence is a free quiz: hide the next token, let the model guess, check the answer.</p>
+      <figure>
+        <svg id="quizSvg" viewBox="0 0 800 260" role="img" aria-label="The sentence The cat sat on the mat becomes six quizzes, each hiding the next token and grading the model's guess"></svg>
+      </figure>
+      <p>One sentence of seven tokens is six quizzes. A trillion tokens of books, websites and code is about a trillion quizzes, and after each batch every knob is nudged to do a little better next time. Nobody teaches the model grammar, facts or reasoning. Whatever helps it pass the quizzes is what its numbers drift towards.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Train a 729-knob model, right here</h2>
+      <p>This is a real language model, just a very small one. It guesses the next <b>letter</b> from the current letter only, using a grid of 27 × 27 = 729 knobs (26 letters plus space). It starts with random knobs and learns from this page’s own text, <span id="corpN">a few thousand</span> letters, using exactly the walk from chapter 6: compute the loss, find every knob’s slope, nudge, repeat.</p>
+      <div class="box">
+        <div class="presets"><button type="button" id="tr10">Train 10 steps</button><button type="button" class="secondary" id="tr300">Train 300 steps</button><button type="button" class="secondary" id="trR">Start over</button></div>
+        <div class="tr-grid">
+          <div>
+            <span class="cap">Average penalty while training (lower is better)</span>
+            <svg id="lossSvg" viewBox="0 0 400 220" role="img" aria-label="The training loss over steps, falling from its starting value" style="display:block;width:100%;height:auto"></svg>
+          </div>
+          <div>
+            <span class="cap" id="afterCap">After the letter “t”, it now expects</span>
+            <div class="soft wide" id="afterRows"></div>
+            <div class="toggles" id="afterPick" style="margin-top:10px"></div>
+          </div>
+        </div>
+        <span class="cap">It writes, letter by letter (rolling the die from Part 2)</span>
+        <div class="gen" id="trOut"></div>
+        <div class="tiles">
+          <div><b id="trS">0</b><span>training steps</span></div>
+          <div><b id="trL"></b><span>average penalty (Part 2, chapter 19)</span></div>
+          <div><b>729</b><span>knobs, versus billions in a real model</span></div>
+        </div>
+      </div>
+      <p>At first it writes noise, and after “t” every letter is about equally likely. After a hundred or so steps it has learned, on its own, that “h” often follows “t”, that “q” is followed by “u”, and roughly how long words are. It cannot learn more than that, because it only sees one letter back. A real model sees thousands of tokens back and has billions of knobs, but the walk is the same.</p>
+      <details class="trace"><summary>Go deeper: what exactly is being trained</summary>
+        <p>Each of the 27 rows of knobs holds a score for every possible next letter, given the current letter. Scores become chances through softmax (Part 2, chapter 4). The loss is the average penalty for the letters that really came next. The slope for each knob is simply (chance the model gave − 1 if that letter really came next, else 0), averaged over every place the current letter appears, so each row learns at its own pace. Each step nudges every knob against its slope.</p>
+      </details>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">Learning versus memorising</p>
+      <h2>Getting the quiz right is not the same as understanding</h2>
+      <p>A model with enough knobs can memorise its training data: give perfect answers on text it has seen, and poor ones on anything new. That is called <b>overfitting</b>, like a student who memorises last year’s exam answers. To catch it, some text is held back and never trained on. If the loss on that held-back text stops falling while the training loss keeps dropping, the model has started memorising.</p>
+      <figure>
+        <svg id="ofSvg" viewBox="0 0 800 280" role="img" aria-label="Training loss keeps falling, while loss on held-back text falls, then turns upward when the model starts memorising"></svg>
+      </figure>
+      <p>Large language models are trained on so much text that they see most of it only about once, so classic overfitting is less of a problem for them. But they still memorise passages that appear many times, such as famous quotes or common code, which is a known issue <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>It does not learn while you chat</h2>
+      <p>Because a chatbot remembers what you said earlier in the conversation, it is natural to think it is learning from you. It is not. Once training ends, the numbers are frozen. Your chat only adds text to what the model reads (Part 2, chapter 15). Close the chat and that text is gone from the model’s view; its numbers were never touched.</p>
+      <figure>
+        <svg viewBox="0 0 800 252" role="img" aria-label="Training happens once, beforehand, and changes the numbers; chatting afterwards only reads the frozen numbers and changes nothing">
+          <rect x="40" y="40" width="300" height="120" fill="#c3b8ff" opacity=".1" stroke="#c3b8ff"/>
+          <text x="56" y="70" fill="#c3b8ff" font-size="16">TRAINING · months, beforehand</text>
+          <text x="56" y="100" fill="#f1eee8" font-size="15">reads trillions of tokens</text>
+          <text x="56" y="124" fill="#f1eee8" font-size="15">nudges every number, millions of times</text>
+          <rect x="420" y="40" width="340" height="120" fill="#76d5c1" opacity=".08" stroke="#76d5c1"/>
+          <text x="436" y="70" fill="#76d5c1" font-size="16">CHATTING · afterwards</text>
+          <text x="436" y="100" fill="#f1eee8" font-size="15">numbers are frozen, read-only</text>
+          <text x="436" y="124" fill="#f1eee8" font-size="15">your words are input, not lessons</text>
+          <text x="40" y="196" fill="#ec6a94" font-size="16">Wrong intuition: “it is learning from our conversation”.</text>
+          <text x="40" y="220" fill="#a5a29c" font-size="14">Companies may use some conversations to train future models, under their own policies,</text>
+          <text x="40" y="240" fill="#a5a29c" font-size="14">but that is a separate, later training run.</text>
+        </svg>
+      </figure>
+      <p>This is also why a model does not know about events after its training data was collected, unless a tool like web search hands it fresh text to read (part 16).</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">How big</p>
+      <h2>The bill for training a large model</h2>
+      <p>Six sums per number per token, times the number of knobs, times the number of tokens read. Pick a model and see what it takes:</p>
+      <div class="box">
+        <div class="pick" id="cP" role="group" aria-label="Learned numbers in the model"><span>LEARNED NUMBERS</span>
+          <button type="button" data-v="1e9">1 billion</button><button type="button" data-v="8e9" aria-pressed="true">8 billion</button><button type="button" data-v="7e10">70 billion</button><button type="button" data-v="4.05e11">405 billion</button><button type="button" data-v="1e12">1 trillion</button>
+        </div>
+        <div class="pick" id="cT" role="group" aria-label="Tokens trained on"><span>TOKENS OF TEXT TRAINED ON</span>
+          <button type="button" data-v="1e11">100 billion</button><button type="button" data-v="1e12">1 trillion</button><button type="button" data-v="1.5e13" aria-pressed="true">15 trillion</button><button type="button" data-v="3e13">30 trillion</button>
+        </div>
+        <div class="pick" id="cG" role="group" aria-label="GPUs"><span>H100 GPUS WORKING TOGETHER</span>
+          <button type="button" data-v="8">8</button><button type="button" data-v="1024">1,024</button><button type="button" data-v="16384" aria-pressed="true">16,384</button><button type="button" data-v="100000">100,000</button>
+        </div>
+        <div class="tiles">
+          <div><b id="cS"></b><span>sums in total</span></div>
+          <div><b id="cD"></b><span>of training, at 40% of each GPU’s peak <span class="tag">example</span></span></div>
+          <div><b id="cE"></b><span>of electricity for the GPUs alone, at 700 W each</span></div>
+        </div>
+        <p class="readout" id="cNote"></p>
+      </div>
+      <p>For a real check, Meta trained Llama 3’s 405-billion-number model on about 15 trillion tokens using up to 16,384 H100 GPUs, and reported about 38 trillion trillion sums in total <span class="tag">public</span>, matching the rule above. That is why training frontier models costs tens to hundreds of millions of dollars, and why it happens rarely, while using them happens billions of times a day.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">Many GPUs</p>
+      <h2>Thousands of GPUs, one walk downhill</h2>
+      <p>No single GPU could do this in a lifetime, so training is split. The simplest split: give each GPU its own share of the batch, let each work out the slopes from its share, then average all the slopes together so every GPU takes the same step. The model stays identical everywhere; only the reading is shared out.</p>
+      <figure>
+        <svg id="dpSvg" viewBox="0 0 800 240" role="img" aria-label="Several GPUs each read part of the batch and compute slopes; the slopes are averaged and every GPU applies the same step"></svg>
+      </figure>
+      <p>Averaging means every GPU must talk to every other GPU after every step, which is why AI data centres need very fast connections between chips. For the largest models even one copy is too big for one GPU, so the model itself is split up as well. That is part 12, “Many chips as one”.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">The whole picture</p>
+      <h2>Guess, grade, share the blame, nudge, repeat</h2>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="The training loop: read a batch, guess the next tokens, grade with the loss, backpropagate blame, nudge every number, and repeat millions of times">
+          <defs><marker id="ar18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
+          <g id="loop18"></g>
+          <path d="M710 140 V180 H100 V146" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar18)"/>
+          <text x="300" y="206" fill="#c3b8ff" font-size="15">repeat for millions of batches</text>
+        </svg>
+      </figure>
+      <p>Training is a walk downhill in fog. The model guesses, the loss says how wrong it was, backpropagation hands every number its share of the blame, and each number takes a tiny step to be a little less wrong. Do that millions of times over trillions of quizzes and random numbers become a model that writes. What exactly those numbers compute, inside, is the subject of part 7 (attention) and part 9 (the transformer).</p>
+    </section>
+
+    <!-- Field guide -->
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>“Knowledge cutoff” dates</b><span>The model only knows text it was trained on, collected before training began.</span><em>chapter 15</em></div>
+        <div><b>It forgets you after a chat</b><span>Chatting never changes its numbers; earlier messages are just text it reads.</span><em>chapter 15</em></div>
+        <div><b>Training runs cost millions</b><span>Six sums per number per token, times trillions of tokens, on thousands of GPUs.</span><em>chapters 10, 16</em></div>
+        <div><b>New model versions, not updates</b><span>Learning means a new training run that produces a new set of numbers.</span><em>chapters 6, 15</em></div>
+        <div><b>It can recite famous text</b><span>Passages seen many times in training get memorised.</span><em>chapter 14</em></div>
+        <div><b>“Parameters” in model names</b><span>The count of knobs, as in an “8B” model with 8 billion.</span><em>chapter 1</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Weights, parameters</b><span>The learned numbers: the model’s knobs.</span></div>
+        <div><b>Training</b><span>Nudging the numbers, step by step, to make the guesses better.</span></div>
+        <div><b>Loss</b><span>One number saying how wrong the model is right now. Lower is better.</span></div>
+        <div><b>Slope, gradient</b><span>Which way, and how steeply, the loss changes as a knob turns.</span></div>
+        <div><b>Gradient descent</b><span>Repeatedly stepping each knob against its slope: walking downhill.</span></div>
+        <div><b>Learning rate</b><span>How big each step is. Too small is slow, too big overshoots.</span></div>
+        <div><b>Backpropagation</b><span>Working backwards from the error to give every knob its slope.</span></div>
+        <div><b>Batch</b><span>The handful of examples used for one step.</span></div>
+        <div><b>Overfitting</b><span>Memorising the training data instead of learning patterns.</span></div>
+        <div><b>Held-out data</b><span>Text kept out of training, used to check for memorising.</span></div>
+        <div><b>Adam</b><span>A popular step rule that gives every knob its own step size.</span></div>
+        <div><b>Pre-training</b><span>The first, huge training run on next-token quizzes. Part 13 covers what comes after.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>Gradient descent, backpropagation (1986), Adam, the 6-sums-per-number-per-token rule, batch sizes in published papers, and Llama 3’s training size and total sums from Meta’s report.</span><em>papers, model cards</em></div>
+        <div><b>Example</b><span>The taxi rides, the learning rates in the demos, the overfitting curves, and the 40% GPU efficiency in the calculator.</span><em>made up to show the idea</em></div>
+        <div><b>Not public</b><span>How Claude models are trained in detail: their size, data, batch sizes, step rules and compute.</span><em>Anthropic has not said</em></div>
+      </div>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Nobody writes a model’s numbers. They start random and are nudged downhill, a tiny step at a time, until the guesses get good.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const C={gold:'#f5c76a',teal:'#76d5c1',coral:'#ff8059',purple:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#2f2d2a',line:'#57534f',grid:'#2a2927'};
+      const fmt=n=>n.toLocaleString('en-US');
+      const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+      const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+      const big=n=>{const u=[[1e24,'trillion trillion'],[1e21,'billion trillion'],[1e18,'million trillion'],[1e15,'thousand trillion'],[1e12,'trillion'],[1e9,'billion'],[1e6,'million']];for(const [v,w] of u)if(n>=v){const x=n/v;return (x>=100?fmt(Math.round(x)):x>=10?x.toFixed(0):x.toFixed(1).replace(/\.0$/,''))+' '+w;}return fmt(Math.round(n));};
+      const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function lcg(s){return()=>(s=(s*1664525+1013904223)>>>0)/4294967296;}
+
+      // A control group: ordered choices become a stepped slider with clickable tick labels; data-kind="choice" stays as buttons.
+      function pick(id,cb){
+        const g=$(id),bs=[...g.querySelectorAll('button')];
+        if(g.dataset.kind==='choice'){
+          bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
+          return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+        }
+        const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
+        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        head.append(out);
+        Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
+        r.setAttribute('aria-label',g.getAttribute('aria-label'));
+        ticks.className='ticks';ticks.setAttribute('aria-hidden','true');
+        const ts=labs.map((l,i)=>{const t=document.createElement('span');t.textContent=l;t.style.left=(i/(n-1)*100)+'%';
+          t.className=i===0?'first':i===n-1?'last':'';t.addEventListener('click',()=>{r.value=i;sync();cb();});ticks.appendChild(t);return t;});
+        function sync(){const i=+r.value;out.textContent=labs[i];r.setAttribute('aria-valuetext',labs[i]);
+          r.style.setProperty('--fill',(i/(n-1)*100)+'%');ts.forEach((t,j)=>t.classList.toggle('on',j===i));}
+        r.addEventListener('input',()=>{sync();cb();});
+        g.classList.add('slide');g.replaceChildren(head,r,ticks);sync();
+        return ()=>vals[+r.value];
+      }
+      function rows(el,items,max){$(el).innerHTML=items.map(it=>`<div class="row${it.hi?' hi':''}"><span class="w">${esc(it.w)}</span><span class="bar"><i style="width:${Math.min(100,Math.max(.4,it.p/max*100)).toFixed(1)}%${it.c?';background:'+it.c:''}"></i></span><span class="v">${esc(it.label)}</span></div>`).join('');}
+
+      /* 1: knobs before and after */
+      (()=>{const r=lcg(3);[['rndKnobs',40,true],['trKnobs',460,false]].forEach(([id,x0,rnd])=>{const g=$(id);
+        for(let i=0;i<12;i++){const x=x0+(i%6)*46+18,y=70+Math.floor(i/6)*44,a=rnd?r()*6.28:-0.6+0.25*Math.sin(i*1.7);
+          S(g,'circle',{cx:x,cy:y,r:15,fill:C.box,stroke:C.teal,'stroke-width':2});S(g,'line',{x1:x,y1:y,x2:x+12*Math.cos(a),y2:y+12*Math.sin(a),stroke:C.teal,'stroke-width':3,'stroke-linecap':'round'});}});})();
+
+      /* 2: shower loop mapping */
+      (()=>{const g=$('loopMap').ownerSVGElement,st=[['feel the water','see the model’s answer',C.gold],['too cold by 5°','the error (loss)',C.coral],['turn tap a bit hotter','nudge the numbers',C.purple]];
+        T(g,40,26,'THE SHOWER',{fill:C.mut,'font-size':13});T(g,40,150,'THE MODEL',{fill:C.mut,'font-size':13});
+        st.forEach(([a,b,c],i)=>{const x=40+i*250;S(g,'rect',{x,y:38,width:220,height:58,fill:c,opacity:.14,stroke:c});T(g,x+14,72,a,{fill:C.fg,'font-size':15});
+          S(g,'rect',{x,y:162,width:220,height:58,fill:c,opacity:.14,stroke:c});T(g,x+14,196,b,{fill:C.fg,'font-size':15});
+          S(g,'path',{d:`M${x+110} 100 V156`,stroke:C.faint,'stroke-dasharray':'3 4'});
+          if(i<2){T(g,x+226,72,'→',{fill:C.mut});T(g,x+226,196,'→',{fill:C.mut});}});
+        T(g,780,72,'↺',{fill:C.purple,'font-size':22,'text-anchor':'end'});T(g,780,196,'↺',{fill:C.purple,'font-size':22,'text-anchor':'end'});
+        T(g,40,244,'Repeat until the error is small.',{fill:C.mut,'font-size':14});})();
+
+      /* 3-6: one-knob taxi model */
+      const R1=(()=>{const r=lcg(11),pts=[];for(let i=0;i<10;i++){const km=1+i*0.95+r()*0.6;pts.push([km,2.6*km+(r()-0.5)*5]);}return pts;})();
+      const A1=R1.reduce((s,[x])=>s+x*x,0)/R1.length,B1=R1.reduce((s,[x,y])=>s+x*y,0)/R1.length,C1=R1.reduce((s,[,y])=>s+y*y,0)/R1.length;
+      const loss1=w=>A1*w*w-2*B1*w+C1,slope1=w=>2*(A1*w-B1),best1=B1/A1;
+      const k1=pick('k1',drawFit);
+      function drawFit(){const w=k1(),svg=$('fitSvg');clear(svg);const X=x=>70+x/11*480,Y=y=>290-y/40*260;
+        for(let v=0;v<=40;v+=10){S(svg,'line',{x1:70,y1:Y(v),x2:550,y2:Y(v),stroke:C.grid});T(svg,62,Y(v)+4,'₹'+v,{fill:C.faint,'font-size':11,'text-anchor':'end'});}
+        for(let v=0;v<=10;v+=2)T(svg,X(v),308,v+' km',{fill:C.faint,'font-size':11,'text-anchor':'middle'});
+        R1.forEach(([x,y])=>{S(svg,'line',{x1:X(x),y1:Y(y),x2:X(x),y2:Y(w*x),stroke:C.rose,'stroke-width':2.5});});
+        S(svg,'line',{x1:X(0),y1:Y(0),x2:X(11),y2:Y(Math.min(40,w*11)),stroke:C.teal,'stroke-width':3,'clip-path':''});
+        R1.forEach(([x,y])=>S(svg,'circle',{cx:X(x),cy:Y(y),r:6,fill:C.gold}));
+        T(svg,580,60,'dots: real rides',{fill:C.gold,'font-size':14});T(svg,580,86,'line: the model’s guess',{fill:C.teal,'font-size':14});T(svg,580,112,'red: each miss',{fill:C.rose,'font-size':14});
+        T(svg,580,160,'fare = ₹'+w+' × km',{fill:C.fg,'font-size':16});
+        const L=loss1(w);$('fitE').textContent=L.toFixed(1);$('fitN').textContent=Math.abs(w-best1)<0.3?'about as good as it gets':w<best1?'guessing too low':'guessing too high';}
+      drawFit();
+
+      const LX=w=>70+w/4.5*660,LY=l=>260-Math.min(l,600)/600*230;
+      function valley(svg){for(let v=0;v<=600;v+=150){S(svg,'line',{x1:70,y1:LY(v),x2:730,y2:LY(v),stroke:C.grid});T(svg,62,LY(v)+4,String(v),{fill:C.faint,'font-size':11,'text-anchor':'end'});}
+        for(let w=0;w<=4.5;w+=0.5)T(svg,LX(w),282,'₹'+w,{fill:C.faint,'font-size':11,'text-anchor':'middle'});
+        let d='';for(let k=0;k<=200;k++){const w=k/200*4.5,l=loss1(w);if(l>600)continue;d+=(d?' L':'M')+LX(w).toFixed(1)+' '+LY(l).toFixed(1);}
+        S(svg,'path',{d,fill:'none',stroke:C.coral,'stroke-width':3});T(svg,70,22,'LOSS (height) FOR EVERY PRICE PER KM (across)',{fill:C.mut,'font-size':12});
+        S(svg,'circle',{cx:LX(best1),cy:LY(loss1(best1)),r:4,fill:C.faint});T(svg,LX(best1),LY(loss1(best1))-12,'bottom',{fill:C.faint,'font-size':11,'text-anchor':'middle'});}
+      const k2=pick('k2',drawLand);
+      function drawLand(){const w=k2(),svg=$('landSvg');clear(svg);valley(svg);const l=loss1(w),s=slope1(w),x0=LX(w),y0=LY(l);
+        const dx=0.45,y1=LY(l-s*dx),y2=LY(l+s*dx);S(svg,'line',{x1:LX(w-dx),y1,x2:LX(w+dx),y2,stroke:C.purple,'stroke-width':3});
+        S(svg,'circle',{cx:x0,cy:y0,r:8,fill:C.teal});
+        $('landNote').textContent=Math.abs(s)<8?`At ₹${w} the ground is nearly flat: you are close to the bottom.`:`At ₹${w} the slope is ${s>0?'uphill to the right':'uphill to the left'} (slope ${s.toFixed(0)}), so the bottom lies to the ${s>0?'left: lower the price':'right: raise the price'}.`;}
+      drawLand();
+
+      const lr1=pick('lr1',()=>{gdReset();});let gw=0.4,gsteps=0,gpath=[];
+      function gdReset(){gw=0.4;gsteps=0;gpath=[gw];drawGd();}
+      // Learning rate as a share of the step that would land exactly on the bottom (1/A1): over 1 overshoots, over 1 by enough flies off
+      function gdStep(){gw=gw-lr1()/A1*slope1(gw);gsteps++;gpath.push(gw);}
+      function drawGd(){const svg=$('gdSvg');clear(svg);valley(svg);
+        for(let i=1;i<gpath.length;i++){const a=gpath[i-1],b=gpath[i];if(Math.abs(b)>20)break;S(svg,'line',{x1:LX(a),y1:LY(loss1(a)),x2:LX(b),y2:LY(loss1(b)),stroke:C.purple,'stroke-width':2,'stroke-dasharray':'4 3'});}
+        gpath.forEach((w,i)=>{if(w<-0.2||w>4.7||loss1(w)>600)return;S(svg,'circle',{cx:LX(w),cy:LY(loss1(w)),r:i===gpath.length-1?8:4,fill:i===gpath.length-1?C.teal:C.purple});});
+        const off=gw<-0.2||gw>4.7||loss1(gw)>600;if(off)T(svg,400,60,'thrown out of the valley: the steps are too big',{fill:C.rose,'font-size':15,'text-anchor':'middle'});
+        $('gdS').textContent=gsteps;$('gdW').textContent=Math.abs(gw)>1e4?'way off':'₹'+gw.toFixed(2);$('gdL').textContent=loss1(gw)>1e6?'enormous':loss1(gw).toFixed(1);}
+      $('gd1').onclick=()=>{gdStep();drawGd();};$('gd10').onclick=()=>{for(let i=0;i<10;i++)gdStep();drawGd();};$('gdR').onclick=gdReset;gdReset();
+
+      /* 7: two knobs, contour map */
+      const R2=(()=>{const r=lcg(5),pts=[];for(let i=0;i<12;i++){const km=1+i*0.8+r()*0.5;pts.push([km,20+2.4*km+(r()-0.5)*6]);}return pts;})();
+      const loss2=(b,w)=>R2.reduce((s,[x,y])=>s+(b+w*x-y)**2,0)/R2.length;
+      // Steepest curvature of the bowl: largest eigenvalue of 2·[[1,mean x],[mean x,mean x²]]
+      const MX=R2.reduce((a,[x])=>a+x,0)/R2.length,MX2=R2.reduce((a,[x])=>a+x*x,0)/R2.length,LMAX=(1+MX2)+Math.sqrt((1-MX2)**2+4*MX*MX);
+      const grad2=(b,w)=>{let gb=0,gw=0;R2.forEach(([x,y])=>{const e=b+w*x-y;gb+=2*e;gw+=2*e*x;});return [gb/R2.length,gw/R2.length];};
+      const BMIN=0,BMAX=50,WMIN=-1,WMAX=6,cv=$('bowl'),cx=cv.getContext('2d');
+      const bx=b=>(b-BMIN)/(BMAX-BMIN)*cv.width,wy=w=>cv.height-(w-WMIN)/(WMAX-WMIN)*cv.height;
+      const shade=document.createElement('canvas');shade.width=cv.width;shade.height=cv.height;
+      (()=>{const sx=shade.getContext('2d'),img=sx.createImageData(shade.width,shade.height);
+        for(let py=0;py<shade.height;py+=2)for(let px=0;px<shade.width;px+=2){const b=BMIN+px/shade.width*(BMAX-BMIN),w=WMIN+(shade.height-py)/shade.height*(WMAX-WMIN);
+          const l=Math.log10(1+loss2(b,w)),t=Math.min(1,l/3.6),band=(Math.floor(l*6)%2)?0.92:1;
+          const r=(28+90*t)*band,g=(26+70*t*.8)*band,bl=(30+40*t)*band;
+          for(let dy=0;dy<2;dy++)for(let dx=0;dx<2;dx++){const i=((py+dy)*shade.width+px+dx)*4;img.data[i]=r;img.data[i+1]=g;img.data[i+2]=bl;img.data[i+3]=255;}}
+        sx.putImageData(img,0,0);})();
+      const lr2=pick('lr2',()=>{bp=[bp[0]];drawBowl();});let bp=[[6,0.2]];
+      function drawBowl(){cx.drawImage(shade,0,0);cx.font='13px Outfit, sans-serif';cx.fillStyle='#a5a29c';
+        cx.fillText('start charge →',cv.width-110,cv.height-10);cx.save();cx.translate(14,90);cx.rotate(-Math.PI/2);cx.fillText('price per km →',0,0);cx.restore();
+        for(let b=10;b<BMAX;b+=10){cx.fillText('₹'+b,bx(b)-8,cv.height-26);}for(let w=0;w<WMAX;w+=2){cx.fillText('₹'+w,24,wy(w)+4);}
+        cx.strokeStyle='#c3b8ff';cx.lineWidth=2;cx.setLineDash([4,3]);cx.beginPath();bp.forEach(([b,w],i)=>{const X=bx(b),Y=wy(w);i?cx.lineTo(X,Y):cx.moveTo(X,Y);});cx.stroke();cx.setLineDash([]);
+        bp.forEach(([b,w],i)=>{cx.fillStyle=i===bp.length-1?'#76d5c1':'#c3b8ff';cx.beginPath();cx.arc(bx(b),wy(w),i===bp.length-1?7:3,0,7);cx.fill();});
+        const [b,w]=bp[bp.length-1],l=loss2(b,w);
+        $('bowlNote').textContent=!isFinite(l)||l>1e6?'The steps got too big and flew out of the bowl. Lower the learning rate and start over.':`After ${bp.length-1} steps: start charge ₹${b.toFixed(1)}, price ₹${w.toFixed(2)} per km, loss ${l.toFixed(1)}. Click the map to start somewhere else.`;}
+      function bwalk(n){for(let i=0;i<n;i++){const [b,w]=bp[bp.length-1];if(!isFinite(b)||Math.abs(b)>1e6)break;const [gb,gw]=grad2(b,w),r=lr2()/LMAX;bp.push([b-r*gb,w-r*gw]);}drawBowl();}
+      cv.addEventListener('click',e=>{const rc=cv.getBoundingClientRect(),px=(e.clientX-rc.left)/rc.width*cv.width,py=(e.clientY-rc.top)/rc.height*cv.height;bp=[[BMIN+px/cv.width*(BMAX-BMIN),WMIN+(cv.height-py)/cv.height*(WMAX-WMIN)]];drawBowl();});
+      $('bw20').onclick=()=>bwalk(20);$('bw200').onclick=()=>bwalk(200);$('bw2k')&&($('bw2k').onclick=()=>bwalk(2000));$('bwR').onclick=()=>{bp=[[6,0.2]];drawBowl();};drawBowl();
+
+      /* 8: dimensions */
+      (()=>{const g=$('dims').ownerSVGElement;
+        let d='';for(let k=0;k<=40;k++){const x=k/40;d+=(k?' L':'M')+(40+x*180).toFixed(1)+' '+(165-380*(x-0.55)**2).toFixed(1);}S(g,'path',{d,fill:'none',stroke:C.coral,'stroke-width':3});
+        T(g,40,190,'1 knob: a curve',{fill:C.fg,'font-size':15});
+        for(let r=5;r>=1;r--)S(g,'ellipse',{cx:390,cy:100,rx:r*26,ry:r*13,fill:'none',stroke:C.coral,'stroke-opacity':.2+.15*(6-r)});S(g,'circle',{cx:390,cy:100,r:4,fill:C.teal});
+        T(g,300,190,'2 knobs: a bowl',{fill:C.fg,'font-size':15});
+        T(g,560,90,'8,000,000,000',{fill:C.teal,'font-size':20});T(g,560,116,'directions',{fill:C.mut,'font-size':14});
+        T(g,560,190,'billions: same rule',{fill:C.fg,'font-size':15});})();
+
+      /* 9: backprop chain */
+      (()=>{const svg=$('bpSvg'),N=[['input',40],['step 1',200],['step 2',360],['step 3',520],['guess',680]];
+        S(svg,'defs',{}).innerHTML=`<marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${C.coral}"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${C.purple}"/></marker>`;
+        N.forEach(([n,x],i)=>{S(svg,'rect',{x,y:90,width:100,height:56,fill:i===0?C.gold:i===4?C.coral:C.teal,opacity:.18,stroke:i===0?C.gold:i===4?C.coral:C.teal});T(svg,x+50,124,n,{fill:C.fg,'font-size':15,'text-anchor':'middle'});
+          if(i>0&&i<4){S(svg,'circle',{cx:x+50,cy:166,r:11,fill:C.box,stroke:C.teal,'stroke-width':2});S(svg,'line',{x1:x+50,y1:166,x2:x+58,y2:159,stroke:C.teal,'stroke-width':2.5});T(svg,x+50,198,'its knobs',{fill:C.teal,'font-size':12,'text-anchor':'middle'});}
+          if(i<4){S(svg,'path',{d:`M${x+104} 104 H${x+156}`,stroke:C.coral,'stroke-width':2.5,'marker-end':'url(#af)'});S(svg,'path',{d:`M${x+156} 134 H${x+104}`,stroke:C.purple,'stroke-width':2.5,'marker-end':'url(#ab)'});}});
+        T(svg,40,52,'FORWARD: make the guess →',{fill:C.coral,'font-size':14});T(svg,780,52,'← BACKWARD: pass the blame',{fill:C.purple,'font-size':14,'text-anchor':'end'});
+        T(svg,690,180,'wrong by 3',{fill:C.rose,'font-size':14});
+        T(svg,40,250,'Each step passes blame back to the one before, scaled by how much it changed the result.',{fill:C.fg,'font-size':15});})();
+
+      /* 11: batch paths */
+      (()=>{const svg=$('batchSvg'),r=lcg(4);for(let k=5;k>=1;k--)S(svg,'ellipse',{cx:600,cy:125,rx:k*90,ry:k*20,fill:'none',stroke:C.coral,'stroke-opacity':.12+.07*(6-k)});
+        let p=[80,40],d1=`M${p[0]} ${p[1]}`;for(let i=0;i<6;i++){p=[p[0]+(600-p[0])*0.45,p[1]+(125-p[1])*0.45];d1+=` L${p[0].toFixed(0)} ${p[1].toFixed(0)}`;}
+        S(svg,'path',{d:d1,fill:'none',stroke:C.teal,'stroke-width':2.5});
+        p=[80,210];let d2=`M${p[0]} ${p[1]}`;for(let i=0;i<40;i++){p=[p[0]+(600-p[0])*0.12+(r()-.5)*30,p[1]+(125-p[1])*0.12+(r()-.5)*26];d2+=` L${p[0].toFixed(0)} ${p[1].toFixed(0)}`;}
+        S(svg,'path',{d:d2,fill:'none',stroke:C.purple,'stroke-width':1.8});S(svg,'circle',{cx:600,cy:125,r:5,fill:C.fg});
+        T(svg,40,28,'all the data per step: 6 smooth steps, each one enormously slow',{fill:C.teal,'font-size':13});
+        T(svg,40,244,'a small batch per step: 40 wobbly steps, each one fast',{fill:C.purple,'font-size':13});})();
+
+      /* 12: quizzes */
+      (()=>{const svg=$('quizSvg'),tok=['The','␣cat','␣sat','␣on','␣the','␣mat','.'];
+        for(let q=1;q<tok.length;q++){const y=14+(q-1)*38;
+          tok.slice(0,q).forEach((t,i)=>{S(svg,'rect',{x:40+i*62,y,width:58,height:28,fill:C.gold,opacity:.85});T(svg,69+i*62,y+19,t,{fill:'#20140a','font-size':13,'text-anchor':'middle'});});
+          S(svg,'rect',{x:40+q*62,y,width:58,height:28,fill:'none',stroke:C.coral,'stroke-dasharray':'4 3'});T(svg,69+q*62,y+19,'?',{fill:C.coral,'font-size':15,'text-anchor':'middle'});
+          T(svg,40+(tok.length)*62+20,y+19,'answer: '+tok[q],{fill:C.mut,'font-size':13});}})();
+
+      /* 13: the 729-knob letter model */
+      const AL='abcdefghijklmnopqrstuvwxyz ',V=27;
+      const txt=[...document.querySelectorAll('main p, main li, main .field-grid span, main h2')].map(e=>e.textContent).join(' ').toLowerCase().replace(/[^a-z]+/g,' ');
+      const CNT=Array.from({length:V},()=>new Float64Array(V)),NA=new Float64Array(V);let NT=0;
+      for(let i=1;i<txt.length;i++){const a=AL.indexOf(txt[i-1]),b=AL.indexOf(txt[i]);CNT[a][b]++;NA[a]++;NT++;}
+      $('corpN').textContent='about '+fmt(Math.round(NT/1000)*1000);
+      let Wt,steps,hist;const LR=0.5;
+      function trReset(){const r=lcg(9);Wt=Array.from({length:V},()=>Float64Array.from({length:V},()=>(r()-0.5)*2));steps=0;hist=[[0,lossNow()]];drawTr();}
+      const sm=row=>{const m=Math.max(...row),e=Array.from(row,v=>Math.exp(v-m)),s=e.reduce((a,b)=>a+b,0);return e.map(v=>v/s);};
+      function lossNow(){let L=0;for(let a=0;a<V;a++){if(!NA[a])continue;const p=sm(Wt[a]);for(let b=0;b<V;b++)if(CNT[a][b])L-=CNT[a][b]*Math.log2(p[b]);}return L/NT;}
+      function trStep(){for(let a=0;a<V;a++){if(!NA[a])continue;const p=sm(Wt[a]);for(let b=0;b<V;b++)Wt[a][b]-=LR*(p[b]-CNT[a][b]/NA[a]);}steps++;}
+      let afterLetter='t';
+      $('afterPick').innerHTML=['t','q','e',' '].map(l=>`<button type="button" class="secondary" data-l="${l}" aria-pressed="${l==='t'}">after “${l===' '?'space':l}”</button>`).join('');
+      $('afterPick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;afterLetter=b.dataset.l;$('afterPick').querySelectorAll('button').forEach(o=>o.setAttribute('aria-pressed',o===b));drawTr();});
+      function sample(){const r=lcg(21+steps);let c=AL.indexOf('t'),out='t';for(let i=0;i<70;i++){const p=sm(Wt[c]);let u=r(),j=0;for(;j<V-1;j++){u-=p[j];if(u<0)break;}c=j;out+=AL[j];}return out;}
+      function drawTr(){const svg=$('lossSvg');clear(svg);const maxS=Math.max(300,steps),X=s=>40+s/maxS*350,Y=l=>200-(l-3)/(6.5-3)*185;
+        [3,4,5,6].forEach(v=>{S(svg,'line',{x1:40,y1:Y(v),x2:390,y2:Y(v),stroke:C.grid});T(svg,34,Y(v)+4,String(v),{fill:C.faint,'font-size':11,'text-anchor':'end'});});
+        T(svg,390,214,fmt(maxS)+' steps',{fill:C.faint,'font-size':11,'text-anchor':'end'});
+        S(svg,'path',{d:'M'+hist.map(([s,l])=>X(s).toFixed(1)+' '+Y(Math.min(6.5,l)).toFixed(1)).join(' L'),fill:'none',stroke:C.coral,'stroke-width':2.5});
+        const a=AL.indexOf(afterLetter),p=sm(Wt[a]),top=p.map((v,j)=>[AL[j],v]).sort((x,y)=>y[1]-x[1]).slice(0,5);
+        $('afterCap').textContent=`After the ${afterLetter===' '?'end of a word (space)':'letter “'+afterLetter+'”'}, it now expects`;
+        rows('afterRows',top.map(([l,v])=>({w:l===' '?'space':l,p:v,label:Math.round(v*100)+'%'})),Math.max(.3,top[0][1]));
+        $('trOut').textContent=sample();$('trS').textContent=fmt(steps);$('trL').textContent=hist[hist.length-1][1].toFixed(2);}
+      let anim=null;
+      function train(n){if(anim)return;let left=n;const go=()=>{const k=reduced?left:Math.min(left,12);for(let i=0;i<k;i++){trStep();}left-=k;hist.push([steps,lossNow()]);drawTr();if(left>0)anim=requestAnimationFrame(go);else anim=null;};go();}
+      $('tr10').onclick=()=>train(10);$('tr300').onclick=()=>train(300);$('trR').onclick=()=>{if(anim){cancelAnimationFrame(anim);anim=null;}trReset();};trReset();
+
+      /* 14: overfitting */
+      (()=>{const svg=$('ofSvg'),X=t=>80+t*660,Y=l=>230-l*190;
+        S(svg,'line',{x1:80,y1:230,x2:740,y2:230,stroke:C.line});S(svg,'line',{x1:80,y1:30,x2:80,y2:230,stroke:C.line});
+        let a='',b='';for(let k=0;k<=60;k++){const t=k/60,tr=0.9*Math.exp(-3.2*t)+0.05,te=0.9*Math.exp(-3.2*t)+0.12+Math.max(0,t-0.45)**2*1.1;a+=(k?' L':'M')+X(t).toFixed(1)+' '+Y(tr).toFixed(1);b+=(k?' L':'M')+X(t).toFixed(1)+' '+Y(te).toFixed(1);}
+        S(svg,'path',{d:a,fill:'none',stroke:C.teal,'stroke-width':3});S(svg,'path',{d:b,fill:'none',stroke:C.coral,'stroke-width':3});
+        S(svg,'line',{x1:X(0.45),y1:30,x2:X(0.45),y2:230,stroke:C.rose,'stroke-dasharray':'5 4'});T(svg,X(0.45)+8,48,'memorising starts here',{fill:C.rose,'font-size':13});
+        T(svg,X(0.98),Y(0.07)-18,'training text',{fill:C.teal,'font-size':13,'text-anchor':'end'});T(svg,X(0.98),Y(0.62)-6,'held-back text',{fill:C.coral,'font-size':13,'text-anchor':'end'});
+        T(svg,80,252,'training time →',{fill:C.mut,'font-size':12});T(svg,72,36,'loss',{fill:C.mut,'font-size':12,'text-anchor':'end'});
+        T(svg,80,274,'An illustration, not real data.',{fill:C.faint,'font-size':12});})();
+
+      /* 16: compute calculator */
+      const cP=pick('cP',drawC),cT=pick('cT',drawC),cG=pick('cG',drawC);
+      function drawC(){const p=cP(),t=cT(),g=cG(),s=6*p*t,sec=s/(g*990e12*0.4),d=sec/86400,kwh=g*0.7*sec/3600;
+        $('cS').textContent=big(s);$('cD').textContent=d<1?(sec/3600).toFixed(1)+' hours':d<730?(d<10?d.toFixed(1):fmt(Math.round(d)))+' days':(d/365.25).toFixed(0)+' years';
+        $('cE').textContent=kwh>=1e6?(kwh/1e6).toFixed(1)+' GWh':kwh>=1e3?fmt(Math.round(kwh/1e3))+' MWh':fmt(Math.round(kwh))+' kWh';
+        $('cNote').textContent=`${big(p)} numbers × ${big(t)} tokens × 6 sums = ${big(s)} sums.`+(d>3650?' Far too slow: real runs use more GPUs or a smaller model.':'');}
+      drawC();
+
+      /* 17: data-parallel GPUs */
+      (()=>{const svg=$('dpSvg');S(svg,'defs',{}).innerHTML=`<marker id="ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${C.purple}"/></marker>`;
+        T(svg,40,24,'ONE STEP, SPLIT ACROSS 4 GPUS',{fill:C.mut,'font-size':13});
+        for(let i=0;i<4;i++){const x=40+i*150;S(svg,'rect',{x,y:40,width:130,height:34,fill:C.gold,opacity:.18,stroke:C.gold});T(svg,x+65,62,'quarter of batch',{fill:C.gold,'font-size':13,'text-anchor':'middle'});
+          S(svg,'rect',{x,y:86,width:130,height:46,fill:C.coral,opacity:.18,stroke:C.coral});T(svg,x+65,106,'GPU '+(i+1),{fill:C.fg,'font-size':14,'text-anchor':'middle'});T(svg,x+65,124,'its own slopes',{fill:C.mut,'font-size':12,'text-anchor':'middle'});
+          S(svg,'path',{d:`M${x+65} 134 L${300} 162`,stroke:C.purple,'stroke-width':1.6,'marker-end':'url(#ad)'});}
+        S(svg,'rect',{x:220,y:164,width:180,height:34,fill:C.purple,opacity:.18,stroke:C.purple});T(svg,310,186,'average the slopes',{fill:C.purple,'font-size':14,'text-anchor':'middle'});
+        T(svg,420,186,'→ every GPU takes the same step',{fill:C.fg,'font-size':14});
+        T(svg,40,228,'The model is identical on every GPU; only the reading is shared.',{fill:C.mut,'font-size':13});})();
+
+      /* 18: loop */
+      (()=>{const g=$('loop18').ownerSVGElement,st=[['read a batch','of text',C.gold],['guess','next tokens',C.coral],['grade','the loss',C.coral],['blame','backwards',C.purple],['nudge','every number',C.teal]];
+        st.forEach(([a,b,c],i)=>{const x=40+i*144;S(g,'rect',{x,y:50,width:130,height:90,fill:c,opacity:.13,stroke:c});T(g,x+14,90,a,{fill:C.fg,'font-size':17});T(g,x+14,114,b,{fill:C.mut,'font-size':13});
+          if(i<4)S(g,'path',{d:`M${x+132} 95 H${x+142}`,stroke:C.mut,'stroke-width':2,'marker-end':'url(#ar18)'});});
+        T(g,40,34,'TRAINING, ONE STEP',{fill:C.mut,'font-size':13});})();
+    })();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
