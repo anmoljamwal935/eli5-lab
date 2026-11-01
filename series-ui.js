@@ -12,7 +12,7 @@
   const LIGHT = { '#76d5c1': '#23927c', '#c3b8ff': '#6c5bd0', '#f5c76a': '#b07d1e', '#ff8059': '#d65a32', '#ec6a94': '#c2406c' };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const readSet = () => { try { return new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch { return new Set(); } };
-  const markRead = id => { try { const s = readSet(); if (s.has(id)) return; s.add(id); localStorage.setItem(KEY, JSON.stringify([...s])); drawAll(); } catch {} };
+  const markRead = id => { try { const s = readSet(); if (s.has(id)) return; s.add(id); localStorage.setItem(KEY, JSON.stringify([...s])); drawAll(); if (typeof render === 'function') render(); } catch {} };
   const ids = new Set(list.flatMap(S => [...S.parts, S.bonus].filter(Boolean).map(p => p.id)));
   const open = id => (typeof openReader === 'function' ? openReader(id) : (location.href = '?id=' + encodeURIComponent(id)));
   const colors = c => `--cd:${c};--cl:${LIGHT[String(c).toLowerCase()] || c}`;
@@ -108,7 +108,7 @@
     e.preventDefault();
     open(t.getAttribute('data-sb-open'));
   });
-  window.addEventListener('storage', e => { if (e.key === KEY) drawAll(); });
+  window.addEventListener('storage', e => { if (e.key === KEY) { drawAll(); if (typeof render === 'function') render(); } });
   window.addEventListener('pageshow', e => { if (e.persisted) drawAll(); });
   drawAll();
 })();
