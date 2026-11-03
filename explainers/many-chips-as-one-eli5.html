@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Many chips as one — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (How AI works, from scratch): gold = text and tokens, teal = stored numbers,
+       orange = arithmetic, purple = connections, rose = the wrong intuition. */
+    :root{--rose:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Series parts: fact tags, Go deeper boxes, button pickers, readouts */
+    .tag{display:inline-block;margin:0 2px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted);vertical-align:1px}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p{font-size:15px}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--purple)!important;color:var(--purple)!important;background:rgba(195,184,255,.1)!important}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+    .readout b{color:var(--fg);font-weight:600}
+    .lab-chart svg+svg{margin-top:18px}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body data-series-id="many-chips-as-one-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Many chips as one</h1>
+      <p class="lede">Part 11 ended with a bill: training a large model takes tens of trillions of trillions of sums. No single chip can do that in a lifetime, or even hold the model while it learns. This part shows why, the ways the work is split across thousands of chips, how those chips are wired together, and why the wires, not the chips, so often decide how fast training goes.</p>
+      <p class="source-note">A topic study built from the primary sources: the ZeRO, Megatron-LM, GPipe and Chinchilla papers, Meta’s Llama 3 report, Google’s TPU v4 paper, NVIDIA’s H100 and NVLink specifications and NCCL’s all-reduce cost model; every number below was checked against them · <a href="https://arxiv.org/abs/2407.21783">Read the main source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on <a href="the-gpu-eli5.html" data-series-link="the-gpu-eli5">Part 5</a> (a GPU is thousands of simple workers doing the same sum at once) and <a href="learning-is-nudging-numbers-eli5.html" data-series-link="learning-is-nudging-numbers-eli5">Part 6</a> (training nudges every number against its slope, at about 6 sums per number per token). Part 10 compared the chips; this part wires them together. Facts carry a tag: <span class="tag">public</span> means a published paper, spec sheet or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>text and tokens being read</span>
+        <span><i style="background:#76d5c1"></i>stored numbers: weights, saved state</span>
+        <span><i style="background:#ff8059"></i>arithmetic: sums and slopes</span>
+        <span><i style="background:#c3b8ff"></i>connections: wires, chips talking</span>
+        <span><i style="background:#ec6a94"></i>the wrong intuition, idle or lost time</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>The model does not fit on one chip</h2>
+      <p>Training does not store each learned number just once. With the standard recipe, called mixed-precision Adam, every number needs 16 bytes: 2 for the number itself, 2 for its slope, and 12 for the step rule’s running notes about it <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="memSvg" viewBox="0 0 800 440" role="img" aria-label="A nine by nine grid of 81 squares, each one H100's 80 GB of memory, filled by the training state of a 405-billion-number model: about 10 squares of weights, 10 of slopes and 61 of Adam's notes."></svg>
+      </figure>
+      <p>Meta’s Llama 3 405B has 405 billion learned numbers <span class="tag">public</span>. At 16 bytes each that is 6.5 trillion bytes (6.5 TB). The H100 GPU it was trained on holds 80 GB <span class="tag">public</span>. So the bare training state fills 81 GPUs before a single word is read <span class="tag">example</span>. Part 8 is about why that memory is so precious.</p>
+      <details class="trace"><summary>Go deeper: where the 16 bytes come from</summary>
+        <p>The ZeRO paper’s accounting <span class="tag">public</span>: a 16-bit copy of each weight (2 bytes) and of its slope (2 bytes) for the fast arithmetic, plus a 32-bit master copy of the weight (4), Adam’s momentum (4) and Adam’s variance (4), kept at full precision so tiny nudges are not rounded away. Adam is the step rule from Part 6’s Go deeper box.</p>
+        <p>This still leaves out activations: the in-between results saved on the way forward so the backward pass can use them. ZeRO’s example: a 1.5-billion-number GPT-2 model, reading 32 sequences of 1,024 tokens at once, needs about 60 GB for activations alone <span class="tag">public</span>. Meta has not published Llama 3’s exact memory layout, so the 16 bytes here is the standard recipe, not Meta’s own figure <span class="tag np">not public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>One chip would need three thousand years</h2>
+      <p>Memory is half of it. The other half is time. The Chinchilla paper’s rule for training cost is 6 sums per learned number per token read <span class="tag">public</span>, the rule from Part 6. Llama 3 405B read 15.6 trillion tokens: 6 × 405 billion × 15.6 trillion ≈ 3.8 × 10<sup>25</sup> sums, matching the total Meta reported <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="timeSvg" viewBox="0 0 800 290" role="img" aria-label="Log-scale bars of how long 3.8 times ten to the 25 sums takes: about 3,000 years on one chip, 376 years on 8, 2.9 years on 1,024 and 67 days on 16,384."></svg>
+      </figure>
+      <p>Meta reports each H100 sustaining about 400 trillion sums per second in its largest run, roughly 40% of the chip’s peak <span class="tag">public</span>. At that speed one chip would need about 3,000 years. Spread over 16,384 chips it is about 67 days of pure arithmetic <span class="tag">public</span>. Part 11’s compute budgets are why every frontier model is trained like this.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>Three ways to cut a layered cake</h2>
+      <p>Picture the model as a tall cake: a stack of layers, each layer a grid of learned numbers (Part 5’s grid multiplies). There are three basic ways to share it among chips. Each purple outline below is one chip.</p>
+      <figure>
+        <svg id="cakeSvg" viewBox="0 0 800 300" role="img" aria-label="Three layered cakes cut three ways: whole copies side by side, thin vertical slices through every layer, and separated horizontal layers, each piece outlined as one chip."></svg>
+      </figure>
+      <p>Bake copies, and give each table different text to read: <b>data parallelism</b>. Slice straight down, so every chip holds a sliver of every layer: <b>tensor parallelism</b>. Separate the layers, so each chip holds a few whole ones: <b>pipeline parallelism</b>. Where the analogy breaks: cake slices never need to talk again. Chip slices talk constantly, and the rest of this part is about that talk. The bonus study, <a href="inside-llm-serving-eli5.html" data-series-link="inside-llm-serving-eli5">Inside LLM serving</a>, cuts a finished model the same ways to answer chats.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">Split 1: data</p>
+      <h2>Copy the model, split the reading</h2>
+      <p>Part 6 met the simplest split. Every chip holds the whole model, reads its own share of the batch, and works out slopes from that share. The slopes differ, because the text differs. Before anyone steps, the slopes are averaged, so every copy takes the identical step and stays identical.</p>
+      <figure>
+        <svg id="dpSvg" viewBox="0 0 800 330" role="img" aria-label="Four chips each read different text with the same model, produce slopes of different sizes, and those slopes are combined into one average."></svg>
+      </figure>
+      <p>This averaging is called an <b>all-reduce</b>: every chip puts its numbers in, and every chip gets the total back (divide by the number of chips for the average). It happens after every training step, and it moves one slope for every learned number in the model: billions of numbers, every step.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Averaging in a ring, no boss needed</h2>
+      <p>The obvious way uses a boss: everyone sends slopes to one chip, it adds them up and sends the answer back. But then the boss’s wire carries everything, and it gets worse with every chip added. The standard fix passes pieces around a ring. Step through it with four chips, each holding its slopes cut into four pieces <span class="tag">example</span>:</p>
+      <figure>
+        <svg id="ringSvg" viewBox="0 0 800 250" role="img" aria-label="Four chips in a ring, each holding four pieces of slopes; at each step every chip passes one piece to its neighbour, which adds it, until every chip holds every total."></svg>
+        <div class="pick" role="group" aria-label="Ring all-reduce steps"><span>RING ALL-REDUCE</span>
+          <button type="button" id="ringNext">Next step</button><button type="button" class="secondary" id="ringReset">Start over</button>
+        </div>
+        <p class="readout" id="ringNote" aria-live="polite"></p>
+      </figure>
+      <p>Three steps of adding, then three of copying. Each chip sent 6 pieces, each a quarter of its slopes: 1.5 times its own data. With n chips it is 2(n−1)/n times, which creeps towards 2 but never passes it, however many chips join <span class="tag">public</span>. That is the ring’s great strength, and its limit: the time to share never shrinks as chips are added. It only stops growing.</p>
+      <details class="trace"><summary>Go deeper: the cost model</summary>
+        <p>NVIDIA’s NCCL library documents the best possible all-reduce time as t = (S ÷ B) × 2(n − 1)/n, where S is the bytes each chip holds and B is each chip’s link speed <span class="tag">public</span>. The ring version came to deep learning through Baidu and Uber’s Horovod, based on a 2009 paper by Patarasuk and Yuan that showed it uses the network optimally when the data is large <span class="tag">public</span>. Every hop also costs a small fixed delay, so with thousands of chips libraries also use tree-shaped versions, which NCCL’s documentation describes too.</p>
+      </details>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The fix for memory</p>
+      <h2>Stop storing the same notes everywhere</h2>
+      <p>Plain copies have a catch: every chip stores all 16 bytes per number, so the model must still fit on one chip. But Adam’s notes about a number are only ever used to update that number. So each chip can keep notes for just its own share, update just that share, and pass the result on. This is <b>ZeRO</b>, from Microsoft <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="zeroSvg" viewBox="0 0 800 280" role="img" aria-label="Per-chip memory for a 7.5-billion-number model on 64 chips: 120 GB with plain copies, 31.4 GB sharing Adam's notes, 16.6 GB also sharing slopes, 1.9 GB also sharing weights."></svg>
+      </figure>
+      <p>The bars are the ZeRO paper’s own example: a 7.5-billion-number model on 64 chips <span class="tag">public</span>. Sharing the notes cuts each chip’s memory from 120 GB to 31.4 GB, with no extra traffic. Sharing slopes too gives 16.6 GB, still with the same traffic as plain copies. Sharing the weights as well gives 1.9 GB, at 1.5 times the traffic, because each layer’s weights must be fetched from their owners just before use. PyTorch’s version is called <b>FSDP</b>, fully sharded data parallel, and Llama 3 used it <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">Split 2: tensor</p>
+      <h2>Slice every grid across chips</h2>
+      <p>Sharding saves memory, but each chip still does a whole layer’s arithmetic for its share of the text. Tensor parallelism splits the arithmetic itself. NVIDIA’s Megatron-LM cut each layer’s first grid by columns and its second by rows, so each chip does half of both multiplies with no talking in between <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="tpSvg" viewBox="0 0 800 330" role="img" aria-label="Two chips each take the same input, multiply by half the columns of the first grid and half the rows of the second, and their partial answers are added across chips into the full answer."></svg>
+      </figure>
+      <p>Each chip ends with a partial answer, and one all-reduce adds them up. Attention splits the same way, each chip taking some of Part 7’s heads. That makes two all-reduces per layer going forward and two coming back <span class="tag">public</span>: hundreds per step, each waiting for the slowest chip. So tensor splitting stays where the wires are fastest. Megatron-LM used it across the 8 GPUs inside one server <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: Megatron-LM’s numbers</summary>
+        <p>Megatron-LM trained an 8.3-billion-number model on 512 V100 GPUs: 8-way tensor splitting inside each server and 64 copies across servers. It sustained 15.1 thousand trillion sums per second, 76% scaling efficiency compared with one GPU, with the model growing alongside the chip count. Its servers had 300 GB/s between GPUs inside and 100 GB/s between servers <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Split 3: pipeline</p>
+      <h2>Give each chip a few layers</h2>
+      <p>Pipeline parallelism gives chip 1 the first layers, chip 2 the next ones, and so on. Only the in-between results cross from chip to chip, once per stage, so slower wires will do. The catch is waiting: chip 4 has nothing to do until chip 1 has finished. GPipe’s fix is to cut each batch into <b>micro-batches</b> that follow each other down the line <span class="tag">public</span>. Choose how many:</p>
+      <figure>
+        <svg id="ppSvg" viewBox="0 0 800 250" role="img" aria-label="A timeline for four chips in a pipeline: forward and backward blocks for each micro-batch, with idle gaps at the start and end of the step."></svg>
+        <div class="pick" id="ppPick" role="group" aria-label="Number of micro-batches"><span>MICRO-BATCHES PER STEP</span>
+          <button type="button" class="secondary" data-m="1" aria-pressed="false">1</button><button type="button" class="secondary" data-m="4" aria-pressed="true">4</button><button type="button" class="secondary" data-m="8" aria-pressed="false">8</button><button type="button" class="secondary" data-m="16" aria-pressed="false">16</button>
+        </div>
+        <p class="readout" id="ppNote" aria-live="polite"></p>
+      </figure>
+      <p>The rose gaps are called <b>bubbles</b>. With K stages and M micro-batches, the waiting share is (K − 1)/(M + K − 1) <span class="tag">public</span>. In this simple drawing, where going back takes as long as going forward <span class="tag">example</span>, 16 micro-batches still leave 16% idle. GPipe found the overhead negligible from M ≥ 4K in its experiments, partly because recomputing saved results can be scheduled into the gaps <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">All together</p>
+      <h2>Llama 3 used every split at once</h2>
+      <p>Real runs combine the splits, each where its wires suit it. Meta trained Llama 3 405B on 16,384 GPUs arranged as 8 × 16 × 128 <span class="tag">public</span>: tensor splitting across the 8 GPUs of one server, pipeline splitting across 16 servers in a line, and 128 data-parallel copies of that line, each reading different text.</p>
+      <figure>
+        <svg id="dSvg" viewBox="0 0 800 320" role="img" aria-label="A grid of 128 columns by 16 rows of servers; one column is one pipeline copy of the model, and one cell zooms in to a server of 8 GPUs."></svg>
+      </figure>
+      <p>Each grid cell is one server of 8 GPUs. Meta calls this <b>4D parallelism</b>: the fourth split, context parallelism, divides very long texts among chips and was switched on for the long-text stage of training <span class="tag">public</span>. Each copy read 16 sequences of 8,192 tokens per step: about 16 million tokens per step in all <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The wires, inside</p>
+      <h2>Inside a server: a private motorway</h2>
+      <p>Inside one server, the eight GPUs talk over <b>NVLink</b>, through switch chips called NVSwitch, so any GPU can reach any other directly <span class="tag">public</span>. An H100 gets 900 GB/s of NVLink, counting both directions: 7 times its PCIe link to the server’s CPU, and 9 times a 400 Gb/s network card <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="bwSvg" viewBox="0 0 800 240" role="img" aria-label="Bars on one scale: an H100's own memory at 3,350 GB/s, NVLink at 900 GB/s, PCIe at 128 GB/s and a 400 Gb/s network card at 100 GB/s counting both directions."></svg>
+      </figure>
+      <p>The network card’s 400 gigabits per second is 50 GB/s each way, 100 GB/s both ways <span class="tag">public</span>. Newer systems stretch the fast domain further: NVIDIA’s GB200 NVL72 joins 72 Blackwell GPUs over NVLink at 1,800 GB/s each, about 130 TB/s in all <span class="tag">public</span>. A wider fast domain means bigger tensor splits before anything touches the slower network.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">The wires, between servers</p>
+      <h2>Between servers: a tree of switches</h2>
+      <p>Past the server, every GPU gets its own network card and the traffic runs through switches: InfiniBand, or Ethernet carrying direct memory-to-memory transfers (RoCE). Llama 3 405B trained on RoCE and smaller Llama 3 models on InfiniBand, both at 400 Gb/s per GPU <span class="tag">public</span>. Meta’s 24,576-GPU cluster is a three-layer tree called a Clos network <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="closSvg" viewBox="0 0 800 340" role="img" aria-label="A three-layer switch tree: racks of 16 GPUs under rack switches, every rack switch linked to every pod switch, and pod switches linked more thinly to aggregation switches at the top."></svg>
+      </figure>
+      <p>Sixteen GPUs share a rack switch. 192 racks join through pod switches into a pod of 3,072 GPUs with <b>full bisection bandwidth</b>: cut the pod in half and the halves can still talk at full speed. Eight pods join at the top, but those links are oversubscribed 1:7, so only about a seventh of full speed is guaranteed between pods <span class="tag">public</span>. This tree shape, a fat tree, is a classic data-centre design <span class="tag">public</span>, and Meta’s scheduler keeps the chattiest work inside a pod.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">Another design</p>
+      <h2>Google’s TPU pods rewire themselves with mirrors</h2>
+      <p>Google’s TPUs (Part 10) take a different road. Each rack holds 64 TPU v4 chips wired as a 4 × 4 × 4 cube with ordinary cables. Each face of the cube sends 16 optical fibres to <b>optical circuit switches</b>: boxes of tiny mirrors that steer light from any fibre to any other, and re-aim in milliseconds <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="tpuSvg" viewBox="0 0 800 320" role="img" aria-label="A four by four by four cube of 64 chips, with optical fibres from one face running to a mirror switch, which connects onward to other cubes."></svg>
+      </figure>
+      <p>With 48 of these switches, 64 cubes join into one 4,096-chip machine <span class="tag">public</span>. Because the wiring is just mirror angles, a job can take cubes from anywhere, broken cubes can be skipped, and the network’s shape can be changed to suit the job. Google reports the optical switches cost under 5% of the system and use under 3% of its power <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">Why it stops</p>
+      <h2>The sums shrink, the sharing does not</h2>
+      <p>Now put numbers on it. Take an 8-billion-number model, 4 million tokens per step, chips doing 400 trillion sums a second, and plain copies sharing 2-byte slopes over 50 GB/s links <span class="tag">example</span>. Double the chips and each chip’s share of the sums halves. The all-reduce time barely moves:</p>
+      <figure>
+        <svg id="shrinkSvg" viewBox="0 0 800 300" role="img" aria-label="Paired bars for 256 to 4,096 chips: summing time halves with each doubling, from 1.88 seconds to 0.12, while sharing time stays at about 0.64 seconds."></svg>
+      </figure>
+      <p>That is scaling in one picture. Past about 750 chips here, sharing takes longer than summing, and each doubling buys less <span class="tag">example</span>. Real systems fight back three ways: overlap sharing with the backward pass, which FSDP does <span class="tag">public</span>; put the chattiest splits on the fastest wires; and take bigger steps, so each chip has more sums per round of sharing.</p>
+    </section>
+
+    <!-- 14: LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Add chips until the wires win</h2>
+      <p>A run the size of Llama 3 8B: an 8-billion-number model reading 15 trillion tokens, copied on every chip <span class="tag">example</span>. Each step costs 6 sums per number per token, shared equally, plus one ring all-reduce of 2-byte slopes using NCCL’s best-case formula. Choose the chips, the link speed and the step size:</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="n">Chips <output id="n-o"></output></label><input id="n" type="range" min="3" max="14" step="1" value="10"></div>
+          <div class="control"><label for="bw">Link speed per chip, each way <output id="bw-o"></output></label><input id="bw" type="range" min="0" max="5" step="1" value="2"></div>
+          <div class="control"><label for="b">Tokens per step <output id="b-o"></output></label><input id="b" type="range" min="0" max="5" step="1" value="3"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="3,5,3">One server, NVLink</button>
+            <button type="button" class="secondary" data-p="10,2,3">1,024 chips, 400 Gb/s network</button>
+            <button type="button" class="secondary" data-p="14,2,3">16,384 chips, same network</button>
+            <button type="button" class="secondary" data-p="14,2,5">16,384 chips, 16M-token steps</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars for one training step: time spent summing on each chip, time spent sharing slopes, and the whole step."></svg>
+          <svg id="curveChart" viewBox="0 0 520 330" role="img" aria-label="Days to train against number of chips on log scales: the wires-free line keeps falling while the with-wires line flattens."></svg>
+        </div>
+      </div></div>
+      <p>Read the curve: on the dashed line, doubling the chips halves the time. The solid line follows it until sharing catches up with summing, then flattens. Bigger steps and faster wires both push the bend to the right. Watch the ledger’s tokens per chip too: at 16,384 chips, a 4-million-token step gives each chip about 244 tokens, less than one 8,192-token document. That is another reason real runs combine splits instead of just adding copies.</p>
+      <details class="trace"><summary>Go deeper: what the lab assumes</summary>
+        <p>No overlap between summing and sharing; NCCL’s best-case ring time with no per-hop delay; every chip at 400 trillion sums per second; plain copies, since ZeRO’s first two stages move the same bytes <span class="tag">example</span>. Model size cancels out: a bigger model has more sums and more slopes in the same proportion, so the bend sits at the same chip count, about 1 + 1.5 × tokens per step × link speed ÷ chip speed. Steps cannot grow forever either: McCandlish and colleagues found that each task has a largest useful batch, beyond which bigger steps stop speeding up learning <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Twice the chips is not twice as fast</h2>
+      <p>The natural guess is that doubling the chips halves the time. Meta’s own numbers show the gap even in a carefully tuned run: on 8,192 GPUs each sustained 430 trillion sums a second, on 16,384 each sustained 400 <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="mistakeSvg" viewBox="0 0 800 210" role="img" aria-label="Total speed of 8,192 GPUs at 430 trillion sums per second each, and of 16,384 GPUs at 400 each, which reaches 1.86 times, short of the dashed line at twice."></svg>
+      </figure>
+      <p>Twice the chips gave 1.86 times the speed <span class="tag">public</span>. Meta’s explanation: to keep each step at 16 million tokens, each copy got a smaller share of every batch, so each GPU had less work per round of sharing <span class="tag">public</span>. That is the lab’s bend, seen in a real run.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Faster chips need faster wires</h2>
+      <p>Here is the twist. Make the chips faster and only the summing shrinks. The sharing takes exactly as long, so the wires matter more, not less. The lab’s default run, then the same run with a chip 2.5 times faster <span class="tag">example</span>:</p>
+      <figure>
+        <svg id="fastSvg" viewBox="0 0 800 250" role="img" aria-label="With today's chip, summing takes 0.47 seconds and sharing 0.64; with a chip 2.5 times faster, summing takes 0.19 seconds and sharing still 0.64."></svg>
+      </figure>
+      <p>The share of time spent summing falls from 42% to 23% with no change to the network. That is why each chip generation brings faster links as well: NVLink went from 900 GB/s per GPU on Hopper to 1,800 GB/s on Blackwell <span class="tag">public</span>. In the lab, the bend moves left whenever chips get faster than their wires.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">The hidden cost</p>
+      <h2>Something breaks about every three hours</h2>
+      <p>Thousands of chips means thousands of things that can fail, and training runs in lockstep: if one GPU stops, every GPU waits. In a 54-day stretch of Llama 3 405B’s training, Meta counted 466 interruptions: 47 planned for maintenance, and 419 unexpected, about one every three hours <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="failSvg" viewBox="0 0 800 330" role="img" aria-label="Causes of 419 unexpected interruptions: faulty GPUs 148, GPU memory 72, software bugs 54, network switches or cables 35, host maintenance 32, all other causes 78."></svg>
+      </figure>
+      <p>About 78% of the unexpected ones were hardware, confirmed or suspected, with GPUs and their memory at the top of the list <span class="tag">public</span>. Even so, only three needed a person to step in, automation handled the rest, and the run spent more than 90% of its time doing useful training <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: a slip in the report, and other lessons</summary>
+        <p>Meta’s text says GPU issues were 58.7% of the unexpected interruptions. Its own table counts 268 of 419 in GPU categories, which is 64%. The gap comes from the table listing the 148 faulty-GPU cases as 30.1%, when 148 ÷ 419 is 35.3%. The drawing uses the counts <span class="tag">public</span>.</p>
+        <p>Other lessons from the same report: one slow but working GPU, a straggler, can slow thousands of others; midday heat cost 1–2% of throughput; and tens of thousands of GPUs pausing together swung the data centre’s power draw by tens of megawatts <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">The fix</p>
+      <h2>Save often, restart fast</h2>
+      <p>The defence is a <b>checkpoint</b>: every so often, every chip writes its share of the training state to storage. After a failure, the job swaps out the broken machine, reloads the last checkpoint and carries on. Everything since that save is lost and must be redone <span class="tag">example</span>:</p>
+      <figure>
+        <svg id="ckptSvg" viewBox="0 0 800 300" role="img" aria-label="Training progress over 24 hours climbs, drops back to the last save at each failure, pauses to restart, and ends below the no-failure line."></svg>
+      </figure>
+      <p>So there are two levers: save more often, which costs pauses, and restart faster. Meta’s checkpoints were 1 MB to 4 GB per GPU, written to a storage system sustaining 2 TB/s with bursts to 7 TB/s, and it worked to shorten both checkpointing and job startup <span class="tag">public</span>. Google’s mirror switches attack the same problem from the other side, by routing around the broken part.</p>
+    </section>
+
+    <!-- 19 -->
+    <section class="panel">
+      <p class="kicker">The whole picture</p>
+      <h2>Many chips, wired as one machine</h2>
+      <p>A large model needs more memory than one chip has and more sums than one chip could do in centuries. So the work is cut at several levels, with the chattiest splits on the shortest, fastest wires:</p>
+      <figure>
+        <svg id="wholeSvg" viewBox="0 0 800 290" role="img" aria-label="Four levels side by side: one chip, a server of 8 chips, a pod of thousands of chips and a cluster of eight pods, each with the split that runs at that level."></svg>
+      </figure>
+      <p>Tensor splits inside the server, on NVLink. Pipeline stages across servers. Data-parallel copies, with sharded optimizer notes, across the whole cluster. Every step ends with chips sharing what they worked out, and how fast that sharing goes, not how fast each chip sums, often sets the pace.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>GPU counts in model reports</b><span>Training runs are described by chip count: 16,384 H100s for Llama 3 405B.</span><em>chapters 2, 9</em></div>
+        <div><b>Data centres built around networks</b><span>NVLink inside each server, 400 Gb/s per GPU between them, switches in layers.</span><em>chapters 10, 11</em></div>
+        <div><b>“Rack-scale” systems like NVL72</b><span>A wider fast-wire domain lets tensor splits span 72 GPUs.</span><em>chapter 10</em></div>
+        <div><b>Huge batch sizes</b><span>Millions of tokens per step give each chip enough sums per round of sharing.</span><em>chapters 13, 14</em></div>
+        <div><b>Training runs pause and resume</b><span>Failures every few hours are normal at this scale; checkpoints make them survivable.</span><em>chapters 17, 18</em></div>
+        <div><b>Power swings of megawatts</b><span>Thousands of GPUs waiting together for sharing or a checkpoint drop their power at once.</span><em>chapter 17</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>All-reduce</b><span>Every chip puts numbers in; every chip gets the total back.</span></div>
+        <div><b>Data parallelism</b><span>Whole copies of the model, each reading different text.</span></div>
+        <div><b>Tensor parallelism</b><span>Every grid sliced across chips, which add up partial answers.</span></div>
+        <div><b>Pipeline parallelism</b><span>Each chip holds a few whole layers and passes results along.</span></div>
+        <div><b>Micro-batch, bubble</b><span>Small pieces of a batch sent down the pipeline; the idle gaps left.</span></div>
+        <div><b>ZeRO, FSDP</b><span>Copies that share out optimizer notes, slopes and even weights.</span></div>
+        <div><b>NVLink, NVSwitch</b><span>NVIDIA’s fast GPU-to-GPU wires and the switch chips joining them.</span></div>
+        <div><b>InfiniBand, RoCE</b><span>Networks that copy data straight between servers’ memories.</span></div>
+        <div><b>Clos network, fat tree</b><span>Layers of switches with many paths between any two machines.</span></div>
+        <div><b>Bisection bandwidth</b><span>How fast one half of a network can talk to the other half.</span></div>
+        <div><b>Optical circuit switch</b><span>Mirrors that steer light between fibres, rewiring the network.</span></div>
+        <div><b>Checkpoint</b><span>A saved copy of the training state, to restart from after a failure.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>ZeRO’s memory sums, the Megatron-LM and GPipe methods, Llama 3’s cluster, splits, speeds and failures, TPU v4’s mirror switches, NVIDIA’s bandwidth specs and NCCL’s cost formula.</span><em>papers, spec sheets</em></div>
+        <div><b>Example</b><span>The lab’s model and network, 2-byte slopes with no overlap, the ring’s numbers, the pipeline timing, the 2.5× faster chip and the checkpoint drawing.</span><em>simplified to show the idea</em></div>
+        <div><b>Not public</b><span>How Anthropic splits and wires its training runs, how many chips it uses, and how often they fail. Meta’s exact per-GPU memory layout.</span><em>companies have not said</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">The hand-off</p>
+      <h2>Next: from autocomplete to assistant</h2>
+      <p>All this machinery makes one thing: a base model, a very good guesser of the next word that will continue any text it is given, helpful or not. Part 13 shows how that guesser becomes an assistant, through fine-tuning on example conversations and feedback from people.</p>
+      <figure>
+        <svg id="nextSvg" viewBox="0 0 800 220" role="img" aria-label="Thousands of chips produce one trained base model, which Part 13 turns into an assistant that answers in a chat."></svg>
+      </figure>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A big model is trained by thousands of chips acting as one: each holds a slice, does its sums, and then they all share. Past a point, the sharing, not the summing, sets the pace.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+    const C={gold:'#f5c76a',teal:'#76d5c1',or:'#ff8059',pur:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f'};
+    function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+    const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+    const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+    const comma=n=>Math.round(n).toLocaleString('en-US');
+    function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
+    const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+
+    /* 1: memory grid. One square = one H100's 80 GB. 405e9 numbers x 16 bytes = 6,480 GB = 81 squares. */
+    (()=>{const svg=$('memSvg'),P=405e9,chip=80e9;
+      const segs=[[0,P*2/chip,C.teal,1],[P*2/chip,P*4/chip,C.or,1],[P*4/chip,P*16/chip,C.teal,.38]];
+      for(let t=0;t<81;t++){const x=40+(t%9)*44,y=24+Math.floor(t/9)*44;
+        segs.forEach(([a,b,c,o])=>{const lo=Math.max(a,t),hi=Math.min(b,t+1);if(hi>lo)S(svg,'rect',{x:x+(lo-t)*40,y,width:(hi-lo)*40,height:40,fill:c,'fill-opacity':o});});
+        S(svg,'rect',{x,y,width:40,height:40,fill:'none',stroke:C.box,'stroke-width':1});}
+      S(svg,'rect',{x:480,y:30,width:40,height:40,fill:'none',stroke:C.pur,'stroke-width':2});
+      T(svg,534,48,'one H100');T(svg,534,68,'80 GB of memory',{fill:C.mut});
+      [[C.teal,1,'weights · 810 GB'],[C.or,1,'slopes · 810 GB'],[C.teal,.38,'Adam’s notes · 4,860 GB']].forEach(([c,o,s],i)=>{
+        S(svg,'rect',{x:480,y:116+i*40,width:22,height:22,fill:c,'fill-opacity':o});T(svg,514,133+i*40,s);});
+      T(svg,480,282,'= 81 chips full',{'font-size':26,fill:C.fg});
+      T(svg,480,310,'before any text is read',{fill:C.mut});
+      T(svg,480,410,'1 square = 80 GB',{fill:C.mut});})();
+
+    /* 2: time on a log scale. 3.8e25 sums at 400e12 per chip per second (Llama 3 Table 4). */
+    (()=>{const svg=$('timeSvg'),sec=3.8e25/400e12,yr=365.25*86400,x=v=>220+(Math.log10(v)+1)*108;
+      T(svg,220,18,'YEARS, LOG SCALE · each gridline = 10×',{fill:C.mut});
+      [-1,0,1,2,3,4].forEach((p,i)=>{const gx=x(10**p);S(svg,'line',{x1:gx,y1:30,x2:gx,y2:244,stroke:'#2f2d2a'});
+        T(svg,gx,268,['0.1','1','10','100','1,000','10,000'][i],{fill:C.mut,'text-anchor':'middle'});});
+      [[1,'1 chip'],[8,'8 chips'],[1024,'1,024 chips'],[16384,'16,384 chips']].forEach(([n,name],i)=>{const v=sec/n/yr,y=40+i*52;
+        S(svg,'rect',{x:220,y,width:x(v)-220,height:24,fill:C.or});
+        T(svg,205,y+10,name,{'text-anchor':'end'});
+        T(svg,205,y+30,v>=1?(v>=10?comma(v):v.toFixed(1))+' years':Math.round(v*365.25)+' days',{'text-anchor':'end',fill:C.or});});})();
+
+    /* 3: three cakes */
+    (()=>{const svg=$('cakeSvg'),op=[1,.75,.55,.38];
+      const layers=(x,y,w,h,gap=0)=>op.forEach((o,k)=>S(svg,'rect',{x,y:y+k*(h+gap),width:w,height:h,fill:C.teal,'fill-opacity':o}));
+      [80,182].forEach((x,i)=>{S(svg,'rect',{x:x+24,y:22,width:32,height:20,fill:C.gold,'fill-opacity':.85});
+        layers(x,56,80,30);S(svg,'rect',{x:x-4,y:52,width:88,height:128,fill:'none',stroke:C.pur,'stroke-width':2});});
+      for(let s=0;s<4;s++){const x=310+s*46;layers(x,56,36,30);S(svg,'rect',{x:x-4,y:52,width:44,height:128,fill:'none',stroke:C.pur,'stroke-width':2});}
+      for(let k=0;k<4;k++){const y=50+k*36;S(svg,'rect',{x:570,y,width:180,height:28,fill:C.teal,'fill-opacity':op[k]});S(svg,'rect',{x:566,y:y-2,width:188,height:32,fill:'none',stroke:C.pur,'stroke-width':2});}
+      [[171,'copies','split the reading','data'],[400,'slices','split each grid','tensor'],[660,'layers','split the stack','pipeline']].forEach(([x,a,b,c])=>{
+        T(svg,x,226,a,{'text-anchor':'middle','font-size':20});T(svg,x,252,b,{'text-anchor':'middle',fill:C.mut});T(svg,x,278,c+' parallel',{'text-anchor':'middle',fill:C.pur});});})();
+
+    /* 4: data parallel */
+    (()=>{const svg=$('dpSvg'),m=marker(svg,'dpA',C.mut),mp=marker(svg,'dpP',C.pur),w=[70,40,90,52],cx=[90,220,350,480],avg=63;
+      cx.forEach((x,i)=>{S(svg,'rect',{x:x-30,y:20,width:60,height:44,fill:C.gold,'fill-opacity':.2,stroke:C.gold});
+        for(let l=0;l<3;l++)S(svg,'line',{x1:x-20,y1:32+l*10,x2:x+20-(l===2?14:0),y2:32+l*10,stroke:C.gold,'stroke-width':2});
+        arrow(svg,`M${x} 66 L${x} 96`,m,C.mut);
+        S(svg,'rect',{x:x-50,y:100,width:100,height:74,fill:'none',stroke:C.pur,'stroke-width':2});
+        for(let k=0;k<4;k++)S(svg,'rect',{x:x-40,y:106+k*16,width:80,height:13,fill:C.teal,'fill-opacity':[1,.75,.55,.38][k]});
+        arrow(svg,`M${x} 176 L${x} 198`,m,C.mut);
+        S(svg,'rect',{x:x-w[i]/2,y:202,width:w[i],height:18,fill:C.or});
+        arrow(svg,`M${x} 222 L${285+(i-1.5)*16} 282`,mp,C.pur);});
+      S(svg,'rect',{x:285-avg/2,y:286,width:avg,height:18,fill:C.or});
+      T(svg,580,48,'different text',{fill:C.gold});T(svg,580,142,'same model',{fill:C.teal});
+      T(svg,580,216,'different slopes',{fill:C.or});T(svg,580,300,'average: all-reduce',{fill:C.pur});})();
+
+    /* 5: ring all-reduce, 4 chips x 4 pieces */
+    (()=>{const svg=$('ringSvg'),N=4,init=[[3,1,4,1],[5,9,2,6],[5,3,5,8],[9,7,9,3]];let val,cnt,step,sent;
+      const bx=i=>25+i*190;
+      function reset(){val=init.map(r=>r.slice());cnt=init.map(r=>r.map(()=>1));step=0;sent=[];draw();}
+      function next(){if(step>=2*(N-1))return;sent=[];const nv=val.map(r=>r.slice()),nc=cnt.map(r=>r.slice());
+        for(let i=0;i<N;i++){const to=(i+1)%N;
+          if(step<N-1){const c=((i-step)%N+N)%N;nv[to][c]=val[to][c]+val[i][c];nc[to][c]=cnt[to][c]+cnt[i][c];sent.push([i,c]);}
+          else{const s=step-(N-1),c=((i+1-s)%N+N)%N;nv[to][c]=val[i][c];nc[to][c]=cnt[i][c];sent.push([i,c]);}}
+        val=nv;cnt=nc;step++;draw();}
+      function draw(){clear(svg);const mp=marker(svg,'rgA',C.pur);
+        for(let i=0;i<N;i++){const x=bx(i);T(svg,x+80,40,'chip '+'ABCD'[i],{'text-anchor':'middle'});
+          S(svg,'rect',{x,y:56,width:160,height:80,fill:'none',stroke:C.line});
+          for(let c=0;c<N;c++){const cx=x+10+c*37,full=cnt[i][c]===N,hot=sent.some(([a,b])=>a===i&&b===c);
+            S(svg,'rect',{x:cx,y:76,width:33,height:40,fill:C.or,'fill-opacity':full?1:.12+.14*cnt[i][c],stroke:hot?C.pur:'none','stroke-width':3});
+            T(svg,cx+16.5,102,String(val[i][c]),{'text-anchor':'middle',fill:full?C.box:C.fg,'font-size':18});}
+          if(i<N-1)arrow(svg,`M${x+162} 96 L${x+188} 96`,mp,C.pur);}
+        arrow(svg,`M${bx(3)+80} 138 L${bx(3)+80} 180 L${bx(0)+80} 180 L${bx(0)+80} 140`,mp,C.pur);
+        T(svg,400,212,'D passes back to A',{'text-anchor':'middle',fill:C.pur});
+        T(svg,400,240,'full total',{'text-anchor':'end',fill:C.mut});S(svg,'rect',{x:410,y:226,width:18,height:18,fill:C.or});
+        const phase=step===0?'Start: each chip holds its own slopes, cut into four pieces.':step<N?`Step ${step} of 6, adding: each chip passes one piece to its neighbour, which adds it to its own.`+(step===N-1?' Now each chip holds one finished total.':''):`Step ${step} of 6, copying: finished totals are passed on and copied.`+(step===2*(N-1)?' Done: every chip holds every total, 22, 20, 20, 18.':'');
+        $('ringNote').innerHTML=`${phase} Pieces sent by each chip so far: <b>${step}</b>, ${step===0?'nothing yet':`${step} quarter${step>1?'s':''} of its data. Purple outline: the piece each chip just sent`}.`;}
+      $('ringNext').addEventListener('click',next);$('ringReset').addEventListener('click',reset);reset();})();
+
+    /* 6: ZeRO, 7.5B params on 64 chips (ZeRO paper Figure 1) */
+    (()=>{const svg=$('zeroSvg'),P=7.5,N=64,x0=200,k=4;
+      [[C.teal,1,'weights',200],[C.or,1,'slopes',320],[C.teal,.38,'Adam’s notes',430]].forEach(([c,o,s,x])=>{S(svg,'rect',{x,y:10,width:18,height:18,fill:c,'fill-opacity':o});T(svg,x+26,25,s,{fill:C.mut});});
+      const rows=[['plain copies',[2*P,2*P,12*P]],['share Adam’s notes',[2*P,2*P,12*P/N]],['+ share slopes',[2*P,2*P/N,12*P/N]],['+ share weights',[2*P/N,2*P/N,12*P/N]]];
+      S(svg,'line',{x1:x0+80*k,y1:46,x2:x0+80*k,y2:244,stroke:C.mut,'stroke-dasharray':'5 5'});
+      T(svg,x0+80*k,266,'one H100: 80 GB',{'text-anchor':'middle',fill:C.mut});
+      rows.forEach(([name,seg],i)=>{const y=56+i*48;let x=x0;
+        seg.forEach((g,j)=>{S(svg,'rect',{x,y,width:g*k,height:28,fill:[C.teal,C.or,C.teal][j],'fill-opacity':[1,1,.38][j]});x+=g*k;});
+        const tot=seg.reduce((a,b)=>a+b,0);T(svg,185,y+19,name,{'text-anchor':'end'});
+        T(svg,Math.max(x,x0+4)+8,y+19,(tot>=100?tot.toFixed(0):tot.toFixed(1))+' GB',{fill:C.mut});});})();
+
+    /* 7: tensor parallel, Megatron MLP split */
+    (()=>{const svg=$('tpSvg'),m=marker(svg,'tpA',C.mut),mp=marker(svg,'tpP',C.pur);
+      const grid=(x,y,w,h,cols,rows)=>{S(svg,'rect',{x,y,width:w,height:h,fill:C.teal,'fill-opacity':.85});
+        for(let c=1;c<cols;c++)S(svg,'line',{x1:x+c*w/cols,y1:y,x2:x+c*w/cols,y2:y+h,stroke:C.box,'stroke-width':1});
+        for(let r=1;r<rows;r++)S(svg,'line',{x1:x,y1:y+r*h/rows,x2:x+w,y2:y+r*h/rows,stroke:C.box,'stroke-width':1});};
+      [50,180].forEach((y0,l)=>{T(svg,30,y0-14,'chip '+(l+1),{fill:C.pur});S(svg,'line',{x1:30,y1:y0,x2:30,y2:y0+80,stroke:C.pur,'stroke-width':4});
+        S(svg,'rect',{x:52,y:y0,width:18,height:80,fill:C.or});arrow(svg,`M72 ${y0+40} L110 ${y0+40}`,m,C.mut);
+        grid(114,y0,70,80,4,8);arrow(svg,`M186 ${y0+40} L218 ${y0+40}`,m,C.mut);
+        S(svg,'rect',{x:222,y:y0,width:18,height:80,fill:C.or});arrow(svg,`M242 ${y0+40} L270 ${y0+40}`,m,C.mut);
+        grid(274,y0+20,110,40,8,4);arrow(svg,`M386 ${y0+40} L414 ${y0+40}`,m,C.mut);
+        S(svg,'rect',{x:418,y:y0,width:18,height:80,fill:C.or,'fill-opacity':.5});});
+      S(svg,'circle',{cx:530,cy:155,r:22,fill:'none',stroke:C.pur,'stroke-width':2});T(svg,530,163,'+',{'text-anchor':'middle',fill:C.pur,'font-size':24});
+      arrow(svg,'M438 90 L511 143',mp,C.pur);arrow(svg,'M438 220 L511 167',mp,C.pur);arrow(svg,'M553 155 L590 155',mp,C.pur);
+      S(svg,'rect',{x:594,y:115,width:18,height:80,fill:C.or});
+      T(svg,149,292,'half the columns',{'text-anchor':'middle',fill:C.teal});T(svg,329,292,'half the rows',{'text-anchor':'middle',fill:C.teal});
+      T(svg,530,292,'all-reduce: add',{'text-anchor':'middle',fill:C.pur});
+      T(svg,61,316,'same input',{'text-anchor':'middle',fill:C.or});T(svg,427,316,'partial answers',{'text-anchor':'middle',fill:C.or});
+      T(svg,640,316,'full answer',{'text-anchor':'middle',fill:C.or});})();
+
+    /* 8: pipeline bubbles, GPipe schedule, K = 4 stages */
+    (()=>{const svg=$('ppSvg'),K=4;let M=4;
+      function draw(){clear(svg);const T2=2*(M+K-1),w=680/T2;
+        for(let k=0;k<K;k++){const y=24+k*40;T(svg,20,y+22,'chip '+(k+1));
+          const busy={};for(let m=0;m<M;m++){busy[m+k]=['f',m];busy[(M+K-1)+(M-1-m)+(K-1-k)]=['b',m];}
+          for(let s=0;s<T2;s++){const b=busy[s],x=100+s*w;
+            S(svg,'rect',{x:x+1,y,width:w-2,height:30,fill:b?C.or:C.rose,'fill-opacity':b?(b[0]==='f'?1:.55):.18,stroke:b?'none':C.rose,'stroke-width':1.5});
+            if(b&&w>=30)T(svg,x+w/2,y+21,String(b[1]+1),{'text-anchor':'middle',fill:C.box});}}
+        [[C.or,1,'forward',100],[C.or,.55,'backward',240],[C.rose,.18,'waiting',390]].forEach(([c,o,s,x])=>{S(svg,'rect',{x,y:200,width:18,height:18,fill:c,'fill-opacity':o,stroke:x===390?C.rose:'none'});T(svg,x+26,215,s,{fill:C.mut});});
+        T(svg,780,215,'time →',{'text-anchor':'end',fill:C.mut});
+        const idle=(K-1)/(M+K-1);
+        $('ppNote').innerHTML=`${M} micro-batch${M>1?'es':''}, 4 chips: the step takes <b>${T2}</b> time slots and each chip waits for <b>${Math.round(idle*100)}%</b> of them. ${M===1?'With one micro-batch only one chip works at a time: no better than one chip.':''}`;}
+      document.querySelectorAll('#ppPick button').forEach(b=>b.addEventListener('click',()=>{M=+b.dataset.m;document.querySelectorAll('#ppPick button').forEach(o=>o.setAttribute('aria-pressed',o===b));draw();}));
+      draw();})();
+
+    /* 9: Llama 3 405B 4D layout: TP 8 x PP 16 x DP 128 (Table 4) */
+    (()=>{const svg=$('dSvg'),x0=120,y0=60,cw=4,rh=12;
+      S(svg,'rect',{x:x0,y:y0,width:128*cw,height:16*rh,fill:C.pur,'fill-opacity':.12});
+      for(let c=0;c<=128;c++)S(svg,'line',{x1:x0+c*cw,y1:y0,x2:x0+c*cw,y2:y0+16*rh,stroke:C.pur,'stroke-opacity':.45,'stroke-width':.6});
+      for(let r=0;r<=16;r++)S(svg,'line',{x1:x0,y1:y0+r*rh,x2:x0+128*cw,y2:y0+r*rh,stroke:C.pur,'stroke-opacity':.45,'stroke-width':.6});
+      S(svg,'rect',{x:x0+40*cw,y:y0,width:cw,height:16*rh,fill:C.pur});
+      S(svg,'rect',{x:x0+40*cw-1,y:y0+5*rh,width:cw+2,height:rh,fill:C.or});
+      S(svg,'line',{x1:x0+41*cw+1,y1:y0+5*rh,x2:658,y2:100,stroke:C.mut,'stroke-dasharray':'3 4'});
+      S(svg,'line',{x1:x0+41*cw+1,y1:y0+6*rh,x2:658,y2:160,stroke:C.mut,'stroke-dasharray':'3 4'});
+      for(let i=0;i<8;i++)S(svg,'rect',{x:664+(i%4)*30,y:104+Math.floor(i/4)*30,width:24,height:24,fill:C.or,'fill-opacity':.85});
+      T(svg,376,40,'128 copies: split the reading',{'text-anchor':'middle',fill:C.pur});
+      T(svg,105,150,'16 stages',{'text-anchor':'end',fill:C.pur});T(svg,105,170,'of layers',{'text-anchor':'end',fill:C.pur});
+      T(svg,720,192,'8 GPUs, NVLink',{'text-anchor':'middle'});T(svg,720,214,'slice each grid',{'text-anchor':'middle',fill:C.mut});
+      T(svg,376,290,'8 × 16 × 128 = 16,384 GPUs',{'text-anchor':'middle','font-size':20});})();
+
+    /* 10: bandwidth inside a server (H100 spec sheet and Hopper architecture blog) */
+    (()=>{const svg=$('bwSvg'),x0=230,k=.16;
+      [['own memory (HBM)',3350,C.teal,1],['NVLink, GPU to GPU',900,C.pur,1],['PCIe, GPU to CPU',128,C.pur,.6],['network card, 400 Gb/s',100,C.pur,.6]].forEach(([n,v,c,o],i)=>{const y=24+i*54;
+        S(svg,'rect',{x:x0,y,width:v*k,height:26,fill:c,'fill-opacity':o});
+        T(svg,215,y+12,n,{'text-anchor':'end'});T(svg,215,y+32,comma(v)+' GB/s',{'text-anchor':'end',fill:c});});})();
+
+    /* 11: Clos network (Llama 3 RoCE cluster) */
+    (()=>{const svg=$('closSvg');const agg=[260,360];
+      [40,330].forEach(base=>{const tors=[0,1,2,3].map(r=>base+15+r*62+25),cs=[0,1,2,3].map(s=>base+40+s*60);
+        tors.forEach(tx=>cs.forEach(sx=>S(svg,'line',{x1:tx,y1:230,x2:sx,y2:162,stroke:C.pur,'stroke-opacity':.75,'stroke-width':1.6})));
+        cs.forEach(sx=>agg.forEach(ax=>S(svg,'line',{x1:sx,y1:150,x2:ax,y2:74,stroke:C.pur,'stroke-opacity':.5,'stroke-width':1,'stroke-dasharray':'4 4'})));
+        cs.forEach(sx=>S(svg,'rect',{x:sx-20,y:150,width:40,height:12,fill:C.pur}));
+        tors.forEach(tx=>{S(svg,'rect',{x:tx-25,y:230,width:50,height:12,fill:C.pur});
+          for(let g=0;g<16;g++)S(svg,'circle',{cx:tx-22+(g%8)*6.3,cy:256+Math.floor(g/8)*12,r:2.4,fill:C.or});});
+        T(svg,base+140,305,'pod: 192 racks',{'text-anchor':'middle'});T(svg,base+140,326,'3,072 GPUs',{'text-anchor':'middle',fill:C.mut});});
+      agg.forEach(ax=>S(svg,'rect',{x:ax-30,y:60,width:60,height:14,fill:C.pur}));
+      T(svg,610,72,'aggregation');T(svg,610,94,'1:7 oversubscribed',{fill:C.rose});
+      T(svg,610,160,'pod switches');T(svg,610,182,'full speed in pod',{fill:C.mut});
+      T(svg,610,240,'rack switch');T(svg,610,264,'16 GPUs per rack',{fill:C.mut});
+      T(svg,610,305,'8 pods: 24,576');})();
+
+    /* 12: TPU v4 cube and optical circuit switch */
+    (()=>{const svg=$('tpuSvg'),p=(i,j,k)=>[60+i*34+k*20,250-j*34-k*18];
+      for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++){const [x,y]=p(i,j,k);
+        if(i<3){const [a,b]=p(i+1,j,k);S(svg,'line',{x1:x,y1:y,x2:a,y2:b,stroke:C.line});}
+        if(j<3){const [a,b]=p(i,j+1,k);S(svg,'line',{x1:x,y1:y,x2:a,y2:b,stroke:C.line});}
+        if(k<3){const [a,b]=p(i,j,k+1);S(svg,'line',{x1:x,y1:y,x2:a,y2:b,stroke:C.line});}}
+      let f=0;for(let j=0;j<4;j++)for(let k=0;k<4;k++){const [x,y]=p(3,j,k);S(svg,'line',{x1:x+5,y1:y,x2:420,y2:112+f*8.5,stroke:C.pur,'stroke-opacity':.55});f++;}
+      for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++){const [x,y]=p(i,j,k);S(svg,'circle',{cx:x,cy:y,r:4.5,fill:C.or});}
+      S(svg,'rect',{x:420,y:100,width:90,height:150,fill:C.box,stroke:C.pur,'stroke-width':2});
+      for(let r=0;r<5;r++)S(svg,'line',{x1:445,y1:116+r*26,x2:485,y2:132+r*26,stroke:C.fg,'stroke-width':3});
+      const cube=(cx,cy)=>{S(svg,'path',{d:`M${cx} ${cy} l40 0 l0 40 l-40 0 z`,fill:C.or,'fill-opacity':.35,stroke:C.or});
+        S(svg,'path',{d:`M${cx} ${cy} l18 -16 l40 0 l-18 16 z`,fill:C.or,'fill-opacity':.2,stroke:C.or});
+        S(svg,'path',{d:`M${cx+40} ${cy} l18 -16 l0 40 l-18 16 z`,fill:C.or,'fill-opacity':.15,stroke:C.or});};
+      [[640,110],[640,210]].forEach(([cx,cy])=>{for(let q=0;q<3;q++)S(svg,'line',{x1:510,y1:150+q*30,x2:cx,y2:cy+10+q*10,stroke:C.pur,'stroke-opacity':.55});cube(cx,cy);});
+      T(svg,150,292,'64 chips, copper',{'text-anchor':'middle'});T(svg,465,292,'mirror switch',{'text-anchor':'middle',fill:C.pur});
+      T(svg,670,292,'more cubes: 4,096',{'text-anchor':'middle'});})();
+
+    /* 13: summing shrinks, sharing does not. 8B params, 4M tokens/step, 400e12 sums/s, 50 GB/s each way */
+    (()=>{const svg=$('shrinkSvg'),x0=200,k=260;
+      [[C.or,'summing',200],[C.pur,'sharing slopes',330]].forEach(([c,s,x])=>{S(svg,'rect',{x,y:8,width:18,height:18,fill:c});T(svg,x+26,23,s,{fill:C.mut});});
+      [256,512,1024,2048,4096].forEach((n,i)=>{const y=44+i*50,comp=6*8e9*4e6/(n*400e12),comm=2*(n-1)/n*16e9/50e9;
+        T(svg,185,y+24,comma(n)+' chips',{'text-anchor':'end'});
+        S(svg,'rect',{x:x0,y,width:comp*k,height:16,fill:C.or});T(svg,x0+comp*k+8,y+14,comp.toFixed(2)+' s',{fill:C.or});
+        S(svg,'rect',{x:x0,y:y+20,width:comm*k,height:16,fill:C.pur});T(svg,x0+comm*k+8,y+34,comm.toFixed(2)+' s',{fill:C.pur});});})();
+
+    /* 15: twice the chips (Llama 3 Table 4) */
+    (()=>{const svg=$('mistakeSvg'),x0=220,k=70,a=8192*430e12/1e18,b=16384*400e12/1e18;
+      [[a,'8,192 GPUs','× 430 trillion/s'],[b,'16,384 GPUs','× 400 trillion/s']].forEach(([v,n,s],i)=>{const y=40+i*64;
+        S(svg,'rect',{x:x0,y,width:v*k,height:28,fill:C.or});T(svg,205,y+12,n,{'text-anchor':'end'});T(svg,205,y+32,s,{'text-anchor':'end',fill:C.mut});
+        T(svg,x0+v*k-8,y+20,i?(b/a).toFixed(2)+'×':'1×',{'text-anchor':'end',fill:C.box});});
+      S(svg,'line',{x1:x0+2*a*k,y1:28,x2:x0+2*a*k,y2:150,stroke:C.rose,'stroke-width':2,'stroke-dasharray':'6 5'});
+      T(svg,x0+2*a*k,176,'the guess: 2×',{'text-anchor':'middle',fill:C.rose});
+      T(svg,x0,196,'scale: 70 px = a billion billion sums a second',{fill:C.mut});})();
+
+    /* 16: faster chips, same wires (lab defaults, chip 2.5x faster) */
+    (()=>{const svg=$('fastSvg'),x0=220,k=500;
+      [[C.or,'summing',220],[C.pur,'sharing slopes',350]].forEach(([c,s,x])=>{S(svg,'rect',{x,y:8,width:18,height:18,fill:c});T(svg,x+26,23,s,{fill:C.mut});});
+      [[400e12,'today’s chip'],[1000e12,'2.5× faster chip']].forEach(([F,n],i)=>{const y=50+i*92,comp=6*8e9*4e6/(1024*F),comm=2*1023/1024*16e9/50e9;
+        T(svg,205,y+16,n,{'text-anchor':'end'});T(svg,205,y+38,Math.round(comp/(comp+comm)*100)+'% summing',{'text-anchor':'end',fill:C.mut});
+        S(svg,'rect',{x:x0,y,width:comp*k,height:20,fill:C.or});T(svg,x0+comp*k+8,y+16,comp.toFixed(2)+' s',{fill:C.or});
+        S(svg,'rect',{x:x0,y:y+26,width:comm*k,height:20,fill:C.pur});T(svg,x0+comm*k+8,y+42,comm.toFixed(2)+' s',{fill:C.pur});});})();
+
+    /* 17: causes of unexpected interruptions (Llama 3 Table 5 counts) */
+    (()=>{const svg=$('failSvg'),x0=270,k=3;
+      [['faulty GPU',148],['GPU memory (HBM3)',72],['software bugs',54],['network switch or cable',35],['host maintenance',32],['all other causes',78]].forEach(([n,v],i)=>{const y=24+i*44;
+        S(svg,'rect',{x:x0,y,width:v*k,height:26,fill:C.rose,'fill-opacity':i===5?.45:.9});
+        T(svg,255,y+19,n,{'text-anchor':'end'});T(svg,x0+v*k+8,y+19,String(v),{fill:C.mut});});
+      T(svg,x0,304,'419 unexpected interruptions in 54 days',{fill:C.fg});})();
+
+    /* 18: checkpoints (example) */
+    (()=>{const svg=$('ckptSvg'),X=h=>80+h*680/24,Y=p=>250-p*8;
+      S(svg,'line',{x1:80,y1:250,x2:760,y2:250,stroke:C.line});
+      [0,12,24].forEach(h=>T(svg,X(h),274,h?h+' h':'0',{'text-anchor':h===24?'end':'middle',fill:C.mut}));
+      S(svg,'line',{x1:X(0),y1:Y(0),x2:X(24),y2:Y(24),stroke:C.mut,'stroke-dasharray':'5 5'});
+      const up=(a,b,pa)=>S(svg,'line',{x1:X(a),y1:Y(pa),x2:X(b),y2:Y(pa+b-a),stroke:C.or,'stroke-width':3});
+      const lost=(x1,y1,x2,y2)=>S(svg,'line',{x1:X(x1),y1:Y(y1),x2:X(x2),y2:Y(y2),stroke:C.rose,'stroke-width':3});
+      up(0,10,0);lost(10,10,10,8);lost(10,8,11,8);up(11,19,8);lost(19,16,19,13);lost(19,13,20,13);up(20,24,13);
+      [[4,4],[8,8],[12,9],[16,13],[20,13],[24,17]].forEach(([h,p])=>S(svg,'circle',{cx:X(h),cy:Y(p),r:6,fill:C.teal}));
+      S(svg,'circle',{cx:90,cy:18,r:6,fill:C.teal});T(svg,102,24,'save',{fill:C.mut});
+      S(svg,'line',{x1:170,y1:18,x2:200,y2:18,stroke:C.or,'stroke-width':3});T(svg,208,24,'training',{fill:C.mut});
+      S(svg,'line',{x1:300,y1:18,x2:330,y2:18,stroke:C.rose,'stroke-width':3});T(svg,338,24,'lost or restarting',{fill:C.mut});
+      S(svg,'line',{x1:500,y1:18,x2:530,y2:18,stroke:C.mut,'stroke-dasharray':'5 5'});T(svg,538,24,'no failures',{fill:C.mut});
+      T(svg,24,150,'work',{fill:C.mut});T(svg,24,170,'done',{fill:C.mut});})();
+
+    /* 19: whole picture, levels side by side */
+    (()=>{const svg=$('wholeSvg');
+      S(svg,'rect',{x:60,y:110,width:36,height:36,fill:C.or});
+      for(let i=0;i<8;i++)S(svg,'rect',{x:150+(i%4)*24,y:104+Math.floor(i/4)*24,width:18,height:18,fill:C.or,'fill-opacity':.85});
+      S(svg,'rect',{x:144,y:98,width:102,height:54,fill:'none',stroke:C.pur,'stroke-width':4});
+      for(let c=0;c<14;c++)for(let r=0;r<8;r++)S(svg,'rect',{x:290+c*12,y:80+r*12,width:9,height:9,fill:C.or,'fill-opacity':.6});
+      S(svg,'rect',{x:284,y:74,width:174,height:102,fill:'none',stroke:C.pur,'stroke-width':2});
+      for(let q=0;q<8;q++){const x=510+(q%4)*64,y=72+Math.floor(q/4)*56;S(svg,'rect',{x,y,width:54,height:48,fill:C.or,'fill-opacity':.35,stroke:C.pur,'stroke-width':1,'stroke-dasharray':'3 3'});}
+      [[78,'chip','sums'],[195,'server: 8','tensor split'],[371,'pod: 3,072','pipeline stages'],[635,'cluster: 24,576','data copies']].forEach(([x,a,b])=>{
+        T(svg,x,222,a,{'text-anchor':'middle'});T(svg,x,246,b,{'text-anchor':'middle',fill:C.pur});});
+      T(svg,400,280,'thicker outline = faster wires',{'text-anchor':'middle',fill:C.mut});})();
+
+    /* 20: hand-off */
+    (()=>{const svg=$('nextSvg'),m=marker(svg,'nxA',C.mut);
+      for(let c=0;c<12;c++)for(let r=0;r<8;r++)S(svg,'rect',{x:40+c*15,y:40+r*15,width:11,height:11,fill:C.or,'fill-opacity':.55});
+      arrow(svg,'M226 100 L300 100',m,C.mut);
+      for(let k=0;k<4;k++)S(svg,'rect',{x:310,y:46+k*28,width:120,height:22,fill:C.teal,'fill-opacity':[1,.75,.55,.38][k]});
+      arrow(svg,'M440 100 L514 100',m,C.mut);
+      S(svg,'path',{d:'M530 50 h220 a10 10 0 0 1 10 10 v70 a10 10 0 0 1 -10 10 h-170 l-24 22 l4 -22 h-30 a10 10 0 0 1 -10 -10 v-70 a10 10 0 0 1 10 -10 z',fill:C.gold,'fill-opacity':.15,stroke:C.gold,'stroke-width':2});
+      for(let l=0;l<3;l++)S(svg,'line',{x1:552,y1:76+l*20,x2:730-(l===2?70:0),y2:76+l*20,stroke:C.gold,'stroke-width':3});
+      T(svg,130,190,'this part: training',{'text-anchor':'middle'});T(svg,370,190,'a base model',{'text-anchor':'middle',fill:C.teal});
+      T(svg,645,190,'Part 13: an assistant',{'text-anchor':'middle',fill:C.gold});})();
+  </script>
+
+  <script>
+    // LAB. An 8B-parameter model, 15T tokens, plain data parallelism, H100-class chips at 400e12 sums/s.
+    // Step time = summing (6·P·B/(n·F)) + ring all-reduce of 2-byte slopes (2(n−1)/n · 2P / link), no overlap.
+    const ids=['n','bw','b'];
+    const BW=[12.5,25,50,100,200,450], P=8e9, D=15e12, F=400e12;
+    const chipsOf=v=>2**v, bwOf=v=>BW[v], tokOf=v=>0.5e6*2**v;
+    function fsec(v){if(v===0)return '0 s';if(v>=100)return comma(v)+' s';if(v>=10)return v.toFixed(1)+' s';if(v>=1)return v.toFixed(2)+' s';
+      const ms=v*1000;return (ms>=10?Math.round(ms):ms.toFixed(1))+' ms';}
+    const fdays=d=>d>=730?(d/365.25).toFixed(1)+' years':d>=10?Math.round(d)+' days':d.toFixed(1)+' days';
+    function compute(v){
+      const n=chipsOf(v[0]),bw=bwOf(v[1])*1e9,B=tokOf(v[2]);
+      const sums=6*P*B, tComp=sums/(n*F), bytes=2*(n-1)/n*2*P, tComm=bytes/bw, tStep=tComp+tComm;
+      const steps=D/B, days=steps*tStep/86400, ideal=steps*tComp/86400, nstar=1+1.5*B*bw/F;
+      return {n,bw,B,tComp,tComm,tStep,steps,days,ideal,eff:tComp/tStep,nstar,
+        rows:[['Summing, per chip',tComp,'#ff8059'],['Sharing slopes (all-reduce)',tComm,'#c3b8ff'],['Whole step',tStep,'#f1eee8']],
+        ledger:[['sums per step',(sums/1e18).toFixed(2)+' × 10¹⁸'],['each chip sends per step',(bytes/1e9).toFixed(1)+' GB'],
+          ['summing time',fsec(tComp)],['sharing time',fsec(tComm)],['share of step spent summing',Math.round(tComp/tStep*100)+'%'],
+          ['tokens per chip per step',comma(B/n)],['steps for 15T tokens',comma(steps)],['training time',fdays(days)],
+          ['if the wires were free',fdays(ideal)],['sharing = summing at',comma(nstar)+' chips']]};
+    }
+    const labConfig={format:fsec,sliderFormats:[v=>comma(chipsOf(v)),v=>bwOf(v)+' GB/s',v=>(tokOf(v)/1e6)+'M']};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function niceMax(x){const p=10**Math.floor(Math.log10(x));for(const m of [1,2,5,10])if(m*p>=x*(1-1e-9))return m*p;return 10*p;}
+    function drawCurve(r,v){const svg=$('curveChart');clear(svg);
+      const X=k=>100+(k-3)*400/11, Y=d=>260-Math.log10(d)*55;
+      T(svg,24,22,'days to train',{fill:C.mut});
+      S(svg,'line',{x1:200,y1:16,x2:224,y2:16,stroke:C.or,'stroke-width':3,'stroke-dasharray':'6 4'});T(svg,230,22,'wires free',{fill:C.mut});
+      S(svg,'line',{x1:330,y1:16,x2:354,y2:16,stroke:C.fg,'stroke-width':3});T(svg,360,22,'with wires',{fill:C.mut});
+      [0,1,2,3,4].forEach(p=>{S(svg,'line',{x1:100,y1:Y(10**p),x2:500,y2:Y(10**p),stroke:'#2f2d2a'});
+        T(svg,88,Y(10**p)+6,['1 day','10 days','100 days','1k days','10k days'][p],{'text-anchor':'end',fill:C.mut});});
+      [[3,'8'],[6,'64'],[9,'512'],[12,'4,096'],[14,'16,384']].forEach(([k,s])=>T(svg,X(k),292,s,{'text-anchor':k===14?'end':'middle',fill:C.mut}));
+      T(svg,24,292,'chips',{fill:C.mut});
+      const pts=[],ideal=[];for(let k=3;k<=14;k++){const c=compute([k,v[1],v[2]]);pts.push([X(k),Y(c.days)]);ideal.push([X(k),Y(c.ideal)]);}
+      if(r.nstar>=8&&r.nstar<=16384){const xs=X(Math.log2(r.nstar));S(svg,'line',{x1:xs,y1:40,x2:xs,y2:262,stroke:C.pur,'stroke-width':2,'stroke-dasharray':'3 4'});
+        T(svg,Math.min(450,Math.max(70,xs)),318,'sharing = summing',{'text-anchor':'middle',fill:C.pur});}
+      S(svg,'path',{d:'M'+ideal.map(p=>p.join(' ')).join(' L'),fill:'none',stroke:C.or,'stroke-width':3,'stroke-dasharray':'6 4'});
+      S(svg,'path',{d:'M'+pts.map(p=>p.join(' ')).join(' L'),fill:'none',stroke:C.fg,'stroke-width':3});
+      S(svg,'circle',{cx:X(v[0]),cy:Y(r.days),r:7,fill:C.fg,stroke:C.box,'stroke-width':2});}
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const r=compute(v),rows=r.rows;
+      if(rows.some(x=>!Number.isFinite(x[1])||x[1]<0)||!Number.isFinite(r.days)) throw new Error('Lab returned non-finite results');
+      const m=niceMax(Math.max(...rows.map(x=>x[1]))),x0=30,span=440,sx=x=>x0+Math.min(m,x)*span/m,ticks=[0,m/2,m];
+      const bottom=70+rows.length*82;$('labChart').setAttribute('viewBox',`0 0 520 ${bottom+78}`);
+      let s='<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">time for one training step</text>';
+      rows.forEach(([name,val,col],i)=>{const y=80+i*82;
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}</text><rect data-v="${val}" x="${x0}" y="${y}" width="${sx(val)-x0}" height="26" fill="${esc(col)}"/>`;});
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">Axis adjusts to values.</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=r.ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      drawCurve(r,v);
+      window.labResults={valid:true,rows:rows.map(x=>x[1]),axis:m,days:r.days,ideal:r.ideal,eff:r.eff,nstar:r.nstar,n:r.n,bw:r.bw,B:r.B,tokensPerChip:r.B/r.n};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
