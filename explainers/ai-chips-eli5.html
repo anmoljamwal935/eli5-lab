@@ -226,11 +226,11 @@
     <section class="panel">
       <p class="kicker">The yardstick</p>
       <h2>Is the chip waiting for maths or memory?</h2>
-      <p>Put the two speeds together. Divide a chip’s sums per second by its bytes per second and you get its <b>ridge point</b>: how many sums it must do with each byte it reads to keep the arithmetic busy. Below that, it waits on memory. Above it, the maths is the limit <span class="tag">public</span>.</p>
+      <p>Part 8 drew this as a roofline. A chip’s sums per second divided by its bytes per second gives its <b>ridge point</b>: how many sums it must do with each byte it reads to keep the arithmetic busy. Below that, it waits on memory; above it, the maths is the limit <span class="tag">public</span>. Here is the H100’s again, now with Part 5’s grid on it.</p>
       <figure>
         <svg id="f13" viewBox="0 0 800 390" role="img" aria-label="A roofline for the H100 at 16 bits on ten-times scales: a slanted memory-limited line rising to a ridge at about 295 sums per byte, then a flat maths-limited roof at about 990 trillion; dots for 1, 64 and 1,024 tokens at once"></svg>
       </figure>
-      <p>Take Part 5’s 4,096-by-4,096 weight grid at 16 bits. One token does one multiply and one add with each 2-byte weight: 1 sum per byte, far left. Push 64 tokens through the same weights and each byte serves 64 tokens; at 1,024 tokens the chip finally runs out of arithmetic <span class="tag">example</span>. This drawing is called a <b>roofline</b>; the first TPU paper used it to explain every one of its results.</p>
+      <p>Take Part 5’s 4,096-by-4,096 weight grid at 16 bits. One token does one multiply and one add with each 2-byte weight: 1 sum per byte, far left. Push 64 tokens through the same weights and each byte serves 64 tokens; at 1,024 tokens the chip finally runs out of arithmetic <span class="tag">example</span>. The first TPU paper used this same roofline to explain every one of its results, and the next three chapters use it to compare every chip here.</p>
     </section>
 
     <!-- 14 LAB -->
