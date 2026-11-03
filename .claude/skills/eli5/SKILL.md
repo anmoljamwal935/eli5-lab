@@ -357,7 +357,7 @@ Run all nine steps. These are the differences:
 - **Fact tags.** Series parts are often built from topics rather than a single source. In the hero, explain the tags once (`<span class="tag">public</span>` for a published paper, spec sheet or plain arithmetic, `<span class="tag">example</span>` for a made-up but consistent number, `<span class="tag np">not public</span>` where a company has not said) and tag facts as you use them. This is on top of Step 3, not instead of it.
 - **Go deeper boxes.** Optional detail goes in `<details class="trace"><summary>Go deeper: …</summary>…</details>`. A reader who skips every one must still follow every later part.
 - **Hand-off.** The last panel before the takeaway names what the next part answers. The end cards link it automatically.
-- **Step 8 card.** Add the label `PART N · <TRACK NAME>` in the track's colour (still 0–3 labels).
+- **Step 8 card.** Add the label `PART N` in the track's colour (teal `#76d5c1` for the LLM track, purple `#c3b8ff` for the chip track). It is one of the 0–3 labels and, like them, at most 3 words; the colour says which track.
 - **Step 9 publish.** Use `--subcategory "<series title>"` (exactly the series title, so the catalogue groups the parts) and `--part N`. Start `--summary` with `Part N: `. Before running the publisher, set `file: '<slug>-eli5.html'` on the part in the series data file and commit that change on its own, so the publisher's push carries both. Note it in the Git preflight as the one expected outgoing commit.
 - **Live checks, in addition to Step 9's.** The part's strip reads "Part N of M". The previous part's end card now links to it. Its dot on the home page band and the series map is lit, not dashed.
 
