@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "many-chips-as-one-eli5",
+    "title": "Many chips as one",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 12: why one chip is not enough, and how thousands work together",
+    "bullets": [
+      "Large models need more memory and sums than one chip has, so the work is split: copies, sliced grids, layer pipelines, sharded optimizer state",
+      "Every step ends with chips sharing slopes; past a point that sharing, not the arithmetic, sets the training speed"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "ONE CHIP",
+      "SPLIT",
+      "WIRES",
+      "SHARE"
+    ],
+    "file": "explainers/many-chips-as-one-eli5.html",
+    "date": "2026-11-03",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Paired bars for more and more chips: the time each chip spends summing halves each time, while the time spent sharing slopes stays the same.\"><rect x=\"24\" y=\"26\" width=\"230.1\" height=\"6\" fill=\"#ff8059\"/><rect x=\"24\" y=\"33\" width=\"78.2\" height=\"6\" fill=\"#c3b8ff\"/><rect x=\"24\" y=\"46\" width=\"115.0\" height=\"6\" fill=\"#ff8059\"/><rect x=\"24\" y=\"53\" width=\"78.4\" height=\"6\" fill=\"#c3b8ff\"/><rect x=\"24\" y=\"66\" width=\"57.5\" height=\"6\" fill=\"#ff8059\"/><rect x=\"24\" y=\"73\" width=\"78.5\" height=\"6\" fill=\"#c3b8ff\"/><rect x=\"24\" y=\"86\" width=\"28.8\" height=\"6\" fill=\"#ff8059\"/><rect x=\"24\" y=\"93\" width=\"78.5\" height=\"6\" fill=\"#c3b8ff\"/><rect x=\"24\" y=\"106\" width=\"14.4\" height=\"6\" fill=\"#ff8059\"/><rect x=\"24\" y=\"113\" width=\"78.5\" height=\"6\" fill=\"#c3b8ff\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"262\" y=\"33\" fill=\"#ff8059\">SUMS</text><text x=\"110\" y=\"40\" fill=\"#c3b8ff\">SHARING</text><text x=\"24\" y=\"140\" fill=\"#c3b8ff\">PART 12</text></g></svg>",
+    "part": 12
+  },
+  {
     "id": "why-bigger-works-eli5",
     "title": "Scale: why bigger works",
     "category": "AI & Frontier",
