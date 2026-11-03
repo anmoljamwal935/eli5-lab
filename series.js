@@ -21,7 +21,7 @@ window.ELI5_SERIES = {
     { id: 'the-transformer-eli5', track: 'llm', title: 'The transformer, assembled', blurb: 'Stacking the pieces into one full pass through the model', file: 'the-transformer-eli5.html' },
     { id: 'ai-chips-eli5', track: 'chip', title: 'AI chips: GPUs, TPUs and Trainium', blurb: 'What each design removes or adds to get better at AI maths', file: 'ai-chips-eli5.html' },
     { id: 'why-bigger-works-eli5', track: 'llm', title: 'Scale: why bigger works', blurb: 'Data, compute, and the surprisingly steady rules of scaling', file: 'why-bigger-works-eli5.html' },
-    { id: 'many-chips-as-one-eli5', track: 'chip', title: 'Many chips as one', blurb: 'Why one chip is not enough, and how thousands are wired together' },
+    { id: 'many-chips-as-one-eli5', track: 'chip', title: 'Many chips as one', blurb: 'Why one chip is not enough, and how thousands are wired together', file: 'many-chips-as-one-eli5.html' },
     { id: 'autocomplete-to-assistant-eli5', track: 'llm', title: 'From autocomplete to assistant', blurb: 'Fine-tuning and human feedback: how a word-guesser learns to help' },
     { id: 'context-window-eli5', track: 'llm', title: 'Memory and the context window', blurb: 'What the model can see at once, and why long chats forget' },
     { id: 'why-models-make-things-up-eli5', track: 'llm', title: 'Why models make things up', blurb: 'Confident mistakes: where they come from and why they are hard to stop' },
