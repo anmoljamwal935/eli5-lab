@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "the-transformer-eli5",
+    "title": "The transformer, assembled",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 9: stacking the pieces into one full pass through the model",
+    "bullets": [
+      "One block, attention then feed-forward, each adding to a running list, stacked dozens of times",
+      "Feed-forward tables hold most of the numbers; a pass is almost all multiply-and-add"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "TOKENS",
+      "BLOCKS",
+      "SCORES"
+    ],
+    "file": "explainers/the-transformer-eli5.html",
+    "date": "2026-11-03",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Six tokens climb as lines through two stacked blocks of attention arcs and feed-forward diamonds, and the last line turns into chance bars at the top right\"><g stroke=\"#a5a29c\" stroke-width=\"1.5\"><path d=\"M40 114V36\"/><path d=\"M66 114V36\"/><path d=\"M92 114V36\"/><path d=\"M118 114V36\"/><path d=\"M144 114V36\"/><path d=\"M170 114V36\"/></g><g fill=\"none\" stroke=\"#c3b8ff\"><path d=\"M168 98Q105 72 42 98\" stroke-width=\"1\"/><path d=\"M168 98Q130 82 94 98\" stroke-width=\"2.2\"/><path d=\"M168 98Q157 90 146 98\" stroke-width=\"1.4\"/><path d=\"M168 66Q105 40 42 66\" stroke-width=\"1\"/><path d=\"M168 66Q130 50 94 66\" stroke-width=\"2.2\"/><path d=\"M168 66Q157 58 146 66\" stroke-width=\"1.4\"/></g><g fill=\"#76d5c1\"><path d=\"M35 82L40 77L45 82L40 87Z\"/><path d=\"M61 82L66 77L71 82L66 87Z\"/><path d=\"M87 82L92 77L97 82L92 87Z\"/><path d=\"M113 82L118 77L123 82L118 87Z\"/><path d=\"M139 82L144 77L149 82L144 87Z\"/><path d=\"M165 82L170 77L175 82L170 87Z\"/><path d=\"M35 50L40 45L45 50L40 55Z\"/><path d=\"M61 50L66 45L71 50L66 55Z\"/><path d=\"M87 50L92 45L97 50L92 55Z\"/><path d=\"M113 50L118 45L123 50L118 55Z\"/><path d=\"M139 50L144 45L149 50L144 55Z\"/><path d=\"M165 50L170 45L175 50L170 55Z\"/></g><path d=\"M170 36V28H206\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.5\"/><g fill=\"#ff8059\"><rect x=\"212\" y=\"22\" width=\"74\" height=\"12\"/><rect x=\"212\" y=\"40\" width=\"17\" height=\"12\" opacity=\".8\"/><rect x=\"212\" y=\"58\" width=\"11\" height=\"12\" opacity=\".65\"/></g><g fill=\"#f5c76a\"><rect x=\"33\" y=\"116\" width=\"14\" height=\"10\"/><rect x=\"59\" y=\"116\" width=\"14\" height=\"10\"/><rect x=\"85\" y=\"116\" width=\"14\" height=\"10\"/><rect x=\"111\" y=\"116\" width=\"14\" height=\"10\"/><rect x=\"137\" y=\"116\" width=\"14\" height=\"10\"/><rect x=\"163\" y=\"116\" width=\"14\" height=\"10\"/></g><g font-family=\"monospace\" font-size=\"9\"><text x=\"296\" y=\"139\" text-anchor=\"end\" fill=\"#76d5c1\">PART 9</text></g></svg>",
+    "part": 9
+  },
+  {
     "id": "memory-bottleneck-eli5",
     "title": "Memory: the real bottleneck",
     "category": "AI & Frontier",
