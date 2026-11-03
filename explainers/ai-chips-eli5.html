@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI chips: GPUs, TPUs and Trainium — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key: gold = text and tokens, teal = stored numbers, orange = arithmetic, purple = connections, rose = the wrong intuition.
+       In this part gold marks a token's numbers flowing in, and purple also marks control (the parts that decide what happens next). */
+    .panel figure{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+    /* Part 10: the systolic-array stepper */
+    .stepper{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+    .stepper button{min-height:36px;padding:6px 14px}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+    .readout b{color:var(--fg)}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 10: what GPUs, TPUs and Trainium cut or add for AI maths">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/ai-chips-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="AI chips: GPUs, TPUs and Trainium">
+<meta property="og:description" content="Part 10: what GPUs, TPUs and Trainium cut or add for AI maths">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/ai-chips-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/ai-chips-eli5.png?v=a8276e5f">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI chips: GPUs, TPUs and Trainium">
+<meta property="article:published_time" content="2026-11-03">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="ai-chips-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>AI chips: GPUs, TPUs and Trainium</h1>
+      <p class="lede">A GPU is a general machine that happens to be good at AI. Google’s TPU and Amazon’s Trainium were designed for AI from the first sketch. This part compares them by what each design throws away and what it adds: a different shape of arithmetic unit, smaller numbers, more memory on the chip, and faster memory beside it.</p>
+      <p class="source-note">Built from Google’s TPU papers (Jouppi and others, 2017 and 2023) and Cloud TPU documentation, NVIDIA’s H100, Hopper, Blackwell and NVFP4 pages, and AWS’s Neuron documentation for Trainium and Inferentia, facts checked against them · <a href="https://arxiv.org/abs/1704.04760">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on Parts 3 to 5 (switches, the CPU, the GPU) and on Part 8 (memory). Facts carry a tag: <span class="tag">public</span> means a published paper, spec sheet or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. Speeds are <b>dense</b> peaks unless the text says otherwise. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>a token’s numbers flowing in</span>
+        <span><i style="background:#76d5c1"></i>stored numbers and memory</span>
+        <span><i style="background:#ff8059"></i>arithmetic</span>
+        <span><i style="background:#c3b8ff"></i>control and connections</span>
+        <span><i style="background:#ec6a94"></i>the wrong intuition, waste</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>A GPU’s sums mostly come from one part</h2>
+      <p>Part 5 recap: a <a href="the-gpu-eli5.html" data-series-link="the-gpu-eli5">GPU</a> has thousands of simple workers that march in groups of 32, plus <b>tensor cores</b> that multiply whole blocks of numbers in one step. On NVIDIA’s H100, almost all of the AI arithmetic comes from those tensor cores <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="f1" viewBox="0 0 800 260" role="img" aria-label="NVIDIA H100 sums per second: 67 trillion from the ordinary workers at 32 bits, about 990 trillion from tensor cores at 16 bits, and about 1,980 trillion at 8 bits"></svg>
+      </figure>
+      <p>The ordinary workers, the warp schedulers and the caches are still there, because a GPU also has to run graphics, physics and any program someone writes in CUDA. So a natural question: if AI is almost nothing but grid multiplies, what if a chip kept only the grid unit and the memory to feed it?</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The first answer</p>
+      <h2>Google’s first TPU: almost no control</h2>
+      <p>Google asked that question in 2013 and had a chip in its data centres by 2015: the <b>TPU</b>, tensor processing unit <span class="tag">public</span>. Its heart is one 256-by-256 grid of 65,536 multiply-and-add units working on 8-bit numbers, beside 28 MiB of memory on the chip. Its peak was 92 trillion operations a second.</p>
+      <figure>
+        <svg id="f2" viewBox="0 0 800 220" role="img" aria-label="The first TPU's die area: 37 percent data buffers, 30 percent arithmetic, 10 percent input and output, 2 percent control, and 21 percent other"></svg>
+      </figure>
+      <p>Look at the purple sliver. The paper lists what the TPU left out: “no caches, branch prediction, out-of-order execution, multiprocessing, speculative prefetching, address coalescing, multithreading, context switching” <span class="tag">public</span>. Those are Part 4’s CPU tricks and Part 5’s GPU tricks. Its authors summed it up: “Minimalism is a virtue of domain-specific processors.”</p>
+      <details class="trace"><summary>Go deeper: why it could afford to be so simple</summary>
+        <p>The first TPU only ran trained models (inference), as a plug-in card taking orders from a CPU over PCIe, the same bridge as Part 5, chapter 15. It had about a dozen instructions, and one of them, “MatrixMultiply”, could keep the big grid busy for thousands of clock ticks. With so few decisions to make, very little control was needed. Its measured speed was 15 to 30 times that of the CPUs and GPUs in the same data centres, on Google’s own models <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>A bucket chain, not everyone at the well</h2>
+      <p>Picture a fire and a well. If every helper walks to the well for each bucket, the path to the well is jammed. In a bucket chain, water leaves the well once and is passed from hand to hand, and every helper still does useful work on it.</p>
+      <figure>
+        <svg id="f3" viewBox="0 0 800 270" role="img" aria-label="On the left six workers each make their own trip to a well; on the right one trip to the well feeds a chain of six workers who pass the bucket along"></svg>
+      </figure>
+      <p><b>Mapping it back:</b> the well is memory, buckets are numbers, helpers are multiply-and-add units. <b>Where the analogy breaks:</b> a bucket of water is used up, but a number can be reused. Each unit multiplies the passing number, keeps a copy of nothing, and hands the same number on to the next unit, which uses it again.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">How it works</p>
+      <h2>A systolic array: numbers march through a grid</h2>
+      <p>The TPU’s grid works like that chain, in two directions. Each cell holds one <b>weight</b> that stays put. A token’s numbers enter from the left and move one cell right per tick. Running sums move one cell down per tick. The name <b>systolic</b> comes from the heart: data pulses through in step <span class="tag">public</span>. Here it is with Part 5’s two 4-by-4 grids:</p>
+      <figure>
+        <div class="stepper" role="group" aria-label="Systolic array controls"><button type="button" id="sysStep">Step</button><button type="button" class="secondary" id="sysPlay">Play</button><button type="button" class="secondary" id="sysReset">Reset</button></div>
+        <svg id="sysSvg" viewBox="0 0 800 520" role="img" aria-label="A four by four grid of cells, each holding a weight; the first grid's numbers enter from the left in a staggered line, running sums flow downwards, and finished answers collect below the grid"></svg>
+      </figure>
+      <p class="readout" id="sysNote"></p>
+      <p>Press Step a few times. The answers match Part 5’s grid multiply exactly, but no cell ever went to memory: the 16 weights were loaded once and the 16 input numbers each entered once. Every number was then used four times, once in each cell it passed.</p>
+      <details class="trace"><summary>Go deeper: the timing rule</summary>
+        <p>Token i’s number for row k enters at tick i + k. It reaches the cell in column j at tick i + k + j, where it is multiplied by that cell’s weight and added to the sum arriving from above. The sum for answer (i, j) leaves the bottom after tick i + j + 3. The staggered start is what lines everything up, which is why the input queue on the left looks like a staircase. A real TPU grid works the same way at 128 or 256 cells a side <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Why bother</p>
+      <h2>Bigger grids reuse each number more</h2>
+      <p>Part 8 showed that fetching a number costs more than multiplying it. The TPU paper says the same about its own on-chip memory: “reading a large SRAM uses much more power than arithmetic” <span class="tag">public</span>. In an n-by-n grid, each number fetched is used n times. So the bigger the grid, the fewer fetches per sum.</p>
+      <figure>
+        <svg id="f5" viewBox="0 0 800 250" role="img" aria-label="Uses per number fetched: 4 for a 4 by 4 tensor core, 128 for a 128 by 128 TPU grid, 256 for a 256 by 256 TPU grid"></svg>
+      </figure>
+      <p>Google’s 2023 TPU v4 paper makes exactly this comparison: its 128-by-128 grids reuse each input 128 times, “whereas the 4x4 FP16 array multipliers of the A100 only get reused 4 times, leading to more on-chip SRAM accesses” <span class="tag">public</span>. Newer GPU tensor cores handle larger blocks than the A100’s, but NVIDIA does not publish their internal grid size <span class="tag np">not public</span>.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>Big grids waste cells on awkward sizes</h2>
+      <p>A grid unit only works in whole tiles of its own size. The first TPU paper tested a 600-by-600 matrix from one of its models. On the 256-by-256 grid it took 9 tiles; on a hypothetical 512-by-512 grid it took only 4, but each was four times slower, so the bigger grid lost <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="f6" viewBox="0 0 800 400" role="img" aria-label="A 600 by 600 matrix covered by nine 256 by 256 tiles, leaving 39 percent of cells idle, and by four 512 by 512 tiles, leaving 66 percent idle"></svg>
+      </figure>
+      <p>This is the trade every designer weighs: big grids save memory trips, small ones waste less on odd shapes. Google’s TPUs from v2 to v5p used 128-by-128 grids, several per chip; its two newest generations went back to 256 by 256 <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">Smaller numbers</p>
+      <h2>How a number is packed into bits</h2>
+      <p>Part 5 showed that fewer bits per number means more sums per second. A <b>floating-point</b> number has three parts: a sign, some <b>range</b> bits (how big or small it can be, like the power of ten in 3 × 10⁸), and some <b>detail</b> bits (how many digits it keeps). Each format splits its bits differently:</p>
+      <figure>
+        <svg id="f7" viewBox="0 0 800 370" role="img" aria-label="Bit layouts drawn to scale: FP32 1 sign 8 range 23 detail; FP16 1, 5, 10; bfloat16 1, 8, 7; FP8 E4M3 1, 4, 3; FP8 E5M2 1, 5, 2; FP4 E2M1 1, 2, 1"></svg>
+      </figure>
+      <p><b>bfloat16</b> (“brain floating point”) is Google’s format. It keeps all 8 of FP32’s range bits and throws away detail instead: “the dynamic range of bfloat16 is identical to that of FP32” <span class="tag">public</span>. Neural networks tolerate rough numbers far better than numbers that overflow, so this turned out to be the right thing to cut.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Why it pays</p>
+      <h2>Detail bits cost silicon, squared</h2>
+      <p>Part 3 showed a multiplier is a grid where every bit of one number meets every bit of the other. So its size grows with the <b>square</b> of the detail bits. Google: bfloat16 multipliers are “about half the size in silicon of a typical FP16 multiplier, and they are eight times smaller than an FP32 multiplier” <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="f8" viewBox="0 0 800 330" role="img" aria-label="Squares whose sides are the detail bits plus one: FP32 24 by 24, FP16 11 by 11, bfloat16 8 by 8, FP8 4 by 4"></svg>
+      </figure>
+      <p>Counting the hidden leading 1 that every format keeps, the squares are 24², 11², 8² and 4². That rough rule gives a ninth for bfloat16 against FP32, close to Google’s “eight times” <span class="tag">example</span>. The answers are still added up in 32 bits, so small rounding errors do not pile up across thousands of additions <span class="tag">public</span>. The first TPU went further, to 8-bit whole numbers, which its paper says can take 6 times less energy and area than 16-bit floating point <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">The march down</p>
+      <h2>Eight bits, then four, with shared scales</h2>
+      <p>NVIDIA’s H100 added two 8-bit floating-point formats, E4M3 and E5M2 (4 or 5 range bits), with hardware that picks 8 or 16 bits layer by layer <span class="tag">public</span>. Blackwell GPUs added 4-bit numbers. A 4-bit number has only 15 distinct values, so blocks of numbers share one extra <b>scale</b> that stretches the steps to fit the block.</p>
+      <figure>
+        <svg id="f9" viewBox="0 0 800 310" role="img" aria-label="Top: the eight non-negative values an FP4 number can hold, 0 to 6. Bottom: sixteen real numbers, each rounded to the nearest of those steps after a shared scale of one 256th"></svg>
+      </figure>
+      <p>In NVIDIA’s <b>NVFP4</b>, every block of 16 numbers carries its own 8-bit scale, plus one 32-bit scale for the whole grid; the shared MXFP4 format uses blocks of 32 <span class="tag">public</span>. The dots that miss their step are the rounding error. Whether a model still works this rough is tested model by model.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">Who gets what</p>
+      <h2>Not every chip doubles at fewer bits</h2>
+      <p>Each designer decides which formats get their own fast path. Here is the peak speed of each chip at 16, 8 and 4 bits, from the companies’ own spec pages <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="f10" viewBox="0 0 800 560" role="img" aria-label="Peak dense trillions of sums per second at 16, 8 and 4 bits for NVIDIA H100 and B200, Google TPU v6e and Ironwood, and AWS Trainium2 and Trainium3"></svg>
+      </figure>
+      <p>NVIDIA doubles the speed at each halving it supports. Google’s Trillium (TPU v6e) runs 8-bit floating point at the same speed as bfloat16; Ironwood doubles it. AWS’s Trainium3 does 8-bit and 4-bit at the same speed, so for it 4 bits saves memory, not maths. These are choices about where to spend switches, not signs of a better or worse chip.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">Memory on the chip</p>
+      <h2>Every design adds memory on the chip</h2>
+      <p>Part 8 showed memory beside the chip is far slower than memory on it. So all three families spend a lot of silicon on <b>SRAM</b>, the fast memory built into the chip itself. They differ in how they use it <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="f11" viewBox="0 0 800 400" role="img" aria-label="On-chip memory in mebibytes: first TPU 28, TPU v4 170, H100 about 114 split into registers, L1 and L2, Trainium2 224, Trainium3 256; a dashed line marks one 4,096 by 4,096 grid at 16 bits, 32"></svg>
+      </figure>
+      <p>A GPU spends a big share on <b>registers</b>, the private scratch space of every worker, because it hides waits by keeping thousands of groups ready (Part 5, chapter 7). TPU v4 has one thread per core and a register file of 0.25 MiB; the TPU paper contrasts that with an A100 GPU’s 27 MiB <span class="tag">public</span>. TPUs and Trainium instead have big memories the software fills on purpose: AWS calls Trainium’s 28 MB per core “software-managed” <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">Memory beside the chip</p>
+      <h2>Every generation buys faster HBM</h2>
+      <p>On-chip memory holds a grid, not a model: Part 5’s 8-billion-number model is 16 GB at 16 bits. That lives in <b>HBM</b>, the stacked memory right beside the chip that Part 8 introduced. The first TPU used plain DDR3 memory instead, and paid for it:</p>
+      <figure>
+        <svg id="f12" viewBox="0 0 800 430" role="img" aria-label="Memory bandwidth in gigabytes per second: first TPU 34, TPU v4 1,200, Ironwood 7,380, H100 3,350, B200 8,000, Trainium 880, Trainium2 2,900, Trainium3 4,900"></svg>
+      </figure>
+      <p>Its paper found most of its models waiting on that 34 GB/s, and estimated that the GPU’s faster memory “would triple achieved TOPS” <span class="tag">public</span>. Every later chip in all three families bought HBM, and each generation buys more of it. How the chips talk to each other is a separate road, covered in Part 12.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">The yardstick</p>
+      <h2>Is the chip waiting for maths or memory?</h2>
+      <p>Part 8 drew this as a roofline. A chip’s sums per second divided by its bytes per second gives its <b>ridge point</b>: how many sums it must do with each byte it reads to keep the arithmetic busy. Below that, it waits on memory; above it, the maths is the limit <span class="tag">public</span>. Here is the H100’s again, now with Part 5’s grid on it.</p>
+      <figure>
+        <svg id="f13" viewBox="0 0 800 390" role="img" aria-label="A roofline for the H100 at 16 bits on ten-times scales: a slanted memory-limited line rising to a ridge at about 295 sums per byte, then a flat maths-limited roof at about 990 trillion; dots for 1, 64 and 1,024 tokens at once"></svg>
+      </figure>
+      <p>Take Part 5’s 4,096-by-4,096 weight grid at 16 bits. One token does one multiply and one add with each 2-byte weight: 1 sum per byte, far left. Push 64 tokens through the same weights and each byte serves 64 tokens; at 1,024 tokens the chip finally runs out of arithmetic <span class="tag">example</span>. The first TPU paper used this same roofline to explain every one of its results, and the next three chapters use it to compare every chip here.</p>
+    </section>
+
+    <!-- 14 LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Which runs out first: maths or memory?</h2>
+      <p>One multiply of Part 5’s 4,096-by-4,096 weight grid by a stack of tokens. Pick how many tokens go through together, the number format, and the chip. The orange bar is the time if only the arithmetic counted, the teal bar the time if only memory traffic counted. The real time is roughly the longer one.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="tok">Tokens at once <output id="tok-o"></output></label><input id="tok" type="range" min="0" max="12" step="1" value="6"></div>
+          <div class="control"><label for="fmt">Number format <output id="fmt-o"></output></label><input id="fmt" type="range" min="0" max="2" step="1" value="0"></div>
+          <div class="control"><label for="chip">Chip <output id="chip-o"></output></label><input id="chip" type="range" min="0" max="5" step="1" value="0"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="0,0,0">One chat, H100</button>
+            <button type="button" class="secondary" data-p="10,1,0">Busy server, 8-bit</button>
+            <button type="button" class="secondary" data-p="8,1,3">Ironwood, 256 tokens</button>
+            <button type="button" class="secondary" data-p="12,2,5">Trainium3, 4-bit</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Time in microseconds for one grid multiply if limited only by arithmetic, and if limited only by memory traffic, for the chosen chip, format and number of tokens"></svg></div>
+      </div></div>
+      <p>Try one token at 16 bits on every chip: all are memory-bound, by 100 times or more, whatever their logo. Then raise the tokens: the teal bar barely moves, because the weights are read once however many tokens share them, while the orange bar grows. Fewer bits shrink both bars, which is why every family keeps adding smaller formats.</p>
+      <details class="trace"><summary>Go deeper: exactly what the lab computes</summary>
+        <p>With n = 4,096 and t tokens: sums = 2 × t × n² (a multiply and an add per weight per token); numbers moved = n² weights + t × n inputs + t × n outputs, all in the chosen format; maths time = sums ÷ the chip’s dense peak for that format; memory time = bytes ÷ the chip’s memory bandwidth. Where a chip lists no 4-bit speed, numbers are stored in 4 bits but multiplied at its 8-bit speed <span class="tag">example</span>. It assumes perfect overlap and peak speeds, which real chips never reach (chapter 16), and ignores on-chip reuse across grids. Spec figures: H100 989.5 / 1,979 trillion, 3,350 GB/s; B200 2,250 / 4,500 / 9,000, 8,000 GB/s; Ironwood 2,307 / 4,614, 7,380 GB/s; TPU v4 275 / 275, 1,200 GB/s; Trainium2 667 / 1,299, 2,900 GB/s; Trainium3 671 / 2,517 / 2,517, 4,900 GB/s <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Different logos, nearly the same balance</h2>
+      <p>Three companies, three design philosophies. Yet divide each chip’s 16-bit speed by its memory speed and the ridge points land close together: roughly 140 to 310 sums per byte <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="f15" viewBox="0 0 800 380" role="img" aria-label="Ridge points at 16 bits, in sums per byte: H100 295, B200 281, TPU v4 229, Ironwood 313, Trainium2 230, Trainium3 137; a single token at 16 bits needs only 1"></svg>
+      </figure>
+      <p>That is not an accident. Arithmetic is cheap to add and memory speed is expensive, so every designer adds sums until memory can just about keep up with a busy server, and no further. The first TPU’s ridge point was 1,350, far to the right, and it spent most of its time waiting. For a single chat, at 1 sum per byte, every one of these chips is waiting on memory.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>The biggest headline number does not win</h2>
+      <p>Spec sheets print peak numbers, and often the biggest version of them. NVIDIA’s H100 page lists 1,979 trillion for 16 bits, with a footnote: “With sparsity” <span class="tag">public</span>. That counts a trick where half of the weights in each small group are forced to zero and skipped. For ordinary dense maths, the peak is half: about 990 trillion.</p>
+      <figure>
+        <svg id="f16" viewBox="0 0 800 380" role="img" aria-label="Top: H100 headline 1,979 with sparsity versus 990 dense. Bottom: the first TPU's six production models used between 6 and 78 percent of its peak, 23 percent on average"></svg>
+      </figure>
+      <p>And a peak is a ceiling, not a speed. The first TPU paper measured its six real workloads: they used 6% to 78% of the chip’s peak, 23% on average <span class="tag">public</span>. Comparing chips by headline numbers ignores memory, number formats, sparsity footnotes and software. Fair comparisons run the same model on both, and companies rarely publish those for each other’s chips.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">Side by side</p>
+      <h2>Three repeated building blocks</h2>
+      <p>Each chip is one building block, copied. An H100 repeats a GPU block (an <b>SM</b>) 132 times. A TPU v4 has two <b>TensorCores</b>, each with four 128-by-128 grids and a vector unit, sharing 128 MiB of memory. A Trainium2 has eight <b>NeuronCores</b> <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="f17" viewBox="0 0 800 360" role="img" aria-label="Schematic building blocks: an H100 SM with four small tensor cores and 128 small workers, repeated 132 times; a TPU v4 TensorCore with four big grids, repeated twice; a Trainium2 NeuronCore with one big grid, three helper engines and a large memory, repeated eight times"></svg>
+      </figure>
+      <p>A NeuronCore has a <b>tensor engine</b> “based on a power-optimized systolic array”, plus vector, scalar and fully programmable engines for everything that is not a grid multiply <span class="tag">public</span>. Amazon’s <b>Inferentia</b> chips are the inference-only siblings: Inferentia2 uses the same cores as the first Trainium, 190 trillion sums a second at 16 bits <span class="tag">public</span>. Block sizes in the drawing are illustrative <span class="tag">example</span>.</p>
+    </section>
+
+    <!-- Field guides -->
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What each design removes or adds</h2>
+      <div class="field-grid">
+        <div><b>GPU (NVIDIA H100, B200)</b><span>Keeps thousands of general workers, caches and huge register files, so it runs any program. Adds tensor cores, smaller formats each generation (FP8, then FP4) and more HBM. Biggest software head start: CUDA.</span><em>chapters 1, 9, 10</em></div>
+        <div><b>TPU (Google)</b><span>Removes caches, branch guessing and multithreading. Adds large systolic grids, bfloat16, big software-filled memories and its own chip-to-chip links. Programs are compiled ahead for it.</span><em>chapters 2, 4, 7, 11</em></div>
+        <div><b>Trainium (AWS)</b><span>A few big cores, each with a systolic tensor engine, helper engines and 28 MB of software-managed SRAM. Adds its own 8-bit and 4-bit formats and HBM. Programmed through AWS’s Neuron software.</span><em>chapters 10, 11, 17</em></div>
+        <div><b>Inferentia (AWS)</b><span>The same kind of cores, aimed only at running trained models, where cost per answer matters more than training speed.</span><em>chapter 17</em></div>
+        <div><b>What all of them add</b><span>Bigger matrix units, fewer bits per number, more memory on the chip, faster stacked memory beside it.</span><em>chapters 5, 10, 11, 12</em></div>
+        <div><b>What none of them escape</b><span>Reading the weights from memory. Only sharing each read across many tokens fixes that.</span><em>chapters 13–15</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>“Up to” and asterisks on spec sheets</b><span>Often sparsity figures, twice the dense speed.</span><em>chapter 16</em></div>
+        <div><b>Models released in FP8 or 4-bit</b><span>Smaller numbers: faster maths and half or a quarter of the memory.</span><em>chapters 7–10</em></div>
+        <div><b>Chatbots answer one token at a time but serve millions</b><span>One chat is memory-bound; batching many is how chips get busy.</span><em>chapters 13, 14</em></div>
+        <div><b>AI labs using several kinds of chip</b><span>Anthropic says it uses Google TPUs, Amazon Trainium and NVIDIA GPUs.</span><em>chapter 17</em></div>
+        <div><b>“HBM shortage” in the news</b><span>Every AI chip depends on stacked memory beside it.</span><em>chapter 12</em></div>
+        <div><b>Cloud companies designing chips</b><span>A chip that does only what their own models need can be cheaper per answer.</span><em>chapters 2, 15</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>TPU</b><span>Google’s tensor processing unit: a chip built around grid multiplies.</span></div>
+        <div><b>Trainium, Inferentia</b><span>Amazon’s AI chips, for training and for running trained models.</span></div>
+        <div><b>Systolic array</b><span>A grid of multiply-and-add cells that pass numbers to their neighbours in step.</span></div>
+        <div><b>MXU, tensor engine</b><span>Google’s and Amazon’s names for their grid units.</span></div>
+        <div><b>bfloat16</b><span>A 16-bit format with FP32’s range and less detail.</span></div>
+        <div><b>FP8, FP4</b><span>8- and 4-bit floating-point numbers. FP4 needs shared scales.</span></div>
+        <div><b>Block scale</b><span>One extra number that stretches a block of small numbers to fit.</span></div>
+        <div><b>Sparsity</b><span>Skipping weights forced to zero. Spec sheets often quote it.</span></div>
+        <div><b>Dense peak</b><span>The top speed for ordinary maths, without skipping.</span></div>
+        <div><b>SRAM</b><span>Fast memory built into the chip.</span></div>
+        <div><b>HBM</b><span>Stacked memory chips beside the processor, in the same package.</span></div>
+        <div><b>Ridge point</b><span>Sums per byte needed to keep the arithmetic busy.</span></div>
+        <div><b>Memory-bound</b><span>Waiting for numbers to arrive, not for sums to finish.</span></div>
+        <div><b>Roofline</b><span>The drawing of both limits on one chart.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>The first TPU’s design, die shares, omitted features and measured use of its peak; TPU v4’s cores, grids and memories; Cloud TPU, NVIDIA and AWS spec figures; format layouts; Google’s multiplier-size rule; Anthropic’s three chip platforms.</span><em>papers, spec pages, docs</em></div>
+        <div><b>Example</b><span>The bucket chain, the 4-by-4 systolic demo, the 16 rounded numbers, the roofline dots, the lab’s single grid multiply, and the block sizes in the building-block drawing.</span><em>made up or simplified to show the idea</em></div>
+        <div><b>Not public</b><span>The internal grid size of NVIDIA’s newer tensor cores, how much of its peak each company’s production models actually use today, and which chips serve any particular Claude model.</span><em>the companies have not said</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Next: why bigger keeps working</h2>
+      <p>Every design on this page exists because bigger models, trained on more data with more arithmetic, kept getting better, and the bill for that arithmetic became worth a custom chip. Part 11, back on the LLM track, shows the surprisingly steady rules behind “bigger works”. Part 12 then shows how thousands of these chips are wired together to act as one.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A GPU, a TPU and Trainium all make the same bet: bigger grids of multipliers, fewer bits per number, more memory on the chip and faster memory beside it. They differ in what they keep from general computing, and none of them escapes the cost of reading the weights.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Static drawings and the systolic stepper. Every label is 14px or larger; sentences stay in the <p> text.
+    (function(){
+      const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const C={gold:'#f5c76a',teal:'#76d5c1',coral:'#ff8059',purple:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f'};
+      const fmt=n=>n.toLocaleString('en-US');
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+      const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+      const marker=svg=>{const d=S(svg,'defs',{});const m=S(d,'marker',{id:svg.id+'-ah',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:C.mut});return `url(#${svg.id}-ah)`;};
+
+      /* 1: H100 sums by unit */
+      (()=>{const svg=$('f1'),k=0.3;T(svg,40,28,'NVIDIA H100 · TRILLION SUMS PER SECOND',{fill:C.mut,'font-size':14});
+        [['ordinary workers, 32-bit',67,.45],['tensor cores, 16-bit (dense)',989,.8],['tensor cores, 8-bit (dense)',1979,1]].forEach(([n,v,o],i)=>{const y=70+i*60;
+          T(svg,40,y-8,n,{fill:C.fg,'font-size':16});S(svg,'rect',{x:40,y,width:v*k,height:26,fill:C.coral,'fill-opacity':o});
+          T(svg,40+v*k+10,y+19,(v===989?'about 990':v===1979?'about 1,980':fmt(v)),{fill:C.coral,'font-size':16});});
+        T(svg,40,246,'scale: 300 px = 1,000 trillion sums per second',{fill:C.mut,'font-size':14});})();
+
+      /* 2: first TPU die shares */
+      (()=>{const svg=$('f2'),x0=40,W=700,y=56,h=56;T(svg,40,32,'THE FIRST TPU (2015): SHARE OF THE CHIP’S AREA',{fill:C.mut,'font-size':14});
+        const seg=[['buffers 37%',37,C.teal,1],['arithmetic 30%',30,C.coral,1],['I/O 10%',10,C.line,1],['control 2%',2,C.purple,1],['other 21%',21,'none',0]];
+        let x=x0;seg.forEach(([n,p,c,f],i)=>{const w=p/100*W;
+          S(svg,'rect',{x,y,width:w,height:h,fill:c,stroke:f?'none':C.line,'stroke-dasharray':f?'':'5 4'});
+          const cx=x+w/2;
+          if(i===3){S(svg,'line',{x1:cx,y1:y+h+2,x2:cx,y2:y+h+40,stroke:C.purple});T(svg,cx-6,y+h+64,n,{fill:C.purple,'font-size':16});}
+          else T(svg,cx,y+h+30,n,{fill:c==='none'?C.mut:c===C.line?C.mut:c,'font-size':16,'text-anchor':'middle'});
+          x+=w;});
+        T(svg,40,206,'drawn to scale: the whole bar is the whole chip',{fill:C.mut,'font-size':14});})();
+
+      /* 3: the well and the bucket chain */
+      (()=>{const svg=$('f3'),ah=marker(svg);
+        T(svg,40,30,'EVERYONE WALKS TO THE WELL',{fill:C.mut,'font-size':14});T(svg,440,30,'A BUCKET CHAIN',{fill:C.mut,'font-size':14});
+        const wx=90,wy=145,wr=28;S(svg,'circle',{cx:wx,cy:wy,r:wr,fill:C.teal,'fill-opacity':.35,stroke:C.teal});T(svg,wx,wy+56,'memory',{fill:C.teal,'font-size':16,'text-anchor':'middle'});
+        for(let i=0;i<6;i++){const px=320,py=55+i*36,dx=px-wx,dy=py-wy,d=Math.hypot(dx,dy);
+          S(svg,'line',{x1:wx+dx/d*(wr+2),y1:wy+dy/d*(wr+2),x2:px-dx/d*12,y2:py-dy/d*12,stroke:C.teal,'stroke-dasharray':'5 5','stroke-opacity':.8});
+          S(svg,'circle',{cx:px,cy:py,r:10,fill:C.coral});}
+        T(svg,342,151,'6 trips',{fill:C.fg,'font-size':16});
+        const w2=480;S(svg,'circle',{cx:w2,cy:wy,r:wr,fill:C.teal,'fill-opacity':.35,stroke:C.teal});T(svg,w2,wy+56,'memory',{fill:C.teal,'font-size':16,'text-anchor':'middle'});
+        const xs=[545,590,635,680,725,770];
+        S(svg,'path',{d:`M${w2+wr+2} ${wy} L${xs[0]-12} ${wy}`,stroke:C.teal,'stroke-width':2,fill:'none','marker-end':ah});
+        xs.forEach((x,i)=>{S(svg,'circle',{cx:x,cy:wy,r:10,fill:C.coral});if(i<5)S(svg,'path',{d:`M${x+11} ${wy} L${xs[i+1]-12} ${wy}`,stroke:C.mut,'stroke-width':2,fill:'none','marker-end':ah});});
+        T(svg,560,105,'1 trip, passed along',{fill:C.fg,'font-size':16});
+        T(svg,40,256,'teal: memory · orange: workers doing sums',{fill:C.mut,'font-size':14});})();
+
+      /* 4: systolic array stepper, using Part 5's grids */
+      const A=[[1,2,0,1],[3,1,2,0],[0,1,1,2],[2,0,1,1]],B=[[2,1,0,3],[1,0,2,1],[0,3,1,0],[1,2,1,1]],n=4,TMAX=2*(n-1)+n-1;
+      const R=A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+      let t=-1,timer=null;
+      const gx=330,gy=80,P=80,CS=72;
+      function drawSys(){const svg=$('sysSvg');clear(svg);
+        T(svg,gx,40,'EACH CELL KEEPS ONE WEIGHT',{fill:C.teal,'font-size':14});
+        T(svg,770,40,t<0?'ready':'tick '+(t+1)+' of '+(TMAX+1),{fill:C.fg,'font-size':16,'text-anchor':'end'});
+        T(svg,40,62,'TOKENS’ NUMBERS ENTER →',{fill:C.gold,'font-size':14});
+        T(svg,672,236,'sums',{fill:C.coral,'font-size':16});T(svg,672,258,'flow down',{fill:C.coral,'font-size':16});
+        let busy=0,macs=0,reads=n*n;
+        for(let i=0;i<n;i++)for(let k=0;k<n;k++)if(i+k<=t)reads++;
+        for(let k=0;k<n;k++)for(let j=0;j<n;j++){const x=gx+j*P,y=gy+k*P,i=t-k-j,on=i>=0&&i<n;
+          S(svg,'rect',{x,y,width:CS,height:CS,fill:on?C.coral:C.box,'fill-opacity':on?.22:1,stroke:on?C.coral:C.line});
+          T(svg,x+CS-8,y+26,'×'+B[k][j],{fill:C.teal,'font-size':16,'text-anchor':'end'});
+          if(on){busy++;let s=0;for(let m=0;m<=k;m++)s+=A[i][m]*B[m][j];
+            T(svg,x+10,y+26,String(A[i][k]),{fill:C.gold,'font-size':16});
+            T(svg,x+CS/2,y+58,'= '+s,{fill:C.coral,'font-size':16,'text-anchor':'middle'});}}
+        for(let i=0;i<n;i++)for(let k=0;k<n;k++)for(let j=0;j<n;j++){const tt=i+k+j;if(tt<=t)macs++;}
+        // the queue: numbers still waiting to enter each row, in a staircase
+        for(let k=0;k<n;k++)for(let i=0;i<n;i++){const d=i+k-t;if(d>=1)T(svg,gx-34-(d-1)*36,gy+k*P+44,String(A[i][k]),{fill:C.gold,'font-size':16,'text-anchor':'middle'});}
+        T(svg,gx-16,gy+n*P+40,'answers',{fill:C.mut,'font-size':14,'text-anchor':'end'});
+        for(let i=0;i<n;i++)for(let j=0;j<n;j++){if(t>=i+j+n-1)T(svg,gx+j*P+CS/2,gy+n*P+40+i*24,String(R[i][j]),{fill:C.coral,'font-size':16,'text-anchor':'middle'});}
+        const done=t>=TMAX;
+        $('sysNote').innerHTML=t<0?'Weights loaded: 16 numbers, read once. Press <b>Step</b> to start the first token’s numbers moving.':
+          `Tick ${t+1}: <b>${busy}</b> ${busy===1?'cell':'cells'} busy. So far <b>${macs}</b> multiply-and-adds, using <b>${reads}</b> numbers read from memory (16 weights + ${reads-16} inputs).`+(done?` Done: all 16 answers match Part 5. Fetching two numbers for every multiply-and-add would have taken <b>${2*n*n*n}</b> reads.`:'');}
+      const stop=()=>{if(timer){clearInterval(timer);timer=null;}};
+      $('sysStep').onclick=()=>{stop();if(t>=TMAX)t=-1;else t++;drawSys();};
+      $('sysReset').onclick=()=>{stop();t=-1;drawSys();};
+      $('sysPlay').onclick=()=>{stop();if(t>=TMAX)t=-1;if(matchMedia('(prefers-reduced-motion: reduce)').matches){t=TMAX;drawSys();return;}
+        timer=setInterval(()=>{t++;drawSys();if(t>=TMAX)stop();},650);};
+      drawSys();
+
+      /* 5: reuse per number fetched */
+      (()=>{const svg=$('f5'),k=2.4;T(svg,40,28,'USES PER NUMBER FETCHED',{fill:C.mut,'font-size':14});
+        [['4 × 4 grid (A100 tensor core)',4],['128 × 128 grid (TPU v2 to v5p)',128],['256 × 256 grid (first TPU, v6e, Ironwood)',256]].forEach(([nm,v],i)=>{const y=72+i*58;
+          T(svg,40,y-8,nm,{fill:C.fg,'font-size':16});S(svg,'rect',{x:40,y,width:v*k,height:24,fill:C.teal,'fill-opacity':.8});
+          T(svg,40+v*k+10,y+18,String(v),{fill:C.teal,'font-size':16});});
+        T(svg,40,238,'scale: 240 px = 100 uses',{fill:C.mut,'font-size':14});})();
+
+      /* 6: tiling a 600x600 matrix */
+      (()=>{const svg=$('f6'),k=0.25;
+        S(svg,'rect',{x:40,y:16,width:16,height:16,fill:C.coral,'fill-opacity':.7});T(svg,64,30,'the 600 × 600 grid',{fill:C.fg,'font-size':14});
+        S(svg,'rect',{x:260,y:16,width:16,height:16,fill:C.rose,'fill-opacity':.25,stroke:C.rose});T(svg,284,30,'cells with nothing to do',{fill:C.fg,'font-size':14});
+        const tile=(ox,oy,ts,cnt)=>{const a=ts*cnt*k;S(svg,'rect',{x:ox,y:oy,width:a,height:a,fill:C.rose,'fill-opacity':.18});
+          S(svg,'rect',{x:ox,y:oy,width:600*k,height:600*k,fill:C.coral,'fill-opacity':.7});
+          for(let r=0;r<cnt;r++)for(let c=0;c<cnt;c++)S(svg,'rect',{x:ox+c*ts*k,y:oy+r*ts*k,width:ts*k,height:ts*k,fill:'none',stroke:C.fg,'stroke-opacity':.55});};
+        T(svg,60,62,'256 × 256 UNIT',{fill:C.mut,'font-size':14});tile(60,74,256,3);
+        T(svg,60,300,'9 tiles × 2 µs = 18 µs',{fill:C.fg,'font-size':16});T(svg,60,326,'39% of cells idle',{fill:C.rose,'font-size':16});
+        T(svg,440,62,'512 × 512 UNIT',{fill:C.mut,'font-size':14});tile(440,74,512,2);
+        T(svg,440,360,'4 tiles × 8 µs = 32 µs',{fill:C.fg,'font-size':16});T(svg,440,386,'66% of cells idle',{fill:C.rose,'font-size':16});
+        T(svg,60,386,'scale: 1 px = 4 cells a side',{fill:C.mut,'font-size':14});})();
+
+      /* 7: bit layouts */
+      (()=>{const svg=$('f7'),u=16,x0=180;
+        [['sign',C.line,1],['range bits',C.teal,1],['detail bits',C.teal,.4]].forEach(([nm,c,o],i)=>{S(svg,'rect',{x:40+i*170,y:16,width:16,height:16,fill:c,'fill-opacity':o});T(svg,64+i*170,30,nm,{fill:C.fg,'font-size':14});});
+        [['FP32',8,23],['FP16',5,10],['bfloat16',8,7],['FP8 E4M3',4,3],['FP8 E5M2',5,2],['FP4 E2M1',2,1]].forEach(([nm,e,m],i)=>{const y=62+i*48;
+          T(svg,40,y+19,nm,{fill:nm==='bfloat16'?C.fg:C.mut,'font-size':16});
+          S(svg,'rect',{x:x0,y,width:u-1,height:26,fill:C.line});
+          S(svg,'rect',{x:x0+u,y,width:e*u-1,height:26,fill:C.teal});
+          S(svg,'rect',{x:x0+u*(1+e),y,width:m*u-1,height:26,fill:C.teal,'fill-opacity':.4});
+          T(svg,x0+u*(1+e+m)+12,y+19,(1+e+m)+' bits',{fill:C.fg,'font-size':16});});
+        T(svg,40,356,'scale: 16 px = 1 bit',{fill:C.mut,'font-size':14});})();
+
+      /* 8: multiplier squares */
+      (()=>{const svg=$('f8'),u=10,base=270;T(svg,40,28,'MULTIPLIER SIZE ≈ DETAIL BITS SQUARED',{fill:C.mut,'font-size':14});
+        [['FP32',24,40],['FP16',11,330],['bfloat16',8,490],['FP8',4,630]].forEach(([nm,b,x])=>{const s=b*u;
+          S(svg,'rect',{x,y:base-s,width:s,height:s,fill:C.coral,'fill-opacity':nm==='bfloat16'?.9:.45});
+          T(svg,x+s/2,base+28,nm,{fill:C.fg,'font-size':16,'text-anchor':'middle'});
+          T(svg,x+s/2,base+50,b+' × '+b+' = '+b*b,{fill:C.mut,'font-size':14,'text-anchor':'middle'});});})();
+
+      /* 9: FP4 values and block rounding */
+      (()=>{const svg=$('f9'),x0=60,x1=740,V=[0,.5,1,1.5,2,3,4,6],sx=v=>x0+v/6*(x1-x0);
+        T(svg,40,30,'EVERY NON-NEGATIVE VALUE AN FP4 (E2M1) NUMBER CAN HOLD',{fill:C.mut,'font-size':14});
+        S(svg,'line',{x1:x0,y1:70,x2:x1,y2:70,stroke:C.line,'stroke-width':2});
+        V.forEach(v=>{S(svg,'circle',{cx:sx(v),cy:70,r:7,fill:C.teal});T(svg,sx(v),100,String(v),{fill:C.fg,'font-size':16,'text-anchor':'middle'});});
+        T(svg,40,150,'ONE BLOCK OF 16 REAL NUMBERS, SCALED BY 1/256',{fill:C.mut,'font-size':14});
+        const s=1/256,X=[0.0016,0.0031,0.0044,0.0052,0.0060,0.0071,0.0083,0.0097,0.0108,0.0121,0.0139,0.0152,0.0170,0.0188,0.0207,0.0230];
+        const sy=v=>x0+v/(6*s)*(x1-x0);
+        S(svg,'line',{x1:x0,y1:236,x2:x1,y2:236,stroke:C.line,'stroke-width':2});
+        V.forEach(v=>S(svg,'rect',{x:sy(v*s)-2,y:228,width:4,height:16,fill:C.teal}));
+        X.forEach(x=>{const q=V.reduce((b,v)=>Math.abs(v*s-x)<Math.abs(b*s-x)?v:b,0)*s;
+          S(svg,'line',{x1:sy(x),y1:186,x2:sy(q),y2:226,stroke:C.rose,'stroke-width':1.5});
+          S(svg,'circle',{cx:sy(x),cy:180,r:5,fill:C.gold});});
+        T(svg,x0,272,'0',{fill:C.fg,'font-size':16,'text-anchor':'middle'});T(svg,x1,272,'6/256 ≈ 0.023',{fill:C.fg,'font-size':16,'text-anchor':'end'});
+        T(svg,40,298,'gold: the real numbers · rose: where each is rounded to',{fill:C.mut,'font-size':14});})();
+
+      /* 10: speed by format, per chip */
+      (()=>{const svg=$('f10'),k=520/9000,x0=190;
+        [['16-bit',.35],['8-bit',.65],['4-bit',1]].forEach(([nm,o],i)=>{S(svg,'rect',{x:40+i*130,y:16,width:16,height:16,fill:C.coral,'fill-opacity':o});T(svg,64+i*130,30,nm,{fill:C.fg,'font-size':14});});
+        T(svg,500,30,'dense, trillion sums per second',{fill:C.mut,'font-size':14});
+        const D=[['NVIDIA H100',[989,1979,null]],['NVIDIA B200',[2250,4500,9000]],['Google v6e',[918,918,null]],['Google Ironwood',[2307,4614,null]],['AWS Trainium2',[667,1299,null]],['AWS Trainium3',[671,2517,2517]]];
+        D.forEach(([nm,vals],r)=>{const y=60+r*78;T(svg,40,y+36,nm,{fill:C.fg,'font-size':16});
+          vals.forEach((v,i)=>{const yy=y+i*22;if(v==null){T(svg,x0+4,yy+14,'no 4-bit figure listed',{fill:C.faint,'font-size':14});return;}
+            S(svg,'rect',{x:x0,y:yy,width:v*k,height:16,fill:C.coral,'fill-opacity':[.35,.65,1][i]});
+            T(svg,x0+v*k+8,yy+14,fmt(v),{fill:C.mut,'font-size':14});});});
+        T(svg,40,546,'scale: 520 px = 9,000 trillion · H100 16-bit is 989.5',{fill:C.mut,'font-size':14});})();
+
+      /* 11: on-chip memory */
+      (()=>{const svg=$('f11'),k=2.2,x0=180,line=x0+32*k;
+        T(svg,40,28,'MEMORY ON THE CHIP, MiB',{fill:C.mut,'font-size':14});
+        T(svg,line+8,52,'one 4,096 × 4,096 grid at 16 bits = 32 MiB',{fill:C.mut,'font-size':14});
+        S(svg,'line',{x1:line,y1:60,x2:line,y2:346,stroke:C.fg,'stroke-dasharray':'4 4','stroke-opacity':.6});
+        const D=[['first TPU',[[28,1]],'28'],['TPU v4',[[170,1]],'170'],['H100',[[33,.95],[33,.6],[48,.35]],'≈ 114 (registers + L1 + L2)'],['Trainium2',[[224,1]],'224'],['Trainium3',[[256,1]],'256']];
+        D.forEach(([nm,segs,lab],r)=>{const y=74+r*56;T(svg,40,y+19,nm,{fill:C.fg,'font-size':16});
+          let x=x0;segs.forEach(([v,o])=>{S(svg,'rect',{x,y,width:v*k-1,height:26,fill:C.teal,'fill-opacity':o});x+=v*k;});
+          T(svg,Math.max(x,line)+10,y+19,lab,{fill:C.teal,'font-size':16});});
+        T(svg,40,380,'scale: 2.2 px = 1 MiB · an 8-billion-number model at 16 bits would be about 15,000 MiB',{fill:C.mut,'font-size':14});})();
+
+      /* 12: memory bandwidth */
+      (()=>{const svg=$('f12'),k=500/8000,x0=200;T(svg,40,28,'MEMORY BANDWIDTH, GB PER SECOND',{fill:C.mut,'font-size':14});
+        const D=[['first TPU (DDR3)',34],['TPU v4',1200],['Ironwood',7380],['H100',3350],['B200',8000],['Trainium',880],['Trainium2',2900],['Trainium3',4900]];
+        const fam=['GOOGLE','','','NVIDIA','','AWS','',''];
+        D.forEach(([nm,v],r)=>{const y=52+r*42+(r>=3?12:0)+(r>=5?12:0);T(svg,40,y+18,nm,{fill:C.fg,'font-size':16});
+          S(svg,'rect',{x:x0,y,width:Math.max(2,v*k),height:24,fill:C.teal,'fill-opacity':.85});T(svg,x0+Math.max(2,v*k)+10,y+18,fmt(v),{fill:C.teal,'font-size':16});
+          if(fam[r])T(svg,770,y+18,fam[r],{fill:C.mut,'font-size':14,'text-anchor':'end'});});
+        T(svg,40,416,'scale: 500 px = 8,000 GB/s · Trainium is AWS’s 820 GiB/s, converted',{fill:C.mut,'font-size':14});})();
+
+      /* 13: roofline for H100 at 16 bits */
+      (()=>{const svg=$('f13'),X0=100,X1=740,Y0=330,lx=v=>X0+Math.log10(v)*160,ly=v=>Y0-Math.log10(v)*80;
+        const peak=989.5,bw=3.35,ridge=peak/bw;
+        T(svg,X0,24,'trillion sums per second (H100, 16-bit)',{fill:C.mut,'font-size':14});
+        [1,10,100,1000].forEach(v=>{S(svg,'line',{x1:X0,y1:ly(v),x2:X1,y2:ly(v),stroke:'#2a2927'});T(svg,X0-10,ly(v)+5,fmt(v),{fill:C.mut,'font-size':14,'text-anchor':'end'});});
+        [1,10,100,1000,10000].forEach(v=>T(svg,lx(v),Y0+24,fmt(v),{fill:C.mut,'font-size':14,'text-anchor':'middle'}));
+        T(svg,(X0+X1)/2,Y0+50,'sums per byte read from memory',{fill:C.mut,'font-size':14,'text-anchor':'middle'});
+        S(svg,'line',{x1:X0,y1:Y0,x2:X1,y2:Y0,stroke:C.line});S(svg,'line',{x1:X0,y1:Y0,x2:X0,y2:ly(3000),stroke:C.line});
+        S(svg,'line',{x1:lx(1),y1:ly(bw),x2:lx(ridge),y2:ly(peak),stroke:C.teal,'stroke-width':4});
+        S(svg,'line',{x1:lx(ridge),y1:ly(peak),x2:X1,y2:ly(peak),stroke:C.coral,'stroke-width':4});
+        T(svg,lx(ridge)+10,ly(peak)-14,'ridge ≈ 295 sums per byte',{fill:C.fg,'font-size':16});
+        T(svg,230,290,'memory-bound',{fill:C.teal,'font-size':16});T(svg,640,140,'maths-bound',{fill:C.coral,'font-size':16});
+        const N=4096,pt=b=>{const f=2*b*N*N,by=(N*N+2*b*N)*2,i=f/by;return [i,Math.min(peak,bw*i)];};
+        [[1,'1 token',14,22],[64,'64 tokens',12,20],[1024,'1,024 tokens',-48,30]].forEach(([b,l,dx,dy])=>{const [i,p]=pt(b);
+          S(svg,'circle',{cx:lx(i),cy:ly(p),r:7,fill:C.fg,stroke:C.box,'stroke-width':2});T(svg,lx(i)+dx,ly(p)+dy,l,{fill:C.fg,'font-size':16});});})();
+
+      /* 15: ridge points */
+      (()=>{const svg=$('f15'),k=1.6,x0=200;T(svg,40,28,'RIDGE POINT AT 16 BITS: SUMS PER BYTE',{fill:C.mut,'font-size':14});
+        const D=[['H100',989.5,3.35],['B200',2250,8],['TPU v4',275,1.2],['Ironwood',2307,7.38],['Trainium2',667,2.9],['Trainium3',671,4.9]];
+        S(svg,'line',{x1:x0+k,y1:46,x2:x0+k,y2:322,stroke:C.rose,'stroke-width':2,'stroke-dasharray':'4 3'});
+        D.forEach(([nm,p,b],r)=>{const y=56+r*44,v=p/b;T(svg,40,y+18,nm,{fill:C.fg,'font-size':16});
+          S(svg,'rect',{x:x0+4,y,width:v*k-4,height:24,fill:C.purple,'fill-opacity':.75});T(svg,x0+v*k+10,y+18,String(Math.round(v)),{fill:C.purple,'font-size':16});});
+        T(svg,x0-6,348,'rose line: one token at 16 bits = 1 sum per byte',{fill:C.rose,'font-size':14});
+        T(svg,40,372,'scale: 1.6 px = 1 sum per byte',{fill:C.mut,'font-size':14});})();
+
+      /* 16: headline vs dense, and measured use of peak */
+      (()=>{const svg=$('f16'),k=0.2,x0=300;T(svg,40,28,'H100, 16-BIT, TRILLION SUMS PER SECOND',{fill:C.mut,'font-size':14});
+        [['headline, “with sparsity”',1979,C.rose],['dense, ordinary maths',989.5,C.coral]].forEach(([nm,v,c],i)=>{const y=44+i*36;
+          T(svg,40,y+18,nm,{fill:C.fg,'font-size':16});S(svg,'rect',{x:x0,y,width:v*k,height:24,fill:c,'fill-opacity':.85});T(svg,x0+v*k+10,y+18,v===1979?'1,979':'989.5',{fill:c,'font-size':16});});
+        T(svg,40,152,'FIRST TPU: SHARE OF PEAK ACTUALLY USED, SIX REAL MODELS',{fill:C.mut,'font-size':14});
+        const D=[['MLP0',12.5],['MLP1',9.4],['LSTM0',8.2],['LSTM1',6.3],['CNN0',78.2],['CNN1',22.5]];
+        D.forEach(([nm,v],r)=>{const y=166+r*32;T(svg,40,y+17,nm,{fill:C.fg,'font-size':16});
+          S(svg,'rect',{x:x0,y,width:400,height:22,fill:'none',stroke:C.line});
+          S(svg,'rect',{x:x0,y,width:v*4,height:22,fill:C.coral,'fill-opacity':.85});T(svg,x0+v*4+10,y+17,v+'%',{fill:C.coral,'font-size':16});});
+        T(svg,40,370,'outline = the chip’s peak · average 23%',{fill:C.mut,'font-size':14});})();
+
+      /* 17: building blocks (illustrative areas) */
+      (()=>{const svg=$('f17');
+        const blk=(x,y,w,h,c,o)=>S(svg,'rect',{x,y,width:w,height:h,fill:c,'fill-opacity':o});
+        // H100 SM
+        T(svg,40,28,'H100: ONE SM',{fill:C.mut,'font-size':14});
+        blk(40,44,210,200,C.box,1);
+        for(let i=0;i<4;i++)blk(50+i*50,54,40,40,C.coral,.95);
+        for(let r=0;r<8;r++)for(let c=0;c<16;c++)blk(50+c*12,104+r*10,8,6,C.coral,.45);
+        blk(50,190,190,22,C.teal,.8);blk(50,218,190,16,C.purple,.6);
+        T(svg,40,272,'× 132 per chip',{fill:C.fg,'font-size':16});
+        // TPU v4 TensorCore
+        T(svg,300,28,'TPU v4: ONE TENSORCORE',{fill:C.mut,'font-size':14});
+        blk(300,44,210,200,C.box,1);
+        for(let i=0;i<4;i++)blk(310+(i%2)*98,54+Math.floor(i/2)*72,92,66,C.coral,.95);
+        blk(310,200,190,14,C.coral,.45);blk(310,220,150,16,C.teal,.8);blk(466,220,34,16,C.purple,.6);
+        T(svg,300,272,'× 2 per chip',{fill:C.fg,'font-size':16});
+        // Trainium2 NeuronCore
+        T(svg,560,28,'TRAINIUM2: ONE NEURONCORE',{fill:C.mut,'font-size':14});
+        blk(560,44,210,200,C.box,1);
+        blk(570,54,110,100,C.coral,.95);blk(690,54,70,28,C.coral,.45);blk(690,88,70,28,C.coral,.45);blk(690,122,70,32,C.purple,.6);
+        blk(570,162,190,72,C.teal,.8);
+        T(svg,560,272,'× 8 per chip',{fill:C.fg,'font-size':16});
+        [['big grid units',C.coral,.95],['small workers, vector units',C.coral,.45],['on-chip memory',C.teal,.8],['control, general-purpose',C.purple,.6]].forEach(([nm,c,o],i)=>{const x=40+(i%2)*380,y=304+Math.floor(i/2)*28;
+          blk(x,y,16,16,c,o);T(svg,x+24,y+14,nm,{fill:C.fg,'font-size':14});});})();
+    })();
+  </script>
+  <script>
+    // LAB. A mechanism-exploration chart; one scale function sx() places every tick and bar.
+    // Assumptions: one n×n weight grid (n = 4,096) times t tokens; every number in the chosen format;
+    // maths time = 2·t·n² ÷ dense peak; memory time = (n² + 2·t·n) × bytes ÷ bandwidth; no on-chip reuse across grids.
+    const ids=['tok','fmt','chip'],$=id=>document.getElementById(id);
+    const N=4096,BITS=[16,8,4];
+    const CHIPS=[ // dense peaks in trillion sums/s at 16, 8, 4 bits (null = no faster path), bandwidth in GB/s
+      ['H100',[989.5,1979,null],3350],['B200',[2250,4500,9000],8000],['TPU v4',[275,275,null],1200],
+      ['Ironwood',[2307,4614,null],7380],['Trainium2',[667,1299,null],2900],['Trainium3',[671,2517,2517],4900]];
+    const us=v=>v===0?'0 µs':(v>=100?Math.round(v).toLocaleString('en-US'):v>=10?String(+v.toFixed(1)):String(+v.toPrecision(2)))+' µs';
+    const big=v=>{for(const [d,w] of [[1e12,' trillion'],[1e9,' billion'],[1e6,' million']])if(v>=d)return String(+(v/d).toPrecision(3))+w;return Math.round(v).toLocaleString('en-US');};
+    function compute(v){
+      const [e,f,c]=v,t=2**e,bits=BITS[f],[name,peaks,bw]=CHIPS[c];
+      const native=peaks[f]!=null,peak=native?peaks[f]:peaks[1];
+      const sums=2*t*N*N,nums=N*N+2*t*N,bytes=nums*bits/8;
+      const tm=bytes/(bw*1e9)*1e6,tc=sums/(peak*1e12)*1e6,real=Math.max(tm,tc),ridge=peak*1e12/(bw*1e9),inten=sums/bytes;
+      return {real,bound:tc>tm?'maths':'memory',rows:[['arithmetic time',tc,'#ff8059'],['memory time',tm,'#76d5c1']],
+        ledger:[['sums (multiply + add)',big(sums)],['numbers moved',big(nums)],['bytes moved',big(bytes)],['sums per byte',(+inten.toPrecision(3)).toLocaleString('en-US')],
+          [name+' speed used',peak.toLocaleString('en-US')+' trillion/s'+(native?'':' (no 4-bit figure: 8-bit speed)')],[name+' memory',bw.toLocaleString('en-US')+' GB/s'],
+          ['ridge point',Math.round(ridge)+' sums per byte'],['limited by',(tc>tm?'maths':'memory')+', ×'+String(+(Math.max(tc,tm)/Math.min(tc,tm)).toPrecision(3))],['arithmetic busy',String(+(tc/real*100).toPrecision(3))+'%']]};
+    }
+    const labConfig={format:us,sliderFormats:[v=>(2**v).toLocaleString('en-US'),v=>BITS[v]+'-bit',v=>CHIPS[v][0]]};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const nice=x=>{const p=10**Math.floor(Math.log10(x)),m=x/p;return (m<=1?1:m<=2?2:m<=5?5:10)*p;};
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const {real,bound,rows,ledger}=compute(v);
+      if(!Number.isFinite(real)||rows.some(r=>!Number.isFinite(r[1])||r[1]<0)) throw new Error('Lab returned invalid results');
+      const m=nice(Math.max(...rows.map(r=>r[1]))),x0=40,span=420,sx=x=>x0+Math.max(0,Math.min(m,x))*span/m,ticks=[0,m/2,m];
+      const bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">real time ≈ ${esc(us(real))}, ${bound}-bound</text>`;
+      rows.forEach(([name,val,col],i)=>{const y=80+i*82;
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/>`;
+        s+=`<text x="${x0}" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="${x0}" y="${y-8}" fill="#f1eee8" font-size="16">${esc(us(val))}</text>`;
+        s+=`<rect data-v="${val}" x="${x0}" y="${y}" width="${(sx(val)-x0).toFixed(2)}" height="26" fill="${col}"/>`;});
+      s+=ticks.map((tk,i)=>`<text class="tick" data-v="${tk}" x="${sx(tk)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(us(tk))}</text>`).join('');
+      s+=`<text x="${x0}" y="${bottom+57}" fill="#a5a29c" font-size="16">Axis adjusts to the longer bar.</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,inputs:v,rows:rows.map(r=>r[1]),real,bound,axis:m};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
