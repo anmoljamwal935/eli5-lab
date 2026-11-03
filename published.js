@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "memory-bottleneck-eli5",
+    "title": "Memory: the real bottleneck",
+    "category": "AI & Frontier",
+    "minutes": 20,
+    "summary": "Part 8: why moving numbers, not multiplying them, sets AI's speed",
+    "bullets": [
+      "Fetching a number costs far more than multiplying it, so the chip mostly waits on HBM",
+      "Sums per byte and the roofline show when memory or maths is the limit, and how batching flips it"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "HBM",
+      "SUMS PER BYTE",
+      "ROOFLINE"
+    ],
+    "file": "explainers/memory-bottleneck-eli5.html",
+    "date": "2026-11-03",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A roofline: a rising teal memory limit meets a flat orange sums limit, with one chat stuck low on the memory slope\"><path d=\"M28 124H296\" stroke=\"#57534f\" fill=\"none\"/><path d=\"M28 124V24\" stroke=\"#57534f\" fill=\"none\"/><path d=\"M36 118L196 44\" stroke=\"#76d5c1\" stroke-width=\"3\" fill=\"none\"/><path d=\"M196 44H292\" stroke=\"#ff8059\" stroke-width=\"3\" fill=\"none\"/><path d=\"M196 50V124\" stroke=\"#f1eee8\" stroke-dasharray=\"3 4\" stroke-opacity=\".5\" fill=\"none\"/><circle cx=\"62\" cy=\"106\" r=\"5.5\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"292\" y=\"34\" text-anchor=\"end\" fill=\"#ff8059\">SUMS LIMIT</text><text x=\"74\" y=\"100\" fill=\"#ec6a94\">ONE CHAT</text><text x=\"36\" y=\"139\" fill=\"#c3b8ff\">PART 8</text></g></svg>",
+    "part": 8
+  },
+  {
     "id": "attention-eli5",
     "title": "Attention: words looking at words",
     "category": "AI & Frontier",
