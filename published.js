@@ -1,5 +1,30 @@
 window.PUBLISHED = [
   {
+    "id": "ai-chips-eli5",
+    "title": "AI chips: GPUs, TPUs and Trainium",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 10: what GPUs, TPUs and Trainium cut or add for AI maths",
+    "bullets": [
+      "TPUs and Trainium swap GPU flexibility for big systolic grids that reuse every number",
+      "All add smaller numbers and more memory, yet one chat still waits on memory"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "GPU",
+      "SYSTOLIC GRID",
+      "FEWER BITS",
+      "HBM",
+      "RIDGE POINT"
+    ],
+    "file": "explainers/ai-chips-eli5.html",
+    "date": "2026-11-03",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A systolic array: a token's numbers enter a four by four grid of weight cells from the left in a staircase, running sums flow down, and answers collect below\"><g fill=\"#f5c76a\"><circle cx=\"100\" cy=\"54\" r=\"3.5\"/><circle cx=\"100\" cy=\"80\" r=\"3.5\"/><circle cx=\"86\" cy=\"80\" r=\"3.5\"/><circle cx=\"100\" cy=\"106\" r=\"3.5\"/><circle cx=\"86\" cy=\"106\" r=\"3.5\"/><circle cx=\"72\" cy=\"106\" r=\"3.5\"/></g><path d=\"M106 28H116M106 54H116M106 80H116M106 106H116\" fill=\"none\" stroke=\"#f5c76a\" stroke-opacity=\".6\"/><g fill=\"#76d5c1\" fill-opacity=\".25\" stroke=\"#76d5c1\" stroke-opacity=\".7\"><rect x=\"120\" y=\"18\" width=\"20\" height=\"20\"/><rect x=\"146\" y=\"18\" width=\"20\" height=\"20\"/><rect x=\"172\" y=\"18\" width=\"20\" height=\"20\"/><rect x=\"198\" y=\"18\" width=\"20\" height=\"20\"/><rect x=\"120\" y=\"44\" width=\"20\" height=\"20\"/><rect x=\"146\" y=\"44\" width=\"20\" height=\"20\"/><rect x=\"172\" y=\"44\" width=\"20\" height=\"20\"/><rect x=\"198\" y=\"44\" width=\"20\" height=\"20\"/><rect x=\"120\" y=\"70\" width=\"20\" height=\"20\"/><rect x=\"146\" y=\"70\" width=\"20\" height=\"20\"/><rect x=\"172\" y=\"70\" width=\"20\" height=\"20\"/><rect x=\"198\" y=\"70\" width=\"20\" height=\"20\"/><rect x=\"120\" y=\"96\" width=\"20\" height=\"20\"/><rect x=\"146\" y=\"96\" width=\"20\" height=\"20\"/><rect x=\"172\" y=\"96\" width=\"20\" height=\"20\"/><rect x=\"198\" y=\"96\" width=\"20\" height=\"20\"/></g><g fill=\"#ff8059\" fill-opacity=\".85\"><rect x=\"198\" y=\"18\" width=\"20\" height=\"20\"/><rect x=\"172\" y=\"44\" width=\"20\" height=\"20\"/><rect x=\"146\" y=\"70\" width=\"20\" height=\"20\"/><rect x=\"120\" y=\"96\" width=\"20\" height=\"20\"/></g><path d=\"M130 118V128M156 118V128M182 118V128M208 118V128\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"2\"/><g fill=\"#ff8059\"><rect x=\"124\" y=\"130\" width=\"12\" height=\"6\"/><rect x=\"150\" y=\"130\" width=\"12\" height=\"6\"/><rect x=\"176\" y=\"130\" width=\"12\" height=\"6\"/></g><g font-family=\"monospace\" font-size=\"9\"><text x=\"230\" y=\"28\" fill=\"#a5a29c\">SYSTOLIC GRID</text><text x=\"230\" y=\"140\" fill=\"#c3b8ff\">PART 10</text></g></svg>",
+    "part": 10
+  },
+  {
     "id": "the-transformer-eli5",
     "title": "The transformer, assembled",
     "category": "AI & Frontier",
