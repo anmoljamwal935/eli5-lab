@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "why-bigger-works-eli5",
+    "title": "Scale: why bigger works",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 11: why bigger models win, and the rules for splitting compute",
+    "bullets": [
+      "Loss falls on smooth power laws as parameters, data and compute grow together",
+      "Compute-optimal is about 20 tokens per parameter; small models are overtrained for cheap use"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PARAMETERS",
+      "DATA",
+      "COMPUTE",
+      "LOSS"
+    ],
+    "file": "explainers/why-bigger-works-eli5.html",
+    "date": "2026-11-03",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three rectangles with the same area from one corner: wide and flat, medium, and tall and thin, three ways to split one training budget between parameters and data.\"><rect x=\"40\" y=\"123.2\" width=\"229.6\" height=\"1.8\" fill=\"#ff8059\" fill-opacity=\"0.22\" stroke=\"#ff8059\" stroke-width=\"1.5\"/><rect x=\"40\" y=\"116.6\" width=\"57.4\" height=\"8.4\" fill=\"#ff8059\" fill-opacity=\"0.22\" stroke=\"#ff8059\" stroke-width=\"1.5\"/><rect x=\"40\" y=\"35.0\" width=\"6.6\" height=\"90.0\" fill=\"#ff8059\" fill-opacity=\"0.22\" stroke=\"#ff8059\" stroke-width=\"1.5\"/><line x1=\"40\" y1=\"125\" x2=\"290\" y2=\"125\" stroke=\"#76d5c1\" stroke-width=\"2\"/><line x1=\"40\" y1=\"125\" x2=\"40\" y2=\"22\" stroke=\"#f5c76a\" stroke-width=\"2\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"304\" y=\"26\" text-anchor=\"end\" fill=\"#76d5c1\">PART 11</text><text x=\"120\" y=\"70\" fill=\"#f1eee8\">SAME BUDGET</text></g></svg>",
+    "part": 11
+  },
+  {
     "id": "ai-chips-eli5",
     "title": "AI chips: GPUs, TPUs and Trainium",
     "category": "AI & Frontier",
