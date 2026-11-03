@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Attention: words looking at words — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key: gold = text and tokens, teal = stored numbers, orange = arithmetic, purple = connections, rose = the wrong intuition.
+       This part adds blue for values, the content a word passes on. */
+    .panel figure{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    /* Field grids: cell outlines, so an unfilled last row stays empty instead of showing a grey block */
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 7: how each word looks back and blends in what matters">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/attention-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Attention: words looking at words">
+<meta property="og:description" content="Part 7: how each word looks back and blends in what matters">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/attention-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/attention-eli5.png?v=190a5eef">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Attention: words looking at words">
+<meta property="article:published_time" content="2026-11-01">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="attention-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Attention: words looking at words</h1>
+      <p class="lede">A word’s meaning depends on the words around it. Attention is how a model lets each word look back at the earlier words, decide which ones matter, and pull in their meaning. It is the single most important idea inside today’s language models.</p>
+      <p class="source-note">Built from the original papers (Bahdanau, Cho and Bengio 2014; Vaswani and others 2017; Su and others 2021) and Meta’s Llama 3 report, facts checked against them · <a href="https://arxiv.org/abs/1706.03762">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Part 1 gave every token a list of numbers, a spot on a map of meaning. Part 2 showed the model guessing the next token. This part shows how the tokens talk to each other in between. Facts carry a tag: <span class="tag">public</span> means a published paper or plain arithmetic, <span class="tag">example</span> means a made-up number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>words and tokens</span>
+        <span><i style="background:#ff8059"></i>queries and scores</span>
+        <span><i style="background:#76d5c1"></i>keys</span>
+        <span><i style="background:#8fc9fb"></i>values</span>
+        <span><i style="background:#c3b8ff"></i>who looks at whom</span>
+        <span><i style="background:#ec6a94"></i>the wrong intuition</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>One word, two meanings</h2>
+      <p>Part 1, chapter 17, left a puzzle. “Bank” gets the same starting numbers whether it means a riverside or a place for money. Only the other words in the sentence can tell them apart, so the model needs a way to let them in.</p>
+      <figure>
+        <svg id="f1" viewBox="0 0 800 290" role="img" aria-label="The word bank starts at one fixed point between a nature group and a money group; the earlier words in each sentence pull it one way or the other"></svg>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>The deciding word can be far back</h2>
+      <p>The clue is not always next door. In Part 2’s example, the word that settles “I speak fluent ___” is “France”, sixteen words earlier. Looking at the last couple of words, the way a phone keyboard does, misses it.</p>
+      <figure>
+        <svg id="f2" viewBox="0 0 800 230" role="img" aria-label="A row of seventeen word blocks: the blank at the end connects by a long arc to the word France sixteen positions back, while a short window only covers the last two words"></svg>
+      </figure>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The textbook shortcut</p>
+      <h2>Just average every earlier word?</h2>
+      <p>The simplest fix is to mix in every earlier word equally. But most words, like “the” and “to”, say nothing about which bank. An equal mix lands in a vague middle that means nothing much.</p>
+      <figure>
+        <svg id="f3" viewBox="0 0 800 300" role="img" aria-label="On a meaning map, the plain average of every earlier word lands in an empty middle, far from the river area where bank should go"></svg>
+      </figure>
+      <p>What the model needs is a <b>weighted</b> mix: a lot of “river” and “boat”, very little “the”. Attention is a way to work out those weights from the words themselves, fresh for every sentence.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>A question asked to a room</h2>
+      <p>Imagine “bank” standing in a room with the earlier words. It calls out a question: “Who can tell me what kind of bank I am?” Every word wears a name tag describing what it can help with. The better a tag matches the question, the more “bank” listens to that word.</p>
+      <figure>
+        <svg id="f4" viewBox="0 0 800 300" role="img" aria-label="Bank asks a question to five earlier words; thicker lines go to river and boat, whose name tags match the question best, and thin lines go to the and to"></svg>
+      </figure>
+      <p><b>Mapping it back:</b> the question is the <b>query</b>, each name tag is a <b>key</b>, and what each word then shares is its <b>value</b>. <b>Where the analogy breaks:</b> nobody chooses the questions or tags. They are numbers, made by tables learned in training (Part 6), and every word asks and answers at the same time.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Every word makes three lists</h2>
+      <p>Each word’s list of numbers is multiplied by three learned tables. Out come three new, shorter lists: a <b>query</b> (what this word is looking for), a <b>key</b> (what it can offer) and a <b>value</b> (what it passes on if chosen).</p>
+      <figure>
+        <svg id="f5" viewBox="0 0 800 280" role="img" aria-label="The list of numbers for bank is multiplied by three learned tables, giving a query, a key and a value"></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: how long are these lists?</summary>
+        <p>In the original 2017 Transformer, each word’s list had 512 numbers and each query, key and value had 64 <span class="tag">public</span>. In Llama 3 8B, the word’s list has 4,096 numbers and each head’s query has 128 <span class="tag">public</span>. The three tables are part of the model’s learned numbers, set by training.</p>
+      </details>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Step 1: score every earlier word</h2>
+      <p>Compare the query of “bank” with the key of every earlier word, using the multiply-and-add closeness score from Part 1, chapter 14. A matching key gives a high score; an unrelated one gives a score near zero.</p>
+      <figure>
+        <svg id="f6" viewBox="0 0 800 290" role="img" aria-label="Scores for each earlier word in The boat drifted to the river bank: river and boat score highest, the small words score near zero"></svg>
+      </figure>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Step 2: scores become shares</h2>
+      <p>The scores go through softmax, the recipe from Part 2, chapter 4, which turns them into shares adding up to 100%. Here “river” gets about half of the attention and “boat” a quarter; the small words share what is left.</p>
+      <figure>
+        <svg id="f7" viewBox="0 0 800 220" role="img" aria-label="One bar split into attention shares: river 53 percent, boat 24 percent, drifted 10 percent, and the small words 14 percent together"></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: the formula, and why it divides by a square root</summary>
+        <span class="eq">attention = softmax( query · keys ÷ √(list length) ) × values</span>
+        <p>Before softmax, the scores are divided by the square root of the key length. The 2017 paper explains why: with long lists the dot products grow large, which pushes softmax into regions where it is almost all-or-nothing and very hard to train <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Step 3: blend the values</h2>
+      <p>Finally, “bank” takes each earlier word’s value, scales it by that word’s share, and adds them up. The result is added to its own numbers, which moves “bank” on the map of meaning towards the riverside sense.</p>
+      <figure>
+        <svg id="f8" viewBox="0 0 800 300" role="img" aria-label="On a meaning map, bank moves from its fixed starting point towards river and boat, pulled by the weighted blend of their values"></svg>
+      </figure>
+    </section>
+
+    <!-- 9 LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Steer what “bank” listens to</h2>
+      <p>A toy version with two-number lists <span class="tag">example</span>. Five earlier words sit on a small meaning map. Turn the direction of the query of “bank” (towards water or money) and how sharply it focuses. The bars show each word’s share of attention; the dashed line is the plain average.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="dir">Query points towards <output id="dir-o"></output></label><input id="dir" type="range" min="0" max="180" step="5" value="30"></div>
+          <div class="control"><label for="foc">Focus (score multiplier) <output id="foc-o"></output></label><input id="foc" type="range" min="0" max="6" step="0.5" value="2"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="20,3">river bank</button>
+            <button type="button" class="secondary" data-p="160,3">money bank</button>
+            <button type="button" class="secondary" data-p="90,2">can’t tell</button>
+            <button type="button" class="secondary" data-p="20,0">no focus</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Attention share for each earlier word, with a dashed line at the plain average of 20 percent"></svg></div>
+      </div></div>
+      <p>At zero focus every word gets 20%, the plain average from chapter 3. Raise the focus and attention piles onto the words whose keys point the same way as the query. Point the query between water and money and it splits its attention, like a reader who cannot yet tell.</p>
+      <details class="trace"><summary>Go deeper: exactly what the lab computes</summary>
+        <p>Each word has a two-number key at a fixed angle: river 10°, boat 30°, the 95°, paid 140° and money 170° <span class="tag">example</span>. The query is a two-number list pointing at the slider’s angle. Each score is focus × cos(angle between query and key), softmax turns the scores into shares, and the ledger shows every step. Real models do the same with lists of 64 to 128 numbers, learned rather than chosen.</p>
+      </details>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The rule</p>
+      <h2>Only look backwards, never ahead</h2>
+      <p>In a model that writes, each word may only look at itself and the words before it. Later words are hidden. Partly this is because, while writing, they do not exist yet. And in training (Part 6, chapter 12), peeking at the next word would turn every quiz into copying the answer.</p>
+      <figure>
+        <svg id="f10" viewBox="0 0 800 350" role="img" aria-label="A grid of who may look at whom in The boat drifted to the river bank: the lower triangle is open, the upper triangle is blocked"></svg>
+      </figure>
+      <p>This has a sharp consequence. In “I opened a bank account”, the word “bank” cannot see “account”, which comes after it. It stays unsure at first, and “account”, looking back at “bank”, does the work of settling the meaning. The 2017 paper does this by setting the scores for later words to minus infinity before softmax, so their shares are zero <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Many heads ask different questions</h2>
+      <p>One question per word is not enough. A word may need to know who did the action, what “it” refers to, and which words are next to it, all at once. So each layer runs many attention <b>heads</b> side by side, each with its own three tables and its own kind of question.</p>
+      <figure>
+        <svg id="f11" viewBox="0 0 800 300" role="img" aria-label="The same sentence with three heads drawn as arcs: one links it to cat, one links sat to cat, and one links neighbouring words"></svg>
+      </figure>
+      <p>The original Transformer used 8 heads per layer; Llama 3 8B uses 32 heads in each of its 32 layers, 1,024 in all <span class="tag">public</span>. Nobody assigns the heads their jobs. Some end up tracking grammar, some tracking names, and many do things no one has yet put into words. The labels in the drawing are illustrations <span class="tag">example</span>.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Layer after layer, meanings sharpen</h2>
+      <p>Attention runs again in every layer, each time on the updated lists from the layer before. Early layers mostly sort out nearby words; later ones combine ideas from across the whole text. Step by step, “bank” ends up meaning exactly the bank in this sentence.</p>
+      <figure>
+        <svg id="f12" viewBox="0 0 800 290" role="img" aria-label="On a meaning map, bank moves in steps over successive layers from its fixed starting point to a precise spot beside river"></svg>
+      </figure>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">A missing piece</p>
+      <h2>Attention alone ignores word order</h2>
+      <p>Look at the scoring step again: nothing in it knows where a word sits. Shuffle the earlier words and the shares stay the same. But “dog bites man” and “man bites dog” differ only in order (Part 1, chapter 18).</p>
+      <figure>
+        <svg id="f13" viewBox="0 0 800 290" role="img" aria-label="Dog bites man and man bites dog: each word's query and key is turned by an angle that depends on its position, so the same words in a different order compare differently"></svg>
+      </figure>
+      <p>The common fix today, called rotary position embedding (RoPE), turns each query and key by an angle that depends on the word’s position <span class="tag">public</span>. Two words’ score then depends on how far apart they are, not just on what they are. Llama 3 uses this method <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">The cost</p>
+      <h2>Every word compares with every earlier word</h2>
+      <p>Each word scores every word before it, in every head of every layer. Double the text and the number of comparisons roughly quadruples. The 2017 paper lists this cost as growing with the square of the length <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="f14" viewBox="0 0 800 300" role="img" aria-label="Triangles of comparisons for 4, 8 and 16 words contain 10, 36 and 136 pairs, growing with the square of the length"></svg>
+      </figure>
+      <p>At Llama 3’s full context of about 128,000 tokens <span class="tag">public</span>, that is about 8.2 billion comparisons for one head in one layer. This is why very long chats are slow and expensive, the subject of part 14.</p>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">The shortcut that works</p>
+      <h2>Saved keys make writing faster</h2>
+      <p>Because words only look back, an earlier word’s key and value never change once made. So while writing, the model saves them. Each new token only computes its own query, key and value, then compares against the saved pile. This pile is the <b>KV cache</b>.</p>
+      <figure>
+        <svg id="f15" viewBox="0 0 800 260" role="img" aria-label="Saved keys and values for six earlier words sit in a row; the newest word computes only its own query, key and value and compares against the saved ones"></svg>
+      </figure>
+      <p>The cache saves arithmetic but costs memory, and it grows with every token. Llama 3 shares each key and value among four query heads (8 key-value heads for 32 query heads) to keep it smaller <span class="tag">public</span>. The bonus study, <a href="inside-llm-serving-eli5.html" data-series-link="inside-llm-serving-eli5">Inside LLM serving</a>, is largely about this pile.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Attention shares are not explanations</h2>
+      <p>It is tempting to read the shares as the model’s reasons: “it answered that because it looked at this word”. A 2019 study tested this and found that, often, very different attention patterns gave the same prediction <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="f16" viewBox="0 0 800 260" role="img" aria-label="Two very different attention patterns over the same words lead to the same prediction"></svg>
+      </figure>
+      <p>Attention is one ingredient among many: the blended values pass through the rest of each layer and dozens more layers. Where a head looked is a clue, not a confession. Part 15 comes back to this when asking why models make things up.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">Where it came from</p>
+      <h2>From translation to every model</h2>
+      <p>Attention was invented for translation. In 2014, Bahdanau, Cho and Bengio let a translator “search” the source sentence for the words relevant to each word it wrote <span class="tag">public</span>. In 2017, “Attention Is All You Need” built a whole model out of attention, the Transformer <span class="tag">public</span>. Almost every large language model today descends from it.</p>
+      <figure>
+        <svg id="f17" viewBox="0 0 800 220" role="img" aria-label="A timeline: attention for translation in 2014, the Transformer in 2017, rotary positions in 2021, and Llama 3 with 1,024 heads in 2024"></svg>
+      </figure>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>It keeps track of “it” and “she”</b><span>Heads learn to link a word back to whatever it refers to.</span><em>chapters 4, 11</em></div>
+        <div><b>Long chats get slower</b><span>Every new token compares against every earlier one.</span><em>chapter 14</em></div>
+        <div><b>A word late in a prompt can change everything</b><span>Later words look back at earlier ones and reshape their meaning.</span><em>chapter 10</em></div>
+        <div><b>“Context window” limits</b><span>The longest text the model attends over at once.</span><em>chapter 14</em></div>
+        <div><b>Answers start slower than they continue</b><span>The prompt’s keys and values are built first; then the KV cache makes each step cheaper.</span><em>chapter 15</em></div>
+        <div><b>Highlighting “what the model looked at”</b><span>A useful clue, but not a full explanation.</span><em>chapter 16</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Attention</b><span>Each word looking back, weighing earlier words, and blending in their meaning.</span></div>
+        <div><b>Query</b><span>A word’s list saying what it is looking for.</span></div>
+        <div><b>Key</b><span>A word’s list saying what it can offer.</span></div>
+        <div><b>Value</b><span>What a word passes on, in proportion to its share.</span></div>
+        <div><b>Attention share (weight)</b><span>How much one word listens to another. Shares add up to 100%.</span></div>
+        <div><b>Causal mask</b><span>The rule that words may only look backwards.</span></div>
+        <div><b>Head</b><span>One set of query, key and value tables: one kind of question.</span></div>
+        <div><b>Self-attention</b><span>Words in one text attending to each other.</span></div>
+        <div><b>RoPE</b><span>Rotating queries and keys by position, so order matters.</span></div>
+        <div><b>KV cache</b><span>The saved keys and values of earlier tokens.</span></div>
+        <div><b>Context window</b><span>How many tokens the model can attend over at once.</span></div>
+        <div><b>Transformer</b><span>The model design built on attention, from 2017. Part 9 assembles it.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>The attention formula, scaling by the square root, the causal mask, 8 heads in the 2017 model, the cost growing with the square of the length, RoPE, and Llama 3’s heads, layers and context, from the papers.</span><em>papers, model reports</em></div>
+        <div><b>Example</b><span>The scores and shares for the river sentence, the map positions, the lab’s two-number lists, and the jobs given to heads in the drawings.</span><em>made up to show the idea</em></div>
+        <div><b>Not public</b><span>How many heads and layers Claude models use, their position method, and their context handling details.</span><em>Anthropic has not said</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Next: why memory is the bottleneck</h2>
+      <p>Attention lets every word reach back across the whole text, which is what makes these models good at language. But each new token must read every learned number and the growing KV cache from memory. Part 8, back on the chip track, shows why moving those numbers, more than multiplying them, now sets the speed of AI.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Attention lets every word ask the words before it a question, and blend in the answers it likes best.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Static drawings. Every label is 14px or larger; sentences stay in the <p> text.
+    (function(){
+      const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const C={gold:'#f5c76a',coral:'#ff8059',teal:'#76d5c1',blue:'#8fc9fb',purple:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f'};
+      function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+      const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+      const mk=(svg,id,c)=>{let d=svg.querySelector('defs')||S(svg,'defs',{});d.insertAdjacentHTML('beforeend',`<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${c}"/></marker>`);return `url(#${id})`;};
+      // An arrow from the edge of one circle (or point) to the edge of another
+      function edge(x1,y1,x2,y2,r1,r2){const d=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/d,uy=(y2-y1)/d;return [x1+ux*r1,y1+uy*r1,x2-ux*r2,y2-uy*r2];}
+
+      /* 1: bank between two meanings */
+      (()=>{const s=$('f1'),arr=mk(s,'a1',C.purple);
+        T(s,70,34,'NATURE',{fill:C.mut,'font-size':14});T(s,610,34,'MONEY',{fill:C.mut,'font-size':14});
+        [['river',100,80],['water',60,130],['shore',150,150]].forEach(([w,x,y])=>{S(s,'circle',{cx:x,cy:y,r:6,fill:C.gold});T(s,x+12,y+5,w,{fill:C.mut});});
+        [['money',620,80],['loan',580,150],['deposit',660,135]].forEach(([w,x,y])=>{S(s,'circle',{cx:x,cy:y,r:6,fill:C.gold});T(s,x+12,y+5,w,{fill:C.mut});});
+        S(s,'circle',{cx:400,cy:110,r:11,fill:C.gold});T(s,400,86,'bank',{fill:C.gold,'font-size':20,'text-anchor':'middle'});
+        T(s,400,146,'one fixed start',{fill:C.mut,'font-size':15,'text-anchor':'middle'});
+        let e=edge(400,110,210,130,13,0);S(s,'path',{d:`M${e[0]} ${e[1]} L${e[2]} ${e[3]}`,stroke:C.purple,'stroke-width':2.5,'stroke-dasharray':'6 5',fill:'none','marker-end':arr});
+        e=edge(400,110,565,135,13,0);S(s,'path',{d:`M${e[0]} ${e[1]} L${e[2]} ${e[3]}`,stroke:C.purple,'stroke-width':2.5,'stroke-dasharray':'6 5',fill:'none','marker-end':arr});
+        T(s,40,215,'“…drifted to the river bank”',{fill:C.gold,'font-size':17});T(s,40,242,'pulled towards nature',{fill:C.purple,'font-size':16});
+        T(s,450,215,'“…paid money into the bank”',{fill:C.gold,'font-size':17});T(s,450,242,'pulled towards money',{fill:C.purple,'font-size':16});})();
+
+      /* 2: the far clue */
+      (()=>{const s=$('f2'),n=17,w=40,x0=40,y=110;
+        for(let i=0;i<n;i++){const x=x0+i*w+i*3;S(s,'rect',{x,y,width:w,height:30,fill:i===n-1?'none':C.gold,opacity:i===8||i===n-1?1:.35,stroke:i===n-1?C.coral:'none','stroke-dasharray':i===n-1?'4 3':''});}
+        const cx=i=>x0+i*(w+3)+w/2;
+        T(s,cx(8),100,'France',{fill:C.gold,'font-size':17,'text-anchor':'middle'});
+        T(s,cx(n-2),100,'fluent',{fill:C.gold,'font-size':15,'text-anchor':'middle'});
+        T(s,cx(n-1),131,'?',{fill:C.coral,'font-size':18,'text-anchor':'middle'});
+        S(s,'path',{d:`M${cx(n-1)} 106 C${cx(n-1)} 30 ${cx(8)} 30 ${cx(8)} 80`,fill:'none',stroke:C.purple,'stroke-width':2.5});
+        T(s,(cx(8)+cx(n-1))/2,38,'16 words back',{fill:C.purple,'font-size':16,'text-anchor':'middle'});
+        S(s,'rect',{x:cx(n-2)-w/2-4,y:150,width:2*w+11,height:8,fill:C.rose,opacity:.8});
+        T(s,cx(n-2)+w/2,186,'2-word window',{fill:C.rose,'font-size':16,'text-anchor':'middle'});
+        T(s,40,186,'each block is one word',{fill:C.mut,'font-size':15});})();
+
+      /* shared toy map for chapters 3, 8, 12 */
+      const MAP=[['the',380,70],['to',440,90],['drifted',320,130],['boat',170,90],['river',120,150]];
+      function mapBase(s,showWords){S(s,'rect',{x:40,y:20,width:720,height:230,fill:'none',stroke:C.line,'stroke-dasharray':'3 5'});
+        T(s,60,48,'WATER',{fill:C.mut,'font-size':14});T(s,680,48,'MONEY',{fill:C.mut,'font-size':14});
+        if(showWords)MAP.forEach(([w,x,y])=>{S(s,'circle',{cx:x,cy:y,r:6,fill:C.blue});T(s,x+12,y+5,w,{fill:C.mut});});}
+
+      /* 3: plain average lands in the middle */
+      (()=>{const s=$('f3');mapBase(s,true);const ax=MAP.reduce((a,m)=>a+m[1],0)/MAP.length,ay=MAP.reduce((a,m)=>a+m[2],0)/MAP.length;
+        S(s,'path',{d:`M${ax-9} ${ay-9} L${ax+9} ${ay+9} M${ax+9} ${ay-9} L${ax-9} ${ay+9}`,stroke:C.rose,'stroke-width':3,class:'strike'});
+        T(s,ax,ay-22,'plain average',{fill:C.rose,'font-size':16,'text-anchor':'middle'});
+        S(s,'circle',{cx:150,cy:200,r:20,fill:'none',stroke:C.teal,'stroke-width':2,'stroke-dasharray':'5 4'});
+        T(s,180,206,'where bank belongs',{fill:C.teal,'font-size':16});
+        T(s,60,284,'(example positions, two directions only)',{fill:C.faint,'font-size':14});})();
+
+      /* 4: a question to a room */
+      (()=>{const s=$('f4'),ppl=[['river',360,60,6],['boat',470,110,5],['drifted',520,180,2.5],['to',430,240,1],['the',320,262,1]];
+        S(s,'circle',{cx:110,cy:150,r:26,fill:C.gold,opacity:.9});T(s,110,156,'bank',{fill:'#202020','font-size':16,'text-anchor':'middle'});
+        T(s,110,206,'asks a question',{fill:C.coral,'font-size':15,'text-anchor':'middle'});
+        ppl.forEach(([w,x,y,th])=>{const e=edge(110,150,x,y,28,20);S(s,'path',{d:`M${e[0].toFixed(1)} ${e[1].toFixed(1)} L${e[2].toFixed(1)} ${e[3].toFixed(1)}`,stroke:C.purple,'stroke-width':th,'stroke-opacity':.85,fill:'none'});
+          S(s,'circle',{cx:x,cy:y,r:18,fill:C.box,stroke:C.gold,'stroke-width':2});
+          S(s,'rect',{x:x+24,y:y-12,width:14,height:24,fill:C.teal,opacity:.7});T(s,x+46,y+6,w,{fill:C.fg,'font-size':16});});
+        T(s,600,60,'thick line = listens more',{fill:C.purple,'font-size':15});
+        T(s,600,86,'teal tag = key',{fill:C.teal,'font-size':15});})();
+
+      /* 5: three lists */
+      (()=>{const s=$('f5'),arr=mk(s,'a5',C.mut);
+        for(let i=0;i<12;i++)S(s,'rect',{x:40+i*16,y:120,width:14,height:40,fill:C.gold,opacity:.35+.5*((i*7)%5)/4});
+        T(s,40,104,'bank: its list',{fill:C.gold,'font-size':16});
+        const out=[['query','what it looks for',C.coral,50],['key','what it offers',C.teal,140],['value','what it passes on',C.blue,230]];
+        out.forEach(([n,d,c,y])=>{S(s,'path',{d:`M240 140 C300 140 300 ${y} 352 ${y}`,fill:'none',stroke:C.mut,'stroke-width':2,'marker-end':arr});
+          for(let i=0;i<5;i++)S(s,'rect',{x:362+i*16,y:y-14,width:14,height:28,fill:c,opacity:.45+.5*((i*3+y)%4)/3});
+          T(s,460,y-2,n,{fill:c,'font-size':18});T(s,460,y+18,d,{fill:C.mut,'font-size':15});});
+        T(s,262,24,'× 3 learned tables',{fill:C.teal,'font-size':15});})();
+
+      /* 6 and 7: scores and shares for The boat drifted to the river bank */
+      const W6=[['The',0.2],['boat',1.8],['drifted',0.9],['to',0.1],['the',0.2],['river',2.6]];
+      (()=>{const s=$('f6');T(s,40,30,'QUERY OF BANK VS EACH KEY · 180 px = score 1',{fill:C.mut,'font-size':14});
+        W6.forEach(([w,v],i)=>{const y=50+i*36;T(s,130,y+20,w,{fill:C.gold,'text-anchor':'end'});S(s,'rect',{x:150,y:y+4,width:v*180,height:22,fill:C.coral,opacity:.85});T(s,150+v*180+10,y+21,v.toFixed(1),{fill:C.fg,'font-size':16});});
+        S(s,'line',{x1:150,y1:46,x2:150,y2:270,stroke:C.line});T(s,40,282,'score',{fill:C.faint,'font-size':14});})();
+      (()=>{const s=$('f7'),ex=W6.map(([,v])=>Math.exp(v)),tot=ex.reduce((a,b)=>a+b,0),x0=50,L=700;let x=x0;const seg=[];
+        W6.forEach(([w],i)=>{const wd=ex[i]/tot*L;seg.push([w,x,wd,ex[i]/tot]);S(s,'rect',{x,y:80,width:Math.max(0,wd-2),height:44,fill:w==='river'||w==='boat'?C.purple:w==='drifted'?C.purple:C.faint,opacity:w==='river'?1:w==='boat'?.75:w==='drifted'?.5:.6});x+=wd;});
+        const mid=k=>seg[k][1]+seg[k][2]/2,pc=k=>Math.round(seg[k][3]*100)+'%';
+        T(s,mid(5),68,'river '+pc(5),{fill:C.fg,'text-anchor':'middle'});T(s,mid(1),68,'boat '+pc(1),{fill:C.fg,'text-anchor':'middle'});T(s,mid(2),68,'drifted '+pc(2),{fill:C.mut,'font-size':15,'text-anchor':'middle'});
+        T(s,x0,150,'The '+pc(0),{fill:C.mut,'font-size':15});
+        T(s,(seg[3][1]+seg[4][1]+seg[4][2])/2,150,'to, the '+(Math.round((seg[3][3]+seg[4][3])*100))+'%',{fill:C.mut,'font-size':15,'text-anchor':'middle'});
+        T(s,x0,30,'SHARES OF ATTENTION · whole bar = 100%',{fill:C.mut,'font-size':14});
+        T(s,x0,196,'river + boat ≈ 77%',{fill:C.purple,'font-size':16});})();
+
+      /* 8: the blend moves bank */
+      (()=>{const s=$('f8'),arr=mk(s,'a8',C.purple);mapBase(s,true);
+        S(s,'circle',{cx:580,cy:190,r:9,fill:C.gold});T(s,595,184,'bank, before',{fill:C.gold});
+        S(s,'circle',{cx:250,cy:160,r:9,fill:C.gold});T(s,250,190,'bank, after',{fill:C.gold,'text-anchor':'middle'});
+        const e=edge(580,190,250,160,11,11);S(s,'path',{d:`M${e[0]} ${e[1]} L${e[2]} ${e[3]}`,stroke:C.purple,'stroke-width':3,fill:'none','marker-end':arr});
+        T(s,430,226,'pulled by the blend',{fill:C.purple,'font-size':16,'text-anchor':'middle'});
+        T(s,60,284,'(example positions, two directions only)',{fill:C.faint,'font-size':14});})();
+
+      /* 10: causal mask grid */
+      (()=>{const s=$('f10'),tok=['The','boat','drifted','to','the','river','bank'],n=7,cw=64,ch=34,x0=150,y0=60;
+        tok.forEach((w,i)=>{T(s,x0+i*cw+cw/2,y0-12,w,{fill:C.gold,'font-size':15,'text-anchor':'middle'});T(s,x0-12,y0+i*ch+22,w,{fill:C.gold,'font-size':15,'text-anchor':'end'});});
+        for(let r=0;r<n;r++)for(let c=0;c<n;c++){const ok=c<=r;S(s,'rect',{x:x0+c*cw+2,y:y0+r*ch+2,width:cw-4,height:ch-4,fill:ok?C.purple:'#2a2927',opacity:ok?(r===n-1&&c===5?1:.55):1});}
+        T(s,x0+n*cw+24,y0+40,'open:',{fill:C.purple,'font-size':16});T(s,x0+n*cw+24,y0+62,'looks back',{fill:C.purple,'font-size':16});
+        T(s,x0+n*cw+24,y0+120,'blocked:',{fill:C.rose,'font-size':16});T(s,x0+n*cw+24,y0+142,'the future',{fill:C.rose,'font-size':16});
+        T(s,40,y0+n*ch+36,'row = the word looking · column = the word looked at',{fill:C.mut,'font-size':14});})();
+
+      /* 11: heads as arcs */
+      (()=>{const s=$('f11'),tok=['The','cat','sat','on','the','mat','because','it','was','tired'],x=i=>60+i*76,y=230;
+        tok.forEach((w,i)=>T(s,x(i),y,w,{fill:C.gold,'text-anchor':'middle','font-size':17}));
+        const arc=(a,b,h,dash,c)=>S(s,'path',{d:`M${x(a)} ${y-24} C${x(a)} ${y-24-h} ${x(b)} ${y-24-h} ${x(b)} ${y-24}`,fill:'none',stroke:c,'stroke-width':2.5,'stroke-dasharray':dash});
+        arc(7,1,150,'',C.purple);arc(2,1,60,'6 4',C.coral);arc(5,4,34,'2 4',C.teal);arc(5,3,58,'2 4',C.teal);
+        T(s,40,34,'head A: who is “it”?',{fill:C.purple,'font-size':16});
+        T(s,330,34,'head B: who acted?',{fill:C.coral,'font-size':16});
+        T(s,580,34,'head C: neighbours',{fill:C.teal,'font-size':16});
+        T(s,40,280,'(jobs are illustrations)',{fill:C.faint,'font-size':14});})();
+
+      /* 12: layer by layer */
+      (()=>{const s=$('f12'),arr=mk(s,'a12',C.purple);mapBase(s,true);
+        const P=[[600,180,'layer 1',28],[470,150,'layer 4',-18],[330,190,'layer 12',28],[230,150,'layer 32',28]];
+        P.forEach(([x,y,l,dy],i)=>{S(s,'circle',{cx:x,cy:y,r:8,fill:C.gold,opacity:.45+.55*i/3});T(s,x,y+dy,l,{fill:C.gold,'font-size':15,'text-anchor':'middle'});
+          if(i){const [px,py]=P[i-1],e=edge(px,py,x,y,10,10);S(s,'path',{d:`M${e[0]} ${e[1]} L${e[2]} ${e[3]}`,stroke:C.purple,'stroke-width':2,fill:'none','marker-end':arr});}});
+        T(s,60,284,'(example positions; Llama 3 8B has 32 layers)',{fill:C.faint,'font-size':14});})();
+
+      /* 13: rotation by position */
+      (()=>{const s=$('f13');const row=(y,words)=>{words.forEach((w,i)=>{const cx=150+i*130,a=(-90+i*50)*Math.PI/180;
+          S(s,'circle',{cx,cy:y,r:30,fill:'none',stroke:C.line,'stroke-width':2});
+          S(s,'line',{x1:cx,y1:y,x2:cx+24*Math.cos(a),y2:y+24*Math.sin(a),stroke:C.coral,'stroke-width':3,'stroke-linecap':'round'});
+          T(s,cx,y+52,w,{fill:C.gold,'font-size':17,'text-anchor':'middle'});});
+          ['position 1','2','3'].forEach((l,i)=>T(s,150+i*130,y-42,l,{fill:C.mut,'font-size':14,'text-anchor':'middle'}));};
+        row(70,['dog','bites','man']);row(210,['man','bites','dog']);
+        T(s,560,96,'turn grows',{fill:C.coral,'font-size':16});T(s,560,120,'with position',{fill:C.coral,'font-size':16});
+        T(s,560,220,'same words,',{fill:C.mut,'font-size':16});T(s,560,244,'different turns',{fill:C.mut,'font-size':16});})();
+
+      /* 14: comparisons grow with the square */
+      (()=>{const s=$('f14'),grids=[[4,40],[8,190],[16,380]],cell=10;
+        grids.forEach(([n,x0])=>{for(let r=0;r<n;r++)for(let c=0;c<=r;c++)S(s,'rect',{x:x0+c*cell,y:60+r*cell,width:cell-2,height:cell-2,fill:C.coral,opacity:.75});
+          T(s,x0,50,n+' words',{fill:C.gold,'font-size':16});T(s,x0,60+n*cell+26,(n*(n+1)/2)+' pairs',{fill:C.coral,'font-size':16});});
+        T(s,600,110,'128,000 tokens:',{fill:C.gold,'font-size':16});T(s,600,138,'8.2 billion pairs',{fill:C.coral,'font-size':18});T(s,600,162,'per head, per layer',{fill:C.mut,'font-size':15});})();
+
+      /* 15: KV cache */
+      (()=>{const s=$('f15'),tok=['The','boat','drifted','to','the','river'];
+        tok.forEach((w,i)=>{const x=40+i*100;T(s,x+30,60,w,{fill:C.gold,'font-size':16,'text-anchor':'middle'});
+          S(s,'rect',{x,y:76,width:28,height:56,fill:C.teal,opacity:.6});S(s,'rect',{x:x+32,y:76,width:28,height:56,fill:C.blue,opacity:.6});});
+        S(s,'rect',{x:30,y:66,width:600,height:76,fill:'none',stroke:C.teal,'stroke-dasharray':'5 4'});
+        T(s,40,170,'saved: keys (teal), values (blue)',{fill:C.teal,'font-size':16});
+        const nx=680;T(s,nx+30,60,'bank',{fill:C.gold,'font-size':18,'text-anchor':'middle'});
+        S(s,'rect',{x:nx-4,y:76,width:20,height:56,fill:C.coral,opacity:.85});S(s,'rect',{x:nx+20,y:76,width:20,height:56,fill:C.teal,opacity:.85});S(s,'rect',{x:nx+44,y:76,width:20,height:56,fill:C.blue,opacity:.85});
+        T(s,nx+30,170,'new: computed now',{fill:C.coral,'font-size':16,'text-anchor':'middle'});
+        T(s,40,226,'each step adds one column to the saved pile',{fill:C.mut,'font-size':15});})();
+
+      /* 16: different patterns, same answer */
+      (()=>{const s=$('f16'),words=['The','boat','drifted','to','the','river'],A=[2,30,8,2,3,55],B=[22,12,20,18,14,14];
+        const pat=(x0,vals,lab)=>{T(s,x0,30,lab,{fill:C.mut,'font-size':15});vals.forEach((v,i)=>{const y=44+i*28;T(s,x0+70,y+17,words[i],{fill:C.gold,'font-size':15,'text-anchor':'end'});S(s,'rect',{x:x0+80,y:y+4,width:v*3,height:18,fill:C.purple,opacity:.8});});};
+        pat(40,A,'PATTERN A');pat(330,B,'PATTERN B');
+        T(s,640,110,'both predict',{fill:C.mut,'font-size':16});T(s,640,138,'the same',{fill:C.mut,'font-size':16});T(s,640,166,'next word',{fill:C.mut,'font-size':16});
+        T(s,40,236,'(illustration of the 2019 finding)',{fill:C.faint,'font-size':14});})();
+
+      /* 17: timeline */
+      (()=>{const s=$('f17'),E=[[2014,'attention for','translation',C.coral],[2017,'the Transformer','',C.purple],[2021,'rotary','positions (RoPE)',C.coral],[2024,'Llama 3:','1,024 heads',C.purple]];
+        const X=y=>80+(y-2013)/(2025-2013)*640;S(s,'line',{x1:60,y1:110,x2:760,y2:110,stroke:C.line,'stroke-width':2});
+        E.forEach(([y,a,b,c],i)=>{const x=X(y),up=i%2===0;S(s,'circle',{cx:x,cy:110,r:8,fill:c});T(s,x,up?80:144,String(y),{fill:c,'font-size':16,'text-anchor':'middle'});
+          T(s,x,up?36:176,a,{fill:C.fg,'font-size':15,'text-anchor':'middle'});if(b)T(s,x,up?56:196,b,{fill:C.fg,'font-size':15,'text-anchor':'middle'});});})();
+    })();
+  </script>
+
+  <script>
+    // LAB. Configure ids, labConfig and compute(); the chart below places every tick and bar with one scale function.
+    // Assumptions: two-number keys at fixed angles; query = (cos d, sin d); score = focus × cos(angle between); shares by softmax.
+    const ids=['dir','foc'],$=id=>document.getElementById(id);
+    const pct=v=>Math.round(v)+'%';
+    const WORDS=[['river',10],['boat',30],['the',95],['paid',140],['money',170]];
+    function compute(v){
+      const [d,f]=v,rad=x=>x*Math.PI/180;
+      const sc=WORDS.map(([,a])=>f*Math.cos(rad(a-d)));
+      const mx=Math.max(...sc),ex=sc.map(x=>Math.exp(x-mx)),tot=ex.reduce((a,b)=>a+b,0),sh=ex.map(e=>e/tot*100);
+      // Where the blend points: the share-weighted sum of each word's direction
+      const bx=WORDS.reduce((a,[,ang],i)=>a+sh[i]*Math.cos(rad(ang)),0),by=WORDS.reduce((a,[,ang],i)=>a+sh[i]*Math.sin(rad(ang)),0);
+      const blend=(Math.atan2(by,bx)*180/Math.PI+360)%360;
+      return {even:100/WORDS.length,rows:WORDS.map(([w],i)=>[w,sh[i],'#c3b8ff']),
+        ledger:[['word (key angle)','score → share'],...WORDS.map(([w,a],i)=>[w+' ('+a+'°)',sc[i].toFixed(2)+' → '+sh[i].toFixed(1)+'%']),['blend points to',blend.toFixed(0)+'° '+(blend<60?'water':blend>120?'money':'unclear')]]};
+    }
+    const labConfig={format:pct,sliderFormats:[v=>v+'° '+(v<60?'(water)':v>120?'(money)':'(between)'),v=>'×'+v]};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const {even,rows,ledger}=compute(v);
+      if(rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned non-finite results');
+      // One scale for ticks and bars: 0% at the left, 100% at the right
+      const x0=120,span=320,sx=p=>x0+Math.max(0,Math.min(100,p))*span/100,ticks=[0,50,100];
+      const bottom=40+rows.length*44,height=bottom+56;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      let s=`<text x="${x0}" y="22" fill="#a5a29c" font-size="16">share of attention</text>`;
+      rows.forEach(([name,val,col],i)=>{const y=36+i*44;
+        s+=`<text x="${x0-12}" y="${y+21}" text-anchor="end" fill="#f5c76a" font-size="16">${esc(name)}</text>`;
+        s+=`<rect data-v="${val}" x="${x0}" y="${y+4}" width="${Math.max(0,sx(val)-x0).toFixed(2)}" height="24" fill="${col}"/>`;
+        s+=`<line x1="${sx(even)}" y1="${y}" x2="${sx(even)}" y2="${y+32}" stroke="#f1eee8" stroke-dasharray="4 4"/>`;
+        s+=`<text x="${x0+span+14}" y="${y+22}" fill="#f1eee8" font-size="16">${esc(pct(val))}</text>`;});
+      s+=`<line x1="${x0}" y1="${bottom-6}" x2="${x0+span}" y2="${bottom-6}" stroke="#57534f"/>`;
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+16}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(pct(t))}</text>`).join('');
+      s+=`<text x="${x0}" y="${bottom+44}" fill="#a5a29c" font-size="16">dashed: plain average, 20%</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,rows:rows.map(r=>r[1])};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

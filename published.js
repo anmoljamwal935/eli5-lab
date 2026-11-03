@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "attention-eli5",
+    "title": "Attention: words looking at words",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 7: how each word looks back and blends in what matters",
+    "bullets": [
+      "Queries, keys and values: score, share and blend, step by step",
+      "Steer what 'bank' listens to, and see why long texts cost so much"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "QUERY",
+      "KEY",
+      "VALUE"
+    ],
+    "file": "explainers/attention-eli5.html",
+    "date": "2026-11-01",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Bank looks back at the earlier words, with the thickest attention lines going to river and boat\"><g fill=\"#f5c76a\"><rect x=\"24\" y=\"96\" width=\"30\" height=\"14\"/><rect x=\"62\" y=\"96\" width=\"30\" height=\"14\"/><rect x=\"100\" y=\"96\" width=\"30\" height=\"14\"/><rect x=\"138\" y=\"96\" width=\"30\" height=\"14\"/><rect x=\"176\" y=\"96\" width=\"30\" height=\"14\"/><rect x=\"214\" y=\"96\" width=\"30\" height=\"14\"/><rect x=\"262\" y=\"92\" width=\"34\" height=\"22\"/></g><g fill=\"none\" stroke=\"#c3b8ff\"><path d=\"M279 90 C279 34 229 34 229 94\" stroke-width=\"5\"/><path d=\"M279 90 C279 22 77 22 77 94\" stroke-width=\"3.5\"/><path d=\"M279 90 C279 50 191 50 191 94\" stroke-width=\"1\"/><path d=\"M279 90 C279 44 115 44 115 94\" stroke-width=\"1.6\"/></g><text x=\"24\" y=\"138\" font-family=\"monospace\" font-size=\"9\" fill=\"#76d5c1\">LLM PART 7</text></svg>",
+    "part": 7
+  },
+  {
     "id": "learning-is-nudging-numbers-eli5",
     "title": "Learning is nudging numbers",
     "category": "AI & Frontier",
