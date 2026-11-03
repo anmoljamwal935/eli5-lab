@@ -11,7 +11,8 @@ import sys
 import xml.etree.ElementTree as ET
 
 W, H, EDGE = 320, 155, 16
-PALETTE = {'#ff8059', '#76d5c1', '#f5c76a', '#c3b8ff', '#f87171', '#f1eee8', '#a5a29c',
+PALETTE = {'#ff8059', '#76d5c1', '#f5c76a', '#c3b8ff', '#f87171', '#ec6a94',  # #ec6a94: series 'wrong intuition' rose
+           '#f1eee8', '#a5a29c',
            '#57534f', '#73706a', '#202020', '#181818', 'none'}
 UNSAFE = re.compile(r'<(script|style|foreignObject|image|use)\b|\son\w+\s*=|javascript:|href\s*=', re.I)
 
