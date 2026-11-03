@@ -86,3 +86,21 @@ button.sr-title:hover,button.sr-title:focus-visible{color:var(--accent);text-dec
 .sr-parts li.read .sr-state{color:var(--fg)}
 @media(max-width:760px){.series-row .sr-count{grid-column:1/-1;flex-direction:row;align-items:baseline;gap:8px}.series-row>div{grid-column:1}.series-row>.icon{grid-column:2;grid-row:2;align-self:start}.series-row .sr-count b{font-size:22px}
   .sr-parts li{grid-template-columns:26px 10px minmax(0,1fr) auto;gap:10px}.sr-meta{display:none}.sr-title{font-size:15px}.sr-actions button{font-size:13px;padding:8px 13px}}
+
+/* Reader: series strip under the header (drawn by readerSeries() in app.js). */
+.reader-series{display:flex;align-items:center;gap:14px;padding:6px 28px;border-bottom:1px solid var(--line);flex-shrink:0;font:11px monospace;letter-spacing:.06em;color:var(--muted)}
+.reader-series[hidden]{display:none}
+.rs-name{white-space:nowrap;text-transform:uppercase}
+.rs-segs{flex:1;display:flex;gap:3px;min-width:0}
+.rs-seg{all:unset;flex:1;height:18px;position:relative;cursor:default}
+button.rs-seg{cursor:pointer}
+.rs-seg::before{content:'';position:absolute;left:0;right:0;top:6px;height:6px;background:color-mix(in srgb,var(--c) 18%,transparent);transition:top .15s,height .15s}
+.rs-seg.live::before{background:color-mix(in srgb,var(--c) 45%,transparent)}
+.rs-seg.read::before{background:var(--c)}
+.rs-seg.soon::before{top:8px;height:2px;background:color-mix(in srgb,var(--c) 35%,transparent)}
+.rs-seg.current::before{top:3px;height:12px;background:var(--c);box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--fg)}
+button.rs-seg:hover::before,button.rs-seg:focus-visible::before{top:3px;height:12px}
+button.rs-seg:focus-visible{outline:none}
+.rs-count{white-space:nowrap;text-transform:uppercase;color:var(--fg)}
+header.reader-header .reader-nav-btn:disabled{opacity:.3;cursor:default;border-color:var(--line);color:var(--fg)}
+@media(max-width:760px){.reader-series{padding:4px 12px;gap:10px}.rs-name{display:none}.rs-segs{gap:2px}}
