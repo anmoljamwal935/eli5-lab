@@ -18,7 +18,7 @@ window.ELI5_SERIES = {
     { id: 'learning-is-nudging-numbers-eli5', track: 'llm', title: 'Learning is nudging numbers', blurb: 'Training from two knobs to billions: error, slope, and the walk downhill', file: 'learning-is-nudging-numbers-eli5.html' },
     { id: 'attention-eli5', track: 'llm', title: 'Attention: words looking at words', blurb: 'How each word gathers meaning from the words before it', file: 'attention-eli5.html' },
     { id: 'memory-bottleneck-eli5', track: 'chip', title: 'Memory: the real bottleneck', blurb: 'Why moving numbers costs more than doing maths on them', file: 'memory-bottleneck-eli5.html' },
-    { id: 'the-transformer-eli5', track: 'llm', title: 'The transformer, assembled', blurb: 'Stacking the pieces into one full pass through the model' },
+    { id: 'the-transformer-eli5', track: 'llm', title: 'The transformer, assembled', blurb: 'Stacking the pieces into one full pass through the model', file: 'the-transformer-eli5.html' },
     { id: 'ai-chips-eli5', track: 'chip', title: 'AI chips: GPUs, TPUs and Trainium', blurb: 'What each design removes or adds to get better at AI maths' },
     { id: 'why-bigger-works-eli5', track: 'llm', title: 'Scale: why bigger works', blurb: 'Data, compute, and the surprisingly steady rules of scaling' },
     { id: 'many-chips-as-one-eli5', track: 'chip', title: 'Many chips as one', blurb: 'Why one chip is not enough, and how thousands are wired together' },
