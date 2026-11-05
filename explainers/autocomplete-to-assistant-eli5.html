@@ -1,0 +1,1581 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>From autocomplete to assistant — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* ===== LOCAL-PREVIEW FALLBACK (not part of the published page) =====
+       The live site provides these rules via ../eli5-study.css (kept as the
+       <link> below, which wins on equal specificity when it loads). They are
+       inlined here so this single file renders identically when opened
+       standalone, e.g. without its sibling stylesheet. Exact copy of the
+       series-era eli5-study.css. The publisher may strip this block.
+       ==================================================================*/
+/* ELI5 Lab — Shared Visual System for All Studies */
+    @font-face {
+      font-family: 'Outfit';
+      src: url('assets/outfit.ttf') format('truetype');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+    
+    :root {
+      --bg: #161616;
+      --surface: #202020;
+      --raised: #282828;
+      --raised-hover: #323232;
+      --fg: #f1eee8;
+      --fg-dim: #dedcd6;
+      --muted: #a5a29c;
+      --faint: #73706a;
+      --border: #3b3936;
+      --border-subtle: #292826;
+      --accent: #ff8059;
+      --accent-soft: rgba(255, 128, 89, 0.14);
+      --accent-hover: #ffa385;
+      --ink: #20120c;
+    
+      --teal: #76d5c1;
+      --teal-soft: rgba(118, 213, 193, 0.14);
+      --gold: #f5c76a;
+      --gold-soft: rgba(245, 199, 106, 0.14);
+      --blue: #8fc9fb;
+      --blue-soft: rgba(143, 201, 251, 0.14);
+      --purple: #c3b8ff;
+      --purple-soft: rgba(195, 184, 255, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+    
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+      scrollbar-width: none;
+      background-color: var(--bg);
+      color: var(--fg);
+    }
+    
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--fg);
+      line-height: 1.75;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-image: radial-gradient(ellipse at 85% 20%, rgba(255, 128, 89, 0.04), transparent 60%);
+      min-height: 100vh;
+    }
+    
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    a:hover {
+      color: var(--accent-hover);
+    }
+    
+    /* ==========================================================================
+       1. STANDALONE MASTHEAD (Perfect Grid Alignment with Content Container)
+       ========================================================================== */
+    header.study-masthead {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 78px;
+      width: 100%;
+      background: rgba(22, 22, 22, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 0;
+      color: #fff;
+    }
+    
+    header.study-masthead::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, #ff8059 0 72px, rgba(255, 255, 255, 0.16) 72px 100%);
+    }
+    
+    header.study-masthead .masthead-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    header.study-masthead .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: #f5f1e9;
+      text-decoration: none;
+    }
+    header.study-masthead .brand:hover {
+      color: #fff;
+      opacity: 0.85;
+    }
+    
+    header.study-masthead .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      background: #ff8059;
+      color: #21110c;
+      font: 700 14px/1 var(--font-mono);
+      letter-spacing: -0.05em;
+      border-radius: 0;
+      flex-shrink: 0;
+    }
+    
+    header.study-masthead .brand-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 26px;
+      line-height: 0.9;
+      letter-spacing: -1.4px;
+      font-weight: 600;
+    }
+    header.study-masthead .brand-copy b {
+      font-weight: 400;
+      color: #b7b4ae;
+    }
+    header.study-masthead .brand-copy small {
+      font: 8px/1 var(--font-mono);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8e8b85;
+    }
+    header.study-masthead .brand-dot {
+      margin: 0 2px;
+      color: #ff8059;
+    }
+    
+    header.study-masthead .nav-right {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    
+    header.study-masthead .topic-tag {
+      font: 10px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-right: 6px;
+    }
+    
+    header.study-masthead .back-btn {
+      height: 40px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid #ff8059;
+      border-radius: 0;
+      background: #ff8059;
+      color: #22120d;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+    }
+    header.study-masthead .back-btn b {
+      font-size: 15px;
+      font-weight: 400;
+    }
+    header.study-masthead .back-btn:hover {
+      background: transparent;
+      color: #ff8059;
+    }
+    
+    /* Reading Progress Bar */
+    .eli5-progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: transparent;
+      z-index: 101;
+      pointer-events: none;
+    }
+    .eli5-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.1s ease-out;
+    }
+    
+    /* Inside Reader Modal: hide duplicate inner masthead! */
+    body.in-frame header.study-masthead {
+      display: none !important;
+    }
+    body.in-frame .eli5-study-container {
+      padding-top: 28px;
+    }
+    
+    /* ==========================================================================
+       2. UNIFIED CONTENT CONTAINER (All studies share exact same alignment)
+       ========================================================================== */
+    .eli5-study-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 90px;
+      width: 100%;
+    }
+    
+    .eli5-hero-kicker {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .eli5-hero-kicker i {
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .eli5-hero-kicker .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      margin-left: auto;
+    }
+    .eli5-hero-kicker .live-dot::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    
+    /* THE DEPTH CARD: QUESTION -> MECHANISM -> INTUITION */
+    .hero-depth-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 9px 18px;
+      margin-bottom: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      background: rgba(22, 22, 22, 0.75);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #dedcd6;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+    
+    .hero-depth-card .step-tag {
+      color: var(--accent);
+      font-weight: 700;
+      margin-right: 2px;
+    }
+    
+    .hero-depth-card i {
+      width: 22px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 128, 89, 0.8), rgba(255, 255, 255, 0.2));
+      position: relative;
+      display: inline-block;
+    }
+    .hero-depth-card i::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -2px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    
+    /* ==========================================================================
+       3. ARTICLE CONTENT & TYPOGRAPHY
+       ========================================================================== */
+    .eli5-study-container h1, .hero h1 {
+      margin-bottom: 20px;
+    }
+    
+    .eli5-study-container h2 {
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 1.25;
+      color: #fff;
+      margin: 44px 0 16px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-subtle);
+      position: relative;
+    }
+    .eli5-study-container h2::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      width: 32px;
+      height: 2px;
+      background: var(--accent);
+    }
+    
+    .eli5-study-container h3 {
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin: 30px 0 12px;
+    }
+    
+    .eli5-study-container p {
+      font-size: 16.5px;
+      color: var(--fg-dim);
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+    
+    .eli5-study-container strong {
+      color: #fff;
+      font-weight: 600;
+    }
+    
+    .eli5-study-container .lead, .eli5-study-container .lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    
+    /* Sections & Bands inside studies */
+    .course-section, .band, .scene, .panel, .wrap, .section {
+      padding: 36px 0 !important;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .course-section:first-of-type {
+      border-top: 0;
+    }
+    
+    .grid2, .grid3 {
+      display: grid;
+      gap: 18px;
+      margin: 24px 0;
+    }
+    .grid2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .grid3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    
+    .card, .taccount, .snapshot {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 0;
+    }
+    .taccount {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .taccount h4 {
+      grid-column: span 2;
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    
+    .formula {
+      padding: 16px 20px;
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      font-family: var(--font-mono);
+      font-size: 15px;
+      color: #fff;
+      margin: 20px 0;
+    }
+    
+    .lab {
+      margin: 32px 0;
+      border: 1px solid var(--border);
+      background: #1a1c18;
+      padding: 24px;
+    }
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    /* Wide screens: give the chart two thirds so its 520-wide viewBox renders near 1:1 */
+    @media (min-width: 761px) {
+      .lab-grid { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); }
+    }
+    .controls .control {
+      margin-bottom: 14px;
+    }
+    .controls label {
+      display: block;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .controls input, .controls select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 14px;
+    }
+    .controls input:focus, .controls select:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+    .controls .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .controls button {
+      height: 38px;
+      padding: 0 16px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #20120c;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .controls button.secondary {
+      background: transparent;
+      color: var(--fg);
+      border-color: var(--border);
+    }
+    .output {
+      padding: 18px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .model-limit {
+      font-size: 12px;
+      color: var(--faint);
+      margin-top: 14px;
+    }
+    
+    .table-wrap {
+      overflow-x: auto;
+      margin: 24px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    th {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .quiz {
+      margin: 28px 0;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .quiz fieldset {
+      border: 0;
+    }
+    .quiz legend {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+    .quiz label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .quiz button {
+      margin-top: 12px;
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #20120c;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    details.trace {
+      margin: 24px 0;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      font-size: 13px;
+    }
+    details.trace summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    details.trace ul {
+      margin: 14px 0 0 18px;
+      line-height: 1.6;
+    }
+    
+    /* ==========================================================================
+       4. CORE INTUITION TAKEAWAY
+       ========================================================================== */
+    .eli5-takeaway-card {
+      margin: 60px 0 30px;
+      padding: 34px 28px;
+      background: radial-gradient(ellipse at top left, rgba(255, 128, 89, 0.08), transparent 70%), var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      position: relative;
+    }
+    .eli5-takeaway-card .takeaway-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .eli5-takeaway-card blockquote {
+      font-size: clamp(19px, 2.4vw, 26px);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.4;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .eli5-takeaway-card .takeaway-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .eli5-takeaway-card .takeaway-actions a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .eli5-takeaway-card .takeaway-actions a:hover {
+      text-decoration: underline;
+    }
+    
+    /* ==========================================================================
+       5. RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 760px) {
+      header.study-masthead {
+        height: 70px;
+      }
+      header.study-masthead .masthead-inner {
+        padding: 0 16px;
+      }
+      header.study-masthead .brand-mark {
+        width: 36px;
+        height: 36px;
+        font-size: 12px;
+      }
+      header.study-masthead .brand-copy {
+        font-size: 21px;
+      }
+      header.study-masthead .brand-copy small, header.study-masthead .topic-tag {
+        display: none;
+      }
+      header.study-masthead .back-btn {
+        height: 36px;
+        padding: 0 12px;
+        font-size: 11px;
+        gap: 8px;
+      }
+      .hero-depth-card {
+        font-size: 9px;
+        gap: 8px;
+        padding: 7px 12px;
+      }
+      .hero-depth-card i {
+        width: 14px;
+      }
+      .eli5-takeaway-card {
+        padding: 22px 18px;
+      }
+    }
+    
+    /* Reset layout grid wrappers from legacy structures */
+    .layout {
+      display: block !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .content, main.content {
+      display: block !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .hero {
+      padding: 10px 0 28px !important;
+      background: transparent !important;
+    }
+    .hero h1 {
+      max-width: 100% !important;
+    }
+    .course-section {
+      padding: 36px 0 !important;
+      background: transparent !important;
+    }
+    
+    /* ==========================================================================
+       6. LEGACY STUDY NORMALIZATION
+       Old explainers keep their bespoke diagrams and interactions, while this
+       shared layer gives every page the same ELI5 Lab reading surface.
+       ========================================================================== */
+    :root {
+      --paper: var(--bg);
+      --card: var(--surface);
+      --wash: var(--raised);
+      --ink: var(--fg);
+      --body: var(--fg-dim);
+      --line: var(--border);
+      --line-soft: var(--border-subtle);
+      --white: var(--fg);
+      --gray: var(--surface);
+      --grey: var(--surface);
+      --brand: var(--accent);
+      --maroon: var(--accent);
+      --saffron: var(--accent);
+      --saffron2: var(--accent-hover);
+      --green: var(--teal);
+      --good: var(--teal);
+      --blue: var(--blue);
+      --focus: var(--accent);
+      --shadow: none;
+      --radius: 0px;
+      --radius-lg: 0px;
+    }
+    
+    body {
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(19, 88, 96, 0.12), transparent 34rem),
+        radial-gradient(circle at 82% 28%, rgba(255, 128, 89, 0.07), transparent 32rem),
+        #07090b !important;
+    }
+    
+    /* Remove page-specific chrome now duplicated by the shared masthead. */
+    .eli5-study-container > .layout > .toc,
+    .eli5-study-container > nav,
+    .eli5-study-container > header.mast,
+    .eli5-study-container main > header.mast,
+    .eli5-study-container .mobile-toc {
+      display: none !important;
+    }
+    
+    /* One reading column across every legacy structure. */
+    .eli5-study-container :where(.inner, .wrap, .page, .scene-inner, .hero-inner, .copy, .copy--wide) {
+      width: 100% !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    .eli5-study-container :where(main, .page, .content) {
+      color: var(--fg-dim) !important;
+      background: transparent !important;
+    }
+    
+    .eli5-study-container :where(.hero, .band, .scene, .panel, .chapter, .closing) {
+      color: var(--fg-dim) !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(.band, .scene, .panel, .chapter) {
+      padding: 42px 0 !important;
+      border-left: 0 !important;
+      border-right: 0 !important;
+      border-bottom: 0 !important;
+      border-top: 1px solid var(--border-subtle) !important;
+    }
+    
+    .eli5-study-container > :where(.hero, header.hero),
+    .eli5-study-container main > :where(.hero, header.hero),
+    .eli5-study-container .layout .hero {
+      padding: 6px 0 38px !important;
+      border: 0 !important;
+      text-align: left !important;
+    }
+    
+    .eli5-study-container :where(.hero h1, h1) {
+      max-width: 15ch !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      color: var(--fg) !important;
+      font-family: var(--font-sans) !important;
+      font-weight: 400 !important;
+      font-size: clamp(42px, 7vw, 72px) !important;
+      line-height: 0.98 !important;
+      letter-spacing: -0.055em !important;
+    }
+    
+    .eli5-study-container :where(h2, h3, h4, h5) {
+      color: var(--fg) !important;
+      font-family: var(--font-sans) !important;
+    }
+    
+    .eli5-study-container :where(h2) {
+      font-weight: 400 !important;
+      letter-spacing: -0.035em !important;
+    }
+    
+    .eli5-study-container :where(p, li, dd) {
+      color: var(--fg-dim);
+    }
+    
+    .eli5-study-container :where(.lead, .lede, .body) {
+      max-width: 68ch !important;
+      color: var(--muted) !important;
+      font-size: clamp(17px, 2vw, 20px) !important;
+      line-height: 1.65 !important;
+    }
+    
+    .eli5-study-container :where(.eyebrow, .kicker, .label, .src, .smallprint, .source-note, .caption) {
+      font-family: var(--font-mono) !important;
+      letter-spacing: 0.08em;
+    }
+    
+    .eli5-study-container :where(.eyebrow, .kicker, .label) {
+      color: var(--accent) !important;
+      text-transform: uppercase;
+    }
+    
+    /* Shared surface language: square, quiet, high-contrast. */
+    .eli5-study-container :where(
+      .card, .viz, .figure, .diagram, .callout, .snapshot, .quote, .note,
+      .analogy, .lens, .check, .risk, .source-block, .evidence-board,
+      .math-audit, .math-viz, .truth-strip, .stat, .mapping, .formula,
+      .lab, .output, .eqbox, .equation, .not-oracle, .bottom-line,
+      .compute-strip, .balance, .complaint, .verdict
+    ) {
+      color: var(--fg-dim) !important;
+      background-color: rgba(255, 255, 255, 0.035) !important;
+      border-color: var(--border) !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(.card, .viz, .figure, .callout, .quote, .note, .stat, .mapping) {
+      padding: clamp(16px, 3vw, 24px) !important;
+    }
+    
+    .eli5-study-container :where(.pill, .tag, .status, .chip, .stamp, .mode, .source-link) {
+      border-radius: 999px !important;
+      border-color: var(--border) !important;
+      background: var(--accent-soft) !important;
+      color: var(--accent) !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(input, select, textarea) {
+      max-width: 100%;
+      background: #0c0f12 !important;
+      color: var(--fg) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 0 !important;
+    }
+    
+    .eli5-study-container :where(button) {
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(button:not(.secondary)) {
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
+      color: #20120c !important;
+    }
+    
+    .eli5-study-container :where(button.secondary) {
+      background: transparent !important;
+      border-color: var(--border) !important;
+      color: var(--fg) !important;
+    }
+    
+    .eli5-study-container :where(.chapter-no, .number, .rule-num, .check__n, .gear__num) {
+      background: var(--accent) !important;
+      color: #20120c !important;
+      border-radius: 0 !important;
+    }
+    
+    .eli5-study-container :where(.caption, .src, .fine, .small, .model-limit, footer, .footer) {
+      color: var(--faint) !important;
+    }
+    
+    .eli5-study-container :where(footer, .footer) {
+      background: transparent !important;
+      border-top: 1px solid var(--border-subtle) !important;
+    }
+    
+    /* Keep wide teaching visuals usable instead of forcing them off-screen. */
+    .eli5-study-container :where(svg, img, canvas, video) {
+      max-width: 100%;
+    }
+    
+    .eli5-study-container :where(.diagram, .scrollable, .table-wrap, pre) {
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .eli5-study-container pre,
+    .eli5-study-container code {
+      font-family: var(--font-mono);
+    }
+    
+    @media (max-width: 760px) {
+      body {
+        font-size: 16px;
+      }
+    
+      .eli5-study-container {
+        padding: 22px 16px 56px;
+      }
+    
+      .eli5-hero-kicker {
+        gap: 9px;
+        font-size: 9px;
+      }
+    
+      .eli5-hero-kicker .live-dot {
+        display: none;
+      }
+    
+      .hero-depth-card {
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    
+      .eli5-study-container :where(.hero h1, h1) {
+        max-width: 11ch !important;
+        font-size: clamp(38px, 12vw, 54px) !important;
+      }
+    
+      .eli5-study-container :where(.band, .scene, .panel, .chapter, .course-section) {
+        padding: 32px 0 !important;
+      }
+    
+      .eli5-study-container :where(.grid2, .grid3, .cols, .two, .two-col, .duo, .trio, .watch, .risk-grid, .signal-grid, .source-grid, .math-grid, .claim-grid, .complaint-grid, .sandboxgrid, .check-grid) {
+        grid-template-columns: 1fr !important;
+      }
+    
+      .eli5-study-container :where(.chapter-head) {
+        grid-template-columns: 38px minmax(0, 1fr) !important;
+        gap: 12px !important;
+      }
+    
+      .eli5-study-container :where(.chapter-no, .number) {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        font-size: 14px !important;
+      }
+    
+      .eli5-study-container :where(.actions, .lab-row, .slider-row) {
+        align-items: stretch !important;
+      }
+    
+      .eli5-study-container :where(.actions) {
+        flex-wrap: wrap !important;
+      }
+    
+      .eli5-study-container :where(.actions button) {
+        min-height: 44px;
+      }
+    
+      .eli5-study-container table {
+        min-width: 620px;
+      }
+    }
+    
+    /* ==========================================================================
+       SERIES NAVIGATION (rendered by eli5-study.js from series.js)
+       ========================================================================== */
+    .series-strip[data-series="top"]:not(:empty) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 14px;
+      margin: 0 0 28px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.025);
+      font: 11px/1.5 var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .series-strip .series-name { color: var(--teal); }
+    .series-strip .series-here::before { content: '/'; margin-right: 14px; color: var(--faint); }
+    .series-strip[data-series="top"] a { margin-left: auto; }
+    
+    .series-strip[data-series="end"]:not(:empty) { margin: 48px 0 0; }
+    .series-end-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      font: 11px/1.5 var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+    .series-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      padding: 1px;
+    }
+    .series-card {
+      display: block;
+      min-height: 96px;
+      padding: 16px 18px;
+      background: var(--surface);
+      outline: 1px solid var(--border);
+      color: var(--fg);
+    }
+    a.series-card:hover { background: var(--raised); color: var(--fg); }
+    .series-card small {
+      display: block;
+      margin-bottom: 6px;
+      font: 11px/1.4 var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .series-card b { display: block; font-size: 18px; font-weight: 500; line-height: 1.35; }
+    .series-card em { display: block; margin-top: 6px; font: normal 11px/1.4 var(--font-mono); letter-spacing: 0.06em; color: var(--gold); }
+    .series-card.soon b { color: var(--muted); }
+    .series-cards > :last-child { text-align: right; }
+    @media (max-width: 600px) {
+      .series-cards { grid-template-columns: 1fr; }
+      .series-cards > :last-child { text-align: left; }
+      .series-cards > span:empty { display: none; }
+    }
+    
+    /* ===== Page-specific rules (as published) ===== */
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (How AI works, from scratch): gold = text and tokens, teal = stored numbers,
+       orange = arithmetic, purple = connections, rose = the wrong intuition. */
+    :root{--teal:#76d5c1;--rose:#ec6a94;--gold:#f5c76a;--purple:#c3b8ff}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    /* Series parts: fact tags, Go deeper boxes, button pickers, readouts */
+    .tag{display:inline-block;margin:0 2px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted);vertical-align:1px}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p{font-size:15px}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--purple)!important;color:var(--purple)!important;background:rgba(195,184,255,.1)!important}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+    .readout b{color:var(--fg);font-weight:600}
+    .lab-chart svg+svg{margin-top:18px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    /* Lab layout, sliders, presets, ledger */
+    .lab{margin-top:22px;border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .lab-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:0}
+    .lab-grid .controls{padding:clamp(16px,4vw,28px);border-right:1px solid var(--border)}
+    .lab-grid .lab-chart{padding:clamp(16px,4vw,28px)}
+    .control{margin:14px 0}
+    .control label{display:flex;justify-content:space-between;gap:10px;font:12px/1.4 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .control output{color:var(--fg);font-weight:600}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent);width:100%}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .presets button{min-height:34px;padding:5px 12px;font-size:13px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab .ledger output{color:var(--fg);font-weight:600}
+    button.secondary{font-family:var(--font-sans);font-size:14px;font-weight:500;background:transparent;border:1px solid var(--border);color:var(--fg);border-radius:6px;cursor:pointer}
+    button.secondary:hover{border-color:var(--muted)}
+    /* Chat-document boxes */
+    .box{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .box>small,.cap{display:block;font:12px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .doc{margin-top:12px;padding:14px 16px;background:#0c0f12;border:1px solid var(--border);font:14px/1.7 var(--font-mono);color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+    .doc .m{color:var(--purple)}.doc .cur{color:var(--accent)}
+    .doc .good{color:var(--gold)}.doc .bad{color:var(--rose)}
+    p.note{font-size:13px;color:var(--faint);margin-top:14px}
+    /* Page furniture shared with the house format */
+    .eli5-progress-track{position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:50}
+    .eli5-progress-fill{height:100%;width:0;background:var(--accent)}
+    .study-masthead{border-bottom:1px solid var(--border)}
+    .masthead-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:12px 20px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg)}
+    .brand-mark{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--accent);color:#21110c;font-weight:700;font-family:monospace}
+    .brand-copy{display:flex;flex-direction:column;line-height:1.1}
+    .brand-dot{color:var(--accent)}
+    .brand-copy small{color:var(--muted);font-size:11px}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .topic-tag{font:11px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .back-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--fg);border:1px solid var(--border);padding:6px 12px;border-radius:6px;font-size:13px}
+    .eli5-hero-kicker{display:flex;align-items:center;gap:12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted);margin-bottom:18px}
+    .eli5-hero-kicker i{flex:1;height:1px;background:var(--border)}
+    .live-dot{color:var(--accent)}
+    section.hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:0 0 14px}
+    p.lede{font-size:1.15rem;line-height:1.6;color:var(--fg);max-width:60ch}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .series-strip:empty{display:none}
+    .eli5-takeaway-card{margin:34px 0 10px;padding:clamp(18px,4vw,30px);border:1px solid var(--gold);background:rgba(245,199,106,.05)}
+    .takeaway-eyebrow{font:12px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--gold);margin-bottom:12px}
+    .eli5-takeaway-card blockquote{margin:0;font-size:1.25rem;line-height:1.5;color:var(--fg)}
+    .takeaway-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+    .takeaway-actions a{color:var(--fg);font-size:14px}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){
+      .panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}
+      .panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}
+      .lab-grid{grid-template-columns:1fr}.lab-grid .controls{border-right:0;border-bottom:1px solid var(--border)}
+      .box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}
+      .masthead-inner{padding:10px 14px}.topic-tag{display:none}
+    }
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 13: worked examples and human feedback turn a word-guesser into a helper">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/autocomplete-to-assistant-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="From autocomplete to assistant">
+<meta property="og:description" content="Part 13: worked examples and human feedback turn a word-guesser into a helper">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/autocomplete-to-assistant-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/autocomplete-to-assistant-eli5.png?v=local">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="From autocomplete to assistant">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="autocomplete-to-assistant-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 20 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>From autocomplete to assistant</h1>
+      <p class="lede">Part 12 ended with a finished base model: a very good guesser of the next word that continues any text it is given, helpful or not. This part turns that guesser into an assistant. First people show it thousands of worked examples of helping. Then they grade its answers, and training steers it toward the grades.</p>
+      <p class="source-note">A topic study built from the primary sources: the InstructGPT paper (Ouyang et al., 2022), the DPO paper (Rafailov et al., 2023), Anthropic&rsquo;s HHH framing (Askell et al., 2021) and Meta&rsquo;s Llama 3 report (2024); every number below was checked against them · <a href="https://arxiv.org/abs/2203.02155">Read the main source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on <a href="guess-the-next-word-eli5.html" data-series-link="guess-the-next-word-eli5">Part 2</a> (a chat is a document the model continues, and a raw model fills it in odd ways) and <a href="learning-is-nudging-numbers-eli5.html" data-series-link="learning-is-nudging-numbers-eli5">Part 6</a> (training nudges every number downhill on the loss). Part 12 finished the base model; this part teaches it manners. Facts carry a tag: <span class="tag">public</span> means a published paper, spec sheet or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>words and answers people read</span>
+        <span><i style="background:#76d5c1"></i>scores and grades</span>
+        <span><i style="background:#ff8059"></i>training updates</span>
+        <span><i style="background:#c3b8ff"></i>the chat wiring between turns</span>
+        <span><i style="background:#ec6a94"></i>the wrong guess, gamed or unhelpful</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>A continuer is not a helper</h2>
+      <p>Hand a raw base model an open assistant turn and it guesses whatever text usually follows. Sometimes that is an answer. Sometimes it writes the user&rsquo;s next question for them, or drifts into a forum thread. It is not being rude. Answering was never its job; continuing was.</p>
+      <figure>
+        <svg id="forkSvg" viewBox="0 0 800 380" role="img" aria-label="One open assistant turn splits into three possible continuations: an answer, the user's next question, or a forum thread"></svg>
+      </figure>
+      <p>Part 2 showed the setup: the app lays the chat out as one long document with markers for who speaks, and parks the model at the start of the assistant&rsquo;s turn. Everything after that cursor is a guess. A second round of training decides what <em>kind</em> of guess it makes.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The idea</p>
+      <h2>First, show it worked examples</h2>
+      <p>People write out good answers by hand: a question, then the answer as it should look. About thirteen thousand of them for InstructGPT <span class="tag">public</span>. Training is the same loop as Part 6: cover each answer word, guess it, compare, nudge every number a little downhill. New textbook, same homework.</p>
+      <figure>
+        <svg id="sftSvg" viewBox="0 0 800 360" role="img" aria-label="Example question-answer pairs flow into the same guess-compare-nudge training loop from Part 6"></svg>
+      </figure>
+      <p>This step is called supervised fine-tuning. It teaches the <em>shape</em> of helping: the format, the tone, and when to play the end-of-turn token from Part 2. It barely adds knowledge: thirteen thousand answers against trillions of training words <span class="tag">example</span>.</p>
+      <details class="trace"><summary>Go deeper: who wrote the examples</summary>
+        <p>OpenAI hired a team of about forty contractors and also rewrote real prompts sent to its API <span class="tag">public</span> (<a href="https://arxiv.org/abs/2203.02155">Ouyang et al., 2022</a>). Today most example answers are drafted by models and checked by people instead, but the loop is the same: a human somewhere signs off on what good looks like.</p>
+      </details>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Then let people grade it</h2>
+      <p>Examples alone leave a question: of two decent answers, which is better? Scores are noisy &mdash; my 7 is your 5 &mdash; so graders never score. They read two answers side by side and pick one. InstructGPT collected about thirty-three thousand such comparisons <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="gradeSvg" viewBox="0 0 800 360" role="img" aria-label="One prompt with two candidate answers, and a grader picking the better of the two"></svg>
+      </figure>
+      <p>Picking is easier than scoring, and people agree on picks far more often. Each comparison is a small, sturdy fact: for this prompt, humans liked this one more. Thirty-three thousand sturdy facts beat a million wobbly scores.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>A stand-in grader that never sleeps</h2>
+      <p>People are slow and expensive, so the comparisons train a second, smaller model: the reward model. Shown any answer, it predicts one number &mdash; how much people would like it. Now every new answer can be graded instantly, with no humans in the loop.</p>
+      <figure>
+        <svg id="rmSvg" viewBox="0 0 800 360" role="img" aria-label="Candidate answers enter a reward model and come out with predicted likability scores"></svg>
+      </figure>
+      <p>The stand-in is a guesser too, trained on guesses about guesses. It is wrong the way polls are wrong: right on average, shaky on any single answer. The next step is built to survive that shakiness.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Steered toward high scores, on a leash</h2>
+      <p>The assistant writes answers to about thirty-one thousand new prompts &mdash; no labels needed, the stand-in grades them <span class="tag">public</span> &mdash; and training nudges the numbers toward higher scores. A leash taxes every step away from the example-trained model, so it cannot game the grader by opening every answer with &ldquo;great question!&rdquo; forever.</p>
+      <figure>
+        <svg id="ppoSvg" viewBox="0 0 800 380" role="img" aria-label="A loop of writing, scoring and nudging, with a leash back to the example-trained model"></svg>
+      </figure>
+      <p>This loop is called RLHF. The leash has a formal name &mdash; a penalty on how far the new chances drift, called the KL penalty &mdash; and it is what keeps the steered model speaking normal language instead of grader-pleasing static.</p>
+      <details class="trace"><summary>Go deeper: the alignment tax</summary>
+        <p>Steering has a cost: pushed too hard, the model gets worse at the raw knowledge tests it once passed. InstructGPT&rsquo;s fix mixed some original pre-training text back into the loop, so the model kept one eye on the library while learning manners <span class="tag">public</span> (<a href="https://arxiv.org/abs/2203.02155">Ouyang et al., 2022</a>). The lost ability even has a name: the alignment tax.</p>
+      </details>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Grade answers, watch the model move</h2>
+      <p>You are the grader now. One prompt, two styles of answer, and two dials: how many worked examples the model studied, and how many rounds of feedback steered it. The bars ask one question: for the next prompt, which style is the model more likely to write? All lab numbers are simplified toys <span class="tag">example</span>.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="le">Worked examples studied <output id="le-o"></output></label><input id="le" type="range" min="0" max="13000" step="500" value="13000"></div>
+          <div class="control"><label for="lr">Feedback rounds <output id="lr-o"></output></label><input id="lr" type="range" min="0" max="6" step="1" value="1"></div>
+          <div class="pick" id="rewardPick" role="group" aria-label="What the graders reward"><span>WHAT THE GRADERS REWARD</span>
+            <button type="button" class="secondary" data-r="helpful" aria-pressed="true">Short and helpful</button><button type="button" class="secondary" data-r="flattering" aria-pressed="false">Long and flattering</button>
+          </div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="0,0,helpful">Base model</button>
+            <button type="button" class="secondary" data-p="13000,0,helpful">Examples only</button>
+            <button type="button" class="secondary" data-p="13000,1,helpful">InstructGPT recipe</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 320" role="img" aria-label="The model's chance of writing each answer style under your settings"></svg></div>
+      </div>
+      <p class="readout" id="labNote"></p>
+      </div>
+      <p>Start at the base model: the long flattering answer leads, because internet text is full of it. Add the examples and the short helpful answer takes the lead &mdash; the shape of helping, learned. Add feedback rounds and the lead grows. Now switch the graders to rewarding flattery and watch the same machinery learn the wrong lesson instead.</p>
+      <p class="note">Toy arithmetic with the real recipe&rsquo;s shape: examples shift the chances once, each feedback round shifts them toward whatever the graders pick, and the leash caps the total drift. For InstructGPT the real counts were about 13k examples, 33k comparisons and 31k steering prompts.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The shortcut</p>
+      <h2>Skip the grader entirely</h2>
+      <p>A newer recipe skips the stand-in. For each human-ranked pair, push the chosen answer&rsquo;s chance up and the rejected one&rsquo;s down, in a single training loss &mdash; no grader to train, no sampling loop. It is called Direct Preference Optimization <span class="tag">public</span> (<a href="https://arxiv.org/abs/2305.18290">Rafailov et al., 2023</a>).</p>
+      <figure>
+        <svg id="dpoSvg" viewBox="0 0 800 360" role="img" aria-label="One ranked pair pushes the chosen answer's chance up and the rejected answer's chance down"></svg>
+      </figure>
+      <p>Same comparisons, shorter path: the pair itself is the update. There is less machinery to game, and training is far cheaper than the sampling loop. This is why newer assistants, including Llama 3, learn their manners this way.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The practice</p>
+      <h2>Llama 3: write, judge, keep the best</h2>
+      <p>Meta&rsquo;s recipe adds one more trick. For each prompt the model writes ten to thirty drafts, the reward model scores them all, and only the winners go back into training <span class="tag">public</span>. Then the whole cycle &mdash; examples, judging, preference training &mdash; repeats for six rounds <span class="tag">public</span> (<a href="https://arxiv.org/abs/2407.21783">Llama 3 report, 2024</a>).</p>
+      <figure>
+        <svg id="rsSvg" viewBox="0 0 800 380" role="img" aria-label="Many drafts funnel down to the few winners that go back into training, round after round"></svg>
+      </figure>
+      <p>Notice what happened to the human role: most of the studying is now model-written text. People curate the prompts, rank the pairs, and set the standards &mdash; the industry&rsquo;s shorthand for those standards is <em>helpful, honest, harmless</em> <span class="tag">public</span> &mdash; while the model supplies the volume.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">The result</p>
+      <h2>Same guesser, new manners</h2>
+      <p>Put the same prompt to both models. The base model continues the document however documents usually continue. The assistant answers, stays in its turn, and stops. Nothing about the guessing machinery changed &mdash; Parts 2 through 9 still describe every token &mdash; only what the guesses are steered toward.</p>
+      <figure>
+        <svg id="mannersSvg" viewBox="0 0 800 300" role="img" aria-label="The same guessing machinery steered two ways: continuing the document versus answering and stopping"></svg>
+      </figure>
+      <div class="box">
+        <small>Same prompt, two models (simplified example)</small>
+        <pre class="doc" id="beforeAfter"><span class="m">[user]</span> <span class="good">Write a haiku about GPUs.</span>
+<span class="m">[assistant]</span> <span class="bad">Write another one. Write a limerick. Here are 50 prompts…</span>   ← base model continues
+<span class="m">[assistant]</span> <span class="good">Thousands of small cores, / summing all at once in step — / patience made of light.</span>   ← assistant answers, then stops</pre>
+        <p class="readout">In blind tests, people preferred the small instructed model to the giant raw one <span class="tag">public</span>. Manners beat size.</p>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>Liked is not the same as true</h2>
+      <p>The grader predicts applause, not truth. Long, confident, flattering answers applaud well &mdash; so training can breed agreeable models that flatter you and never say &ldquo;I don&rsquo;t know&rdquo;. And no feedback round adds facts the base model never read: steering picks <em>which</em> guess wins, never what the model knows.</p>
+      <figure>
+        <svg id="applauseSvg" viewBox="0 0 800 380" role="img" aria-label="Answers plotted on approval versus truth axes, with the most approved answer far from the truest"></svg>
+      </figure>
+      <p>This is the honest limit of the whole recipe: it optimizes for what people pick. When the model invents confident nonsense anyway &mdash; fluent, helpful-sounding, wrong &mdash; that failure has its own machinery. That is Part 15.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>Thumbs up and down in every app</b><span>Those buttons are comparison collectors: your picks become future training pairs.</span><em>chapters 3, 4</em></div>
+        <div><b>Refusals and house style</b><span>&ldquo;I can&rsquo;t help with that&rdquo; and the uniform tone are steered behaviors, not the base model&rsquo;s nature.</span><em>chapters 2, 5</em></div>
+        <div><b>&ldquo;RLHF&rdquo; and &ldquo;DPO&rdquo; in model cards</b><span>Reports name the steering recipe the way earlier ones named the chip count.</span><em>chapters 5, 7, 8</em></div>
+        <div><b>Helpful, honest, harmless</b><span>The industry&rsquo;s shorthand for what the grades reward, from Anthropic&rsquo;s 2021 framing.</span><em>chapter 8</em></div>
+        <div><b>Flattery and hedging</b><span>Agreeable filler is what approval-optimized text looks like from the outside.</span><em>chapter 10</em></div>
+        <div><b>Same facts, better manners</b><span>A fine-tuned model knows what its base model knew; ask it something new and both fail together.</span><em>chapters 2, 10</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Supervised fine-tuning (SFT)</b><span>Training on worked examples of good answers, with the usual next-word loss.</span></div>
+        <div><b>Preference pair</b><span>One prompt, two answers, and a human&rsquo;s pick of the better one.</span></div>
+        <div><b>Reward model</b><span>A small model trained on pairs to predict how much people would like an answer.</span></div>
+        <div><b>RLHF</b><span>Steering the model with the reward model&rsquo;s scores as the training signal.</span></div>
+        <div><b>PPO</b><span>The step rule InstructGPT used for steering: small nudges toward higher scores.</span></div>
+        <div><b>DPO</b><span>The shortcut: learn each ranked pair directly, with no separate grader.</span></div>
+        <div><b>Rejection sampling</b><span>Writing many drafts, scoring them, and training only on the winners.</span></div>
+        <div><b>KL leash</b><span>The penalty that taxes drifting too far from the example-trained model.</span></div>
+        <div><b>Alignment tax</b><span>Raw ability lost to steering; repaid by mixing pre-training text back in.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>InstructGPT&rsquo;s 13k examples, 33k comparisons and 31k steering prompts, its blind-test win over the raw model, the DPO method, Llama 3&rsquo;s six SFT-plus-DPO rounds with rejection sampling, and the helpful-honest-harmless framing.</span><em>papers and reports</em></div>
+        <div><b>Example</b><span>The lab&rsquo;s chances and counts, the chat documents, the draft funnel, the approval-truth scatter and the haiku showdown.</span><em>simplified to show the idea</em></div>
+        <div><b>Not public</b><span>Today&rsquo;s frontier data mixes, grader guidelines, system prompts, and how many rounds current labs actually run.</span><em>companies have not said</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">The hand-off</p>
+      <h2>Next: memory and the context window</h2>
+      <p>A well-mannered assistant still sees only so much at once. Part 14 asks how much text fits inside its view at one time, what falls out as the chat grows, and why long conversations forget their beginnings.</p>
+      <figure>
+        <svg id="nextSvg" viewBox="0 0 800 220" role="img" aria-label="A finished assistant faces a growing chat that overflows what it can see at once"></svg>
+      </figure>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>An assistant is a continuer with manners: worked examples teach it the shape of helping, and people&rsquo;s grades steer it. But grades reward approval, which is not quite the same as truth.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+    const C={gold:'#f5c76a',teal:'#76d5c1',or:'#ff8059',pur:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f'};
+    function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+    const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+    const M=(svg,x,y,s)=>T(svg,x,y,s,{'text-anchor':'middle'});
+    const Cap=(svg,x,y,s)=>T(svg,x,y,s,{fill:C.mut,'font-size':14});
+    function R(svg,x,y,w,h,stroke,o={}){return S(svg,'rect',Object.assign({x,y,width:w,height:h,fill:'none',stroke,'stroke-width':2},o));}
+    function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
+    const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+
+    /* 1: one open turn, three possible continuations. */
+    (()=>{const svg=$('forkSvg'),m=marker(svg,'fk',C.mut);
+      Cap(svg,40,40,'an open assistant turn');
+      R(svg,40,60,240,200,C.pur);
+      T(svg,60,110,'[user] a question',{fill:C.gold});
+      T(svg,60,152,'[assistant] writes…',{fill:C.fg});
+      S(svg,'rect',{x:60,y:168,width:12,height:22,fill:C.gold});
+      const outs=[[40,C.gold,'an answer','helps'],[150,C.rose,"the user's next question",'also likely'],[260,C.rose,'a forum thread','drifts away']];
+      outs.forEach(([y,col,t,sub])=>{
+        R(svg,430,y,320,80,col);
+        M(svg,590,y+36,t,{});
+        M(svg,590,y+60,sub,{fill:C.mut,'font-size':14});
+        arrow(svg,`M280 160 L424 ${y+40}`,m,C.mut);});
+    })();
+
+    /* 2: example pairs into the Part 6 loop. */
+    (()=>{const svg=$('sftSvg'),m=marker(svg,'sf',C.mut),mo=marker(svg,'sfo',C.or);
+      Cap(svg,40,36,'worked examples');
+      const pairs=[['Q · why is sky blue','A · sunlight scatters'],['Q · add 17 + 25','A · 42, carry the one'],['Q · write a haiku','A · counts syllables']];
+      pairs.forEach(([q,a],i)=>{const y=60+i*100;
+        R(svg,40,y,200,80,C.gold);
+        T(svg,56,y+32,q,{fill:C.gold,'font-size':14});
+        T(svg,56,y+58,a,{fill:C.fg,'font-size':14});});
+      arrow(svg,'M240 210 L304 184',m,C.mut);
+      const steps=[['guess',310],['compare',470],['nudge',630]];
+      steps.forEach(([t,x])=>{R(svg,x,140,140,70,C.or);M(svg,x+70,182,t,{fill:C.or});});
+      arrow(svg,'M450 175 L470 175',mo,C.or);arrow(svg,'M610 175 L630 175',mo,C.or);
+      arrow(svg,'M700 210 L700 280 L380 280 L380 215',mo,C.or);
+      Cap(svg,380,308,'same loop as Part 6');
+    })();
+
+    /* 3: grading by picking. */
+    (()=>{const svg=$('gradeSvg'),m=marker(svg,'gr',C.mut);
+      R(svg,250,24,300,64,C.gold);
+      M(svg,400,50,'prompt',{fill:C.mut,'font-size':14});
+      M(svg,400,74,'explain tides simply',{});
+      R(svg,70,130,280,110,C.line);R(svg,450,130,280,110,C.line);
+      M(svg,210,168,'answer A',{});M(svg,210,192,'short and correct',{fill:C.mut,'font-size':14});
+      M(svg,590,168,'answer B',{});M(svg,590,192,'long and flowery',{fill:C.mut,'font-size':14});
+      arrow(svg,'M330 88 L210 130',m,C.mut);arrow(svg,'M470 88 L590 130',m,C.mut);
+      arrow(svg,'M210 240 L368 272',m,C.mut);arrow(svg,'M590 240 L432 272',m,C.mut);
+      S(svg,'circle',{cx:400,cy:292,r:32,fill:'none',stroke:C.teal,'stroke-width':2});
+      M(svg,400,298,'you',{});
+      M(svg,400,346,'picks A',{fill:C.teal});
+    })();
+
+    /* 4: the stand-in grader. */
+    (()=>{const svg=$('rmSvg'),m=marker(svg,'rm',C.mut);
+      Cap(svg,560,52,'predicted liking');
+      const rows=[['polished answer',8.2,.85,80],['plain answer',5.1,.55,172],['sloppy answer',3.4,.35,264]];
+      rows.forEach(([t,v,o,y])=>{
+        R(svg,40,y,200,64,C.gold);
+        M(svg,140,y+39,t,{fill:C.fg,'font-size':15});
+        S(svg,'rect',{x:560,y,width:Math.round(v*20),height:44,fill:C.teal,'fill-opacity':o});
+        T(svg,572+Math.round(v*20),y+30,v.toFixed(1),{fill:C.fg,'font-size':15});});
+      R(svg,300,130,190,110,C.teal);
+      M(svg,395,176,'reward model',{});
+      M(svg,395,200,'predicts liking',{fill:C.mut,'font-size':14});
+      arrow(svg,'M240 92 L300 150',m,C.mut);arrow(svg,'M240 184 L300 184',m,C.mut);arrow(svg,'M240 276 L300 222',m,C.mut);
+      Cap(svg,40,344,'trained on the 33k picks');
+    })();
+
+    /* 5: the steering loop with its leash. */
+    (()=>{const svg=$('ppoSvg'),m=marker(svg,'pp',C.mut),mo=marker(svg,'ppo',C.or);
+      const steps=[['writes answers',60,C.gold],['stand-in grades',305,C.teal],['nudges numbers',550,C.or]];
+      steps.forEach(([t,x,col])=>{R(svg,x,48,190,80,col);M(svg,x+95,94,t,{fill:col,'font-size':15});});
+      arrow(svg,'M250 88 L305 88',m,C.mut);arrow(svg,'M495 88 L550 88',m,C.mut);
+      arrow(svg,'M155 128 L155 188 L645 188 L645 133',mo,C.or);
+      R(svg,60,238,250,74,C.pur);
+      M(svg,185,268,'example-trained model',{'font-size':15});
+      M(svg,185,292,'SFT',{fill:C.mut,'font-size':14});
+      S(svg,'path',{d:'M185 238 L185 188',fill:'none',stroke:C.rose,'stroke-width':2,'stroke-dasharray':'6 5'});
+      T(svg,198,218,'leash',{fill:C.rose,'font-size':14});
+      Cap(svg,400,352,'31k prompts, no labels');
+    })();
+
+    /* 6: the lab. Toy chances with the real recipe's shape. */
+    (()=>{
+      const le=$('le'),lr=$('lr'),leo=$('le-o'),lro=$('lr-o'),ledger=$('ledger'),note=$('labNote'),chart=$('labChart');
+      let pref='helpful';
+      const pct=v=>Math.round(v*100)+'%';
+      function model(){
+        const ex=le.value/13000;
+        let h=.22+.30*ex,f=.30-.06*ex,o=.48-.24*ex;
+        const drift=Math.min(.05*lr.value,.30);
+        if(pref==='helpful'){const tf=drift*f/(f+o),to=drift*o/(f+o);h+=drift;f-=tf;o-=to;}
+        else{const th=drift*h/(h+o),to=drift*o/(h+o);f+=drift;h-=th;o-=to;}
+        h=Math.max(h,.02);f=Math.max(f,.02);o=Math.max(o,.02);
+        const s=h+f+o;return{h:h/s,f:f/s,o:o/s,drift};
+      }
+      function draw(){
+        while(chart.firstChild)chart.removeChild(chart.firstChild);
+        const st=model();
+        leo.textContent=Number(le.value).toLocaleString('en-US');
+        lro.textContent=lr.value+' / 6';
+        T(chart,16,32,'chance of writing each style',{fill:C.mut,'font-size':14});
+        const rows=[['short, helpful',st.h,C.teal],['long, flattering',st.f,C.gold],['other text',st.o,C.faint]];
+        rows.forEach(([t,v,col],i)=>{const y=64+i*80;
+          T(chart,16,y+30,t,{fill:C.fg,'font-size':15});
+          S(chart,'rect',{x:190,y,width:8+Math.round(v*250),height:44,fill:col});
+          T(chart,206+Math.round(v*250),y+30,pct(v),{fill:C.fg,'font-size':15});});
+        const kv=[['examples studied',leo.textContent],['feedback rounds',lr.value+' / 6'],['graders reward',pref],['P(short, helpful)',pct(st.h)],['P(long, flattering)',pct(st.f)],['drift / leash cap',st.drift.toFixed(2)+' / 0.30']];
+        ledger.innerHTML='';
+        kv.forEach(([k,v])=>{const a=document.createElement('span');a.textContent=k;ledger.appendChild(a);const b=document.createElement('output');b.textContent=v;ledger.appendChild(b);});
+        const lead=st.h>=st.f?'short and helpful':'long and flattering';
+        note.innerHTML='';
+        const s1=document.createElement('span');s1.textContent=`The model leans ${lead} (`+pct(Math.max(st.h,st.f))+'). ';
+        note.appendChild(s1);
+        const s2=document.createElement('b');s2.textContent=pref==='helpful'?'Examples plus feedback teach the shape of helping.':'Same machinery, wrong lesson: flattery is at '+pct(st.f)+' — add feedback rounds and watch it take the lead.';
+        note.appendChild(s2);
+      }
+      le.addEventListener('input',draw);lr.addEventListener('input',draw);
+      document.querySelectorAll('#rewardPick button').forEach(b=>b.addEventListener('click',()=>{
+        pref=b.dataset.r;
+        document.querySelectorAll('#rewardPick button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+        draw();}));
+      document.querySelectorAll('.lab .presets button').forEach(b=>b.addEventListener('click',()=>{
+        const p=b.dataset.p.split(',');
+        le.value=p[0];lr.value=p[1];pref=p[2];
+        document.querySelectorAll('#rewardPick button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.r===pref?'true':'false'));
+        draw();}));
+      draw();
+    })();
+
+    /* 7: DPO pushes the pair apart. */
+    (()=>{const svg=$('dpoSvg'),mu=marker(svg,'du',C.teal),md=marker(svg,'dd',C.rose);
+      Cap(svg,620,40,'chance');
+      R(svg,150,52,300,92,C.gold);
+      M(svg,300,96,'chosen answer',{fill:C.gold});
+      M(svg,300,120,'human picked this',{fill:C.mut,'font-size':14});
+      R(svg,150,216,300,92,C.rose);
+      M(svg,300,260,'rejected answer',{fill:C.rose});
+      M(svg,300,284,'human passed on this',{fill:C.mut,'font-size':14});
+      S(svg,'rect',{x:620,y:60,width:52,height:150,fill:C.gold});
+      arrow(svg,'M600 230 L600 50',mu,C.teal);
+      M(svg,600,252,'up',{fill:C.teal,'font-size':14});
+      S(svg,'rect',{x:706,y:130,width:52,height:110,fill:C.rose});
+      arrow(svg,'M786 120 L786 250',md,C.rose);
+      M(svg,786,272,'down',{fill:C.rose,'font-size':14});
+      Cap(svg,400,344,'one loss, no grader');
+    })();
+
+    /* 8: rejection sampling funnel, repeated. */
+    (()=>{const svg=$('rsSvg'),m=marker(svg,'rs',C.mut);
+      Cap(svg,40,44,'12 drafts in');
+      for(let r=0;r<4;r++)for(let c=0;c<3;c++)
+        S(svg,'rect',{x:40+c*65,y:60+r*50,width:55,height:34,fill:'none',stroke:C.line,'stroke-width':1.5});
+      S(svg,'path',{d:'M240 50 L400 130',fill:'none',stroke:C.mut,'stroke-width':1.5});
+      S(svg,'path',{d:'M240 254 L400 220',fill:'none',stroke:C.mut,'stroke-width':1.5});
+      for(let i=0;i<3;i++){const y=128+i*60;
+        S(svg,'rect',{x:400,y,width:150,height:44,fill:C.gold,'fill-opacity':.18,stroke:C.gold,'stroke-width':2});
+        M(svg,475,y+29,'winner',{'font-size':15});}
+      arrow(svg,'M550 202 L600 202',m,C.mut);
+      R(svg,600,152,150,100,C.or);
+      M(svg,675,194,'retrain',{fill:C.or});
+      M(svg,675,218,'study winners',{fill:C.mut,'font-size':14});
+      arrow(svg,'M675 152 L675 36 L100 36 L100 52',m,C.mut);
+      M(svg,400,28,'repeat 6 times',{fill:C.mut,'font-size':14});
+    })();
+
+    /* 9: same guesser, two steerings. */
+    (()=>{const svg=$('mannersSvg'),m=marker(svg,'mn',C.mut);
+      R(svg,40,110,190,80,C.teal);
+      M(svg,135,144,'one trained model',{'font-size':15});
+      M(svg,135,166,'same numbers',{fill:C.mut,'font-size':14});
+      R(svg,300,100,200,100,C.pur);
+      M(svg,400,140,'the guesser',{});
+      M(svg,400,164,'Parts 2–9',{fill:C.mut,'font-size':14});
+      R(svg,580,40,190,80,C.gold);
+      M(svg,675,74,'answers, then stops',{'font-size':15});
+      R(svg,580,180,190,80,C.rose);
+      M(svg,675,214,'keeps continuing',{'font-size':15});
+      arrow(svg,'M230 150 L300 150',m,C.mut);
+      arrow(svg,'M500 130 L580 80',m,C.mut);
+      arrow(svg,'M500 170 L580 220',m,C.mut);
+    })();
+
+    /* 10: approval is not truth. */
+    (()=>{const svg=$('applauseSvg'),m=marker(svg,'ap',C.mut);
+      arrow(svg,'M120 300 L740 300',m,C.mut);
+      arrow(svg,'M120 300 L120 40',m,C.mut);
+      T(svg,740,326,'more approved',{fill:C.mut,'font-size':14,'text-anchor':'end'});
+      M(svg,120,28,'more true',{fill:C.mut,'font-size':14});
+      const dots=[['the good answer',620,120,C.gold,96],['the flattering fib',640,250,C.rose,276],['the dry fact',220,110,C.teal,86],['the ramble',200,260,C.faint,286]];
+      dots.forEach(([t,x,y,col,ly])=>{
+        S(svg,'circle',{cx:x,cy:y,r:11,fill:col});
+        M(svg,x,ly,t,{fill:C.fg,'font-size':14});});
+    })();
+
+    /* hand-off: the assistant meets the window. */
+    (()=>{const svg=$('nextSvg');
+      R(svg,40,60,170,90,C.gold);
+      M(svg,125,100,'assistant',{});
+      M(svg,125,124,'finished',{fill:C.mut,'font-size':14});
+      S(svg,'rect',{x:270,y:30,width:330,height:160,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      S(svg,'rect',{x:290,y:56,width:120,height:24,fill:C.gold});
+      S(svg,'rect',{x:290,y:96,width:180,height:24,fill:C.gold});
+      S(svg,'rect',{x:290,y:136,width:300,height:24,fill:C.gold});
+      S(svg,'rect',{x:590,y:136,width:70,height:24,fill:C.rose});
+      M(svg,435,210,'sees this much',{fill:C.mut,'font-size':14});
+      M(svg,668,120,'forgets the start',{fill:C.rose,'font-size':14});
+    })();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
