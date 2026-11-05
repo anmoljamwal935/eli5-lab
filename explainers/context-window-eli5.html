@@ -1273,7 +1273,7 @@
     <section class="panel">
       <p class="kicker">The gotcha</p>
       <h2>Lost in the middle</h2>
-      <p>Being in view is not the same as being used. Liu and colleagues hid one answer-bearing document among many and moved it through every position: accuracy sagged into a U, high at the start and the end, worst in the middle &mdash; dropping more than 30 points <span class="tag">public</span> (<a href="https://arxiv.org/abs/2307.03172">Liu et al., 2023</a>).</p>
+      <p>Being in view is not the same as being used. Liu and colleagues hid one answer-bearing document among many and moved it through every position: accuracy sagged into a U, high at the start and the end, worst in the middle &mdash; dropping by tens of points <span class="tag">public</span> (<a href="https://arxiv.org/abs/2307.03172">Liu et al., 2023</a>).</p>
       <figure>
         <svg id="middleSvg" viewBox="0 0 800 380" role="img" aria-label="Recall accuracy plotted against position in the window, sagging into a U in the middle"></svg>
       </figure>
@@ -1287,9 +1287,9 @@
     <section class="panel">
       <p class="kicker">The gotcha</p>
       <h2>The window is not the memory</h2>
-      <p>The advertised number is a capacity, not a promise. RULER, an independent benchmark, grades 17 long-context models on tasks harder than finding a needle &mdash; and finds only half hold up at 32K, with effective lengths from under 4K to over 128K against claims of up to a million <span class="tag">public</span> (<a href="https://arxiv.org/abs/2404.06654">Hsieh et al., 2024</a>).</p>
+      <p>The advertised number is a capacity, not a promise. RULER, an independent benchmark, grades ten long-context models on tasks harder than finding a needle &mdash; and finds only four hold up at 32K, with almost all models falling below the bar before reaching their claimed lengths <span class="tag">public</span> (<a href="https://arxiv.org/abs/2404.06654">Hsieh et al., 2024</a>).</p>
       <figure>
-        <svg id="effectiveSvg" viewBox="0 0 800 360" role="img" aria-label="Advertised window sizes beside the shorter lengths models actually use well"></svg>
+        <svg id="effectiveSvg" viewBox="0 0 800 360" role="img" aria-label="Ten models claim long windows, but only four hold up at 32K"></svg>
       </figure>
       <p>And the whole visible chat is re-read &mdash; and billed &mdash; on every single reply. A long afternoon in view means paying for the afternoon with each answer. The frame is priced by what fills it, not by its size. Providers soften the bill by caching the prefix: Anthropic (August 2024) and OpenAI (October 2024) discount re-reading unchanged opening text by up to 90% and 50% respectively <span class="tag">public</span>.</p>
     </section>
@@ -1380,6 +1380,7 @@
     function R(svg,x,y,w,h,stroke,o={}){return S(svg,'rect',Object.assign({x,y,width:w,height:h,fill:'none',stroke,'stroke-width':2},o));}
     function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
     const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+    var labConfig={format:v=>Math.round(v*100)+'%'};
 
     /* 1: the start of a long chat falls out of view. */
     (()=>{const svg=$('forgetSvg');
@@ -1477,8 +1478,11 @@
         T(chart,504,102,'now',{fill:C.faint,'font-size':14,'text-anchor':'end'});
         M(chart,260,132,st.inView?'Mara is in view':'Mara fell out of view',{fill:st.inView?C.gold:C.rose,'font-size':15});
         T(chart,16,164,'recall chance',{fill:C.mut,'font-size':14});
-        S(chart,'rect',{x:16,y:176,width:Math.max(8,Math.round(st.recall*400)),height:34,fill:st.inView?C.teal:C.rose});
-        T(chart,32+Math.round(st.recall*400),202,pct(st.recall),{fill:C.fg,'font-size':15});
+        const gw=Math.round(st.recall*400);
+        S(chart,'rect',{x:16,y:176,width:gw,height:34,fill:st.inView?C.teal:C.rose,'data-v':st.recall});
+        T(chart,32+gw,202,pct(st.recall),{fill:C.fg,'font-size':15});
+        [0,0.5,1].forEach((v,i)=>S(chart,'text',{x:16+v*400,y:238,fill:C.mut,'font-size':14,'text-anchor':['start','middle','end'][i],'class':'tick','data-v':v},labConfig.format(v)));
+        window.labResults={valid:true,rows:[st.recall]};
         T(chart,16,272,'edges recall best, middle sags',{fill:C.mut,'font-size':14});
         const kv=[['window size',names[Number(lw.value)]],['chat length','100,000'],['fact at',st.pos+'%'],['Mara in view?',st.inView?'yes':'no'],['recall chance',pct(st.recall)]];
         ledger.innerHTML='';
@@ -1531,7 +1535,8 @@
     /* 8: the U-curve of recall against position. */
     (()=>{const svg=$('middleSvg'),m=marker(svg,'md',C.mut);
       arrow(svg,'M100 300 L740 300',m,C.mut);
-      arrow(svg,'M100 300 L100 50',m,C.mut);
+      S(svg,'path',{d:'M100 300 L100 111',fill:'none',stroke:C.mut,'stroke-width':2});
+      arrow(svg,'M100 93 L100 50',m,C.mut);
       T(svg,740,326,'start to end',{fill:C.mut,'font-size':14,'text-anchor':'end'});
       M(svg,100,36,'recall',{fill:C.mut,'font-size':14});
       let d='';
@@ -1544,18 +1549,18 @@
       M(svg,420,216,'middle sags ~55%',{fill:C.fg,'font-size':14});
       S(svg,'circle',{cx:740,cy:102,r:9,fill:C.gold});
       T(svg,586,80,'the end holds ~90%',{fill:C.fg,'font-size':14});
-      M(svg,400,352,'accuracy sags mid-window',{fill:C.mut,'font-size':14});
+      M(svg,400,352,'illustrative U-curve, not measured points',{fill:C.mut,'font-size':14});
     })();
 
     /* 9: claimed windows beside what holds up. */
     (()=>{const svg=$('effectiveSvg');
-      Cap(svg,40,36,'17 long-context models, one benchmark');
+      Cap(svg,40,36,'ten long-context models, one benchmark');
       T(svg,140,110,'claimed',{fill:C.mut,'font-size':14,'text-anchor':'end'});
       S(svg,'rect',{x:150,y:80,width:480,height:44,fill:C.gold,'fill-opacity':.7});
       T(svg,642,110,'32K or more',{fill:C.fg,'font-size':15});
       T(svg,140,210,'holds up',{fill:C.mut,'font-size':14,'text-anchor':'end'});
-      S(svg,'rect',{x:150,y:180,width:240,height:44,fill:C.teal});
-      T(svg,402,210,'half hold up',{fill:C.fg,'font-size':15});
+      S(svg,'rect',{x:150,y:180,width:192,height:44,fill:C.teal});
+      T(svg,354,210,'four of ten',{fill:C.fg,'font-size':15});
       Cap(svg,150,280,'capacity is not performance');
     })();
 

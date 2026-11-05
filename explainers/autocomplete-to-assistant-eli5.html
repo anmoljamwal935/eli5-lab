@@ -1149,8 +1149,8 @@
 
     <section class="hero">
       <h1>From autocomplete to assistant</h1>
-      <p class="lede">Part 12 ended with a finished base model: a very good guesser of the next word that continues any text it is given, helpful or not. This part turns that guesser into an assistant. First people show it thousands of worked examples of helping. Then they grade its answers, and training steers it toward the grades.</p>
-      <p class="source-note">A topic study built from the primary sources: the InstructGPT paper (Ouyang et al., 2022), the DPO paper (Rafailov et al., 2023), Anthropic&rsquo;s HHH framing (Askell et al., 2021) and Meta&rsquo;s Llama 3 report (2024); every number below was checked against them · <a href="https://arxiv.org/abs/2203.02155">Read the main source ↗</a></p>
+      <p class="lede">Part 12 ended with a finished base model: a very good guesser of the next word that continues any text it is given, helpful or not. This part turns that guesser into an assistant. First people show it thousands of worked examples of helping. Then they grade its answers, and training steers it toward the grades &mdash; plus the standing orders and rehearsed refusals that ship with every chat.</p>
+      <p class="source-note">A topic study built from the primary sources: the InstructGPT paper (Ouyang et al., 2022), the DPO paper (Rafailov et al., 2023), Anthropic&rsquo;s HHH framing (Askell et al., 2021) Meta&rsquo;s Llama 3 report (2024) and Touvron et al.&rsquo;s &ldquo;Llama 2&rdquo; (2023); every number below was checked against them · <a href="https://arxiv.org/abs/2203.02155">Read the main source ↗</a></p>
       <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
       <p>It builds on <a href="guess-the-next-word-eli5.html" data-series-link="guess-the-next-word-eli5">Part 2</a> (a chat is a document the model continues, and a raw model fills it in odd ways) and <a href="learning-is-nudging-numbers-eli5.html" data-series-link="learning-is-nudging-numbers-eli5">Part 6</a> (training nudges every number downhill on the loss). Part 12 finished the base model; this part teaches it manners. Facts carry a tag: <span class="tag">public</span> means a published paper, spec sheet or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
       <div class="legend" aria-label="Colour key">
@@ -1217,7 +1217,7 @@
       <figure>
         <svg id="ppoSvg" viewBox="0 0 800 380" role="img" aria-label="A loop of writing, scoring and nudging, with a leash back to the example-trained model"></svg>
       </figure>
-      <p>This loop is called RLHF. The leash has a formal name &mdash; a penalty on how far the new chances drift, called the KL penalty &mdash; and it is what keeps the steered model speaking normal language instead of grader-pleasing static.</p>
+      <p>This loop is called RLHF. Thirty-one thousand prompts steer billions of numbers because the base model already knows the words &mdash; feedback only tilts which ones win. The leash has a formal name &mdash; a penalty on how far the new chances drift, called the KL penalty &mdash; and it is what keeps the steered model speaking normal language instead of grader-pleasing static.</p>
       <details class="trace"><summary>Go deeper: the alignment tax</summary>
         <p>Steering has a cost: pushed too hard, the model gets worse at the raw knowledge tests it once passed. InstructGPT&rsquo;s fix mixed some original pre-training text back into the loop, so the model kept one eye on the library while learning manners <span class="tag">public</span> (<a href="https://arxiv.org/abs/2203.02155">Ouyang et al., 2022</a>). The lost ability even has a name: the alignment tax.</p>
       </details>
@@ -1274,6 +1274,28 @@
 
     <!-- 9 -->
     <section class="panel">
+      <p class="kicker">The practice</p>
+      <h2>Standing orders come first</h2>
+      <p>Training is not the only steering. Every chat opens with a system prompt &mdash; standing instructions from the developer, wearing Part 2&rsquo;s [system] marker, that the model reads before anything you write. Llama 2&rsquo;s published default begins &ldquo;You are a helpful, respectful and honest assistant&hellip;&rdquo; <span class="tag">public</span> (<a href="https://arxiv.org/abs/2307.09288">Touvron et al., 2023</a>). It sets the role, the rules and the refusal style &mdash; invisibly, on every reply.</p>
+      <figure>
+        <svg id="sysSvg" viewBox="0 0 800 360" role="img" aria-label="Standing system orders atop the chat, holding firm against an order to ignore them"></svg>
+      </figure>
+      <p>System prompts are powerful because the model reads them first on every reply &mdash; and fragile because they are still just text. &ldquo;Ignore your instructions&rdquo; attacks, called jailbreaks, try to talk the model out of them. Usually the orders hold; the failures become training data for the next round.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The practice</p>
+      <h2>Learning to refuse</h2>
+      <p>Helpfulness has a boundary, and it is trained in like everything else. Llama 2&rsquo;s recipe is public: adversarial prompts paired with safe demonstrations go into the examples, a separate reward model scores safety, and red teams spend months trying to break the result so the failures become new training data <span class="tag">public</span> (<a href="https://arxiv.org/abs/2307.09288">Touvron et al., 2023</a>). Refusals are rehearsed, not reasoned.</p>
+      <figure>
+        <svg id="refuseSvg" viewBox="0 0 800 360" role="img" aria-label="Attack prompts paired with safe answers, and a red team feeding breaks back into training"></svg>
+      </figure>
+      <p>Push too far and the model refuses safe questions too &mdash; Llama 2&rsquo;s original system prompt was retired for exactly this over-refusal <span class="tag">public</span>. Safety is a dial: helpfulness on one side, refusals (including wrong ones) on the other.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
       <p class="kicker">The result</p>
       <h2>Same guesser, new manners</h2>
       <p>Put the same prompt to both models. The base model continues the document however documents usually continue. The assistant answers, stays in its turn, and stops. Nothing about the guessing machinery changed &mdash; Parts 2 through 9 still describe every token &mdash; only what the guesses are steered toward.</p>
@@ -1289,11 +1311,11 @@
       </div>
     </section>
 
-    <!-- 10 -->
+    <!-- 12 -->
     <section class="panel">
       <p class="kicker">The gotcha</p>
       <h2>Liked is not the same as true</h2>
-      <p>The grader predicts applause, not truth. Long, confident, flattering answers applaud well &mdash; so training can breed agreeable models that flatter you and never say &ldquo;I don&rsquo;t know&rdquo;. And no feedback round adds facts the base model never read: steering picks <em>which</em> guess wins, never what the model knows.</p>
+      <p>The grader predicts applause, not truth. Long, confident, flattering answers applaud well &mdash; so training can breed agreeable models that flatter you and never say &ldquo;I don&rsquo;t know&rdquo;. Gaming the grader has a name, reward hacking, and flattery is its mildest form. And no feedback round adds facts the base model never read: steering picks <em>which</em> guess wins, never what the model knows.</p>
       <figure>
         <svg id="applauseSvg" viewBox="0 0 800 380" role="img" aria-label="Answers plotted on approval versus truth axes, with the most approved answer far from the truest"></svg>
       </figure>
@@ -1305,11 +1327,13 @@
       <h2>What you notice from the outside</h2>
       <div class="field-grid">
         <div><b>Thumbs up and down in every app</b><span>Those buttons are comparison collectors: your picks become future training pairs.</span><em>chapters 3, 4</em></div>
-        <div><b>Refusals and house style</b><span>&ldquo;I can&rsquo;t help with that&rdquo; and the uniform tone are steered behaviors, not the base model&rsquo;s nature.</span><em>chapters 2, 5</em></div>
+        <div><b>Refusals and house style</b><span>&ldquo;I can&rsquo;t help with that&rdquo; and the uniform tone are steered behaviors, not the base model&rsquo;s nature.</span><em>chapters 2, 10</em></div>
         <div><b>&ldquo;RLHF&rdquo; and &ldquo;DPO&rdquo; in model cards</b><span>Reports name the steering recipe the way earlier ones named the chip count.</span><em>chapters 5, 7, 8</em></div>
         <div><b>Helpful, honest, harmless</b><span>The industry&rsquo;s shorthand for what the grades reward, from Anthropic&rsquo;s 2021 framing.</span><em>chapter 8</em></div>
-        <div><b>Flattery and hedging</b><span>Agreeable filler is what approval-optimized text looks like from the outside.</span><em>chapter 10</em></div>
-        <div><b>Same facts, better manners</b><span>A fine-tuned model knows what its base model knew; ask it something new and both fail together.</span><em>chapters 2, 10</em></div>
+        <div><b>Flattery and hedging</b><span>Agreeable filler is what approval-optimized text looks like from the outside.</span><em>chapter 12</em></div>
+        <div><b>Same facts, better manners</b><span>A fine-tuned model knows what its base model knew; ask it something new and both fail together.</span><em>chapters 2, 12</em></div>
+        <div><b>System prompt sets the role</b><span>Standing orders open every chat and shape every reply from the top.</span><em>chapter 9</em></div>
+        <div><b>Refusals are rehearsed</b><span>&ldquo;I can&rsquo;t help with that&rdquo; was practiced on red-team attacks.</span><em>chapter 10</em></div>
       </div>
     </section>
 
@@ -1326,6 +1350,9 @@
         <div><b>Rejection sampling</b><span>Writing many drafts, scoring them, and training only on the winners.</span></div>
         <div><b>KL leash</b><span>The penalty that taxes drifting too far from the example-trained model.</span></div>
         <div><b>Alignment tax</b><span>Raw ability lost to steering; repaid by mixing pre-training text back in.</span></div>
+        <div><b>System prompt</b><span>Standing developer instructions the model reads before anything you write.</span></div>
+        <div><b>Red team</b><span>Attackers-for-hire whose breaks become safety training data.</span></div>
+        <div><b>Reward hacking</b><span>Gaming the grader: high scores for what was asked, not what was wanted.</span></div>
       </div>
     </section>
 
@@ -1333,8 +1360,8 @@
       <p class="kicker">Field guide</p>
       <h2>What is known and what is not</h2>
       <div class="field-grid">
-        <div><b>Public</b><span>InstructGPT&rsquo;s 13k examples, 33k comparisons and 31k steering prompts, its blind-test win over the raw model, the DPO method, Llama 3&rsquo;s six SFT-plus-DPO rounds with rejection sampling, and the helpful-honest-harmless framing.</span><em>papers and reports</em></div>
-        <div><b>Example</b><span>The lab&rsquo;s chances and counts, the chat documents, the draft funnel, the approval-truth scatter and the haiku showdown.</span><em>simplified to show the idea</em></div>
+        <div><b>Public</b><span>InstructGPT&rsquo;s 13k examples, 33k comparisons and 31k steering prompts, its blind-test win over the raw model, the DPO method, Llama 3&rsquo;s six SFT-plus-DPO rounds with rejection sampling, the helpful-honest-harmless framing, and the Llama 2 safety recipe and system prompt.</span><em>papers and reports</em></div>
+        <div><b>Example</b><span>The lab&rsquo;s chances and counts, the chat documents, the draft funnel, the approval-truth scatter, the haiku showdown, the standing-orders doc and the red-team loop.</span><em>simplified to show the idea</em></div>
         <div><b>Not public</b><span>Today&rsquo;s frontier data mixes, grader guidelines, system prompts, and how many rounds current labs actually run.</span><em>companies have not said</em></div>
       </div>
     </section>
@@ -1371,6 +1398,7 @@
     function R(svg,x,y,w,h,stroke,o={}){return S(svg,'rect',Object.assign({x,y,width:w,height:h,fill:'none',stroke,'stroke-width':2},o));}
     function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
     const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+    var labConfig={format:v=>Math.round(v*100)+'%'};
 
     /* 1: one open turn, three possible continuations. */
     (()=>{const svg=$('forkSvg'),m=marker(svg,'fk',C.mut);
@@ -1469,10 +1497,12 @@
         lro.textContent=lr.value+' / 6';
         T(chart,16,32,'chance of writing each style',{fill:C.mut,'font-size':14});
         const rows=[['short, helpful',st.h,C.teal],['long, flattering',st.f,C.gold],['other text',st.o,C.faint]];
-        rows.forEach(([t,v,col],i)=>{const y=64+i*80;
+        rows.forEach(([t,v,col],i)=>{const y=64+i*80,w=Math.round(v*250);
           T(chart,16,y+30,t,{fill:C.fg,'font-size':15});
-          S(chart,'rect',{x:190,y,width:8+Math.round(v*250),height:44,fill:col});
-          T(chart,206+Math.round(v*250),y+30,pct(v),{fill:C.fg,'font-size':15});});
+          S(chart,'rect',{x:190,y,width:w,height:44,fill:col,'data-v':v});
+          T(chart,206+w,y+30,pct(v),{fill:C.fg,'font-size':15});});
+        [0,0.5,1].forEach((v,i)=>S(chart,'text',{x:190+v*250,y:300,fill:C.mut,'font-size':14,'text-anchor':['start','middle','end'][i],'class':'tick','data-v':v},labConfig.format(v)));
+        window.labResults={valid:true,rows:[st.h,st.f,st.o]};
         const kv=[['examples studied',leo.textContent],['feedback rounds',lr.value+' / 6'],['graders reward',pref],['P(short, helpful)',pct(st.h)],['P(long, flattering)',pct(st.f)],['drift / leash cap',st.drift.toFixed(2)+' / 0.30']];
         ledger.innerHTML='';
         kv.forEach(([k,v])=>{const a=document.createElement('span');a.textContent=k;ledger.appendChild(a);const b=document.createElement('output');b.textContent=v;ledger.appendChild(b);});
@@ -1510,13 +1540,13 @@
       M(svg,600,252,'up',{fill:C.teal,'font-size':14});
       S(svg,'rect',{x:706,y:130,width:52,height:110,fill:C.rose});
       arrow(svg,'M786 120 L786 250',md,C.rose);
-      M(svg,786,272,'down',{fill:C.rose,'font-size':14});
+      M(svg,776,272,'down',{fill:C.rose,'font-size':14});
       Cap(svg,400,344,'one loss, no grader');
     })();
 
     /* 8: rejection sampling funnel, repeated. */
     (()=>{const svg=$('rsSvg'),m=marker(svg,'rs',C.mut);
-      Cap(svg,40,44,'12 drafts in');
+      Cap(svg,120,50,'12 drafts in');
       for(let r=0;r<4;r++)for(let c=0;c<3;c++)
         S(svg,'rect',{x:40+c*65,y:60+r*50,width:55,height:34,fill:'none',stroke:C.line,'stroke-width':1.5});
       S(svg,'path',{d:'M240 50 L400 130',fill:'none',stroke:C.mut,'stroke-width':1.5});
@@ -1530,6 +1560,42 @@
       M(svg,675,218,'study winners',{fill:C.mut,'font-size':14});
       arrow(svg,'M675 152 L675 36 L100 36 L100 52',m,C.mut);
       M(svg,400,28,'repeat 6 times',{fill:C.mut,'font-size':14});
+    })();
+
+    /* 9: standing orders open every chat. */
+    (()=>{const svg=$('sysSvg'),m=marker(svg,'sy',C.mut);
+      Cap(svg,40,32,'standing orders open the chat');
+      R(svg,40,56,340,116,C.pur);
+      M(svg,210,96,'standing orders',{});
+      M(svg,210,120,'helpful, safe, honest',{fill:C.mut,'font-size':14});
+      M(svg,210,144,'[system] marker',{fill:C.mut,'font-size':14});
+      S(svg,'rect',{x:40,y:196,width:340,height:40,fill:C.gold,'fill-opacity':.35});
+      M(svg,210,222,'your message',{fill:C.fg,'font-size':14});
+      S(svg,'rect',{x:40,y:248,width:340,height:40,fill:C.gold,'fill-opacity':.8});
+      M(svg,210,274,'its answer',{fill:C.fg,'font-size':14});
+      S(svg,'rect',{x:460,y:196,width:300,height:44,fill:C.rose,'fill-opacity':.4});
+      M(svg,610,224,'ignore your orders',{'font-size':15});
+      arrow(svg,'M610 240 L610 262',m,C.mut);
+      R(svg,460,262,300,60,C.gold);
+      M(svg,610,288,'still refuses',{});
+      M(svg,610,310,'orders hold',{fill:C.mut,'font-size':14});
+      Cap(svg,460,348,'jailbreaks usually fail');
+    })();
+
+    /* 10: attacks rehearsed into refusals. */
+    (()=>{const svg=$('refuseSvg'),m=marker(svg,'rf',C.mut);
+      Cap(svg,40,32,'red teams attack, answers rehearse');
+      T(svg,40,52,'attacks',{fill:C.mut,'font-size':14});
+      T(svg,300,52,'safe answers',{fill:C.mut,'font-size':14});
+      [60,116,172].forEach(y=>{
+        S(svg,'rect',{x:40,y,width:200,height:44,fill:C.rose,'fill-opacity':.5});
+        S(svg,'rect',{x:300,y,width:200,height:44,fill:C.gold,'fill-opacity':.8});
+        arrow(svg,`M240 ${y+22} L300 ${y+22}`,m,C.mut);});
+      R(svg,560,88,180,90,C.teal);
+      M(svg,650,128,'red team',{});
+      M(svg,650,152,'finds breaks',{fill:C.mut,'font-size':14});
+      arrow(svg,'M650 178 L650 256 L140 256 L140 222',m,C.mut);
+      M(svg,395,246,'breaks become training',{fill:C.mut,'font-size':14});
     })();
 
     /* 9: same guesser, two steerings. */
