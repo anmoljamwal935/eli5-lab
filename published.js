@@ -1,5 +1,27 @@
 window.PUBLISHED = [
   {
+    "id": "how-internet-works-eli5",
+    "title": "How the internet actually works",
+    "category": "Infrastructure",
+    "minutes": 20,
+    "summary": "One photo's 130-millisecond trip: packets, undersea glass and resends",
+    "bullets": [
+      "A photo is cut into about 1,400 numbered packets that ride hair-thin glass under the Atlantic",
+      "Lost packets are asked for again; the lab shows light alone, a normal trip and a trip with resends"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PHOTO",
+      "PACKETS",
+      "CABLE"
+    ],
+    "file": "explainers/how-internet-works-eli5.html",
+    "date": "2026-11-06",
+    "subcategory": "The internet",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A photo chopped into packets riding a cable from London to New York; the whole trip in the video takes 130 milliseconds.\"><!-- Miniature of the page's central drawing: the 0-130 ms trip between two cities, same colours. --><path d=\"M40 96C110 74 210 116 280 92\" fill=\"none\" stroke=\"#57534f\" stroke-width=\"2\"/><g fill=\"#f5c76a\"><rect x=\"24\" y=\"70\" width=\"16\" height=\"26\"/><rect x=\"90\" y=\"80\" width=\"20\" height=\"8\"/><rect x=\"126\" y=\"92\" width=\"20\" height=\"8\"/><rect x=\"170\" y=\"96\" width=\"20\" height=\"8\"/><rect x=\"212\" y=\"102\" width=\"20\" height=\"8\"/></g><rect x=\"280\" y=\"70\" width=\"16\" height=\"26\" fill=\"#76d5c1\"/><path d=\"M48 108L90 86M240 100L280 88\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"140\" fill=\"#a5a29c\">LONDON</text><text x=\"296\" y=\"140\" text-anchor=\"end\" fill=\"#a5a29c\">NEW YORK</text><text x=\"140\" y=\"40\" fill=\"#ff8059\">130 MS</text><text x=\"140\" y=\"54\" fill=\"#a5a29c\">1,400 PACKETS</text></g><path d=\"M158 58V72\" stroke=\"#a5a29c\" stroke-dasharray=\"2 3\" fill=\"none\"/></svg>"
+  },
+  {
     "id": "many-chips-as-one-eli5",
     "title": "Many chips as one",
     "category": "AI & Frontier",

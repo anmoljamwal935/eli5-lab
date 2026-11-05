@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How the internet actually works — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="One photo&#x27;s 130-millisecond trip: packets, undersea glass and resends">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/how-internet-works-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="How the internet actually works">
+<meta property="og:description" content="One photo&#x27;s 130-millisecond trip: packets, undersea glass and resends">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/how-internet-works-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/how-internet-works-eli5.png?v=b7f5e43c">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="How the internet actually works">
+<meta property="article:published_time" content="2026-11-06">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Infrastructure</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>INFRASTRUCTURE / 10 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>How the internet actually works</h1>
+      <p class="lede">A photo your friend sends from London can light up your phone in New York in about an eighth of a second. It does not fly there in one piece: it is chopped into about 1,400 numbered pieces, turned into light, and rebuilt at the other end.</p>
+      <p class="source-note">Built from Broch Builds' video "How the internet actually works" (YouTube Short, 2 minutes 7 seconds, English captions, watched in full), facts checked against TeleGeography, KIS-ORCA, the TCP standard (RFC 9293) and WhatsApp's help centre · <a href="https://www.youtube.com/watch?v=TrwST7qDyPA">Watch the source ↗</a></p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#ff8059"></i>the photo and its pieces</span>
+        <span><i style="background:#76d5c1"></i>light and the path it takes</span>
+        <span><i style="background:#f5c76a"></i>the lock (only the phones can open it)</span>
+        <span><i style="background:#c3b8ff"></i>the chat server and its copies</span>
+        <span><i style="background:#f87171"></i>pieces that go missing</span>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-journey">
+      <p class="kicker">The journey</p>
+      <h2>One photo, 130 milliseconds</h2>
+      <p>Sophie is in London. You are in New York. She taps send on a photo in your group chat, and your phone lights up about 130 milliseconds later. A millisecond is one thousandth of a second, so this is roughly one eighth of a second — faster than a blink, which takes about 300 milliseconds.</p>
+      <p>The video slows this trip down so we can follow it stop by stop. These times are a tidy illustration, not a stopwatch reading from one real send: your own trip changes with distance, busy networks and your phone. But the order of the stops is real, and every stop below is one this page will unpack.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Timeline from 0 to 130 milliseconds showing a photo leaving London, crossing the Atlantic as light, and lighting a phone in New York">
+          <text x="50" y="36" fill="#f1eee8" font-size="18">London</text>
+          <text x="750" y="36" text-anchor="end" fill="#f1eee8" font-size="18">New York</text>
+          <text x="400" y="36" text-anchor="middle" fill="#76d5c1" font-size="18">Atlantic Ocean</text>
+          <line x1="50" y1="160" x2="750" y2="160" stroke="#57534f" stroke-width="3"/>
+          <rect x="50" y="152" width="700" height="16" fill="#76d5c1" opacity=".25"/>
+          <circle cx="50" cy="160" r="10" fill="#ff8059"/><circle cx="72" cy="160" r="8" fill="#ff8059"/><circle cx="104" cy="160" r="8" fill="#c3b8ff"/><circle cx="158" cy="160" r="8" fill="#76d5c1"/><circle cx="319" cy="160" r="8" fill="#76d5c1"/><circle cx="750" cy="160" r="10" fill="#ff8059"/>
+          <text x="50" y="130" text-anchor="middle" fill="#f1eee8" font-size="16">0 ms</text>
+          <text x="50" y="200" text-anchor="middle" fill="#a5a29c" font-size="16">tap send</text>
+          <text x="118" y="105" text-anchor="middle" fill="#f1eee8" font-size="16">4 ms</text>
+          <text x="100" y="235" text-anchor="end" fill="#a5a29c" font-size="16">cell tower</text>
+          <line x1="104" y1="172" x2="104" y2="252" stroke="#c3b8ff" stroke-width="1.5" stroke-dasharray="4 4"/><text x="104" y="272" fill="#c3b8ff" font-size="16">10 ms · chat server</text>
+          <text x="158" y="130" text-anchor="middle" fill="#f1eee8" font-size="16">20 ms</text>
+          <text x="245" y="72" text-anchor="middle" fill="#a5a29c" font-size="16">leaves Cornwall</text>
+          <text x="319" y="130" text-anchor="middle" fill="#f1eee8" font-size="16">50 ms</text>
+          <text x="319" y="196" text-anchor="middle" fill="#a5a29c" font-size="16">reaches Long Island</text>
+          <text x="750" y="130" text-anchor="middle" fill="#f1eee8" font-size="16">130 ms</text>
+          <text x="750" y="196" text-anchor="end" fill="#a5a29c" font-size="16">your phone lights up</text>
+          <text x="400" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">scale: the line is 130 ms long, left to right</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-bits">
+      <p class="kicker">The building block</p>
+      <h2>First, the photo becomes numbers</h2>
+      <p>A phone cannot send a picture as a picture. It stores the photo as a long list of numbers: how bright and what colour each tiny dot (called a pixel) is. Written in the simple counting system computers use, built only from 1 and 0, that list becomes millions of ones and zeros. Each single 1 or 0 is called a bit; eight bits make one byte, the usual unit for counting file size.</p>
+      <p>Before anything leaves, the phone also locks the list. In plain words, it scrambles the numbers with a secret key so that anyone who grabs them on the way sees only gibberish. Only the phones in the chat hold the key to unscramble them. This scrambling is called <b>encryption</b>, and when only the sender's and receivers' phones can open it — not even the company in the middle — it is called <b>end-to-end encryption</b>.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="A photo made of coloured dots becomes a row of ones and zeros, then is locked with a gold key">
+          <rect x="40" y="60" width="180" height="135" fill="#202020" stroke="#57534f"/>
+          <g><rect x="55" y="75" width="32" height="32" fill="#ff8059"/><rect x="92" y="75" width="32" height="32" fill="#f5c76a"/><rect x="129" y="75" width="32" height="32" fill="#76d5c1"/><rect x="166" y="75" width="32" height="32" fill="#c3b8ff"/><rect x="55" y="112" width="32" height="32" fill="#76d5c1"/><rect x="92" y="112" width="32" height="32" fill="#ff8059"/><rect x="129" y="112" width="32" height="32" fill="#c3b8ff"/><rect x="166" y="112" width="32" height="32" fill="#f5c76a"/><rect x="55" y="149" width="32" height="32" fill="#c3b8ff"/><rect x="92" y="149" width="32" height="32" fill="#76d5c1"/><rect x="129" y="149" width="32" height="32" fill="#ff8059"/><rect x="166" y="149" width="32" height="32" fill="#76d5c1"/></g>
+          <text x="130" y="225" text-anchor="middle" fill="#a5a29c" font-size="16">the photo: coloured dots</text>
+          <path d="M235 127 H300" stroke="#f1eee8" stroke-width="3"/><path d="M292 119 L302 127 292 135" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <text x="400" y="105" text-anchor="middle" fill="#ff8059" font-size="22">1 0 1 1 0 0 1 0</text>
+          <text x="400" y="140" text-anchor="middle" fill="#ff8059" font-size="22">0 1 1 0 1 0 0 1 …</text>
+          <text x="400" y="225" text-anchor="middle" fill="#a5a29c" font-size="16">millions of ones and zeros</text>
+          <path d="M500 127 H565" stroke="#f1eee8" stroke-width="3"/><path d="M557 119 L567 127 557 135" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <rect x="585" y="82" width="150" height="90" rx="10" fill="#202020" stroke="#f5c76a" stroke-width="3"/>
+          <circle cx="660" cy="118" r="17" fill="none" stroke="#f5c76a" stroke-width="4"/><path d="M660 135 V152" stroke="#f5c76a" stroke-width="4"/>
+          <text x="660" y="225" text-anchor="middle" fill="#f5c76a" font-size="16">locked before sending</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-packets">
+      <p class="kicker">The problem</p>
+      <h2>Too big to send in one go</h2>
+      <p>Our running example is a photo file of about 2 million bytes. Networks do not move a file that size in one lump. There is a usual largest chunk, about 1,500 bytes including its labels, that the equipment on the path will accept. So the phone chops the locked photo into small pieces called <b>packets</b>. At about 1,460 usable bytes per packet, 2 million bytes needs about 1,400 packets — the video's number.</p>
+      <p>Each packet carries two extra things. An <b>address</b>: where it is going, written as numbers (an IP address — IP is just the internet's shared rulebook for addresses). And its <b>own number</b>: packet 1, packet 2, and so on, saying where this piece belongs in the full photo. Remember those numbers. They become the heroes near the end of the trip.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="One long photo bar split into many small packets, with three packets enlarged showing their numbers and destination address">
+          <text x="40" y="34" fill="#a5a29c" font-size="16">THE WHOLE LOCKED PHOTO · ABOUT 2,000,000 BYTES</text>
+          <g fill="#ff8059"><rect x="40" y="50" width="70" height="36"/><rect x="112" y="50" width="70" height="36" opacity=".85"/><rect x="184" y="50" width="70" height="36" opacity=".7"/><rect x="256" y="50" width="70" height="36" opacity=".55"/><rect x="328" y="50" width="70" height="36" opacity=".7"/><rect x="400" y="50" width="70" height="36" opacity=".85"/><rect x="472" y="50" width="70" height="36" opacity=".7"/><rect x="544" y="50" width="70" height="36" opacity=".55"/><rect x="616" y="50" width="70" height="36" opacity=".7"/><rect x="688" y="50" width="72" height="36" opacity=".85"/></g>
+          <text x="400" y="112" text-anchor="middle" fill="#a5a29c" font-size="16">… chopped into about 1,400 packets …</text>
+          <rect x="70" y="150" width="180" height="80" fill="#ff8059"/><text x="160" y="182" text-anchor="middle" fill="#202020" font-size="20">packet #1</text><text x="160" y="208" text-anchor="middle" fill="#202020" font-size="16">to: your phone</text>
+          <rect x="310" y="150" width="180" height="80" fill="#ff8059" opacity=".85"/><text x="400" y="182" text-anchor="middle" fill="#202020" font-size="20">packet #2</text><text x="400" y="208" text-anchor="middle" fill="#202020" font-size="16">to: your phone</text>
+          <rect x="550" y="150" width="180" height="80" fill="#ff8059" opacity=".7"/><text x="640" y="182" text-anchor="middle" fill="#202020" font-size="20">packet #3</text><text x="640" y="208" text-anchor="middle" fill="#202020" font-size="16">to: your phone</text>
+          <text x="400" y="275" text-anchor="middle" fill="#f1eee8" font-size="16">every packet: one number + one address</text>
+          <text x="400" y="305" text-anchor="middle" fill="#a5a29c" font-size="16">about 1,460 usable bytes ride inside each packet</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-first-hop">
+      <p class="kicker">The mechanism</p>
+      <h2>First by air, then by light</h2>
+      <p>The first short hop is the only wireless part near Sophie. Her phone sends the packets as <b>radio waves</b> — invisible waves in the air, the same family as light but with much longer waves — to a cell tower down the street. In the video this takes about 4 milliseconds. Radio is handy because no wire reaches a moving phone, but it is also the slowest, most easily disturbed part of the whole trip.</p>
+      <p>The tower then changes the signal's form. The packets become tiny pulses of light flashing inside thin glass threads called <b>optical fibres</b>, buried in cables under London's streets. Light in glass can carry far more, far faster, than radio through air, so almost everything after the first hop travels this way.</p>
+      <figure>
+        <svg viewBox="0 0 800 310" role="img" aria-label="A phone sending radio waves to a cell tower, which converts them to pulses of light in a fibre cable under the street">
+          <rect x="45" y="80" width="62" height="110" rx="10" fill="#202020" stroke="#ff8059" stroke-width="3"/>
+          <text x="76" y="215" text-anchor="middle" fill="#a5a29c" font-size="16">phone</text>
+          <path d="M125 105 Q160 135 125 165 M145 92 Q195 135 145 178" fill="none" stroke="#ff8059" stroke-width="3"/>
+          <text x="160" y="70" text-anchor="middle" fill="#ff8059" font-size="16">radio waves</text>
+          <path d="M330 190 V80 M305 190 L330 80 355 190" fill="none" stroke="#f1eee8" stroke-width="3"/><rect x="312" y="95" width="36" height="55" fill="#76d5c1"/>
+          <text x="330" y="215" text-anchor="middle" fill="#a5a29c" font-size="16">cell tower</text>
+          <path d="M365 135 H470" stroke="#f1eee8" stroke-width="3"/><path d="M462 127 L472 135 462 143" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <text x="420" y="112" text-anchor="middle" fill="#f1eee8" font-size="16">changes form</text>
+          <rect x="485" y="115" width="275" height="40" rx="20" fill="#202020" stroke="#76d5c1" stroke-width="3"/>
+          <circle cx="520" cy="135" r="7" fill="#76d5c1"/><circle cx="575" cy="135" r="7" fill="#76d5c1"/><circle cx="630" cy="135" r="7" fill="#76d5c1"/><circle cx="685" cy="135" r="7" fill="#76d5c1"/>
+          <text x="622" y="182" text-anchor="middle" fill="#76d5c1" font-size="16">pulses of light in glass</text>
+          <line x1="40" y1="255" x2="760" y2="255" stroke="#57534f" stroke-width="2"/>
+          <text x="40" y="285" fill="#a5a29c" font-size="16">cables run under the street</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-server">
+      <p class="kicker">The mechanism</p>
+      <h2>The server that cannot read it</h2>
+      <p>About 10 milliseconds in, the packets reach a computer owned by the chat app — a <b>server</b>, which just means a computer that waits for requests and responds to them. Because the photo is locked end to end, the server sees only scrambled numbers. It cannot open the photo. What it does know is the group's member list: who is in this chat.</p>
+      <p>So the server becomes a post office that cannot read the letters. It takes Sophie's locked packets and sends a copy onward to every member's phone — including yours in New York. One honest limit: this blindness is only true for apps built with end-to-end encryption, such as WhatsApp, Signal and iMessage. WhatsApp's own help centre says even WhatsApp cannot read such chats. Some other apps lock the photo only part of the way and could open it on their server, so check your app.</p>
+      <figure>
+        <svg viewBox="0 0 800 320" role="img" aria-label="A chat server in the middle forwarding the same locked packet to three group members phones without opening it">
+          <rect x="40" y="120" width="130" height="80" rx="8" fill="#ff8059"/><text x="105" y="152" text-anchor="middle" fill="#202020" font-size="17">Sophie</text><text x="105" y="176" text-anchor="middle" fill="#202020" font-size="16">London</text>
+          <path d="M175 160 H300" stroke="#f1eee8" stroke-width="3"/><path d="M292 152 L302 160 292 168" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <rect x="310" y="105" width="180" height="110" rx="8" fill="#202020" stroke="#c3b8ff" stroke-width="3"/>
+          <text x="400" y="140" text-anchor="middle" fill="#c3b8ff" font-size="18">chat server</text>
+          <rect x="365" y="155" width="70" height="34" fill="#202020" stroke="#f5c76a" stroke-width="2"/><circle cx="400" cy="169" r="7" fill="none" stroke="#f5c76a" stroke-width="2"/>
+          <text x="400" y="240" text-anchor="middle" fill="#a5a29c" font-size="16">sees gibberish only</text>
+          <path d="M495 130 L620 75 M495 160 H620 M495 190 L620 245" stroke="#f1eee8" stroke-width="3"/><path d="M612 68 L622 73 614 83 M612 152 L622 160 612 168 M612 237 L622 243 614 253" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <rect x="630" y="42" width="130" height="62" rx="8" fill="#c3b8ff"/><text x="695" y="80" text-anchor="middle" fill="#202020" font-size="17">member 1</text>
+          <rect x="630" y="129" width="130" height="62" rx="8" fill="#c3b8ff"/><text x="695" y="167" text-anchor="middle" fill="#202020" font-size="17">you · New York</text>
+          <rect x="630" y="216" width="130" height="62" rx="8" fill="#c3b8ff"/><text x="695" y="254" text-anchor="middle" fill="#202020" font-size="17">member 3</text>
+          <text x="400" y="300" text-anchor="middle" fill="#a5a29c" font-size="16">one locked photo in, one copy per member out</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-routers">
+      <p class="kicker">The mechanism</p>
+      <h2>Nobody knows the whole route</h2>
+      <p>After the server, there is no single planned road to New York. The packets hop from box to box. Each box is a <b>router</b>: a special computer whose only job is to look at a packet's address and hand it to the next box in roughly the right direction. A router keeps a list — which neighbour is a good next step for which addresses — and picks from that list in a fraction of a millisecond.</p>
+      <p>The video says each router finds "the fastest path it can". That is a kind summary, but not exact: no router sees or chooses the whole path, and the choice is "a good next hop", not a guaranteed fastest whole route. Different packets from the same photo can even take different roads. Keep that in mind — it explains the mess at arrival.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Packets hopping between five router circles, each router only choosing the next hop toward the destination">
+          <circle cx="90" cy="150" r="34" fill="#202020" stroke="#76d5c1" stroke-width="3"/><text x="90" y="157" text-anchor="middle" fill="#f1eee8" font-size="16">R1</text>
+          <circle cx="250" cy="90" r="34" fill="#202020" stroke="#76d5c1" stroke-width="3"/><text x="250" y="97" text-anchor="middle" fill="#f1eee8" font-size="16">R2</text>
+          <circle cx="250" cy="215" r="34" fill="#202020" stroke="#76d5c1" stroke-width="3"/><text x="250" y="222" text-anchor="middle" fill="#f1eee8" font-size="16">R3</text>
+          <circle cx="430" cy="150" r="34" fill="#202020" stroke="#76d5c1" stroke-width="3"/><text x="430" y="157" text-anchor="middle" fill="#f1eee8" font-size="16">R4</text>
+          <circle cx="590" cy="90" r="34" fill="#202020" stroke="#76d5c1" stroke-width="3"/><text x="590" y="97" text-anchor="middle" fill="#f1eee8" font-size="16">R5</text>
+          <circle cx="715" cy="150" r="34" fill="#ff8059"/><text x="715" y="157" text-anchor="middle" fill="#202020" font-size="16">you</text>
+          <path d="M122 138 L212 103 M122 165 L212 202 M282 95 L392 138 M282 208 L392 165 M462 138 L552 103 M620 108 L685 138" stroke="#76d5c1" stroke-width="3"/>
+          <path d="M204 96 L214 102 202 110 M204 195 L214 201 202 209 M384 131 L394 137 383 146 M384 158 L394 164 383 173 M544 96 L554 102 543 110 M677 131 L687 137 676 146" fill="none" stroke="#76d5c1" stroke-width="3"/>
+          <text x="400" y="275" text-anchor="middle" fill="#a5a29c" font-size="16">each router picks only the next hop</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-cable">
+      <p class="kicker">The mechanism</p>
+      <h2>Across the ocean in glass</h2>
+      <p>At about 20 milliseconds the light leaves Cornwall, on England's south-west coast, and enters a cable lying on the Atlantic floor. TeleGeography, the firm that maps these cables, says that for most of its journey such a cable is about as wide as a garden hose — roughly 17 to 21 millimetres across in deep water. Inside it, the glass threads carrying the light are about as thin as a human hair. Cables like this carry about 99% of the data that moves between continents (an industry estimate; satellites handle well under 1% of United States international capacity, by the regulator's figures TeleGeography quotes).</p>
+      <p>Light weakens as it travels, so every 50 to 80 kilometres a device in the cable, called a <b>repeater</b>, boosts it back to full strength — the video said 50 to 100; the industry guide KIS-ORCA gives 50 to 80. A 6,000-kilometre crossing therefore passes roughly 75 to 120 repeaters. And the crossing itself is quick for a simple reason: light in glass travels at about 200,000 kilometres per second, about two thirds of its speed in empty space. Divide 6,000 kilometres by that speed and you get about 30 milliseconds — exactly the video's ocean leg, ashore on Long Island at about 50 milliseconds.</p>
+      <figure>
+        <svg viewBox="0 0 800 340" role="img" aria-label="Cross-section of a garden-hose-thick undersea cable with hair-thin glass fibres, and repeaters boosting light every 50 to 80 kilometres">
+          <circle cx="150" cy="110" r="72" fill="#202020" stroke="#76d5c1" stroke-width="3"/>
+          <circle cx="128" cy="92" r="10" fill="#76d5c1"/><circle cx="160" cy="88" r="10" fill="#76d5c1"/><circle cx="145" cy="122" r="10" fill="#76d5c1"/><circle cx="172" cy="118" r="10" fill="#76d5c1"/><circle cx="118" cy="125" r="10" fill="#76d5c1"/>
+          <text x="150" y="205" text-anchor="middle" fill="#f1eee8" font-size="16">cable: garden-hose thick</text>
+          <text x="150" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">glass threads inside: hair-thin</text>
+          <text x="310" y="70" fill="#a5a29c" font-size="16">ONE CROSSING · 6,000 KM</text>
+          <line x1="310" y1="120" x2="760" y2="120" stroke="#76d5c1" stroke-width="4"/>
+          <rect x="360" y="102" width="52" height="36" fill="#202020" stroke="#f5c76a" stroke-width="2"/><rect x="485" y="102" width="52" height="36" fill="#202020" stroke="#f5c76a" stroke-width="2"/><rect x="610" y="102" width="52" height="36" fill="#202020" stroke="#f5c76a" stroke-width="2"/>
+          <text x="386" y="162" text-anchor="middle" fill="#f5c76a" font-size="16">boost</text>
+          <text x="511" y="162" text-anchor="middle" fill="#f5c76a" font-size="16">boost</text>
+          <text x="636" y="162" text-anchor="middle" fill="#f5c76a" font-size="16">boost</text>
+          <text x="535" y="205" text-anchor="middle" fill="#a5a29c" font-size="16">a boost every 50–80 km</text>
+          <text x="535" y="255" text-anchor="middle" fill="#76d5c1" font-size="18">6,000 km ÷ 200,000 km/s ≈ 30 ms</text>
+          <text x="400" y="305" text-anchor="middle" fill="#a5a29c" font-size="16">about 99% of between-continent data rides cables like this</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-messy">
+      <p class="kicker">The surprise</p>
+      <h2>Arrival is a mess — by design</h2>
+      <p>The packets do not arrive neatly. Because different packets can take different roads, they show up out of order: packet 5 before packet 2, say. And some never show up at all. In the video, three of the 1,400 are missing. This is not a failure of the system; the system expects it, because cheap, busy networks drop pieces now and then.</p>
+      <p>Now the numbers earn their keep. Your phone lines the packets up by number, sees exactly which numbers are missing, and sends back a short "send those again" message. The missing pieces make the trip a second time. This give-and-take — number every piece, confirm what arrived, resend what did not — is the heart of <b>TCP</b>, the internet's main delivery rulebook (today's standard is RFC 9293); newer apps often use a modern cousin of it with the same numbering idea. Only when every packet is present does your phone unlock the full list and rebuild the photo. That is also why the tidy 130 milliseconds is optimistic: one real resend needs a signal back across the ocean plus a fresh crossing, adding about 60 milliseconds on this route.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Packets arriving shuffled with numbers 3, 1 and 5 and one missing, then lined up in order with the missing packet resent">
+          <text x="40" y="34" fill="#a5a29c" font-size="16">AS THEY ARRIVE</text>
+          <rect x="40" y="50" width="105" height="62" fill="#ff8059"/><text x="92" y="89" text-anchor="middle" fill="#202020" font-size="19">#3</text>
+          <rect x="160" y="50" width="105" height="62" fill="#ff8059" opacity=".85"/><text x="212" y="89" text-anchor="middle" fill="#202020" font-size="19">#1</text>
+          <rect x="280" y="50" width="105" height="62" fill="none" stroke="#f87171" stroke-width="3"/><text x="332" y="89" text-anchor="middle" fill="#f87171" font-size="17">missing</text>
+          <rect x="400" y="50" width="105" height="62" fill="#ff8059" opacity=".7"/><text x="452" y="89" text-anchor="middle" fill="#202020" font-size="19">#5</text>
+          <rect x="520" y="50" width="105" height="62" fill="#ff8059" opacity=".85"/><text x="572" y="89" text-anchor="middle" fill="#202020" font-size="19">#2</text>
+          <path d="M332 125 V165" stroke="#f87171" stroke-width="3"/><path d="M324 157 L332 167 340 157" fill="none" stroke="#f87171" stroke-width="3"/>
+          <text x="360" y="150" fill="#f87171" font-size="16">ask for this one again</text>
+          <text x="40" y="205" fill="#a5a29c" font-size="16">LINED UP BY NUMBER, THEN UNLOCKED</text>
+          <rect x="40" y="220" width="105" height="62" fill="#ff8059"/><text x="92" y="259" text-anchor="middle" fill="#202020" font-size="19">#1</text>
+          <rect x="160" y="220" width="105" height="62" fill="#ff8059"/><text x="212" y="259" text-anchor="middle" fill="#202020" font-size="19">#2</text>
+          <rect x="280" y="220" width="105" height="62" fill="#ff8059"/><text x="332" y="259" text-anchor="middle" fill="#202020" font-size="19">#3</text>
+          <rect x="400" y="220" width="105" height="62" fill="#f87171"/><text x="452" y="259" text-anchor="middle" fill="#202020" font-size="19">#4 resent</text>
+          <rect x="520" y="220" width="105" height="62" fill="#ff8059"/><text x="572" y="259" text-anchor="middle" fill="#202020" font-size="19">#5</text>
+          <text x="700" y="259" text-anchor="middle" fill="#f5c76a" font-size="16">photo rebuilt</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-lab">
+      <p class="kicker">Try it</p>
+      <h2>How long should the ocean take?</h2>
+      <p>No app can beat light. Here the fastest possible trip (the dashed line) is pure light travel at about 200,000 kilometres per second, with nothing lost and no waiting anywhere. Add the everyday waiting — phones thinking, servers copying, routers choosing — and then lose a few packets and watch the resend bill arrive. Photo size changes how many packets there are; on this page it does not change light's travel time.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="photo">Photo size <output id="photo-o"></output></label><input id="photo" type="range" min="1" max="10" step="1" value="2"></div>
+          <div class="control"><label for="dist">Cable route length <output id="dist-o"></output></label><input id="dist" type="range" min="100" max="20000" step="100" value="6000"></div>
+          <div class="control"><label for="lost">Packets lost <output id="lost-o"></output></label><input id="lost" type="range" min="0" max="10" step="1" value="3"></div>
+          <div class="control"><label for="wait">Everyday waiting (phones, server, routers) <output id="wait-o"></output></label><input id="wait" type="range" min="0" max="100" step="5" value="30"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="2,6000,3,30">The video: London to New York</button>
+            <button type="button" class="secondary" data-p="2,6000,0,30">Same trip, nothing lost</button>
+            <button type="button" class="secondary" data-p="2,300,0,20">Same city</button>
+            <button type="button" class="secondary" data-p="5,17000,3,50">London to Sydney, bigger photo</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars comparing pure light travel, a normal trip, and a trip with lost packets resent"></svg></div>
+      </div></div>
+      <p class="note">Fixing lost packets is charged as one extra round trip: the "missing" signal travels back, then the resent packets travel forward. Real networks sometimes notice losses sooner, so treat this as an honest estimate, not an exact bill.</p>
+    </section>
+
+    <section class="panel" id="panel-1858">
+      <p class="kicker">The surprise</p>
+      <h2>1858: sixteen hours for 98 words</h2>
+      <p>The same ocean was crossed by wire long before the internet. In August 1858 the first telegraph cable across the Atlantic carried a 98-word message of congratulations from Queen Victoria to United States President James Buchanan. The words were tapped out by hand in code, letter by letter, and the message took about 16 hours to get through. The cable failed a few weeks later, but the idea never died.</p>
+      <p>Put the two trips side by side. Sixteen hours is 57,600,000 milliseconds. Today's photo — millions of times more information than 98 words — crosses in about 130 milliseconds on the video's telling. That makes the modern trip roughly 440,000 times faster in time alone, before you even count how much more it carries. The drawing below cannot use one honest scale (the old bar would stretch past the page about 440,000 times over), so it uses a broken scale and says so.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Two bars with a broken scale: 1858 telegraph 57 million milliseconds for 98 words versus today about 130 milliseconds for a whole photo">
+          <text x="40" y="60" fill="#a5a29c" font-size="18">1858 telegraph</text>
+          <rect x="40" y="75" width="720" height="38" fill="#f87171"/>
+          <text x="760" y="135" text-anchor="end" fill="#f87171" font-size="17">57,600,000 ms · 98 words · 16 hours</text>
+          <text x="40" y="185" fill="#a5a29c" font-size="18">today, this photo</text>
+          <rect x="40" y="200" width="26" height="38" fill="#ff8059"/>
+          <text x="82" y="227" fill="#ff8059" font-size="17">about 130 ms · a whole photo</text>
+          <path d="M300 75 L315 113 M315 75 L300 113" stroke="#f1eee8" stroke-width="3"/>
+          <text x="400" y="275" text-anchor="middle" fill="#a5a29c" font-size="16">scale broken: the red bar is shortened to fit</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel" id="panel-field-guide">
+      <p class="kicker">Field guide</p>
+      <h2>Four ways your data can travel</h2>
+      <div class="field-grid">
+        <div><b>Radio waves</b><span>The wireless hop from phone to tower, or your home Wi-Fi. Easy to join from anywhere, easiest to disturb.</span><em>First and last few metres to kilometres</em></div>
+        <div><b>Light in glass fibre</b><span>Pulses of light in hair-thin glass. Carries almost everything between cities and continents, very fast, huge capacity.</span><em>Streets, countryside, ocean floors</em></div>
+        <div><b>Electric signals in copper wire</b><span>Older phone lines and short cables inside buildings. Slower and shorter-range than fibre, still widely used.</span><em>Inside homes and offices</em></div>
+        <div><b>Satellite</b><span>Useful where no cable reaches — ships, planes, remote places. The long trip up and down adds delay, and total capacity is small next to cables.</span><em>Well under 1% of international capacity</em></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-so-what">
+      <p class="kicker">So what</p>
+      <h2>Three things this explains about your day</h2>
+      <ul class="checks">
+        <li><b>Why far-away calls always lag a little.</b> Light in glass needs about 30 milliseconds to cross an ocean, and your voice must go there and back. No better app can remove that floor; distance is physics, not bad software. Try the lab above with your own city pair.</li>
+        <li><b>Why one cut cable can slow a country.</b> About 99% of between-continent data rides on a few hundred undersea cables, each about as thick as a garden hose. When one is cut by an anchor or fishing gear, traffic squeezes onto the remaining cables until a repair ship arrives.</li>
+        <li><b>Why the lock matters, and its limit.</b> In an end-to-end encrypted chat, the server that carries your photo cannot read it — only the phones in the chat can. But that protection depends on your app: if it does not offer end-to-end encryption, the company in the middle may be able to open what passes through.</li>
+      </ul>
+      <p>Facts checked against <a href="https://www2.telegeography.com/submarine-cable-faqs-frequently-asked-questions">TeleGeography's submarine cable FAQ</a>, <a href="https://kis-orca.org/subsea-cables/design/">KIS-ORCA's cable design guide</a>, <a href="https://www.rfc-editor.org/rfc/rfc9293.txt">RFC 9293 (the TCP standard)</a> and <a href="https://faq.whatsapp.com/820124435853543">WhatsApp's end-to-end encryption help page</a>.</p>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>The internet is not one road or a cloud in the sky: it is millions of numbered pieces of light, handed from box to box, and rebuilt by their numbers at the other end.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Configure ids, labConfig and compute() only. Do not edit update(): check_render.py verifies its ticks and bars.
+    // Assumptions and expected results require independent verification.
+    const ids=['photo','dist','lost','wait'],$=id=>document.getElementById(id);
+    const ms=v=>Math.round(v)+' ms';
+    // compute(values) gets slider values in `ids` order: [photo MB, distance km, lost packets, waiting ms]
+    // Light in glass: about 200 km per millisecond, so one-way time = distance / 200.
+    // A lost packet costs one extra round trip (signal back + resend forward) when lost > 0.
+    function compute(v){
+      const [mb,dist,lost,wait]=v;
+      const oneWay=dist/200, packets=Math.ceil(mb*1000000/1460);
+      const noLoss=oneWay+wait, withLoss=noLoss+(lost>0?2*oneWay:0);
+      return {truth:oneWay, rows:[['Light alone, nothing lost',oneWay,'#76d5c1'],['Normal trip, nothing lost',noLoss,'#ff8059'],['Trip with resends',withLoss,'#f87171']], ledger:[['Photo size',mb+' MB'],['Packets (1,460 usable bytes each)',packets.toLocaleString('en-US')],['One-way light time',oneWay.toFixed(1)+' ms'],['Everyday waiting',wait+' ms'],['Resend cost (one round trip)',(lost>0?2*oneWay:0).toFixed(1)+' ms'],['Repeaters passed (every 50-80 km)',Math.floor(dist/80)+' to '+Math.ceil(dist/50)]]};
+    }
+    const labConfig={format:ms, sliderFormats:[v=>v+' MB',v=>v.toLocaleString('en-US')+' km',v=>v+' lost',v=>v+' ms'], minSpan:50, maxSpan:500, step:50};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false}; // invalidate stale success before computation
+      $('labChart').innerHTML='';
+      $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value), fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=(labConfig.sliderFormats[i]||fmt)(v[i]));
+      const {truth,rows,ledger}=compute(v);
+      if(!Number.isFinite(truth)||!rows.length||rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned non-finite or missing results');
+      const {minSpan,maxSpan,step}=labConfig;
+      if(!(minSpan>0 && maxSpan>=minSpan && step>0)) throw new Error('Invalid lab axis configuration');
+      const m=Math.min(maxSpan,Math.max(minSpan,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/step)*step));
+      // Zero sits at the left edge unless some value is negative; never hand-place ticks or bars.
+      const neg=Math.min(truth,...rows.map(r=>r[1]))<0, x0=neg?260:60, span=neg?200:400;
+      const sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m, ticks=neg?[-m,0,m]:[0,m/2,m];
+      const bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      const clipped=rows.map(r=>Math.abs(r[1])>m), truthClipped=Math.abs(truth)>m;
+      // Axis and truth lines are drawn per row band so they never cross the row labels above each bar.
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">truth ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      rows.forEach(([name,val,col],i)=>{
+        const y=80+i*82,x=sx(val);
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><line x1="${sx(truth)}" y1="${y-4}" x2="${sx(truth)}" y2="${y+30}" stroke="#f1eee8" stroke-dasharray="5 5"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}${clipped[i]?' · off-scale':''}</text><rect data-v="${val}" x="${Math.min(x,x0)}" y="${y}" width="${Math.abs(x-x0)}" height="26" fill="${esc(col)}"/>`;
+        if(clipped[i]){const d=val>0?1:-1;s+=`<path class="overflow-marker" d="M${x-d*9} ${y+3} L${x} ${y+13} L${x-d*9} ${y+23}" fill="none" stroke="#f1eee8" stroke-width="3"/>`;}
+      });
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
