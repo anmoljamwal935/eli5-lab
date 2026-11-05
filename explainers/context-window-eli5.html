@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Memory and the context window — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* ===== LOCAL-PREVIEW FALLBACK (not part of the published page) =====
+       The live site provides these rules via ../eli5-study.css (kept as the
+       <link> below, which wins on equal specificity when it loads). They are
+       inlined here so this single file renders identically when opened
+       standalone, e.g. without its sibling stylesheet. Exact copy of the
+       series-era eli5-study.css. The publisher may strip this block.
+       ==================================================================*/
+/* ELI5 Lab — Shared Visual System for All Studies */
+    @font-face {
+      font-family: 'Outfit';
+      src: url('assets/outfit.ttf') format('truetype');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+    
+    :root {
+      --bg: #161616;
+      --surface: #202020;
+      --raised: #282828;
+      --raised-hover: #323232;
+      --fg: #f1eee8;
+      --fg-dim: #dedcd6;
+      --muted: #a5a29c;
+      --faint: #73706a;
+      --border: #3b3936;
+      --border-subtle: #292826;
+      --accent: #ff8059;
+      --accent-soft: rgba(255, 128, 89, 0.14);
+      --accent-hover: #ffa385;
+      --ink: #20120c;
+    
+      --teal: #76d5c1;
+      --teal-soft: rgba(118, 213, 193, 0.14);
+      --gold: #f5c76a;
+      --gold-soft: rgba(245, 199, 106, 0.14);
+      --blue: #8fc9fb;
+      --blue-soft: rgba(143, 201, 251, 0.14);
+      --purple: #c3b8ff;
+      --purple-soft: rgba(195, 184, 255, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+    
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+      scrollbar-width: none;
+      background-color: var(--bg);
+      color: var(--fg);
+    }
+    
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--fg);
+      line-height: 1.75;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-image: radial-gradient(ellipse at 85% 20%, rgba(255, 128, 89, 0.04), transparent 60%);
+      min-height: 100vh;
+    }
+    
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    a:hover {
+      color: var(--accent-hover);
+    }
+    
+    /* ==========================================================================
+       1. STANDALONE MASTHEAD (Perfect Grid Alignment with Content Container)
+       ========================================================================== */
+    header.study-masthead {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 78px;
+      width: 100%;
+      background: rgba(22, 22, 22, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 0;
+      color: #fff;
+    }
+    
+    header.study-masthead::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, #ff8059 0 72px, rgba(255, 255, 255, 0.16) 72px 100%);
+    }
+    
+    header.study-masthead .masthead-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    header.study-masthead .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: #f5f1e9;
+      text-decoration: none;
+    }
+    header.study-masthead .brand:hover {
+      color: #fff;
+      opacity: 0.85;
+    }
+    
+    header.study-masthead .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      background: #ff8059;
+      color: #21110c;
+      font: 700 14px/1 var(--font-mono);
+      letter-spacing: -0.05em;
+      border-radius: 0;
+      flex-shrink: 0;
+    }
+    
+    header.study-masthead .brand-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 26px;
+      line-height: 0.9;
+      letter-spacing: -1.4px;
+      font-weight: 600;
+    }
+    header.study-masthead .brand-copy b {
+      font-weight: 400;
+      color: #b7b4ae;
+    }
+    header.study-masthead .brand-copy small {
+      font: 8px/1 var(--font-mono);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8e8b85;
+    }
+    header.study-masthead .brand-dot {
+      margin: 0 2px;
+      color: #ff8059;
+    }
+    
+    header.study-masthead .nav-right {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    
+    header.study-masthead .topic-tag {
+      font: 10px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-right: 6px;
+    }
+    
+    header.study-masthead .back-btn {
+      height: 40px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid #ff8059;
+      border-radius: 0;
+      background: #ff8059;
+      color: #22120d;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+    }
+    header.study-masthead .back-btn b {
+      font-size: 15px;
+      font-weight: 400;
+    }
+    header.study-masthead .back-btn:hover {
+      background: transparent;
+      color: #ff8059;
+    }
+    
+    /* Reading Progress Bar */
+    .eli5-progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: transparent;
+      z-index: 101;
+      pointer-events: none;
+    }
+    .eli5-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.1s ease-out;
+    }
+    
+    /* Inside Reader Modal: hide duplicate inner masthead! */
+    body.in-frame header.study-masthead {
+      display: none !important;
+    }
+    body.in-frame .eli5-study-container {
+      padding-top: 28px;
+    }
+    
+    /* ==========================================================================
+       2. UNIFIED CONTENT CONTAINER (All studies share exact same alignment)
+       ========================================================================== */
+    .eli5-study-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 90px;
+      width: 100%;
+    }
+    
+    .eli5-hero-kicker {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .eli5-hero-kicker i {
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .eli5-hero-kicker .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      margin-left: auto;
+    }
+    .eli5-hero-kicker .live-dot::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    
+    /* THE DEPTH CARD: QUESTION -> MECHANISM -> INTUITION */
+    .hero-depth-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 9px 18px;
+      margin-bottom: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      background: rgba(22, 22, 22, 0.75);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #dedcd6;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+    
+    .hero-depth-card .step-tag {
+      color: var(--accent);
+      font-weight: 700;
+      margin-right: 2px;
+    }
+    
+    .hero-depth-card i {
+      width: 22px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 128, 89, 0.8), rgba(255, 255, 255, 0.2));
+      position: relative;
+      display: inline-block;
+    }
+    .hero-depth-card i::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -2px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    
+    /* ==========================================================================
+       3. ARTICLE CONTENT & TYPOGRAPHY
+       ========================================================================== */
+    .eli5-study-container h1, .hero h1 {
+      margin-bottom: 20px;
+    }
+    
+    .eli5-study-container h2 {
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 1.25;
+      color: #fff;
+      margin: 44px 0 16px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-subtle);
+      position: relative;
+    }
+    .eli5-study-container h2::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      width: 32px;
+      height: 2px;
+      background: var(--accent);
+    }
+    
+    .eli5-study-container h3 {
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin: 30px 0 12px;
+    }
+    
+    .eli5-study-container p {
+      font-size: 16.5px;
+      color: var(--fg-dim);
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+    
+    .eli5-study-container strong {
+      color: #fff;
+      font-weight: 600;
+    }
+    
+    .eli5-study-container .lead, .eli5-study-container .lede {
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    
+    /* Sections & Bands inside studies */
+    .course-section, .band, .scene, .panel, .wrap, .section {
+      padding: 36px 0 !important;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .course-section:first-of-type {
+      border-top: 0;
+    }
+    
+    .grid2, .grid3 {
+      display: grid;
+      gap: 18px;
+      margin: 24px 0;
+    }
+    .grid2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .grid3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    
+    .card, .taccount, .snapshot {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+      border-radius: 0;
+    }
+    .taccount {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .taccount h4 {
+      grid-column: span 2;
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    
+    .formula {
+      padding: 16px 20px;
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      font-family: var(--font-mono);
+      font-size: 15px;
+      color: #fff;
+      margin: 20px 0;
+    }
+    
+    .lab {
+      margin: 32px 0;
+      border: 1px solid var(--border);
+      background: #1a1c18;
+      padding: 24px;
+    }
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    /* Wide screens: give the chart two thirds so its 520-wide viewBox renders near 1:1 */
+    @media (min-width: 761px) {
+      .lab-grid { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); }
+    }
+    .controls .control {
+      margin-bottom: 14px;
+    }
+    .controls label {
+      display: block;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .controls input, .controls select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 14px;
+    }
+    .controls input:focus, .controls select:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+    .controls .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .controls button {
+      height: 38px;
+      padding: 0 16px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #20120c;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .controls button.secondary {
+      background: transparent;
+      color: var(--fg);
+      border-color: var(--border);
+    }
+    .output {
+      padding: 18px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .model-limit {
+      font-size: 12px;
+      color: var(--faint);
+      margin-top: 14px;
+    }
+    
+    .table-wrap {
+      overflow-x: auto;
+      margin: 24px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    th {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .quiz {
+      margin: 28px 0;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .quiz fieldset {
+      border: 0;
+    }
+    .quiz legend {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+    .quiz label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .quiz button {
+      margin-top: 12px;
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #20120c;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    details.trace {
+      margin: 24px 0;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      font-size: 13px;
+    }
+    details.trace summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    details.trace ul {
+      margin: 14px 0 0 18px;
+      line-height: 1.6;
+    }
+    
+    /* ==========================================================================
+       4. CORE INTUITION TAKEAWAY
+       ========================================================================== */
+    .eli5-takeaway-card {
+      margin: 60px 0 30px;
+      padding: 34px 28px;
+      background: radial-gradient(ellipse at top left, rgba(255, 128, 89, 0.08), transparent 70%), var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      position: relative;
+    }
+    .eli5-takeaway-card .takeaway-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font: 11px/1 var(--font-mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .eli5-takeaway-card blockquote {
+      font-size: clamp(19px, 2.4vw, 26px);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.4;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .eli5-takeaway-card .takeaway-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .eli5-takeaway-card .takeaway-actions a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .eli5-takeaway-card .takeaway-actions a:hover {
+      text-decoration: underline;
+    }
+    
+    /* ==========================================================================
+       5. RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 760px) {
+      header.study-masthead {
+        height: 70px;
+      }
+      header.study-masthead .masthead-inner {
+        padding: 0 16px;
+      }
+      header.study-masthead .brand-mark {
+        width: 36px;
+        height: 36px;
+        font-size: 12px;
+      }
+      header.study-masthead .brand-copy {
+        font-size: 21px;
+      }
+      header.study-masthead .brand-copy small, header.study-masthead .topic-tag {
+        display: none;
+      }
+      header.study-masthead .back-btn {
+        height: 36px;
+        padding: 0 12px;
+        font-size: 11px;
+        gap: 8px;
+      }
+      .hero-depth-card {
+        font-size: 9px;
+        gap: 8px;
+        padding: 7px 12px;
+      }
+      .hero-depth-card i {
+        width: 14px;
+      }
+      .eli5-takeaway-card {
+        padding: 22px 18px;
+      }
+    }
+    
+    /* Reset layout grid wrappers from legacy structures */
+    .layout {
+      display: block !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .content, main.content {
+      display: block !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .hero {
+      padding: 10px 0 28px !important;
+      background: transparent !important;
+    }
+    .hero h1 {
+      max-width: 100% !important;
+    }
+    .course-section {
+      padding: 36px 0 !important;
+      background: transparent !important;
+    }
+    
+    /* ==========================================================================
+       6. LEGACY STUDY NORMALIZATION
+       Old explainers keep their bespoke diagrams and interactions, while this
+       shared layer gives every page the same ELI5 Lab reading surface.
+       ========================================================================== */
+    :root {
+      --paper: var(--bg);
+      --card: var(--surface);
+      --wash: var(--raised);
+      --ink: var(--fg);
+      --body: var(--fg-dim);
+      --line: var(--border);
+      --line-soft: var(--border-subtle);
+      --white: var(--fg);
+      --gray: var(--surface);
+      --grey: var(--surface);
+      --brand: var(--accent);
+      --maroon: var(--accent);
+      --saffron: var(--accent);
+      --saffron2: var(--accent-hover);
+      --green: var(--teal);
+      --good: var(--teal);
+      --blue: var(--blue);
+      --focus: var(--accent);
+      --shadow: none;
+      --radius: 0px;
+      --radius-lg: 0px;
+    }
+    
+    body {
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(19, 88, 96, 0.12), transparent 34rem),
+        radial-gradient(circle at 82% 28%, rgba(255, 128, 89, 0.07), transparent 32rem),
+        #07090b !important;
+    }
+    
+    /* Remove page-specific chrome now duplicated by the shared masthead. */
+    .eli5-study-container > .layout > .toc,
+    .eli5-study-container > nav,
+    .eli5-study-container > header.mast,
+    .eli5-study-container main > header.mast,
+    .eli5-study-container .mobile-toc {
+      display: none !important;
+    }
+    
+    /* One reading column across every legacy structure. */
+    .eli5-study-container :where(.inner, .wrap, .page, .scene-inner, .hero-inner, .copy, .copy--wide) {
+      width: 100% !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    .eli5-study-container :where(main, .page, .content) {
+      color: var(--fg-dim) !important;
+      background: transparent !important;
+    }
+    
+    .eli5-study-container :where(.hero, .band, .scene, .panel, .chapter, .closing) {
+      color: var(--fg-dim) !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(.band, .scene, .panel, .chapter) {
+      padding: 42px 0 !important;
+      border-left: 0 !important;
+      border-right: 0 !important;
+      border-bottom: 0 !important;
+      border-top: 1px solid var(--border-subtle) !important;
+    }
+    
+    .eli5-study-container > :where(.hero, header.hero),
+    .eli5-study-container main > :where(.hero, header.hero),
+    .eli5-study-container .layout .hero {
+      padding: 6px 0 38px !important;
+      border: 0 !important;
+      text-align: left !important;
+    }
+    
+    .eli5-study-container :where(.hero h1, h1) {
+      max-width: 15ch !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      color: var(--fg) !important;
+      font-family: var(--font-sans) !important;
+      font-weight: 400 !important;
+      font-size: clamp(42px, 7vw, 72px) !important;
+      line-height: 0.98 !important;
+      letter-spacing: -0.055em !important;
+    }
+    
+    .eli5-study-container :where(h2, h3, h4, h5) {
+      color: var(--fg) !important;
+      font-family: var(--font-sans) !important;
+    }
+    
+    .eli5-study-container :where(h2) {
+      font-weight: 400 !important;
+      letter-spacing: -0.035em !important;
+    }
+    
+    .eli5-study-container :where(p, li, dd) {
+      color: var(--fg-dim);
+    }
+    
+    .eli5-study-container :where(.lead, .lede, .body) {
+      max-width: 68ch !important;
+      color: var(--muted) !important;
+      font-size: clamp(17px, 2vw, 20px) !important;
+      line-height: 1.65 !important;
+    }
+    
+    .eli5-study-container :where(.eyebrow, .kicker, .label, .src, .smallprint, .source-note, .caption) {
+      font-family: var(--font-mono) !important;
+      letter-spacing: 0.08em;
+    }
+    
+    .eli5-study-container :where(.eyebrow, .kicker, .label) {
+      color: var(--accent) !important;
+      text-transform: uppercase;
+    }
+    
+    /* Shared surface language: square, quiet, high-contrast. */
+    .eli5-study-container :where(
+      .card, .viz, .figure, .diagram, .callout, .snapshot, .quote, .note,
+      .analogy, .lens, .check, .risk, .source-block, .evidence-board,
+      .math-audit, .math-viz, .truth-strip, .stat, .mapping, .formula,
+      .lab, .output, .eqbox, .equation, .not-oracle, .bottom-line,
+      .compute-strip, .balance, .complaint, .verdict
+    ) {
+      color: var(--fg-dim) !important;
+      background-color: rgba(255, 255, 255, 0.035) !important;
+      border-color: var(--border) !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(.card, .viz, .figure, .callout, .quote, .note, .stat, .mapping) {
+      padding: clamp(16px, 3vw, 24px) !important;
+    }
+    
+    .eli5-study-container :where(.pill, .tag, .status, .chip, .stamp, .mode, .source-link) {
+      border-radius: 999px !important;
+      border-color: var(--border) !important;
+      background: var(--accent-soft) !important;
+      color: var(--accent) !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(input, select, textarea) {
+      max-width: 100%;
+      background: #0c0f12 !important;
+      color: var(--fg) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 0 !important;
+    }
+    
+    .eli5-study-container :where(button) {
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    
+    .eli5-study-container :where(button:not(.secondary)) {
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
+      color: #20120c !important;
+    }
+    
+    .eli5-study-container :where(button.secondary) {
+      background: transparent !important;
+      border-color: var(--border) !important;
+      color: var(--fg) !important;
+    }
+    
+    .eli5-study-container :where(.chapter-no, .number, .rule-num, .check__n, .gear__num) {
+      background: var(--accent) !important;
+      color: #20120c !important;
+      border-radius: 0 !important;
+    }
+    
+    .eli5-study-container :where(.caption, .src, .fine, .small, .model-limit, footer, .footer) {
+      color: var(--faint) !important;
+    }
+    
+    .eli5-study-container :where(footer, .footer) {
+      background: transparent !important;
+      border-top: 1px solid var(--border-subtle) !important;
+    }
+    
+    /* Keep wide teaching visuals usable instead of forcing them off-screen. */
+    .eli5-study-container :where(svg, img, canvas, video) {
+      max-width: 100%;
+    }
+    
+    .eli5-study-container :where(.diagram, .scrollable, .table-wrap, pre) {
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .eli5-study-container pre,
+    .eli5-study-container code {
+      font-family: var(--font-mono);
+    }
+    
+    @media (max-width: 760px) {
+      body {
+        font-size: 16px;
+      }
+    
+      .eli5-study-container {
+        padding: 22px 16px 56px;
+      }
+    
+      .eli5-hero-kicker {
+        gap: 9px;
+        font-size: 9px;
+      }
+    
+      .eli5-hero-kicker .live-dot {
+        display: none;
+      }
+    
+      .hero-depth-card {
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    
+      .eli5-study-container :where(.hero h1, h1) {
+        max-width: 11ch !important;
+        font-size: clamp(38px, 12vw, 54px) !important;
+      }
+    
+      .eli5-study-container :where(.band, .scene, .panel, .chapter, .course-section) {
+        padding: 32px 0 !important;
+      }
+    
+      .eli5-study-container :where(.grid2, .grid3, .cols, .two, .two-col, .duo, .trio, .watch, .risk-grid, .signal-grid, .source-grid, .math-grid, .claim-grid, .complaint-grid, .sandboxgrid, .check-grid) {
+        grid-template-columns: 1fr !important;
+      }
+    
+      .eli5-study-container :where(.chapter-head) {
+        grid-template-columns: 38px minmax(0, 1fr) !important;
+        gap: 12px !important;
+      }
+    
+      .eli5-study-container :where(.chapter-no, .number) {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        font-size: 14px !important;
+      }
+    
+      .eli5-study-container :where(.actions, .lab-row, .slider-row) {
+        align-items: stretch !important;
+      }
+    
+      .eli5-study-container :where(.actions) {
+        flex-wrap: wrap !important;
+      }
+    
+      .eli5-study-container :where(.actions button) {
+        min-height: 44px;
+      }
+    
+      .eli5-study-container table {
+        min-width: 620px;
+      }
+    }
+    
+    /* ==========================================================================
+       SERIES NAVIGATION (rendered by eli5-study.js from series.js)
+       ========================================================================== */
+    .series-strip[data-series="top"]:not(:empty) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 14px;
+      margin: 0 0 28px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.025);
+      font: 11px/1.5 var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .series-strip .series-name { color: var(--teal); }
+    .series-strip .series-here::before { content: '/'; margin-right: 14px; color: var(--faint); }
+    .series-strip[data-series="top"] a { margin-left: auto; }
+    
+    .series-strip[data-series="end"]:not(:empty) { margin: 48px 0 0; }
+    .series-end-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      font: 11px/1.5 var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+    .series-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      padding: 1px;
+    }
+    .series-card {
+      display: block;
+      min-height: 96px;
+      padding: 16px 18px;
+      background: var(--surface);
+      outline: 1px solid var(--border);
+      color: var(--fg);
+    }
+    a.series-card:hover { background: var(--raised); color: var(--fg); }
+    .series-card small {
+      display: block;
+      margin-bottom: 6px;
+      font: 11px/1.4 var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .series-card b { display: block; font-size: 18px; font-weight: 500; line-height: 1.35; }
+    .series-card em { display: block; margin-top: 6px; font: normal 11px/1.4 var(--font-mono); letter-spacing: 0.06em; color: var(--gold); }
+    .series-card.soon b { color: var(--muted); }
+    .series-cards > :last-child { text-align: right; }
+    @media (max-width: 600px) {
+      .series-cards { grid-template-columns: 1fr; }
+      .series-cards > :last-child { text-align: left; }
+      .series-cards > span:empty { display: none; }
+    }
+    
+    /* ===== Page-specific rules (as published) ===== */
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (How AI works, from scratch): gold = text and tokens, teal = stored numbers,
+       orange = arithmetic, purple = connections, rose = the wrong intuition. */
+    :root{--teal:#76d5c1;--rose:#ec6a94;--gold:#f5c76a;--purple:#c3b8ff}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    /* Series parts: fact tags, Go deeper boxes, button pickers, readouts */
+    .tag{display:inline-block;margin:0 2px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted);vertical-align:1px}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p{font-size:15px}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--purple)!important;color:var(--purple)!important;background:rgba(195,184,255,.1)!important}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+    .readout b{color:var(--fg);font-weight:600}
+    .lab-chart svg+svg{margin-top:18px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    /* Lab layout, sliders, presets, ledger */
+    .lab{margin-top:22px;border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .lab-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:0}
+    .lab-grid .controls{padding:clamp(16px,4vw,28px);border-right:1px solid var(--border)}
+    .lab-grid .lab-chart{padding:clamp(16px,4vw,28px)}
+    .control{margin:14px 0}
+    .control label{display:flex;justify-content:space-between;gap:10px;font:12px/1.4 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .control output{color:var(--fg);font-weight:600}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent);width:100%}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .presets button{min-height:34px;padding:5px 12px;font-size:13px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab .ledger output{color:var(--fg);font-weight:600}
+    button.secondary{font-family:var(--font-sans);font-size:14px;font-weight:500;background:transparent;border:1px solid var(--border);color:var(--fg);border-radius:6px;cursor:pointer}
+    button.secondary:hover{border-color:var(--muted)}
+    /* Chat-document boxes */
+    .box{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .box>small,.cap{display:block;font:12px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .doc{margin-top:12px;padding:14px 16px;background:#0c0f12;border:1px solid var(--border);font:14px/1.7 var(--font-mono);color:var(--fg);white-space:pre-wrap;overflow-wrap:anywhere}
+    .doc .m{color:var(--purple)}.doc .cur{color:var(--accent)}
+    .doc .good{color:var(--gold)}.doc .bad{color:var(--rose)}.doc .dim{color:var(--faint)}
+    p.note{font-size:13px;color:var(--faint);margin-top:14px}
+    /* Page furniture shared with the house format */
+    .eli5-progress-track{position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:50}
+    .eli5-progress-fill{height:100%;width:0;background:var(--accent)}
+    .study-masthead{border-bottom:1px solid var(--border)}
+    .masthead-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:12px 20px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg)}
+    .brand-mark{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--accent);color:#21110c;font-weight:700;font-family:monospace}
+    .brand-copy{display:flex;flex-direction:column;line-height:1.1}
+    .brand-dot{color:var(--accent)}
+    .brand-copy small{color:var(--muted);font-size:11px}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .topic-tag{font:11px/1.5 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+    .back-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--fg);border:1px solid var(--border);padding:6px 12px;border-radius:6px;font-size:13px}
+    .eli5-hero-kicker{display:flex;align-items:center;gap:12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted);margin-bottom:18px}
+    .eli5-hero-kicker i{flex:1;height:1px;background:var(--border)}
+    .live-dot{color:var(--accent)}
+    section.hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:0 0 14px}
+    p.lede{font-size:1.15rem;line-height:1.6;color:var(--fg);max-width:60ch}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .series-strip:empty{display:none}
+    .eli5-takeaway-card{margin:34px 0 10px;padding:clamp(18px,4vw,30px);border:1px solid var(--gold);background:rgba(245,199,106,.05)}
+    .takeaway-eyebrow{font:12px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--gold);margin-bottom:12px}
+    .eli5-takeaway-card blockquote{margin:0;font-size:1.25rem;line-height:1.5;color:var(--fg)}
+    .takeaway-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+    .takeaway-actions a{color:var(--fg);font-size:14px}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){
+      .panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}
+      .panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}
+      .lab-grid{grid-template-columns:1fr}.lab-grid .controls{border-right:0;border-bottom:1px solid var(--border)}
+      .box{margin-left:-16px;margin-right:-16px;padding:14px;border-left:0;border-right:0}
+      .masthead-inner{padding:10px 14px}.topic-tag{display:none}
+    }
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 14: how much text fits in view at once, and why long chats forget">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/context-window-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Memory and the context window">
+<meta property="og:description" content="Part 14: how much text fits in view at once, and why long chats forget">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/context-window-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/context-window-eli5.png?v=local">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Memory and the context window">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="context-window-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 20 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Memory and the context window</h1>
+      <p class="lede">Part 13 ended with a well-mannered assistant that still sees only so much at once. Part 7 left a bill unpaid: every word compares with every earlier word, so reading more costs far more than more. This part fits the two together: how much text the model holds in view, what falls out as the chat grows, and why the middle of a long chat is the worst place to hide a fact.</p>
+      <p class="source-note">A topic study built from the primary sources: the 2017 attention paper, Liu et al.&rsquo;s &ldquo;Lost in the Middle&rdquo; (2023), the RULER long-context study (2024), the published window sizes of GPT-4, Llama 3 and Gemini 1.5, Xiao et al.&rsquo;s &ldquo;StreamingLLM&rdquo; (2023) and the providers&rsquo; caching docs; every number below was checked against them · <a href="https://arxiv.org/abs/2307.03172">Read the main source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on <a href="guess-the-next-word-eli5.html" data-series-link="guess-the-next-word-eli5">Part 2</a> (a chat is a document the model re-reads before every reply) and <a href="attention-eli5.html" data-series-link="attention-eli5">Part 7</a> (every word compares with every earlier word, and the saved keys pile up). Part 13 taught the model manners; this part finds out how much of the conversation it can keep in mind. Facts carry a tag: <span class="tag">public</span> means a published paper, spec sheet or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>words and text in view</span>
+        <span><i style="background:#76d5c1"></i>stored numbers: the saved keys</span>
+        <span><i style="background:#ff8059"></i>comparisons between words</span>
+        <span><i style="background:#c3b8ff"></i>the frame and positions in it</span>
+        <span><i style="background:#ec6a94"></i>forgotten or missed text</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Long chats forget their beginnings</h2>
+      <p>An hour into a chat, ask about something from the first minutes and the model blanks &mdash; or worse, answers smoothly about something you never said. It is not distracted. The beginning of your chat is simply gone: not faded, not fuzzy, but no longer in the text it reads.</p>
+      <figure>
+        <svg id="forgetSvg" viewBox="0 0 800 360" role="img" aria-label="A long chat with its beginning faded out; a question about the start gets a shrug"></svg>
+      </figure>
+      <p>This is not forgetting the way people forget. Nothing decayed. The model reads a fixed amount of recent text before every reply, and your first minutes fell outside it. The rest of this part measures that frame.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The idea</p>
+      <h2>It reads through a fixed frame</h2>
+      <p>Before every reply the model re-reads the chat &mdash; Part 2&rsquo;s document &mdash; but only up to a fixed budget of tokens. That budget is the <b>context window</b>: the maximum text it holds in view at one time. Everything inside the frame is read; everything outside might as well not exist.</p>
+      <figure>
+        <svg id="frameSvg" viewBox="0 0 800 360" role="img" aria-label="A chat document longer than the frame, with only the tail end inside the model's view"></svg>
+      </figure>
+      <p>The window is counted in tokens, Part 1&rsquo;s word pieces, and it is shared by everything: your history, any documents you attach, and the reply being written. A 128,000-token window holding a whole novel still has to fit its own answer inside too.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The idea</p>
+      <h2>One window, four tenants</h2>
+      <p>Peek inside a full window and four tenants share it. First the system prompt &mdash; the standing instructions behind Part 2&rsquo;s [system] marker. Then the conversation so far, newest last. Then any fetched pages (chapter 8 below). And last, empty space held for the reply being written. Shares vary by app; this split of one 128K window is sketched <span class="tag">example</span>.</p>
+      <figure>
+        <svg id="tenantsSvg" viewBox="0 0 800 340" role="img" aria-label="One window split between system instructions, chat history, fetched pages and space for the reply"></svg>
+      </figure>
+      <p>The order matters: anything you attach or recall squeezes the room left for history. A window stuffed with documents is a window with a short memory of you &mdash; a trade the next chapters keep making.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Why the frame cannot just grow</h2>
+      <p>Part 7 showed the price: each word scores every word before it, so doubling the text roughly quadruples the comparisons. At Llama 3&rsquo;s full window of about 128,000 tokens that is some 8.2 billion comparisons for a single head in a single layer <span class="tag">public</span>. Ten times the view costs about a hundred times the arithmetic.</p>
+      <figure>
+        <svg id="costSvg" viewBox="0 0 800 360" role="img" aria-label="Comparison triangles for short, medium and long texts, exploding with the square of the length"></svg>
+      </figure>
+      <p>And the saved keys from Part 7 pile up too: one key and value per token, kept for the whole reply. A longer window is a bigger pile in memory. So every extra page in view is paid twice, in sums and in storage.</p>
+      <details class="trace"><summary>Go deeper: the memory bill</summary>
+        <p>The KV cache from Part 7 grows with every token in view. For Llama 3.1&rsquo;s 8-billion-number model that is about 128 kilobytes per token, or 16 gigabytes at its full 131,072-token window <span class="tag">public</span>. Part 8 is about why that memory is the scarcest thing on the chip.</p>
+      </details>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>New words push old words out</h2>
+      <p>When the chat outgrows the window, something has to give, and it is always the oldest text. Each new token slides the frame forward by one: the newest words enter, the oldest fall out. The model never notices the loss &mdash; it only ever sees what is inside.</p>
+      <figure>
+        <svg id="slideSvg" viewBox="0 0 800 360" role="img" aria-label="New tokens slide the frame forward, pushing the oldest words out of view"></svg>
+      </figure>
+      <p>That is the whole mechanism of machine forgetting. No decay, no interference, no &ldquo;tip of the tongue&rdquo;: just a frame that fits the ending and drops the beginning, one token at a time.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Hide a fact, move the frame</h2>
+      <p>A 100,000-token afternoon of chatting hides one fact: the lighthouse keeper&rsquo;s name is Mara. Two dials: how wide the model&rsquo;s frame is, and where in the afternoon the fact sits. The strip asks the only question that matters: is Mara still in view? All lab numbers are simplified toys <span class="tag">example</span>.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="lw">Window size <output id="lw-o"></output></label><input id="lw" type="range" min="0" max="4" step="1" value="3"></div>
+          <div class="control"><label for="lp">Fact position in the chat <output id="lp-o"></output></label><input id="lp" type="range" min="0" max="100" step="1" value="50"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="1,50">GPT-4 launch (8K)</button>
+            <button type="button" class="secondary" data-p="3,50">128K standard</button>
+            <button type="button" class="secondary" data-p="4,50">Million-token</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 340" role="img" aria-label="The chat with the visible frame and the hidden fact marked, plus the recall chance"></svg></div>
+      </div>
+      <p class="readout" id="labNote"></p>
+      </div>
+      <p>Start at the 128K standard: the whole afternoon fits, wherever Mara hides. Drop to the 8K launch window and she falls out of view &mdash; no model retrieves what it cannot read. Widen again and slide her position: even fully in view, the middle is where recall sags. That sag is real, and chapter 9 measures it.</p>
+      <p class="note">Toy arithmetic with the real mechanism&rsquo;s shape: the frame holds the newest tokens, and recall inside it sags in the middle. Real windows and the measured sag are in chapters 7 and 9.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The practice</p>
+      <h2>Each step, ten times the view</h2>
+      <p>Engineers have spent years buying a bigger view. GPT-4 launched at 8,192 tokens in March 2023; its Turbo follow-up jumped to 128,000 that November <span class="tag">public</span>. Gemini 1.5 crossed a million in February 2024 and two million by June <span class="tag">public</span>. Llama 3.1 made 128K standard for open weights <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="growthSvg" viewBox="0 0 800 380" role="img" aria-label="Context windows growing from one thousand to one million tokens between 2019 and 2024"></svg>
+      </figure>
+      <p>Each step is roughly ten times the last, and each costs roughly a hundred times the comparisons &mdash; paid for with the faster chips and leaner attention of Parts 8 through 12. A 128,000-token window holds about a 300-page novel <span class="tag">example</span>, and still answers one token at a time.</p>
+      <details class="trace"><summary>Go deeper: stretching without retraining</summary>
+        <p>Researchers also stretch finished models without starting over: position-rescaling tricks (the YaRN family, 2023) remap the position numbers so old training covers longer text <span class="tag">public</span>. Mistral went the other way, pairing long inputs with sliding-window attention that only ever compares nearby words <span class="tag">public</span>. Same frame problem, opposite answers.</p>
+      </details>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The practice</p>
+      <h2>What does not fit gets fetched</h2>
+      <p>Two workarounds carry what the frame cannot. Retrieval keeps the library outside and fetches only the few chunks each question needs into view. Summarization compresses the old chat into a short running note &mdash; &ldquo;so far we decided&hellip;&rdquo; &mdash; that fits where the full history would not.</p>
+      <figure>
+        <svg id="fetchSvg" viewBox="0 0 800 380" role="img" aria-label="A library outside the frame with the few needed chunks fetched into view, and old chat compressed into a summary"></svg>
+      </figure>
+      <p>Both are admissions that the window is finite. Retrieval bets the right pages can be found fast; summarization bets the details can be safely forgotten. When either bet loses, the model answers from a confident partial picture &mdash; a preview of Part 15.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>Lost in the middle</h2>
+      <p>Being in view is not the same as being used. Liu and colleagues hid one answer-bearing document among many and moved it through every position: accuracy sagged into a U, high at the start and the end, worst in the middle &mdash; dropping more than 30 points <span class="tag">public</span> (<a href="https://arxiv.org/abs/2307.03172">Liu et al., 2023</a>).</p>
+      <figure>
+        <svg id="middleSvg" viewBox="0 0 800 380" role="img" aria-label="Recall accuracy plotted against position in the window, sagging into a U in the middle"></svg>
+      </figure>
+      <p>The test has a folk name: needle in a haystack. Newer long-window models have flattened the curve a lot &mdash; but flattening a U is not erasing it, and the middle of a long context remains the worst place to hide the one fact that matters.</p>
+      <details class="trace"><summary>Go deeper: why the middle loses</summary>
+        <p>Researchers have found pieces of the answer. The first tokens anchor attention out of all proportion to their content &mdash; evicting them wrecks the model, so serving systems pin a few down permanently (attention sinks, Xiao et al., 2023) <span class="tag">public</span> (<a href="https://arxiv.org/abs/2309.17453">StreamingLLM</a>). Recent tokens dominate because every word looks back at what just happened (Part 7). The middle gets neither advantage &mdash; and training rarely rewards digging there.</p>
+      </details>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">The gotcha</p>
+      <h2>The window is not the memory</h2>
+      <p>The advertised number is a capacity, not a promise. RULER, an independent benchmark, grades 17 long-context models on tasks harder than finding a needle &mdash; and finds only half hold up at 32K, with effective lengths from under 4K to over 128K against claims of up to a million <span class="tag">public</span> (<a href="https://arxiv.org/abs/2404.06654">Hsieh et al., 2024</a>).</p>
+      <figure>
+        <svg id="effectiveSvg" viewBox="0 0 800 360" role="img" aria-label="Advertised window sizes beside the shorter lengths models actually use well"></svg>
+      </figure>
+      <p>And the whole visible chat is re-read &mdash; and billed &mdash; on every single reply. A long afternoon in view means paying for the afternoon with each answer. The frame is priced by what fills it, not by its size. Providers soften the bill by caching the prefix: Anthropic (August 2024) and OpenAI (October 2024) discount re-reading unchanged opening text by up to 90% and 50% respectively <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Between chats, nothing persists</h2>
+      <p>Close the chat and the frame is discarded &mdash; words, keys, values, all of it. Every session starts empty: the model brings its trained numbers from Parts 1 to 13 and nothing else. When an app &ldquo;remembers you&rdquo;, it saved notes to disk and fetches them back into view (chapter 8 again) &mdash; memory as retrieval, not recall.</p>
+      <figure>
+        <svg id="persistSvg" viewBox="0 0 800 320" role="img" aria-label="One chat's full frame is discarded; the next chat starts empty except for saved notes fetched in"></svg>
+      </figure>
+      <p>There is no contradiction with the lab: the frame is roomy, but it is rented by the chat. Fluency about &ldquo;last time&rdquo; is either notes reread &mdash; or Part 15.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>The model &ldquo;forgets&rdquo; long chats</b><span>Early details vanish once the chat outgrows the window; nothing decayed, it just fell out.</span><em>chapters 1, 5</em></div>
+        <div><b>128K, 1M, 10M in model cards</b><span>Advertised windows are the headline spec; the fine print is what is usable.</span><em>chapters 7, 10</em></div>
+        <div><b>Slow answers on long documents</b><span>More text in view means quadratically more comparisons per token.</span><em>chapter 4</em></div>
+        <div><b>Citations from RAG apps</b><span>Fetched chunks quoted back are the retrieval workaround, made visible.</span><em>chapter 8</em></div>
+        <div><b>Summaries of &ldquo;so far&rdquo;</b><span>Running notes compress history the frame cannot hold.</span><em>chapter 8</em></div>
+        <div><b>Bigger bills for longer chats</b><span>Every reply re-reads the whole visible chat, and every token counts.</span><em>chapter 10</em></div>
+        <div><b>System prompts eat the window</b><span>Standing instructions are tenants too, billed on every reply like the rest.</span><em>chapter 3</em></div>
+        <div><b>New chat, blank slate</b><span>Each session starts empty; &ldquo;memory&rdquo; is saved notes fetched back in.</span><em>chapter 11</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Context window</b><span>The maximum tokens the model reads in one go: history, documents and reply together.</span></div>
+        <div><b>Sliding window</b><span>What happens when the chat overflows: newest in, oldest out, one token at a time.</span></div>
+        <div><b>KV cache</b><span>Part 7&rsquo;s pile of saved keys and values, growing with every token in view.</span></div>
+        <div><b>Needle in a haystack</b><span>The recall test: one hidden fact in a long context, then a question about it.</span></div>
+        <div><b>Lost in the middle</b><span>The finding that mid-window facts are recalled worst; edges do best.</span></div>
+        <div><b>Effective length</b><span>The length a model actually uses well &mdash; usually far below the advertised window.</span></div>
+        <div><b>Retrieval (RAG)</b><span>Keeping the library outside and fetching only the needed chunks into view.</span></div>
+        <div><b>Running summary</b><span>Compressing old chat into a short note that fits where history would not.</span></div>
+        <div><b>Position rescaling</b><span>Stretching a trained model&rsquo;s window by remapping position numbers.</span></div>
+        <div><b>System prompt</b><span>Standing instructions that hold the first seats in every window.</span></div>
+        <div><b>Stateless</b><span>Keeping nothing between sessions; each chat starts empty.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>The square-law attention cost, the 8.2 billion comparisons at 128K, the KV cache arithmetic, the published window timeline, the lost-in-the-middle U-curve, RULER&rsquo;s effective lengths, attention sinks and prompt-caching discounts.</span><em>papers and reports</em></div>
+        <div><b>Example</b><span>The lab&rsquo;s afternoon and Mara, the comparison triangles, the growth bars, the fetch drawings, the U-curve sketch, the window split and the blank-slate sessions.</span><em>simplified to show the idea</em></div>
+        <div><b>Not public</b><span>How today&rsquo;s frontier labs stretch and price their longest windows, and what their internal recall curves look like.</span><em>companies have not said</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">The hand-off</p>
+      <h2>Next: why models make things up</h2>
+      <p>Forgetting is honest: the text left the frame. But models also fail with everything in view, answering smoothly about things that never happened. Part 15 asks where confident mistakes come from &mdash; and why they are so hard to stop.</p>
+      <figure>
+        <svg id="nextSvg" viewBox="0 0 800 220" role="img" aria-label="A fact inside the frame, yet the answer comes out confident and wrong"></svg>
+      </figure>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>The model reads the ending through a fixed frame and the beginning falls out; and even inside the frame, the middle is where facts go missing. Memory here is a window, not a mind.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+    const C={gold:'#f5c76a',teal:'#76d5c1',or:'#ff8059',pur:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f'};
+    function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+    const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+    const M=(svg,x,y,s)=>T(svg,x,y,s,{'text-anchor':'middle'});
+    const Cap=(svg,x,y,s)=>T(svg,x,y,s,{fill:C.mut,'font-size':14});
+    function R(svg,x,y,w,h,stroke,o={}){return S(svg,'rect',Object.assign({x,y,width:w,height:h,fill:'none',stroke,'stroke-width':2},o));}
+    function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
+    const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+
+    /* 1: the start of a long chat falls out of view. */
+    (()=>{const svg=$('forgetSvg');
+      Cap(svg,40,32,'an hour of chatting');
+      const ws=[420,520,380,560,480,540,400,500];
+      ws.forEach((w,i)=>{const y=52+i*34,gone=i<3;
+        S(svg,'rect',{x:40,y,width:w,height:22,fill:gone?C.rose:C.gold,'fill-opacity':gone?.3:.8});});
+      S(svg,'rect',{x:36,y:190,width:728,height:140,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      T(svg,640,150,'fell out',{fill:C.rose,'font-size':14});
+      T(svg,640,300,'still in view',{fill:C.gold,'font-size':14});
+    })();
+
+    /* 2: the frame holds the tail of a longer document. */
+    (()=>{const svg=$('frameSvg'),m=marker(svg,'fr',C.mut);
+      Cap(svg,40,32,'one chat, longer than the frame');
+      R(svg,140,52,240,280,C.gold);
+      for(let i=0;i<10;i++)
+        S(svg,'rect',{x:160,y:72+i*28,width:i%3===2?120:200,height:10,fill:C.gold,'fill-opacity':.5});
+      S(svg,'rect',{x:110,y:196,width:300,height:136,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      T(svg,430,130,'out of view',{fill:C.rose,'font-size':14});
+      T(svg,430,304,'in view',{fill:C.gold,'font-size':14});
+      R(svg,480,212,250,76,C.gold);
+      M(svg,605,246,'the reply fits too',{'font-size':15});
+      arrow(svg,'M410 264 L480 256',m,C.mut);
+    })();
+
+    /* 3: four tenants share one window. */
+    (()=>{const svg=$('tenantsSvg');
+      Cap(svg,40,32,'one 128K window, sketched');
+      const segs=[['system','2K',40,110,C.pur],['chat history','90K',150,300,C.gold],['fetched pages','20K',454,170,C.gold],['reply space','16K',624,136,C.or]];
+      segs.forEach(([t,v,x,w,col],i)=>{
+        if(i===3)S(svg,'rect',{x,y:70,width:w,height:64,fill:'none',stroke:col,'stroke-width':2,'stroke-dasharray':'6 4'});
+        else S(svg,'rect',{x,y:70,width:w,height:64,fill:col,'fill-opacity':.75});
+        M(svg,x+w/2,58,v,{fill:C.fg,'font-size':14});
+        M(svg,x+w/2,170,t,{fill:C.fg,'font-size':15});});
+      Cap(svg,40,232,'documents squeeze out history');
+    })();
+
+    /* 3: comparisons explode with the square of the length. */
+    (()=>{const svg=$('costSvg');
+      Cap(svg,40,32,'comparisons grow with the square');
+      const groups=[[4,140,5,16],[8,400,4,14],[16,660,3,13]];
+      groups.forEach(([n,cx,r,step])=>{
+        for(let row=1;row<=n;row++){const y=270-(row-1)*step;
+          for(let k=0;k<row;k++)
+            S(svg,'circle',{cx:cx+(k-(row-1)/2)*12,cy:y,r,fill:C.or});}
+        M(svg,cx,308,n+' words',{'font-size':15});
+        M(svg,cx,332,(n*(n+1)/2)+' pairs',{fill:C.or,'font-size':15});});
+    })();
+
+    /* 4: the frame slides forward one token at a time. */
+    (()=>{const svg=$('slideSvg'),m=marker(svg,'sl',C.mut),mr=marker(svg,'slr',C.rose);
+      Cap(svg,40,32,'each new token slides the frame');
+      S(svg,'rect',{x:250,y:60,width:340,height:180,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      [90,120,150,180,210].forEach(y=>S(svg,'rect',{x:270,y,width:300,height:18,fill:C.gold,'fill-opacity':.8}));
+      [108,144,180].forEach(y=>S(svg,'rect',{x:90,y,width:140,height:18,fill:C.rose,'fill-opacity':.4}));
+      [144,180].forEach(y=>S(svg,'rect',{x:610,y,width:120,height:18,fill:C.gold,'fill-opacity':.8}));
+      arrow(svg,'M250 135 L170 135',mr,C.rose);
+      arrow(svg,'M250 171 L170 171',mr,C.rose);
+      arrow(svg,'M730 135 L596 135',m,C.mut);
+      arrow(svg,'M730 171 L596 171',m,C.mut);
+      T(svg,90,262,'oldest, out',{fill:C.rose,'font-size':14});
+      T(svg,610,262,'newest, in',{fill:C.gold,'font-size':14});
+      M(svg,420,262,'the frame',{fill:C.pur,'font-size':14});
+      Cap(svg,40,330,'the model only ever sees inside');
+    })();
+
+    /* 5: the lab. A fixed chat, a movable frame, one hidden fact. */
+    (()=>{
+      const lw=$('lw'),lp=$('lp'),lwo=$('lw-o'),lpo=$('lp-o'),ledger=$('ledger'),note=$('labNote'),chart=$('labChart');
+      const sizes=[4096,8192,32768,131072,1000000],names=['4,096','8,192','32,768','131,072','1,000,000'];
+      const chat=100000;
+      const pct=v=>Math.round(v*100)+'%';
+      function model(){
+        const W=sizes[Number(lw.value)],pos=Number(lp.value);
+        const factTok=pos/100*chat,vis=Math.min(W,chat),start=chat-vis;
+        const inView=factTok>=start;
+        const rel=inView?(vis>=chat?pos/100:(factTok-start)/vis):0;
+        const recall=inView?0.55+0.35*Math.pow(2*rel-1,2):0;
+        return{W,pos,factTok,vis,start,inView,rel,recall};
+      }
+      function draw(){
+        while(chart.firstChild)chart.removeChild(chart.firstChild);
+        const st=model();
+        lwo.textContent=names[Number(lw.value)];
+        lpo.textContent=st.pos+'%';
+        T(chart,16,28,'the afternoon: 100,000 tokens',{fill:C.mut,'font-size':14});
+        S(chart,'rect',{x:16,y:44,width:488,height:36,fill:'none',stroke:C.line,'stroke-width':1.5});
+        const fx=16+488*(st.start/chat),fw=488*(st.vis/chat);
+        S(chart,'rect',{x:fx,y:44,width:fw,height:36,fill:C.pur,'fill-opacity':.22,stroke:C.pur,'stroke-width':1.5});
+        const mx=16+488*(st.factTok/chat);
+        S(chart,'path',{d:`M${mx} 40 L${mx} 84`,stroke:st.inView?C.gold:C.rose,'stroke-width':3});
+        S(chart,'circle',{cx:mx,cy:62,r:7,fill:st.inView?C.gold:C.rose});
+        T(chart,16,102,'start',{fill:C.faint,'font-size':14});
+        T(chart,504,102,'now',{fill:C.faint,'font-size':14,'text-anchor':'end'});
+        M(chart,260,132,st.inView?'Mara is in view':'Mara fell out of view',{fill:st.inView?C.gold:C.rose,'font-size':15});
+        T(chart,16,164,'recall chance',{fill:C.mut,'font-size':14});
+        S(chart,'rect',{x:16,y:176,width:Math.max(8,Math.round(st.recall*400)),height:34,fill:st.inView?C.teal:C.rose});
+        T(chart,32+Math.round(st.recall*400),202,pct(st.recall),{fill:C.fg,'font-size':15});
+        T(chart,16,272,'edges recall best, middle sags',{fill:C.mut,'font-size':14});
+        const kv=[['window size',names[Number(lw.value)]],['chat length','100,000'],['fact at',st.pos+'%'],['Mara in view?',st.inView?'yes':'no'],['recall chance',pct(st.recall)]];
+        ledger.innerHTML='';
+        kv.forEach(([k,v])=>{const a=document.createElement('span');a.textContent=k;ledger.appendChild(a);const b=document.createElement('output');b.textContent=v;ledger.appendChild(b);});
+        note.innerHTML='';
+        const s1=document.createElement('span');
+        s1.textContent=!st.inView?'Mara is out of view: no model retrieves what it cannot read. ':(st.rel>0.3&&st.rel<0.7)?`Mara is in view but buried mid-frame (recall ${pct(st.recall)}). `:`Mara sits near the edge of the frame (recall ${pct(st.recall)}). `;
+        note.appendChild(s1);
+        const s2=document.createElement('b');
+        s2.textContent=!st.inView?'Widen the frame to bring her back.':(st.rel>0.3&&st.rel<0.7)?'In-view is not the same as recalled: chapter 9.':'Edges are the safest hiding places.';
+        note.appendChild(s2);
+      }
+      lw.addEventListener('input',draw);lp.addEventListener('input',draw);
+      document.querySelectorAll('.lab .presets button').forEach(b=>b.addEventListener('click',()=>{
+        const p=b.dataset.p.split(',');
+        lw.value=p[0];lp.value=p[1];
+        draw();}));
+      draw();
+    })();
+
+    /* 6: a decade of bigger windows, roughly 10x a step. */
+    (()=>{const svg=$('growthSvg');
+      Cap(svg,40,32,'windows, 2019 to 2024');
+      const rows=[['GPT-2 · 2019','1K',1024],['GPT-4 · Mar 23','8K',8192],['GPT-4 Turbo · Nov 23','128K',131072],['Gemini 1.5 · Feb 24','1M',1000000],['Gemini 1.5 · Jun 24','2M',2000000]];
+      rows.forEach(([t,v,n],i)=>{const y=60+i*56;
+        const w=Math.round((Math.log10(n)-3+0.5)*90);
+        T(svg,140,y+26,t,{fill:C.mut,'font-size':14,'text-anchor':'end'});
+        S(svg,'rect',{x:150,y,width:w,height:36,fill:C.teal,'fill-opacity':i>=3?.9:.55});
+        T(svg,162+w,y+25,v,{fill:C.fg,'font-size':15});});
+      Cap(svg,150,348,'each step ~10x the view');
+    })();
+
+    /* 7: retrieval fetches, summaries compress. */
+    (()=>{const svg=$('fetchSvg'),m=marker(svg,'ft',C.mut);
+      Cap(svg,40,36,'retrieval: fetch what the question needs');
+      for(let r=0;r<3;r++)for(let c=0;c<2;c++)
+        S(svg,'rect',{x:40+c*62,y:56+r*46,width:52,height:34,fill:'none',stroke:C.line,'stroke-width':1.5});
+      S(svg,'rect',{x:420,y:48,width:320,height:160,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      [70,116,162].forEach(y=>S(svg,'rect',{x:440,y,width:280,height:26,fill:C.gold,'fill-opacity':.8}));
+      arrow(svg,'M164 90 L414 83',m,C.mut);arrow(svg,'M164 136 L414 129',m,C.mut);
+      M(svg,580,232,'fetched chunks',{fill:C.mut,'font-size':14});
+      Cap(svg,40,268,'summary: compress what came before');
+      [288,314].forEach(y=>S(svg,'rect',{x:40,y,width:300,height:20,fill:C.gold,'fill-opacity':.35}));
+      R(svg,420,282,180,52,C.teal);
+      M(svg,510,314,'so far…',{'font-size':15});
+      arrow(svg,'M340 304 L414 308',m,C.mut);arrow(svg,'M600 308 L660 308',m,C.mut);
+      T(svg,668,314,'fits in view',{fill:C.gold,'font-size':14});
+    })();
+
+    /* 8: the U-curve of recall against position. */
+    (()=>{const svg=$('middleSvg'),m=marker(svg,'md',C.mut);
+      arrow(svg,'M100 300 L740 300',m,C.mut);
+      arrow(svg,'M100 300 L100 50',m,C.mut);
+      T(svg,740,326,'start to end',{fill:C.mut,'font-size':14,'text-anchor':'end'});
+      M(svg,100,36,'recall',{fill:C.mut,'font-size':14});
+      let d='';
+      for(let i=0;i<=20;i++){const t=i/20,x=100+t*640,y=300-(0.55+0.35*Math.pow(2*t-1,2))*220;
+        d+=(i===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';}
+      S(svg,'path',{d,fill:'none',stroke:C.teal,'stroke-width':3});
+      S(svg,'circle',{cx:100,cy:102,r:9,fill:C.gold});
+      T(svg,150,80,'start holds ~90%',{fill:C.fg,'font-size':14});
+      S(svg,'circle',{cx:420,cy:179,r:9,fill:C.rose});
+      M(svg,420,216,'middle sags ~55%',{fill:C.fg,'font-size':14});
+      S(svg,'circle',{cx:740,cy:102,r:9,fill:C.gold});
+      T(svg,586,80,'the end holds ~90%',{fill:C.fg,'font-size':14});
+      M(svg,400,352,'accuracy sags mid-window',{fill:C.mut,'font-size':14});
+    })();
+
+    /* 9: claimed windows beside what holds up. */
+    (()=>{const svg=$('effectiveSvg');
+      Cap(svg,40,36,'17 long-context models, one benchmark');
+      T(svg,140,110,'claimed',{fill:C.mut,'font-size':14,'text-anchor':'end'});
+      S(svg,'rect',{x:150,y:80,width:480,height:44,fill:C.gold,'fill-opacity':.7});
+      T(svg,642,110,'32K or more',{fill:C.fg,'font-size':15});
+      T(svg,140,210,'holds up',{fill:C.mut,'font-size':14,'text-anchor':'end'});
+      S(svg,'rect',{x:150,y:180,width:240,height:44,fill:C.teal});
+      T(svg,402,210,'half hold up',{fill:C.fg,'font-size':15});
+      Cap(svg,150,280,'capacity is not performance');
+    })();
+
+    /* 11: the frame is rented by the chat. */
+    (()=>{const svg=$('persistSvg'),m=marker(svg,'ps',C.mut);
+      Cap(svg,40,32,'closing a chat throws the frame away');
+      S(svg,'rect',{x:40,y:60,width:200,height:120,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      [84,112,140].forEach(y=>S(svg,'rect',{x:60,y,width:160,height:18,fill:C.gold,'fill-opacity':.8}));
+      M(svg,140,210,'chat A',{fill:C.mut,'font-size':14});
+      arrow(svg,'M240 120 L330 120',m,C.mut);
+      M(svg,296,147,'thrown away',{fill:C.rose,'font-size':14});
+      S(svg,'rect',{x:380,y:60,width:200,height:120,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      M(svg,480,210,'chat B starts empty',{fill:C.fg,'font-size':14});
+      R(svg,300,232,160,56,C.teal);
+      M(svg,380,266,'saved notes',{'font-size':15});
+      arrow(svg,'M380 232 L380 184',m,C.mut);
+      T(svg,292,262,'fetched back',{fill:C.mut,'font-size':14,'text-anchor':'end'});
+    })();
+
+    /* hand-off: in view, yet answered wrong. */
+    (()=>{const svg=$('nextSvg'),m=marker(svg,'nx',C.mut);
+      S(svg,'rect',{x:40,y:30,width:280,height:150,fill:'none',stroke:C.pur,'stroke-width':2,'stroke-dasharray':'8 6'});
+      S(svg,'circle',{cx:150,cy:95,r:10,fill:C.gold});
+      M(svg,150,140,'fact in view',{fill:C.fg,'font-size':14});
+      arrow(svg,'M320 105 L400 105',m,C.mut);
+      R(svg,400,55,330,100,C.rose);
+      M(svg,565,100,'Mara? Never met her.',{'font-size':15});
+      M(svg,565,124,'confident, wrong',{fill:C.mut,'font-size':14});
+      M(svg,565,188,'part 15',{fill:C.mut,'font-size':14});
+    })();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
