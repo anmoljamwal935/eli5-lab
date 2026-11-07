@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "entropy-eli5",
+    "title": "Entropy: why energy spreads out",
+    "category": "Energy & Physics",
+    "minutes": 20,
+    "summary": "Entropy isn't mess; it's energy spreading out.",
+    "bullets": [
+      "Even a perfect engine must waste heat; temperatures set the limit",
+      "Heat flowing cold to hot is improbable, not impossible; odds collapse as atoms grow",
+      "The Sun gives Earth concentrated energy; everything runs as it spreads"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CONCENTRATED",
+      "SPREADING",
+      "SPREAD OUT"
+    ],
+    "file": "explainers/entropy-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Thermodynamics",
+    "card": "<svg viewBox=\"0 0 320 155\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"The same energy drawn twice with equal area: a tall concentrated coral block becomes a long flat teal sheet as it spreads out\">\n  <rect x=\"60\" y=\"46\" width=\"30\" height=\"64\" fill=\"#ff8059\"/>\n  <path d=\"M100 103 H140 M133 97 L143 103 L133 109\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"2\"/>\n  <rect x=\"152\" y=\"97\" width=\"128\" height=\"13\" fill=\"#76d5c1\"/>\n  <g font-family=\"monospace\" font-size=\"9\" fill=\"#f1eee8\" text-anchor=\"middle\"><text x=\"75\" y=\"132\">CONCENTRATED</text><text x=\"216\" y=\"132\">SPREAD OUT</text></g>\n</svg>"
+  },
+  {
     "id": "how-internet-works-eli5",
     "title": "How the internet actually works",
     "category": "Infrastructure",

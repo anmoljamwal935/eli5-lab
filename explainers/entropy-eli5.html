@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Entropy: why energy spreads out — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    .strike{stroke:#f87171}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Entropy isn&#x27;t mess; it&#x27;s energy spreading out.">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/entropy-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Entropy: why energy spreads out">
+<meta property="og:description" content="Entropy isn&#x27;t mess; it&#x27;s energy spreading out.">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/entropy-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/entropy-eli5.png?v=bc072ac9">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Entropy: why energy spreads out">
+<meta property="article:published_time" content="2026-11-08">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Energy &amp; Physics</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>ENERGY &amp; PHYSICS / 20 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Entropy: why energy spreads out</h1>
+      <p class="lede">Entropy is not "mess". It measures how widely energy has spread out. The Sun's real gift to Earth is energy that is still bunched up, and every event on Earth happens as that energy spreads.</p>
+      <p class="source-note">Built from Veritasium's video "The Most Misunderstood Concept in Physics" (English captions, 27 min), facts checked against the Egan–Lineweaver entropy budget, Quanta, MacTutor and NASA · <a href="https://youtu.be/DxL2HoqLbyA">Watch the source ↗</a></p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#ff8059"></i>concentrated, usable energy (low entropy)</span>
+        <span><i style="background:#76d5c1"></i>spread-out energy (high entropy)</span>
+        <span><i style="background:#f5c76a"></i>amount of energy, or work done</span>
+        <span><i style="background:#c3b8ff"></i>counting the ways (odds)</span>
+        <span><i style="background:#f87171"></i>wrong idea</span>
+      </div>
+    </section>
+
+    <!-- 1. The puzzle -->
+    <section class="panel">
+      <p class="kicker">The puzzle</p>
+      <h2>What does the Earth get from the Sun?</h2>
+      <p>Most people say "energy". But over long stretches Earth sends back as much energy as it takes in. If every unit of energy leaves again, what did we actually receive?</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="Two equal-length bars: energy arriving from the Sun and the same amount of energy leaving to space, followed by a question mark">
+          <text x="40" y="34" fill="#a5a29c" font-size="18">IN FROM THE SUN</text>
+          <rect x="40" y="46" width="640" height="40" fill="#f5c76a"/><text x="56" y="73" fill="#202020" font-size="19">100 units</text>
+          <text x="40" y="136" fill="#a5a29c" font-size="18">OUT TO SPACE</text>
+          <rect x="40" y="148" width="640" height="40" fill="#f5c76a"/><text x="56" y="175" fill="#202020" font-size="19">100 units</text>
+          <text x="735" y="128" fill="#ff8059" font-size="64">?</text>
+          <text x="40" y="236" fill="#a5a29c" font-size="17">Same length on purpose · 6.4 px = 1 unit · illustrative units</text>
+        </svg>
+      </figure>
+      <p class="note">Today the balance is slightly off: NASA and NOAA found Earth's energy surplus roughly doubled between 2005 and 2019, which is why the climate is warming. The video's point concerns the long-run balance that keeps temperatures steady.</p>
+    </section>
+
+    <!-- 2. Carnot's problem -->
+    <section class="panel">
+      <p class="kicker">Carnot's problem</p>
+      <h2>Steam engines wasted almost everything</h2>
+      <p>In the 1820s a young French engineer, Sadi Carnot, asked why British steam engines beat French ones. The video says the best engines of the day turned only about 3% of the fire's heat into useful motion. He set out to find the true limit.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Heat taken from the fire is 100 percent. A real 1820s engine turned about 3 percent into motion and wasted 97 percent. The ideal limit for 160 degree steam is 32 percent">
+          <text x="40" y="34" fill="#a5a29c" font-size="17">HEAT TAKEN FROM THE FIRE</text>
+          <rect x="40" y="44" width="600" height="38" fill="#ff8059"/><text x="56" y="70" fill="#202020" font-size="19">100%</text>
+          <text x="40" y="118" fill="#a5a29c" font-size="17">A REAL ENGINE OF THE 1820s</text>
+          <rect x="40" y="128" width="18" height="38" fill="#f5c76a"/><rect x="58" y="128" width="582" height="38" fill="#76d5c1"/><text x="76" y="154" fill="#202020" font-size="19">97% leaks away as waste heat</text>
+          <text x="40" y="192" fill="#f5c76a" font-size="17">3% becomes motion (figure cited in the video)</text>
+          <text x="40" y="226" fill="#a5a29c" font-size="17">THE CEILING FOR 160 °C STEAM</text>
+          <rect x="40" y="236" width="194" height="38" fill="#f5c76a"/><rect x="234" y="236" width="406" height="38" fill="#76d5c1"/><text x="54" y="262" fill="#202020" font-size="19">32%</text>
+          <text x="660" y="262" fill="#a5a29c" font-size="16">6 px = 1%</text>
+        </svg>
+      </figure>
+      <p>Carnot's story, briefly: as a 17-year-old École Polytechnique student he fought, unsuccessfully, near Paris in 1814. In 1821 he visited his exiled father, who also loved machines, and the two talked steam engines (MacTutor biography).</p>
+    </section>
+
+    <!-- 3. The ideal engine -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>A perfect engine in four moves</h2>
+      <p>Carnot imagined an engine with no friction and no leaks: a chamber of air with a piston that turns a flywheel. A very hot bar and a very cold bar take turns touching the chamber. Move 1: the hot bar touches, heat flows in and the air expands, pushing the piston up. Move 2: the bar is removed, the air keeps expanding and cools. Move 3: the cold bar touches and the flywheel pushes the piston down, squeezing heat out into it. Move 4: the bar is removed and the squeezed air warms back up.</p>
+      <figure>
+        <svg viewBox="0 0 800 290" role="img" aria-label="Four cylinders with pistons showing the cycle: hot bar below with piston rising, no bar and piston rising further while air cools, cold bar below with piston pushed down, no bar and piston pushed further down while air warms">
+          <g fill="none" stroke="#ff8059" stroke-width="3"><circle cx="110" cy="28" r="14"/><circle cx="290" cy="28" r="14"/><circle cx="470" cy="28" r="14"/><circle cx="650" cy="28" r="14"/></g>
+          <g stroke="#a5a29c" stroke-width="3"><path d="M110 42 V97"/><path d="M290 42 V70"/><path d="M470 42 V107"/><path d="M650 42 V132"/></g>
+          <g fill="#202020" stroke="#57534f" stroke-width="2"><rect x="65" y="60" width="90" height="130"/><rect x="245" y="60" width="90" height="130"/><rect x="425" y="60" width="90" height="130"/><rect x="605" y="60" width="90" height="130"/></g>
+          <rect x="67" y="105" width="86" height="85" fill="#ff8059" opacity=".5"/><rect x="247" y="78" width="86" height="112" fill="#76d5c1" opacity=".35"/><rect x="427" y="115" width="86" height="75" fill="#76d5c1" opacity=".5"/><rect x="607" y="140" width="86" height="50" fill="#ff8059" opacity=".35"/>
+          <g fill="#a5a29c"><rect x="65" y="97" width="90" height="8"/><rect x="245" y="70" width="90" height="8"/><rect x="425" y="107" width="90" height="8"/><rect x="605" y="132" width="90" height="8"/></g>
+          <path d="M172 140 V108 M166 116 L172 106 L178 116" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <path d="M352 105 V78 M346 86 L352 76 L358 86" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <path d="M532 80 V113 M526 105 L532 115 L538 105" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <path d="M712 115 V138 M706 130 L712 140 L718 130" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <rect x="65" y="196" width="90" height="26" fill="#ff8059"/><text x="110" y="215" text-anchor="middle" fill="#202020" font-size="16">HOT BAR</text>
+          <rect x="425" y="196" width="90" height="26" fill="#76d5c1"/><text x="470" y="215" text-anchor="middle" fill="#202020" font-size="16">COLD BAR</text>
+          <text x="110" y="262" text-anchor="middle" fill="#f1eee8" font-size="17">1 · HEAT IN</text>
+          <text x="290" y="262" text-anchor="middle" fill="#f1eee8" font-size="17">2 · COOLS</text>
+          <text x="470" y="262" text-anchor="middle" fill="#f1eee8" font-size="17">3 · HEAT OUT</text>
+          <text x="650" y="262" text-anchor="middle" fill="#f1eee8" font-size="17">4 · WARMS</text>
+        </svg>
+      </figure>
+      <p class="note">Carnot himself believed heat was an invisible fluid ("caloric") that is merely carried through the engine, never used up. Later work showed that part of the heat is really turned into work. The limit he found still holds.</p>
+    </section>
+
+    <!-- 4. Reversible -->
+    <section class="panel">
+      <p class="kicker">Reversible</p>
+      <h2>Run it backwards and nothing is lost</h2>
+      <p>With no friction, you can run the engine in reverse: the flywheel's motion pulls heat out of the cold bar and pushes it back into the hot one. After as many reverse laps as forward laps, everything is exactly as it began. Even so, the engine is not 100% efficient.</p>
+      <figure>
+        <svg viewBox="0 0 800 310" role="img" aria-label="Forward lap: hot bar loses 100 units, flywheel gains 32, cold bar gains 68. Reverse lap: the signs flip and every bar returns to where it started">
+          <path d="M400 34 V262" stroke="#57534f" stroke-width="2" stroke-dasharray="5 5"/>
+          <text x="780" y="30" text-anchor="end" fill="#a5a29c" font-size="17">FORWARD LAP</text>
+          <text x="30" y="62" fill="#a5a29c" font-size="17">Hot bar</text><rect x="160" y="44" width="240" height="26" fill="#ff8059"/><text x="176" y="63" fill="#202020" font-size="17">−100</text>
+          <text x="30" y="96" fill="#a5a29c" font-size="17">Flywheel</text><rect x="400" y="78" width="77" height="26" fill="#f5c76a"/><text x="410" y="97" fill="#202020" font-size="17">+32</text>
+          <text x="30" y="130" fill="#a5a29c" font-size="17">Cold bar</text><rect x="400" y="112" width="163" height="26" fill="#76d5c1"/><text x="410" y="131" fill="#202020" font-size="17">+68</text>
+          <text x="780" y="168" text-anchor="end" fill="#a5a29c" font-size="17">REVERSE LAP</text>
+          <text x="30" y="196" fill="#a5a29c" font-size="17">Hot bar</text><rect x="400" y="178" width="240" height="26" fill="#ff8059"/><text x="410" y="197" fill="#202020" font-size="17">+100</text>
+          <text x="30" y="230" fill="#a5a29c" font-size="17">Flywheel</text><rect x="323" y="212" width="77" height="26" fill="#f5c76a"/><text x="333" y="231" fill="#202020" font-size="17">−32</text>
+          <text x="30" y="264" fill="#a5a29c" font-size="17">Cold bar</text><rect x="237" y="246" width="163" height="26" fill="#76d5c1"/><text x="247" y="265" fill="#202020" font-size="17">−68</text>
+          <text x="30" y="298" fill="#a5a29c" font-size="16">2.4 px = 1 unit of energy · each lap: −100 + 32 + 68 = 0, so energy is conserved</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 5. The limit -->
+    <section class="panel">
+      <p class="kicker">The limit</p>
+      <h2>Temperatures alone set the maximum</h2>
+      <p>Some heat must be dumped into the cold bar, or the piston could never return. The best possible share of heat turned into work is 1 − (cold ÷ hot), measured on the Kelvin scale, where zero means the gas particles have stopped moving. The video's 32% fits steam at 160 °C with a cold side near 20 °C (our assumption). The design and the gas do not matter, only the two temperatures.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="Hot side 433 kelvin drawn as a long bar, cold side 293 kelvin as a shorter bar; the 140 kelvin gap is 32 percent of the hot bar, the maximum share turned into work">
+          <text x="40" y="34" fill="#a5a29c" font-size="17">TEMPERATURES, DRAWN AT 1.4 px PER KELVIN</text>
+          <rect x="40" y="46" width="606" height="40" fill="#ff8059"/><text x="56" y="73" fill="#202020" font-size="19">Hot side · 433 K (160 °C)</text>
+          <rect x="40" y="108" width="410" height="40" fill="#76d5c1"/><text x="56" y="135" fill="#202020" font-size="19">Cold side · 293 K (20 °C)</text>
+          <rect x="450" y="108" width="196" height="40" fill="none" stroke="#f5c76a" stroke-width="2" stroke-dasharray="6 5"/><text x="548" y="135" text-anchor="middle" fill="#f5c76a" font-size="19">gap 140 K</text>
+          <text x="40" y="206" fill="#f5c76a" font-size="22">Best share turned into work = gap ÷ hot = 140 ÷ 433 = 32%</text>
+          <text x="40" y="244" fill="#a5a29c" font-size="16">Kelvin = Celsius + 273.15</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 6. Why not 100% -->
+    <section class="panel">
+      <p class="kicker">Why not 100%</p>
+      <h2>Two ways to push toward 100%</h2>
+      <p>Make the hot side hotter, the cold side colder, or both, and the limit rises. It reaches 100% only with an infinitely hot source or a cold side at absolute zero. Kelvin's insight: at zero the gas pushes with no force, so squeezing it costs no work and no heat is lost. Neither condition can be built.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Maximum efficiency bars out of 100 percent: 32 percent for 433 over 293 kelvin, 63 percent if the hot side is 800 kelvin, 77 percent if the cold side is 100 kelvin, and an unreachable dashed 100 percent bar needing absolute zero">
+          <text x="40" y="30" fill="#a5a29c" font-size="17">MAXIMUM SHARE TURNED INTO WORK · 6 px = 1%</text>
+          <text x="40" y="66" fill="#f1eee8" font-size="17">Carnot's case · 433 K hot, 293 K cold</text>
+          <rect x="40" y="74" width="194" height="30" fill="#f5c76a"/><text x="246" y="97" fill="#f1eee8" font-size="17">32%</text>
+          <text x="40" y="136" fill="#f1eee8" font-size="17">Hotter fire · 800 K hot, 293 K cold</text>
+          <rect x="40" y="144" width="380" height="30" fill="#f5c76a"/><text x="432" y="167" fill="#f1eee8" font-size="17">63%</text>
+          <text x="40" y="206" fill="#f1eee8" font-size="17">Colder sink · 433 K hot, 100 K cold</text>
+          <rect x="40" y="214" width="461" height="30" fill="#f5c76a"/><text x="513" y="237" fill="#f1eee8" font-size="17">77%</text>
+          <text x="40" y="276" fill="#f87171" font-size="17">Perfect · needs cold side at 0 K, or an infinitely hot one</text>
+          <rect x="40" y="284" width="600" height="30" fill="none" stroke="#f87171" stroke-width="2" stroke-dasharray="6 5"/><text x="56" y="306" fill="#f87171" font-size="17">100% · unreachable</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 7. Real engines spread energy -->
+    <section class="panel">
+      <p class="kicker">Real engines</p>
+      <h2>Energy doesn't vanish, it spreads out</h2>
+      <p>Real engines add friction, heat leaking into metal and air, and uneven temperatures. The total energy never changes, but it ends up smeared over the walls, the axle and the surroundings, and nobody can gather it back. Energy is most useful when concentrated and least useful when spread out.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="The same amount of energy drawn three times with equal area: a tall narrow block, a medium block, and a long flat sheet, showing energy spreading out while the total stays the same">
+          <text x="40" y="34" fill="#a5a29c" font-size="17">SAME ENERGY IN EVERY SHAPE · EQUAL AREA</text>
+          <rect x="60" y="120" width="60" height="80" fill="#ff8059"/>
+          <rect x="240" y="160" width="120" height="40" fill="#76d5c1" opacity=".6"/>
+          <rect x="500" y="180" width="240" height="20" fill="#76d5c1"/>
+          <path d="M128 185 H232 M224 178 L234 185 L224 192" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <path d="M368 192 H492 M484 185 L494 192 L484 199" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <text x="90" y="234" text-anchor="middle" fill="#ff8059" font-size="18">CONCENTRATED</text>
+          <text x="300" y="234" text-anchor="middle" fill="#76d5c1" font-size="18">SPREADING</text>
+          <text x="620" y="234" text-anchor="middle" fill="#76d5c1" font-size="18">SPREAD OUT</text>
+          <text x="90" y="104" text-anchor="middle" fill="#f1eee8" font-size="17">easy to use</text>
+          <text x="620" y="164" text-anchor="middle" fill="#f1eee8" font-size="17">hard to use</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 8. Entropy named -->
+    <section class="panel">
+      <p class="kicker">The name</p>
+      <h2>Entropy: how spread out energy is</h2>
+      <p>In 1865 Rudolf Clausius named this quantity entropy. Concentrated energy has low entropy; spread-out energy has high entropy. He summed up the first two laws of heat: the energy of the universe is constant, and its entropy tends toward a maximum. The everyday word "disorder" fits, but "energy spreading out" is the clearer picture.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="Three everyday proofs of the second law: a hot cup cooling into the room, gas leaving a corner to fill a box, and a perpetual-motion wheel crossed out">
+          <path d="M92 100 h76 v50 q0 30 -38 30 q-38 0 -38 -30 Z" fill="none" stroke="#ff8059" stroke-width="4"/>
+          <path d="M168 112 q28 0 28 22 q0 22 -28 22" fill="none" stroke="#ff8059" stroke-width="4"/>
+          <path d="M112 86 q-8 -12 0 -22 M130 86 q-8 -12 0 -22 M148 86 q-8 -12 0 -22" fill="none" stroke="#ff8059" stroke-width="3"/>
+          <path d="M206 138 H250 M242 131 L252 138 L242 145" fill="none" stroke="#76d5c1" stroke-width="3"/>
+          <rect x="280" y="90" width="100" height="90" fill="none" stroke="#57534f" stroke-width="2"/><circle cx="293" cy="105" r="5" fill="#ff8059"/><circle cx="303" cy="104" r="5" fill="#ff8059"/><circle cx="310" cy="104" r="5" fill="#ff8059"/><circle cx="294" cy="117" r="5" fill="#ff8059"/><circle cx="301" cy="115" r="5" fill="#ff8059"/><circle cx="311" cy="116" r="5" fill="#ff8059"/><circle cx="295" cy="127" r="5" fill="#ff8059"/><circle cx="302" cy="128" r="5" fill="#ff8059"/>
+          <path d="M388 135 H422 M414 128 L424 135 L414 142" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <rect x="430" y="90" width="100" height="90" fill="none" stroke="#57534f" stroke-width="2"/><circle cx="457" cy="126" r="5" fill="#76d5c1"/><circle cx="467" cy="112" r="5" fill="#76d5c1"/><circle cx="492" cy="122" r="5" fill="#76d5c1"/><circle cx="509" cy="115" r="5" fill="#76d5c1"/><circle cx="454" cy="153" r="5" fill="#76d5c1"/><circle cx="472" cy="146" r="5" fill="#76d5c1"/><circle cx="488" cy="150" r="5" fill="#76d5c1"/><circle cx="509" cy="160" r="5" fill="#76d5c1"/>
+          <circle cx="680" cy="135" r="45" fill="none" stroke="#f5c76a" stroke-width="4"/><circle cx="680" cy="135" r="6" fill="#f5c76a"/>
+          <path d="M680 90 V180 M635 135 H725 M648 103 L712 167 M712 103 L648 167" fill="none" stroke="#f5c76a" stroke-width="2"/>
+          <path class="strike" d="M628 83 L732 187 M732 83 L628 187" fill="none" stroke-width="6"/>
+          <text x="140" y="238" text-anchor="middle" fill="#f1eee8" font-size="18">Hot things cool</text>
+          <text x="405" y="238" text-anchor="middle" fill="#f1eee8" font-size="18">Gas fills the box</text>
+          <text x="680" y="238" text-anchor="middle" fill="#f87171" font-size="18">No perpetual motion</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 9. The model -->
+    <section class="panel">
+      <p class="kicker">The model</p>
+      <h2>Two tiny bars of atoms</h2>
+      <p>The laws of physics run the same forwards and backwards, so why does time seem to have a direction? The video's toy model: two metal bars of 8 atoms each. Energy comes in indivisible packets, and more packets means hotter. The left bar holds 7, the right 3. Packets hop randomly between atoms. Touch the bars together and packets can hop across; any one arrangement is as likely as any other. A snapshot may catch 9 on the left and 1 on the right.</p>
+      <figure>
+        <svg viewBox="0 0 800 462" role="img" aria-label="Top: two bars of eight atoms each, apart, with 7 energy packets on the left bar and 3 on the right. Bottom: the bars touching, in a later snapshot with 9 packets on the left and 1 on the right">
+          <text x="400" y="30" text-anchor="middle" fill="#a5a29c" font-size="17">START · BARS APART</text>
+          <circle cx="80" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="72" cy="70" r="6" fill="#ff8059"/><circle cx="88" cy="70" r="6" fill="#ff8059"/><circle cx="140" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="140" cy="70" r="6" fill="#ff8059"/><circle cx="200" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="260" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="260" cy="70" r="6" fill="#ff8059"/><circle cx="80" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="80" cy="130" r="6" fill="#ff8059"/><circle cx="140" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="200" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="200" cy="130" r="6" fill="#ff8059"/><circle cx="260" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="260" cy="130" r="6" fill="#ff8059"/>
+          <circle cx="500" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="560" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="560" cy="70" r="6" fill="#ff8059"/><circle cx="620" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="680" cy="70" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="500" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="500" cy="130" r="6" fill="#ff8059"/><circle cx="560" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="620" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="620" cy="130" r="6" fill="#ff8059"/><circle cx="680" cy="130" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/>
+          <text x="190" y="190" text-anchor="middle" fill="#f1eee8" font-size="18">HOT BAR · 7 packets</text>
+          <text x="610" y="190" text-anchor="middle" fill="#f1eee8" font-size="18">COLD BAR · 3 packets</text>
+          <text x="400" y="250" text-anchor="middle" fill="#a5a29c" font-size="17">LATER SNAPSHOT · BARS TOUCHING</text>
+          <path d="M400 268 V382" stroke="#57534f" stroke-width="2" stroke-dasharray="5 5"/>
+          <circle cx="80" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="72" cy="290" r="6" fill="#ff8059"/><circle cx="88" cy="290" r="6" fill="#ff8059"/><circle cx="140" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="140" cy="290" r="6" fill="#ff8059"/><circle cx="200" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="200" cy="290" r="6" fill="#ff8059"/><circle cx="260" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="260" cy="290" r="6" fill="#ff8059"/><circle cx="80" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="80" cy="350" r="6" fill="#ff8059"/><circle cx="140" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="140" cy="350" r="6" fill="#ff8059"/><circle cx="200" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="200" cy="350" r="6" fill="#ff8059"/><circle cx="260" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="260" cy="350" r="6" fill="#ff8059"/>
+          <circle cx="500" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="560" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="620" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="620" cy="290" r="6" fill="#ff8059"/><circle cx="680" cy="290" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="500" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="560" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="620" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="680" cy="350" r="22" fill="#202020" stroke="#57534f" stroke-width="2"/>
+          <text x="190" y="412" text-anchor="middle" fill="#f1eee8" font-size="18">LEFT · 9 packets</text>
+          <text x="610" y="412" text-anchor="middle" fill="#f1eee8" font-size="18">RIGHT · 1 packet</text>
+          <circle cx="44" cy="444" r="6" fill="#ff8059"/><text x="58" y="450" fill="#a5a29c" font-size="16">= 1 energy packet</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 10. Counting -->
+    <section class="panel">
+      <p class="kicker">Counting</p>
+      <h2>Improbable, not impossible</h2>
+      <p>Heat flowing from cold to hot looks like a broken law. Ludwig Boltzmann's insight was to count. Nine packets on the left and one on the right can happen in 91,520 ways. An even 5–5 split can happen in 627,264 ways, about 6.9 times as many. Add up every outcome where the left bar ends with more than its starting 7 packets and the chance is 10.5%. Not impossible, just less likely.</p>
+      <figure>
+        <svg viewBox="0 0 800 320" role="img" aria-label="A bar for 627,264 ways to split energy 5 and 5, a much shorter bar for 91,520 ways to split 9 and 1, and a total bar of 3,268,760 arrangements with a 10.5 percent slice where the left bar ends hotter than it started">
+          <text x="40" y="34" fill="#a5a29c" font-size="17">5 | 5 SPLIT · 627,264 WAYS</text>
+          <rect x="40" y="44" width="600" height="34" fill="#c3b8ff"/>
+          <text x="40" y="118" fill="#a5a29c" font-size="17">9 | 1 SPLIT · 91,520 WAYS</text>
+          <rect x="40" y="128" width="88" height="34" fill="#c3b8ff"/><text x="142" y="152" fill="#f1eee8" font-size="18">91,520</text>
+          <text x="40" y="206" fill="#a5a29c" font-size="17">ALL 3,268,760 ARRANGEMENTS OF THE 10 PACKETS</text>
+          <rect x="40" y="216" width="600" height="34" fill="#2b2b2b" stroke="#57534f"/><rect x="40" y="216" width="63" height="34" fill="#c3b8ff"/>
+          <text x="40" y="276" fill="#c3b8ff" font-size="18">10.5% · left bar ends with 8 or more packets</text>
+          <text x="40" y="308" fill="#a5a29c" font-size="16">Top two bars: 1 px ≈ 1,045 ways · bottom: full width = all</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 11. Scale up -->
+    <section class="panel">
+      <p class="kicker">Scaling up</p>
+      <h2>More atoms and the odds collapse</h2>
+      <p>Repeat the experiment with 80 atoms per bar and 100 packets (70 left, 30 right). The chance the left bar ends hotter than it started drops to 0.05%. An everyday solid holds around 100 trillion trillion atoms (10²⁶), so heat flowing from cold to hot is so unlikely it never happens.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="Chance of heat flowing the wrong way: 10.5 percent for 8 atoms per bar drawn as a long bar, 0.05 percent for 80 atoms drawn as a two-pixel sliver, and effectively zero for an everyday solid">
+          <text x="40" y="34" fill="#a5a29c" font-size="17">8 ATOMS PER BAR · 10 PACKETS</text>
+          <rect x="40" y="44" width="420" height="30" fill="#c3b8ff"/><text x="474" y="67" fill="#f1eee8" font-size="18">10.5%</text>
+          <text x="40" y="112" fill="#a5a29c" font-size="17">80 ATOMS PER BAR · 100 PACKETS</text>
+          <rect x="40" y="122" width="2" height="30" fill="#c3b8ff"/><text x="56" y="145" fill="#f1eee8" font-size="18">0.05% · a 2 px sliver</text>
+          <text x="40" y="190" fill="#a5a29c" font-size="17">EVERYDAY SOLID · ABOUT 10²⁶ ATOMS</text>
+          <text x="40" y="222" fill="#f1eee8" font-size="18">effectively 0 · never happens</text>
+          <text x="40" y="256" fill="#a5a29c" font-size="16">40 px = 1% chance</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 12. Rubik -->
+    <section class="panel">
+      <p class="kicker">An analogy</p>
+      <h2>A scrambled Rubik's Cube</h2>
+      <p>A Rubik's Cube has exactly one solved arrangement and about 43 quintillion reachable ones. Turn it at random and you will almost surely land in a mess. Entropy rising is not a force pushing things apart, only the fact that there are overwhelmingly more spread-out, messy arrangements than special ones.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="One solved square on the left against a huge field of dots standing in for the quintillions of scrambled Rubik's Cube arrangements">
+          <rect x="60" y="130" width="40" height="40" fill="#ff8059"/>
+          <text x="80" y="204" text-anchor="middle" fill="#ff8059" font-size="18">1 solved</text>
+          <circle cx="209" cy="69" r="5" fill="#76d5c1"/><circle cx="227" cy="69" r="5" fill="#76d5c1"/><circle cx="245" cy="69" r="5" fill="#76d5c1"/><circle cx="263" cy="69" r="5" fill="#76d5c1"/><circle cx="281" cy="69" r="5" fill="#76d5c1"/><circle cx="299" cy="69" r="5" fill="#76d5c1"/><circle cx="317" cy="69" r="5" fill="#76d5c1"/><circle cx="335" cy="69" r="5" fill="#76d5c1"/><circle cx="353" cy="69" r="5" fill="#76d5c1"/><circle cx="371" cy="69" r="5" fill="#76d5c1"/><circle cx="389" cy="69" r="5" fill="#76d5c1"/><circle cx="407" cy="69" r="5" fill="#76d5c1"/><circle cx="425" cy="69" r="5" fill="#76d5c1"/><circle cx="443" cy="69" r="5" fill="#76d5c1"/><circle cx="461" cy="69" r="5" fill="#76d5c1"/><circle cx="479" cy="69" r="5" fill="#76d5c1"/><circle cx="497" cy="69" r="5" fill="#76d5c1"/><circle cx="515" cy="69" r="5" fill="#76d5c1"/><circle cx="533" cy="69" r="5" fill="#76d5c1"/><circle cx="551" cy="69" r="5" fill="#76d5c1"/><circle cx="569" cy="69" r="5" fill="#76d5c1"/><circle cx="587" cy="69" r="5" fill="#76d5c1"/><circle cx="605" cy="69" r="5" fill="#76d5c1"/><circle cx="623" cy="69" r="5" fill="#76d5c1"/><circle cx="641" cy="69" r="5" fill="#76d5c1"/><circle cx="659" cy="69" r="5" fill="#76d5c1"/><circle cx="677" cy="69" r="5" fill="#76d5c1"/><circle cx="695" cy="69" r="5" fill="#76d5c1"/><circle cx="713" cy="69" r="5" fill="#76d5c1"/><circle cx="731" cy="69" r="5" fill="#76d5c1"/><circle cx="209" cy="87" r="5" fill="#76d5c1"/><circle cx="227" cy="87" r="5" fill="#76d5c1"/><circle cx="245" cy="87" r="5" fill="#76d5c1"/><circle cx="263" cy="87" r="5" fill="#76d5c1"/><circle cx="281" cy="87" r="5" fill="#76d5c1"/><circle cx="299" cy="87" r="5" fill="#76d5c1"/><circle cx="317" cy="87" r="5" fill="#76d5c1"/><circle cx="335" cy="87" r="5" fill="#76d5c1"/><circle cx="353" cy="87" r="5" fill="#76d5c1"/><circle cx="371" cy="87" r="5" fill="#76d5c1"/><circle cx="389" cy="87" r="5" fill="#76d5c1"/><circle cx="407" cy="87" r="5" fill="#76d5c1"/><circle cx="425" cy="87" r="5" fill="#76d5c1"/><circle cx="443" cy="87" r="5" fill="#76d5c1"/><circle cx="461" cy="87" r="5" fill="#76d5c1"/><circle cx="479" cy="87" r="5" fill="#76d5c1"/><circle cx="497" cy="87" r="5" fill="#76d5c1"/><circle cx="515" cy="87" r="5" fill="#76d5c1"/><circle cx="533" cy="87" r="5" fill="#76d5c1"/><circle cx="551" cy="87" r="5" fill="#76d5c1"/><circle cx="569" cy="87" r="5" fill="#76d5c1"/><circle cx="587" cy="87" r="5" fill="#76d5c1"/><circle cx="605" cy="87" r="5" fill="#76d5c1"/><circle cx="623" cy="87" r="5" fill="#76d5c1"/><circle cx="641" cy="87" r="5" fill="#76d5c1"/><circle cx="659" cy="87" r="5" fill="#76d5c1"/><circle cx="677" cy="87" r="5" fill="#76d5c1"/><circle cx="695" cy="87" r="5" fill="#76d5c1"/><circle cx="713" cy="87" r="5" fill="#76d5c1"/><circle cx="731" cy="87" r="5" fill="#76d5c1"/><circle cx="209" cy="105" r="5" fill="#76d5c1"/><circle cx="227" cy="105" r="5" fill="#76d5c1"/><circle cx="245" cy="105" r="5" fill="#76d5c1"/><circle cx="263" cy="105" r="5" fill="#76d5c1"/><circle cx="281" cy="105" r="5" fill="#76d5c1"/><circle cx="299" cy="105" r="5" fill="#76d5c1"/><circle cx="317" cy="105" r="5" fill="#76d5c1"/><circle cx="335" cy="105" r="5" fill="#76d5c1"/><circle cx="353" cy="105" r="5" fill="#76d5c1"/><circle cx="371" cy="105" r="5" fill="#76d5c1"/><circle cx="389" cy="105" r="5" fill="#76d5c1"/><circle cx="407" cy="105" r="5" fill="#76d5c1"/><circle cx="425" cy="105" r="5" fill="#76d5c1"/><circle cx="443" cy="105" r="5" fill="#76d5c1"/><circle cx="461" cy="105" r="5" fill="#76d5c1"/><circle cx="479" cy="105" r="5" fill="#76d5c1"/><circle cx="497" cy="105" r="5" fill="#76d5c1"/><circle cx="515" cy="105" r="5" fill="#76d5c1"/><circle cx="533" cy="105" r="5" fill="#76d5c1"/><circle cx="551" cy="105" r="5" fill="#76d5c1"/><circle cx="569" cy="105" r="5" fill="#76d5c1"/><circle cx="587" cy="105" r="5" fill="#76d5c1"/><circle cx="605" cy="105" r="5" fill="#76d5c1"/><circle cx="623" cy="105" r="5" fill="#76d5c1"/><circle cx="641" cy="105" r="5" fill="#76d5c1"/><circle cx="659" cy="105" r="5" fill="#76d5c1"/><circle cx="677" cy="105" r="5" fill="#76d5c1"/><circle cx="695" cy="105" r="5" fill="#76d5c1"/><circle cx="713" cy="105" r="5" fill="#76d5c1"/><circle cx="731" cy="105" r="5" fill="#76d5c1"/><circle cx="209" cy="123" r="5" fill="#76d5c1"/><circle cx="227" cy="123" r="5" fill="#76d5c1"/><circle cx="245" cy="123" r="5" fill="#76d5c1"/><circle cx="263" cy="123" r="5" fill="#76d5c1"/><circle cx="281" cy="123" r="5" fill="#76d5c1"/><circle cx="299" cy="123" r="5" fill="#76d5c1"/><circle cx="317" cy="123" r="5" fill="#76d5c1"/><circle cx="335" cy="123" r="5" fill="#76d5c1"/><circle cx="353" cy="123" r="5" fill="#76d5c1"/><circle cx="371" cy="123" r="5" fill="#76d5c1"/><circle cx="389" cy="123" r="5" fill="#76d5c1"/><circle cx="407" cy="123" r="5" fill="#76d5c1"/><circle cx="425" cy="123" r="5" fill="#76d5c1"/><circle cx="443" cy="123" r="5" fill="#76d5c1"/><circle cx="461" cy="123" r="5" fill="#76d5c1"/><circle cx="479" cy="123" r="5" fill="#76d5c1"/><circle cx="497" cy="123" r="5" fill="#76d5c1"/><circle cx="515" cy="123" r="5" fill="#76d5c1"/><circle cx="533" cy="123" r="5" fill="#76d5c1"/><circle cx="551" cy="123" r="5" fill="#76d5c1"/><circle cx="569" cy="123" r="5" fill="#76d5c1"/><circle cx="587" cy="123" r="5" fill="#76d5c1"/><circle cx="605" cy="123" r="5" fill="#76d5c1"/><circle cx="623" cy="123" r="5" fill="#76d5c1"/><circle cx="641" cy="123" r="5" fill="#76d5c1"/><circle cx="659" cy="123" r="5" fill="#76d5c1"/><circle cx="677" cy="123" r="5" fill="#76d5c1"/><circle cx="695" cy="123" r="5" fill="#76d5c1"/><circle cx="713" cy="123" r="5" fill="#76d5c1"/><circle cx="731" cy="123" r="5" fill="#76d5c1"/><circle cx="209" cy="141" r="5" fill="#76d5c1"/><circle cx="227" cy="141" r="5" fill="#76d5c1"/><circle cx="245" cy="141" r="5" fill="#76d5c1"/><circle cx="263" cy="141" r="5" fill="#76d5c1"/><circle cx="281" cy="141" r="5" fill="#76d5c1"/><circle cx="299" cy="141" r="5" fill="#76d5c1"/><circle cx="317" cy="141" r="5" fill="#76d5c1"/><circle cx="335" cy="141" r="5" fill="#76d5c1"/><circle cx="353" cy="141" r="5" fill="#76d5c1"/><circle cx="371" cy="141" r="5" fill="#76d5c1"/><circle cx="389" cy="141" r="5" fill="#76d5c1"/><circle cx="407" cy="141" r="5" fill="#76d5c1"/><circle cx="425" cy="141" r="5" fill="#76d5c1"/><circle cx="443" cy="141" r="5" fill="#76d5c1"/><circle cx="461" cy="141" r="5" fill="#76d5c1"/><circle cx="479" cy="141" r="5" fill="#76d5c1"/><circle cx="497" cy="141" r="5" fill="#76d5c1"/><circle cx="515" cy="141" r="5" fill="#76d5c1"/><circle cx="533" cy="141" r="5" fill="#76d5c1"/><circle cx="551" cy="141" r="5" fill="#76d5c1"/><circle cx="569" cy="141" r="5" fill="#76d5c1"/><circle cx="587" cy="141" r="5" fill="#76d5c1"/><circle cx="605" cy="141" r="5" fill="#76d5c1"/><circle cx="623" cy="141" r="5" fill="#76d5c1"/><circle cx="641" cy="141" r="5" fill="#76d5c1"/><circle cx="659" cy="141" r="5" fill="#76d5c1"/><circle cx="677" cy="141" r="5" fill="#76d5c1"/><circle cx="695" cy="141" r="5" fill="#76d5c1"/><circle cx="713" cy="141" r="5" fill="#76d5c1"/><circle cx="731" cy="141" r="5" fill="#76d5c1"/><circle cx="209" cy="159" r="5" fill="#76d5c1"/><circle cx="227" cy="159" r="5" fill="#76d5c1"/><circle cx="245" cy="159" r="5" fill="#76d5c1"/><circle cx="263" cy="159" r="5" fill="#76d5c1"/><circle cx="281" cy="159" r="5" fill="#76d5c1"/><circle cx="299" cy="159" r="5" fill="#76d5c1"/><circle cx="317" cy="159" r="5" fill="#76d5c1"/><circle cx="335" cy="159" r="5" fill="#76d5c1"/><circle cx="353" cy="159" r="5" fill="#76d5c1"/><circle cx="371" cy="159" r="5" fill="#76d5c1"/><circle cx="389" cy="159" r="5" fill="#76d5c1"/><circle cx="407" cy="159" r="5" fill="#76d5c1"/><circle cx="425" cy="159" r="5" fill="#76d5c1"/><circle cx="443" cy="159" r="5" fill="#76d5c1"/><circle cx="461" cy="159" r="5" fill="#76d5c1"/><circle cx="479" cy="159" r="5" fill="#76d5c1"/><circle cx="497" cy="159" r="5" fill="#76d5c1"/><circle cx="515" cy="159" r="5" fill="#76d5c1"/><circle cx="533" cy="159" r="5" fill="#76d5c1"/><circle cx="551" cy="159" r="5" fill="#76d5c1"/><circle cx="569" cy="159" r="5" fill="#76d5c1"/><circle cx="587" cy="159" r="5" fill="#76d5c1"/><circle cx="605" cy="159" r="5" fill="#76d5c1"/><circle cx="623" cy="159" r="5" fill="#76d5c1"/><circle cx="641" cy="159" r="5" fill="#76d5c1"/><circle cx="659" cy="159" r="5" fill="#76d5c1"/><circle cx="677" cy="159" r="5" fill="#76d5c1"/><circle cx="695" cy="159" r="5" fill="#76d5c1"/><circle cx="713" cy="159" r="5" fill="#76d5c1"/><circle cx="731" cy="159" r="5" fill="#76d5c1"/><circle cx="209" cy="177" r="5" fill="#76d5c1"/><circle cx="227" cy="177" r="5" fill="#76d5c1"/><circle cx="245" cy="177" r="5" fill="#76d5c1"/><circle cx="263" cy="177" r="5" fill="#76d5c1"/><circle cx="281" cy="177" r="5" fill="#76d5c1"/><circle cx="299" cy="177" r="5" fill="#76d5c1"/><circle cx="317" cy="177" r="5" fill="#76d5c1"/><circle cx="335" cy="177" r="5" fill="#76d5c1"/><circle cx="353" cy="177" r="5" fill="#76d5c1"/><circle cx="371" cy="177" r="5" fill="#76d5c1"/><circle cx="389" cy="177" r="5" fill="#76d5c1"/><circle cx="407" cy="177" r="5" fill="#76d5c1"/><circle cx="425" cy="177" r="5" fill="#76d5c1"/><circle cx="443" cy="177" r="5" fill="#76d5c1"/><circle cx="461" cy="177" r="5" fill="#76d5c1"/><circle cx="479" cy="177" r="5" fill="#76d5c1"/><circle cx="497" cy="177" r="5" fill="#76d5c1"/><circle cx="515" cy="177" r="5" fill="#76d5c1"/><circle cx="533" cy="177" r="5" fill="#76d5c1"/><circle cx="551" cy="177" r="5" fill="#76d5c1"/><circle cx="569" cy="177" r="5" fill="#76d5c1"/><circle cx="587" cy="177" r="5" fill="#76d5c1"/><circle cx="605" cy="177" r="5" fill="#76d5c1"/><circle cx="623" cy="177" r="5" fill="#76d5c1"/><circle cx="641" cy="177" r="5" fill="#76d5c1"/><circle cx="659" cy="177" r="5" fill="#76d5c1"/><circle cx="677" cy="177" r="5" fill="#76d5c1"/><circle cx="695" cy="177" r="5" fill="#76d5c1"/><circle cx="713" cy="177" r="5" fill="#76d5c1"/><circle cx="731" cy="177" r="5" fill="#76d5c1"/><circle cx="209" cy="195" r="5" fill="#76d5c1"/><circle cx="227" cy="195" r="5" fill="#76d5c1"/><circle cx="245" cy="195" r="5" fill="#76d5c1"/><circle cx="263" cy="195" r="5" fill="#76d5c1"/><circle cx="281" cy="195" r="5" fill="#76d5c1"/><circle cx="299" cy="195" r="5" fill="#76d5c1"/><circle cx="317" cy="195" r="5" fill="#76d5c1"/><circle cx="335" cy="195" r="5" fill="#76d5c1"/><circle cx="353" cy="195" r="5" fill="#76d5c1"/><circle cx="371" cy="195" r="5" fill="#76d5c1"/><circle cx="389" cy="195" r="5" fill="#76d5c1"/><circle cx="407" cy="195" r="5" fill="#76d5c1"/><circle cx="425" cy="195" r="5" fill="#76d5c1"/><circle cx="443" cy="195" r="5" fill="#76d5c1"/><circle cx="461" cy="195" r="5" fill="#76d5c1"/><circle cx="479" cy="195" r="5" fill="#76d5c1"/><circle cx="497" cy="195" r="5" fill="#76d5c1"/><circle cx="515" cy="195" r="5" fill="#76d5c1"/><circle cx="533" cy="195" r="5" fill="#76d5c1"/><circle cx="551" cy="195" r="5" fill="#76d5c1"/><circle cx="569" cy="195" r="5" fill="#76d5c1"/><circle cx="587" cy="195" r="5" fill="#76d5c1"/><circle cx="605" cy="195" r="5" fill="#76d5c1"/><circle cx="623" cy="195" r="5" fill="#76d5c1"/><circle cx="641" cy="195" r="5" fill="#76d5c1"/><circle cx="659" cy="195" r="5" fill="#76d5c1"/><circle cx="677" cy="195" r="5" fill="#76d5c1"/><circle cx="695" cy="195" r="5" fill="#76d5c1"/><circle cx="713" cy="195" r="5" fill="#76d5c1"/><circle cx="731" cy="195" r="5" fill="#76d5c1"/><circle cx="209" cy="213" r="5" fill="#76d5c1"/><circle cx="227" cy="213" r="5" fill="#76d5c1"/><circle cx="245" cy="213" r="5" fill="#76d5c1"/><circle cx="263" cy="213" r="5" fill="#76d5c1"/><circle cx="281" cy="213" r="5" fill="#76d5c1"/><circle cx="299" cy="213" r="5" fill="#76d5c1"/><circle cx="317" cy="213" r="5" fill="#76d5c1"/><circle cx="335" cy="213" r="5" fill="#76d5c1"/><circle cx="353" cy="213" r="5" fill="#76d5c1"/><circle cx="371" cy="213" r="5" fill="#76d5c1"/><circle cx="389" cy="213" r="5" fill="#76d5c1"/><circle cx="407" cy="213" r="5" fill="#76d5c1"/><circle cx="425" cy="213" r="5" fill="#76d5c1"/><circle cx="443" cy="213" r="5" fill="#76d5c1"/><circle cx="461" cy="213" r="5" fill="#76d5c1"/><circle cx="479" cy="213" r="5" fill="#76d5c1"/><circle cx="497" cy="213" r="5" fill="#76d5c1"/><circle cx="515" cy="213" r="5" fill="#76d5c1"/><circle cx="533" cy="213" r="5" fill="#76d5c1"/><circle cx="551" cy="213" r="5" fill="#76d5c1"/><circle cx="569" cy="213" r="5" fill="#76d5c1"/><circle cx="587" cy="213" r="5" fill="#76d5c1"/><circle cx="605" cy="213" r="5" fill="#76d5c1"/><circle cx="623" cy="213" r="5" fill="#76d5c1"/><circle cx="641" cy="213" r="5" fill="#76d5c1"/><circle cx="659" cy="213" r="5" fill="#76d5c1"/><circle cx="677" cy="213" r="5" fill="#76d5c1"/><circle cx="695" cy="213" r="5" fill="#76d5c1"/><circle cx="713" cy="213" r="5" fill="#76d5c1"/><circle cx="731" cy="213" r="5" fill="#76d5c1"/><circle cx="209" cy="231" r="5" fill="#76d5c1"/><circle cx="227" cy="231" r="5" fill="#76d5c1"/><circle cx="245" cy="231" r="5" fill="#76d5c1"/><circle cx="263" cy="231" r="5" fill="#76d5c1"/><circle cx="281" cy="231" r="5" fill="#76d5c1"/><circle cx="299" cy="231" r="5" fill="#76d5c1"/><circle cx="317" cy="231" r="5" fill="#76d5c1"/><circle cx="335" cy="231" r="5" fill="#76d5c1"/><circle cx="353" cy="231" r="5" fill="#76d5c1"/><circle cx="371" cy="231" r="5" fill="#76d5c1"/><circle cx="389" cy="231" r="5" fill="#76d5c1"/><circle cx="407" cy="231" r="5" fill="#76d5c1"/><circle cx="425" cy="231" r="5" fill="#76d5c1"/><circle cx="443" cy="231" r="5" fill="#76d5c1"/><circle cx="461" cy="231" r="5" fill="#76d5c1"/><circle cx="479" cy="231" r="5" fill="#76d5c1"/><circle cx="497" cy="231" r="5" fill="#76d5c1"/><circle cx="515" cy="231" r="5" fill="#76d5c1"/><circle cx="533" cy="231" r="5" fill="#76d5c1"/><circle cx="551" cy="231" r="5" fill="#76d5c1"/><circle cx="569" cy="231" r="5" fill="#76d5c1"/><circle cx="587" cy="231" r="5" fill="#76d5c1"/><circle cx="605" cy="231" r="5" fill="#76d5c1"/><circle cx="623" cy="231" r="5" fill="#76d5c1"/><circle cx="641" cy="231" r="5" fill="#76d5c1"/><circle cx="659" cy="231" r="5" fill="#76d5c1"/><circle cx="677" cy="231" r="5" fill="#76d5c1"/><circle cx="695" cy="231" r="5" fill="#76d5c1"/><circle cx="713" cy="231" r="5" fill="#76d5c1"/><circle cx="731" cy="231" r="5" fill="#76d5c1"/>
+          <text x="470" y="272" text-anchor="middle" fill="#a5a29c" font-size="17">≈ 43 quintillion scrambled arrangements · 300 dots stand in</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 13. Lab -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>When can heat go uphill?</h2>
+      <p>Two bars start with the packets you choose, then touch. Every arrangement is equally likely, so counting gives the exact chance that the left bar ends with more packets than it started with. The "never happens" rule says 0%. Watch the gap shrink as you add atoms.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="n">Atoms per bar <output id="n-o"></output></label><input id="n" type="range" min="2" max="100" value="8"></div>
+          <div class="control"><label for="hot">Packets in left (hot) bar <output id="hot-o"></output></label><input id="hot" type="range" min="0" max="100" value="7"></div>
+          <div class="control"><label for="cold">Packets in right (cold) bar <output id="cold-o"></output></label><input id="cold" type="range" min="0" max="100" value="3"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="8,7,3">The video's tiny bars</button>
+            <button type="button" class="secondary" data-p="80,70,30">80-atom bars</button>
+            <button type="button" class="secondary" data-p="8,5,5">Same temperature</button>
+            <button type="button" class="secondary" data-p="20,100,0">All packets on one side</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Chance that the left bar ends hotter than it started: exact counting compared with the rule that it never happens"></svg></div>
+      </div></div>
+    </section>
+
+    <!-- 14. Bookkeeping -->
+    <section class="panel">
+      <p class="kicker">The bookkeeping</p>
+      <h2>Cooling a house costs entropy elsewhere</h2>
+      <p>An air conditioner moves heat from the cool inside to the hot outside, lowering the house's entropy. That is allowed because the power plant behind it raises entropy by more: concentrated fuel energy spreads into hot machinery, wires and waste heat. Local order is always paid for by more spreading elsewhere.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Entropy change bars: the house falls by 2, the power plant rises by 5, and the net change is a rise of 3">
+          <path d="M300 30 V196" stroke="#57534f" stroke-width="2"/>
+          <text x="40" y="62" fill="#a5a29c" font-size="18">House</text><rect x="180" y="40" width="120" height="30" fill="#ff8059"/><text x="194" y="62" fill="#202020" font-size="18">−2</text>
+          <text x="40" y="118" fill="#a5a29c" font-size="18">Power plant</text><rect x="300" y="96" width="300" height="30" fill="#76d5c1"/><text x="314" y="118" fill="#202020" font-size="18">+5</text>
+          <text x="40" y="174" fill="#a5a29c" font-size="18">Net</text><rect x="300" y="152" width="180" height="30" fill="#76d5c1"/><text x="314" y="174" fill="#202020" font-size="18">+3</text>
+          <text x="500" y="174" fill="#76d5c1" font-size="18">always goes up</text>
+          <text x="40" y="232" fill="#a5a29c" font-size="16">60 px = 1 illustrative unit of entropy</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 15. Sun -->
+    <section class="panel">
+      <p class="kicker">The answer</p>
+      <h2>A steady stream of low-entropy energy</h2>
+      <p>Earth is not a sealed box. Sunlight arrives concentrated, in fewer, higher-energy photons (light particles). Earth sends the same energy back as about 20 times as many lower-energy photons, roughly the ratio of the Sun's temperature to Earth's. Plants growing, storms, and people breathing all run on that conversion.</p>
+      <figure>
+        <svg viewBox="0 0 800 260" role="img" aria-label="One large sunlight photon square becomes about twenty small squares of the same total area, showing one concentrated photon turning into twenty spread-out heat photons">
+          <rect x="60" y="70" width="80" height="80" fill="#ff8059"/>
+          <text x="100" y="52" text-anchor="middle" fill="#ff8059" font-size="17">1 sunlight photon</text>
+          <path d="M160 110 H350 M342 103 L352 110 L342 117" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <g fill="#76d5c1"><rect x="380" y="60" width="18" height="18"/><rect x="410" y="60" width="18" height="18"/><rect x="440" y="60" width="18" height="18"/><rect x="470" y="60" width="18" height="18"/><rect x="500" y="60" width="18" height="18"/><rect x="380" y="90" width="18" height="18"/><rect x="410" y="90" width="18" height="18"/><rect x="440" y="90" width="18" height="18"/><rect x="470" y="90" width="18" height="18"/><rect x="500" y="90" width="18" height="18"/><rect x="380" y="120" width="18" height="18"/><rect x="410" y="120" width="18" height="18"/><rect x="440" y="120" width="18" height="18"/><rect x="470" y="120" width="18" height="18"/><rect x="500" y="120" width="18" height="18"/><rect x="380" y="150" width="18" height="18"/><rect x="410" y="150" width="18" height="18"/><rect x="440" y="150" width="18" height="18"/><rect x="470" y="150" width="18" height="18"/><rect x="500" y="150" width="18" height="18"/></g>
+          <text x="449" y="46" text-anchor="middle" fill="#76d5c1" font-size="17">≈20 heat photons</text>
+          <text x="580" y="104" fill="#a5a29c" font-size="17">Sun ÷ Earth</text>
+          <text x="580" y="128" fill="#a5a29c" font-size="17">temperature ≈ 20</text>
+          <text x="400" y="222" text-anchor="middle" fill="#a5a29c" font-size="17">area stands for energy · both sides ≈ 6,400 px²</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 16. Food chain -->
+    <section class="panel">
+      <p class="kicker">Passing it down</p>
+      <h2>Each step spreads the energy more</h2>
+      <p>Plants capture sunlight and build sugars. Animals eat plants, and bigger animals eat smaller ones. At each step the energy ends up more spread out, and in the end all of it leaves Earth as heat. Life is a channel through which concentrated energy spreads.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Four shapes of equal area getting wider and flatter: sunlight, plants, animals, then heat radiated to space, showing energy spreading at every step of the food chain">
+          <rect x="40" y="90" width="40" height="100" fill="#ff8059"/>
+          <rect x="120" y="140" width="80" height="50" fill="#ff8059" opacity=".6"/>
+          <rect x="240" y="165" width="160" height="25" fill="#76d5c1" opacity=".6"/>
+          <rect x="440" y="177" width="320" height="13" fill="#76d5c1"/>
+          <path d="M88 185 H112 M104 179 L114 185 L104 191" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <path d="M208 185 H232 M224 179 L234 185 L224 191" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <path d="M408 185 H432 M424 179 L434 185 L424 191" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <text x="60" y="224" text-anchor="middle" fill="#f1eee8" font-size="17">Sunlight</text>
+          <text x="160" y="224" text-anchor="middle" fill="#f1eee8" font-size="17">Plants</text>
+          <text x="320" y="224" text-anchor="middle" fill="#f1eee8" font-size="17">Animals</text>
+          <text x="600" y="224" text-anchor="middle" fill="#f1eee8" font-size="17">Heat to space</text>
+          <text x="40" y="40" fill="#a5a29c" font-size="17">EQUAL AREA = SAME ENERGY AT EVERY STEP</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 17. Ladder of certainty -->
+    <section class="panel">
+      <p class="kicker">Idea vs evidence</p>
+      <h2>How sure is each claim?</h2>
+      <p>Settled: Earth's energy in and out balance, and life runs on the Sun's flow. Debated: that life actively speeds up entropy production. The video cites seawater with cyanobacteria making 30–680% more entropy, a figure we could not trace to a source. Speculative: Jeremy England's proposal that energy poured onto matter favours structures that dissipate it, eventually giving life. Quanta reports his formulas are generally accepted, while a Harvard biophysicist calls the life interpretation "extremely speculative".</p>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="Three steps from settled to speculative: Earth energy in equals out is settled, life speeding up entropy is debated, life as an inevitable result of physics is speculative">
+          <text x="150" y="40" text-anchor="middle" fill="#ff8059" font-size="18">SETTLED</text>
+          <text x="400" y="40" text-anchor="middle" fill="#a5a29c" font-size="18">DEBATED</text>
+          <text x="650" y="40" text-anchor="middle" fill="#a5a29c" font-size="18">SPECULATIVE</text>
+          <rect x="40" y="56" width="220" height="100" fill="#ff8059"/>
+          <rect x="290" y="56" width="220" height="100" fill="#ff8059" opacity=".55"/>
+          <rect x="540" y="56" width="220" height="100" fill="#ff8059" opacity=".25"/>
+          <text x="150" y="112" text-anchor="middle" fill="#202020" font-size="19">Earth: in = out</text>
+          <text x="400" y="112" text-anchor="middle" fill="#f1eee8" font-size="19">Life speeds entropy</text>
+          <text x="650" y="112" text-anchor="middle" fill="#f1eee8" font-size="19">Life was inevitable</text>
+          <text x="40" y="196" fill="#a5a29c" font-size="16">Illustrative ladder of confidence, not a measurement</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 18. Gravity flips the rule -->
+    <section class="panel">
+      <p class="kicker">Where it began</p>
+      <h2>Gravity flips the rule about smooth</h2>
+      <p>If entropy only rises, it was lower in the past, and lowest just after the Big Bang (the "past hypothesis"). Yet the early universe was hot, dense and nearly perfectly smooth: temperature the same everywhere to within about 0.001% (figure cited in the video). Smooth sounds like high entropy, until you add gravity. Gravity pulls matter into clumps, so for matter under gravity, smooth is the unlikely arrangement.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="Without gravity, gas packed in a corner is low entropy and gas spread through the box is high entropy. With gravity it is reversed: smooth spread is low entropy and clumps are high entropy">
+          <text x="205" y="30" text-anchor="middle" fill="#a5a29c" font-size="18">NO GRAVITY</text>
+          <text x="595" y="30" text-anchor="middle" fill="#a5a29c" font-size="18">WITH GRAVITY</text>
+          <path d="M400 14 V228" stroke="#57534f" stroke-width="2" stroke-dasharray="5 5"/>
+          <rect x="30" y="60" width="150" height="110" fill="none" stroke="#57534f" stroke-width="2"/><circle cx="43" cy="74" r="5" fill="#ff8059"/><circle cx="52" cy="74" r="5" fill="#ff8059"/><circle cx="60" cy="73" r="5" fill="#ff8059"/><circle cx="43" cy="87" r="5" fill="#ff8059"/><circle cx="52" cy="85" r="5" fill="#ff8059"/><circle cx="61" cy="86" r="5" fill="#ff8059"/><circle cx="45" cy="98" r="5" fill="#ff8059"/><circle cx="52" cy="97" r="5" fill="#ff8059"/><circle cx="60" cy="99" r="5" fill="#ff8059"/><circle cx="44" cy="110" r="5" fill="#ff8059"/><circle cx="52" cy="109" r="5" fill="#ff8059"/><circle cx="61" cy="110" r="5" fill="#ff8059"/><circle cx="44" cy="121" r="5" fill="#ff8059"/><circle cx="53" cy="122" r="5" fill="#ff8059"/><circle cx="60" cy="123" r="5" fill="#ff8059"/><circle cx="44" cy="135" r="5" fill="#ff8059"/>
+          <rect x="230" y="60" width="150" height="110" fill="none" stroke="#57534f" stroke-width="2"/><circle cx="255" cy="78" r="5" fill="#76d5c1"/><circle cx="288" cy="79" r="5" fill="#76d5c1"/><circle cx="314" cy="82" r="5" fill="#76d5c1"/><circle cx="357" cy="86" r="5" fill="#76d5c1"/><circle cx="263" cy="101" r="5" fill="#76d5c1"/><circle cx="290" cy="102" r="5" fill="#76d5c1"/><circle cx="315" cy="100" r="5" fill="#76d5c1"/><circle cx="346" cy="109" r="5" fill="#76d5c1"/><circle cx="264" cy="129" r="5" fill="#76d5c1"/><circle cx="294" cy="122" r="5" fill="#76d5c1"/><circle cx="317" cy="127" r="5" fill="#76d5c1"/><circle cx="354" cy="130" r="5" fill="#76d5c1"/><circle cx="265" cy="143" r="5" fill="#76d5c1"/><circle cx="291" cy="149" r="5" fill="#76d5c1"/><circle cx="320" cy="144" r="5" fill="#76d5c1"/><circle cx="350" cy="143" r="5" fill="#76d5c1"/>
+          <rect x="420" y="60" width="150" height="110" fill="none" stroke="#57534f" stroke-width="2"/><circle cx="451" cy="85" r="5" fill="#ff8059"/><circle cx="484" cy="88" r="5" fill="#ff8059"/><circle cx="514" cy="87" r="5" fill="#ff8059"/><circle cx="534" cy="82" r="5" fill="#ff8059"/><circle cx="456" cy="106" r="5" fill="#ff8059"/><circle cx="486" cy="100" r="5" fill="#ff8059"/><circle cx="510" cy="102" r="5" fill="#ff8059"/><circle cx="541" cy="105" r="5" fill="#ff8059"/><circle cx="442" cy="123" r="5" fill="#ff8059"/><circle cx="476" cy="130" r="5" fill="#ff8059"/><circle cx="514" cy="122" r="5" fill="#ff8059"/><circle cx="545" cy="122" r="5" fill="#ff8059"/><circle cx="451" cy="143" r="5" fill="#ff8059"/><circle cx="472" cy="151" r="5" fill="#ff8059"/><circle cx="506" cy="144" r="5" fill="#ff8059"/><circle cx="548" cy="151" r="5" fill="#ff8059"/>
+          <rect x="620" y="60" width="150" height="110" fill="none" stroke="#57534f" stroke-width="2"/><circle cx="670" cy="108" r="5" fill="#76d5c1"/><circle cx="722" cy="128" r="5" fill="#76d5c1"/><circle cx="656" cy="105" r="5" fill="#76d5c1"/><circle cx="721" cy="137" r="5" fill="#76d5c1"/><circle cx="663" cy="107" r="5" fill="#76d5c1"/><circle cx="718" cy="138" r="5" fill="#76d5c1"/><circle cx="669" cy="100" r="5" fill="#76d5c1"/><circle cx="723" cy="136" r="5" fill="#76d5c1"/><circle cx="659" cy="103" r="5" fill="#76d5c1"/><circle cx="727" cy="128" r="5" fill="#76d5c1"/><circle cx="670" cy="105" r="5" fill="#76d5c1"/><circle cx="728" cy="130" r="5" fill="#76d5c1"/><circle cx="658" cy="107" r="5" fill="#76d5c1"/><circle cx="727" cy="132" r="5" fill="#76d5c1"/><circle cx="658" cy="96" r="5" fill="#76d5c1"/><circle cx="724" cy="129" r="5" fill="#76d5c1"/>
+          <path d="M188 115 H222 M214 108 L224 115 L214 122" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <path d="M578 115 H612 M604 108 L614 115 L604 122" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <text x="105" y="204" text-anchor="middle" fill="#ff8059" font-size="18">entropy LOW</text>
+          <text x="305" y="204" text-anchor="middle" fill="#76d5c1" font-size="18">entropy HIGH</text>
+          <text x="495" y="204" text-anchor="middle" fill="#ff8059" font-size="18">entropy LOW</text>
+          <text x="695" y="204" text-anchor="middle" fill="#76d5c1" font-size="18">entropy HIGH</text>
+          <text x="400" y="250" text-anchor="middle" fill="#a5a29c" font-size="16">dots stand for matter</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 19. Gravity's slide -->
+    <section class="panel">
+      <p class="kicker">Fuel</p>
+      <h2>Clumping turns spare energy into heat</h2>
+      <p>As the universe expanded and cooled, matter fell together. Falling turns stored energy into motion that could do work, like water running downhill through a turbine. When pieces collide, motion becomes heat, usable energy shrinks and entropy rises. Stars, planets, galaxies and life all formed along the way.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Three equal-length bars: stored energy of spread-out matter, half stored and half motion while falling together, then mostly heat after collisions">
+          <text x="40" y="34" fill="#a5a29c" font-size="17">BEFORE · MATTER SPREAD OUT</text>
+          <rect x="40" y="44" width="600" height="30" fill="#ff8059"/><text x="56" y="66" fill="#202020" font-size="18">stored energy</text>
+          <text x="40" y="98" fill="#a5a29c" font-size="17">FALLING TOGETHER</text>
+          <rect x="40" y="108" width="300" height="30" fill="#ff8059"/><text x="56" y="130" fill="#202020" font-size="18">stored</text>
+          <rect x="340" y="108" width="300" height="30" fill="#f5c76a"/><text x="356" y="130" fill="#202020" font-size="18">motion</text>
+          <text x="40" y="162" fill="#a5a29c" font-size="17">COLLISIONS, STARS, HEAT</text>
+          <rect x="40" y="172" width="90" height="30" fill="#f5c76a"/><text x="52" y="194" fill="#202020" font-size="17">motion</text>
+          <rect x="130" y="172" width="510" height="30" fill="#76d5c1"/><text x="146" y="194" fill="#202020" font-size="18">heat</text>
+          <text x="40" y="232" fill="#a5a29c" font-size="16">Same total energy in every row · shares are illustrative</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 20. Black holes -->
+    <section class="panel">
+      <p class="kicker">Black holes</p>
+      <h2>Black holes are the entropy champions</h2>
+      <p>In 1972 Jacob Bekenstein proposed that a black hole's entropy is proportional to the area of its surface. Critics objected: entropy implies temperature, temperature implies glowing, and black holes don't glow. Stephen Hawking, initially unconvinced, worked it out in 1974 and found they do glow faintly (Hawking radiation). The Milky Way's central black hole, 4.3 million Suns, has a temperature near 1.4 × 10⁻¹⁴ K (our calculation, matching the video's "a hundred trillionth of a Kelvin").</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="Three black holes with radii 1, 2 and 4; surface area and entropy grow with the square of mass: 1, 4 and 16 times">
+          <circle cx="140" cy="110" r="20" fill="#202020" stroke="#f1eee8" stroke-width="3"/>
+          <circle cx="400" cy="110" r="40" fill="#202020" stroke="#f1eee8" stroke-width="3"/>
+          <circle cx="660" cy="110" r="80" fill="#202020" stroke="#f1eee8" stroke-width="3"/>
+          <text x="140" y="230" text-anchor="middle" fill="#f1eee8" font-size="18">mass ×1 → entropy ×1</text>
+          <text x="400" y="230" text-anchor="middle" fill="#f1eee8" font-size="18">mass ×2 → entropy ×4</text>
+          <text x="660" y="230" text-anchor="middle" fill="#f1eee8" font-size="18">mass ×4 → entropy ×16</text>
+          <text x="40" y="262" fill="#a5a29c" font-size="16">radius ∝ mass · entropy ∝ surface area ∝ radius²</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 21. Ledger of the universe -->
+    <section class="panel">
+      <p class="kicker">The ledger</p>
+      <h2>Nearly all entropy hides in black holes</h2>
+      <p>Counting entropy in units of Boltzmann's constant (k): all stars in the observable universe hold about 9.5 × 10⁸⁰, and the gas between stars and galaxies about 7 × 10⁸¹ (Egan and Lineweaver, 2010). The early universe, per the video, held about 10⁸⁸. Our Milky Way's central black hole alone holds about 2 × 10⁹⁰ (the video rounds this to 10⁹¹), and all supermassive black holes together about 3 × 10¹⁰⁴. So the early universe held roughly 3 × 10⁻¹⁵ % of today's entropy, a vanishingly small starting point.</p>
+      <figure>
+        <svg viewBox="0 0 800 400" role="img" aria-label="Logarithmic bars of entropy: stars 10 to the 81, gas between stars 10 to the 82, early universe 10 to the 88, microwave background light 10 to the 89, the Milky Way's central black hole 10 to the 90, and all supermassive black holes 10 to the 104">
+          <text x="40" y="30" fill="#a5a29c" font-size="17">Stars in the observable universe</text>
+          <rect x="40" y="38" width="25" height="24" fill="#76d5c1"/><text x="76" y="57" fill="#f1eee8" font-size="17">9.5×10⁸⁰</text>
+          <text x="40" y="84" fill="#a5a29c" font-size="17">Gas between stars and galaxies</text>
+          <rect x="40" y="92" width="48" height="24" fill="#76d5c1"/><text x="100" y="111" fill="#f1eee8" font-size="17">7.1×10⁸¹</text>
+          <text x="40" y="138" fill="#ff8059" font-size="17">Early universe (figure cited in the video)</text>
+          <rect x="40" y="146" width="208" height="24" fill="#ff8059"/><text x="260" y="165" fill="#f1eee8" font-size="17">≈10⁸⁸</text>
+          <text x="40" y="192" fill="#a5a29c" font-size="17">Cosmic microwave background light</text>
+          <rect x="40" y="200" width="242" height="24" fill="#76d5c1"/><text x="294" y="219" fill="#f1eee8" font-size="17">2.0×10⁸⁹</text>
+          <text x="40" y="246" fill="#a5a29c" font-size="17">Milky Way's central black hole (our calculation)</text>
+          <rect x="40" y="254" width="268" height="24" fill="#76d5c1"/><text x="320" y="273" fill="#f1eee8" font-size="17">≈2×10⁹⁰</text>
+          <text x="40" y="300" fill="#a5a29c" font-size="17">All supermassive black holes</text>
+          <rect x="40" y="308" width="636" height="24" fill="#76d5c1"/><text x="688" y="327" fill="#f1eee8" font-size="17">3.1×10¹⁰⁴</text>
+          <path d="M40 346 H680" stroke="#57534f" stroke-width="2"/>
+          <text x="40" y="370" fill="#a5a29c" font-size="16">10⁸⁰</text><text x="300" y="370" text-anchor="middle" fill="#a5a29c" font-size="16">10⁹⁰</text><text x="560" y="370" text-anchor="middle" fill="#a5a29c" font-size="16">10¹⁰⁰</text>
+          <text x="40" y="392" fill="#a5a29c" font-size="16">Log scale: every 26 px = 10 times more entropy (units of k)</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 22. Arrow of time and heat death -->
+    <section class="panel">
+      <p class="kicker">The arrow of time</p>
+      <h2>Time points the way entropy grows</h2>
+      <p>The basic laws don't prefer a direction. The direction comes from odds: the universe began in a very unlikely state and drifts toward likelier ones. That is why we never see an asteroid un-crash or a planetary system unmix back into dust. In the far future, more than 10¹⁰⁰ years from now, after the last black hole has evaporated, the universe reaches its most probable state, the "heat death". Nothing usable is left, and forwards and backwards would look the same.</p>
+      <figure>
+        <svg viewBox="0 0 800 310" role="img" aria-label="A sketch of entropy rising from the Big Bang and levelling off at heat death, with an arrow showing time moving forward">
+          <path d="M50 40 V280" stroke="#57534f" stroke-width="2"/>
+          <text x="62" y="36" fill="#a5a29c" font-size="16">entropy</text>
+          <path d="M60 250 C240 244 330 90 520 72 S700 64 740 64" fill="none" stroke="#76d5c1" stroke-width="5"/>
+          <text x="72" y="190" fill="#ff8059" font-size="17">Big Bang: lowest</text>
+          <text x="740" y="44" text-anchor="end" fill="#f1eee8" font-size="17">Heat death: forwards = backwards</text>
+          <text x="740" y="132" text-anchor="end" fill="#a5a29c" font-size="17">after the last black hole is gone</text>
+          <text x="740" y="156" text-anchor="end" fill="#a5a29c" font-size="17">(more than 10¹⁰⁰ years)</text>
+          <path d="M60 282 H740 M732 275 L742 282 L732 289" fill="none" stroke="#a5a29c" stroke-width="3"/>
+          <text x="400" y="304" text-anchor="middle" fill="#a5a29c" font-size="16">time · sketch of the idea, not data</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 23. Tea and milk -->
+    <section class="panel">
+      <p class="kicker">Don't despair</p>
+      <h2>Complexity peaks in the middle</h2>
+      <p>Maximum entropy is dull, but minimum entropy is not the most interesting state either. Pour milk into tea: unmixed is plain, fully mixed is plain, and the beautiful swirls appear in between. We live in the middle, so use the low entropy while it lasts.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Three glasses of tea and milk: unmixed, swirling, and fully mixed, with a hump above showing complexity is highest in the swirling middle">
+          <path d="M60 96 C190 96 280 34 400 34 S610 96 740 96" fill="none" stroke="#c3b8ff" stroke-width="4"/>
+          <text x="400" y="22" text-anchor="middle" fill="#c3b8ff" font-size="17">complexity</text>
+          <g fill="none" stroke="#a5a29c" stroke-width="3"><rect x="100" y="120" width="120" height="140"/><rect x="340" y="120" width="120" height="140"/><rect x="580" y="120" width="120" height="140"/></g>
+          <rect x="103" y="185" width="114" height="72" fill="#f5c76a" opacity=".75"/><rect x="103" y="123" width="114" height="62" fill="#f1eee8" opacity=".85"/>
+          <rect x="343" y="123" width="114" height="134" fill="#f5c76a" opacity=".75"/>
+          <path d="M352 150 q20 -20 40 0 t40 0 M352 184 q20 20 40 0 t40 0 M352 218 q20 -20 40 0 t40 0" fill="none" stroke="#f1eee8" stroke-width="7" opacity=".85"/>
+          <rect x="583" y="123" width="114" height="134" fill="#f5c76a" opacity=".45"/>
+          <text x="160" y="286" text-anchor="middle" fill="#f1eee8" font-size="18">unmixed</text>
+          <text x="400" y="286" text-anchor="middle" fill="#f1eee8" font-size="18">swirling</text>
+          <text x="640" y="286" text-anchor="middle" fill="#f1eee8" font-size="18">mixed</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 24. Field guide -->
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>Words used on this page</h2>
+      <div class="field-grid">
+        <div><b>Energy</b><span>Can't be created or destroyed, only moved or changed in form.</span><em>First law</em></div>
+        <div><b>Entropy</b><span>How spread out energy is, or how many arrangements match what you see. Higher means more spread out.</span><em>Second law: tends to a maximum</em></div>
+        <div><b>Heat engine</b><span>A device that turns heat flowing from hot to cold into useful work.</span><em>Steam engine, car engine</em></div>
+        <div><b>Reversible</b><span>Can be run backwards with nothing left over. Only an ideal; real engines have friction.</span><em>Carnot's perfect engine</em></div>
+        <div><b>Kelvin</b><span>A temperature scale that starts at absolute zero. 0 °C is 273.15 K.</span><em>Used in the efficiency limit</em></div>
+        <div><b>Arrangement</b><span>One exact way the energy packets sit on the atoms. Each is equally likely.</span><em>Counted by Boltzmann</em></div>
+        <div><b>Past hypothesis</b><span>The assumption that the early universe had very low entropy.</span><em>Why time has a direction</em></div>
+        <div><b>Heat death</b><span>The far-future state with no usable energy left.</span><em>After 10¹⁰⁰ years or more</em></div>
+        <div><b>Hawking radiation</b><span>The faint glow that black holes give off because they have a temperature.</span><em>Predicted 1974</em></div>
+      </div>
+    </section>
+
+    <!-- 25. So what -->
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions to ask next time</h2>
+      <ul class="checks">
+        <li><b>Used up, or spread out?</b> Energy is conserved. What runs out is its usefulness.</li>
+        <li><b>Impossible, or improbable?</b> Ask how many atoms are involved. For a handful, "uphill" happens; for a real object, never.</li>
+        <li><b>Who pays?</b> Any pocket of order, a cold house, a plant, a cell, is bought with more spreading somewhere else. For Earth, that is Sun to space.</li>
+      </ul>
+      <p>Sources read: <a href="https://arxiv.org/abs/0909.3983">Egan &amp; Lineweaver, entropy of the universe ↗</a>, <a href="https://www.quantamagazine.org/a-new-thermodynamics-theory-of-the-origin-of-life-20140122/">Quanta on Jeremy England ↗</a>, <a href="https://mathshistory.st-andrews.ac.uk/Biographies/Carnot_Sadi/">MacTutor on Carnot ↗</a>, <a href="https://terra.nasa.gov/news/joint-nasa-noaa-study-finds-earths-energy-imbalance-has-doubled">NASA/NOAA on Earth's energy imbalance ↗</a>, <a href="https://www.mpe.mpg.de/7968905/news20231025">MPE on the Milky Way's black hole mass ↗</a>.</p>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Energy is never used up, only spread out; the Sun's gift is energy still bunched up, and everything that happens does so as it spreads.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Configure ids, labConfig and compute() only. Do not edit update(): check_render.py verifies its ticks and bars.
+    // Model: two bars of n atoms; the packets are shared out so that every arrangement is equally likely
+    // (stars and bars counting). truth = exact chance that the left bar ends with MORE packets than it started with.
+    const ids=['n','hot','cold'],$=id=>document.getElementById(id);
+    const pc=v=>Math.abs(v)>=10?v.toFixed(1)+'%':v.toFixed(2)+'%';
+    const LF=[0];for(let i=1;i<=700;i++)LF.push(LF[i-1]+Math.log(i)); // ln(i!)
+    const lnC=(a,b)=>LF[a]-LF[b]-LF[a-b];
+    const lnW=(p,n)=>lnC(p+n-1,p); // ln of the number of ways to put p packets on n atoms
+    const sci=ln=>{const e=Math.floor(ln/Math.LN10),m=Math.exp(ln-e*Math.LN10);return m.toFixed(2)+'e'+e};
+    // ponytail: log-factorial table caps n<=100, packets<=200 (slider limits); extend LF if the sliders grow
+    function compute(v){
+      const [n,L,R]=v,T=L+R,lnTot=lnW(T,2*n);
+      let ways=0;for(let k=L+1;k<=T;k++)ways+=Math.exp(lnW(k,n)+lnW(T-k,n)-lnTot);
+      const p=Math.min(1,ways),truth=p*100;
+      const odds=p>0?'1 in '+(1/p).toPrecision(3):'none (0 ways)';
+      return {truth, rows:[['Exact counting',truth,'#c3b8ff'],['"Never happens" rule',0,'#f87171']],
+        ledger:[['Atoms in both bars',String(2*n)],['Packets in total',String(T)],['All arrangements',sci(lnTot)],['Left ends above '+L+' packets',sci(lnTot+Math.log(Math.max(p,1e-300)))+' ways'],['Odds',odds]]};
+    }
+    const labConfig={format:pc, sliderFormats:[v=>v+' atoms',v=>v+' packets',v=>v+' packets'], minSpan:1, maxSpan:100, step:1};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false}; // invalidate stale success before computation
+      $('labChart').innerHTML='';
+      $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value), fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=(labConfig.sliderFormats[i]||fmt)(v[i]));
+      const {truth,rows,ledger}=compute(v);
+      if(!Number.isFinite(truth)||!rows.length||rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned non-finite or missing results');
+      const {minSpan,maxSpan,step}=labConfig;
+      if(!(minSpan>0 && maxSpan>=minSpan && step>0)) throw new Error('Invalid lab axis configuration');
+      const m=Math.min(maxSpan,Math.max(minSpan,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/step)*step));
+      // Zero sits at the left edge unless some value is negative; never hand-place ticks or bars.
+      const neg=Math.min(truth,...rows.map(r=>r[1]))<0, x0=neg?260:60, span=neg?200:400;
+      const sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m, ticks=neg?[-m,0,m]:[0,m/2,m];
+      const bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      const clipped=rows.map(r=>Math.abs(r[1])>m), truthClipped=Math.abs(truth)>m;
+      // Axis and truth lines are drawn per row band so they never cross the row labels above each bar.
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">truth ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      rows.forEach(([name,val,col],i)=>{
+        const y=80+i*82,x=sx(val);
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><line x1="${sx(truth)}" y1="${y-4}" x2="${sx(truth)}" y2="${y+30}" stroke="#f1eee8" stroke-dasharray="5 5"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}${clipped[i]?' · off-scale':''}</text><rect data-v="${val}" x="${Math.min(x,x0)}" y="${y}" width="${Math.abs(x-x0)}" height="26" fill="${esc(col)}"/>`;
+        if(clipped[i]){const d=val>0?1:-1;s+=`<path class="overflow-marker" d="M${x-d*9} ${y+3} L${x} ${y+13} L${x-d*9} ${y+23}" fill="none" stroke="#f1eee8" stroke-width="3"/>`;}
+      });
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
