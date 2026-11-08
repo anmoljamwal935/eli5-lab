@@ -1,0 +1,55 @@
+// "Fundamental analysis, from scratch": the one list every page in this series and its map read from.
+// Plan: plans/fundamental-analysis-series.md. A part with a `file` is published; without one it shows as coming soon.
+// Order here is reading order. Add fields only; never rename or remove one.
+(window.ELI5_SERIES_LIST = window.ELI5_SERIES_LIST || []).push({
+  id: 'fundamental-analysis',
+  title: 'Fundamental analysis, from scratch',
+  tagline: "You know how the market works. Now learn to read a company's accounts, judge the business, and work out what it's really worth, all in an Indian context.",
+  hub: 'fundamental-analysis-from-scratch.html',
+  tracks: {
+    numbers: { name: 'Reading the numbers', short: 'Numbers track', color: '#76d5c1' },
+    business: { name: 'Judging the business', short: 'Business track', color: '#c3b8ff' },
+    value: { name: 'Price and value', short: 'Value track', color: '#f5c76a' }
+  },
+  parts: [
+    { id: 'fundamental-analysis-in-one-page-eli5', track: 'value', title: 'Fundamental analysis in one page', blurb: 'Price vs value, market cap, and the map of what this series covers' },
+    { id: 'where-the-numbers-live-eli5', track: 'numbers', title: 'Where the numbers live', blurb: 'Annual reports, exchange filings, consolidated vs standalone, quarterly results' },
+    { id: 'the-profit-and-loss-eli5', track: 'numbers', title: 'The P&L, line by line', blurb: 'From sales to profit after tax, and the lines that hide surprises' },
+    { id: 'the-balance-sheet-eli5', track: 'numbers', title: 'The balance sheet', blurb: 'What a company owns, what it owes, and what belongs to shareholders' },
+    { id: 'cash-flow-and-the-three-statements-eli5', track: 'numbers', title: 'Cash flow, and how the three connect', blurb: 'Why profit is not cash, and one event moving through all three statements' },
+    { id: 'accounting-choices-eli5', track: 'numbers', title: 'Accounting choices that change profit', blurb: 'Capitalising, depreciation, provisions and one-offs under Ind AS' },
+    { id: 'pe-ratio-eli5', track: 'value', title: 'P/E: what it says and when it lies', blurb: 'EPS and P/E you can drive yourself, and the traps that fool them' },
+    { id: 'margins-and-operating-leverage-eli5', track: 'numbers', title: 'Margins and operating leverage', blurb: 'Why a 10% rise in sales can mean a 30% rise in profit' },
+    { id: 'growth-worth-paying-for-eli5', track: 'numbers', title: "Growth that's worth paying for", blurb: 'CAGR, compounding, base effects, and growth that eats cash' },
+    { id: 'roe-roce-dupont-eli5', track: 'numbers', title: 'ROE, ROCE and DuPont', blurb: 'How well a company uses its money, and three ways to get the same return' },
+    { id: 'how-much-debt-eli5', track: 'numbers', title: 'Debt: how much is too much', blurb: 'Leverage, interest cover, and what a rate hike does to a borrower' },
+    { id: 'working-capital-cycle-eli5', track: 'numbers', title: 'Working capital and the cash cycle', blurb: 'Inventory, customers and suppliers: how long a rupee stays stuck' },
+    { id: 'free-cash-flow-eli5', track: 'numbers', title: 'Free cash flow and earnings quality', blurb: 'The cash test every reported profit has to pass' },
+    { id: 'pb-dividends-ev-eli5', track: 'value', title: 'The other price tags: P/B, dividends, EV/EBITDA', blurb: 'Book value, payouts, and pricing the whole company including its debt' },
+    { id: 'ratios-together-eli5', track: 'value', title: 'Reading ratios together', blurb: 'Peers, PEG, and a one-page dashboard where no ratio stands alone' },
+    { id: 'business-model-eli5', track: 'business', title: 'Business model and unit economics', blurb: 'How the company really makes money, one unit at a time' },
+    { id: 'industry-and-moats-eli5', track: 'business', title: 'Industry structure and moats', blurb: 'Competition, pricing power, and what keeps rivals out' },
+    { id: 'management-and-capital-allocation-eli5', track: 'business', title: 'Management, capital allocation and concalls', blurb: 'What the people in charge do with the cash, and whether they keep promises' },
+    { id: 'governance-and-ownership-eli5', track: 'business', title: 'Governance and who owns the company', blurb: 'Promoters, pledges, related-party deals, auditors and boards' },
+    { id: 'red-flags-eli5', track: 'business', title: 'Red flags and forensic checks', blurb: 'The patterns in the accounts that come before a blow-up' },
+    { id: 'corporate-actions-eli5', track: 'value', title: 'Corporate actions and dilution', blurb: 'Bonus, split, buyback, rights issue, QIP and ESOPs: what each does to you' },
+    { id: 'the-economy-around-the-company-eli5', track: 'business', title: 'The economy around the company', blurb: 'Rates, inflation, the rupee, commodities and the monsoon' },
+    { id: 'discount-rate-eli5', track: 'value', title: 'Discounting and the discount rate', blurb: 'Why money later is worth less, and how much less' },
+    { id: 'dcf-step-by-step-eli5', track: 'value', title: 'DCF, step by step', blurb: 'Turning future cash into a value per share today' },
+    { id: 'reverse-dcf-eli5', track: 'value', title: 'Reverse DCF', blurb: 'What growth the market price is already assuming' },
+    { id: 'relative-valuation-eli5', track: 'value', title: 'Relative valuation and P/E bands', blurb: 'Pricing against peers and against the company’s own history' },
+    { id: 'sum-of-the-parts-eli5', track: 'value', title: 'Conglomerates and special cases', blurb: 'Sum of the parts, holding-company discounts, dividend models and NAV' },
+    { id: 'margin-of-safety-eli5', track: 'value', title: 'Margin of safety and scenarios', blurb: 'Bull, base and bear cases, and how wrong you can afford to be' },
+    { id: 'analysing-banks-eli5', track: 'business', title: 'Banks', blurb: 'NIM, CASA, bad loans and capital: why normal ratios fail for lenders' },
+    { id: 'nbfcs-and-insurers-eli5', track: 'business', title: 'NBFCs and insurers', blurb: 'Cost of funds, asset-liability mismatch, VNB and embedded value' },
+    { id: 'it-and-pharma-exporters-eli5', track: 'business', title: 'Exporters: IT services and pharma', blurb: 'Constant currency, the rupee, deal wins and USFDA inspections' },
+    { id: 'consumer-companies-eli5', track: 'business', title: 'Consumer companies', blurb: 'Volume vs price growth, rural demand, and why consumer P/Es run high' },
+    { id: 'cyclicals-eli5', track: 'business', title: 'Cyclicals', blurb: 'Cement, steel and autos: buying at a high P/E and selling at a low one' },
+    { id: 'utilities-psus-real-estate-eli5', track: 'business', title: 'Utilities, PSUs and real estate', blurb: 'Regulated returns, government owners, and pre-sales' },
+    { id: 'loss-makers-and-ipos-eli5', track: 'business', title: 'Loss-making companies and IPOs', blurb: 'Reading a DRHP, unit economics, cash burn and runway' },
+    { id: 'screening-for-ideas-eli5', track: 'value', title: 'Screening for ideas', blurb: 'Building filters that find candidates without falling into traps' },
+    { id: 'one-company-start-to-finish-eli5', track: 'business', title: 'One company, start to finish', blurb: 'A full analysis of one real company, ending in a one-page thesis' },
+    { id: 'portfolio-taxes-costs-eli5', track: 'value', title: 'Portfolio, taxes and costs', blurb: 'Position sizing, when to sell, and what tax and costs take from returns' }
+  ],
+  bonus: { id: 'satyam-decoded-eli5', title: 'Satyam, decoded', blurb: 'The 2009 fraud read through the red flags from Part 20' }
+});
