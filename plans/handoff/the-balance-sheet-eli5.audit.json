@@ -1,0 +1,498 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "Tata Consumer Products Integrated Annual Report 2025-26, Consolidated Financial Statements (83-page PDF)",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "83 PDF pages = printed pp.403-485",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext -layout; read balance sheet, notes 6, 8, 13, 14, 15, policies, note 36",
+    "beginning_middle_end_evidence": "Read balance sheet p.414, P&L p.415, notes 6-15, Note 36 p.469",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "https://oss-data-in.vaquill.ai/legislation/REG_MCA_mcaacts28234scheduleiiigeneralinstructio/act.pdf"
+    ],
+    "limitations": "Schedule III read via third-party copy (mca.gov.in 403). Ind AS standards themselves not opened; claims rest on Schedule III and TCPL statements. Press revenue 20,280 not retrieved."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "P&L is a flow over a year; balance sheet a snapshot on one date",
+      "kind": "mechanism",
+      "locator": "TCPL statement headings p.414-415",
+      "check_needed": false,
+      "destination": "snapshot"
+    },
+    {
+      "id": 2,
+      "item": "Assets = liabilities + equity; equity is the residual",
+      "kind": "definition",
+      "locator": "Ind AS Conceptual Framework; TCPL BS totals match",
+      "check_needed": true,
+      "destination": "equation"
+    },
+    {
+      "id": 3,
+      "item": "Ramu FY26 balance sheet lines (canonical, example)",
+      "kind": "number",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "equation"
+    },
+    {
+      "id": 4,
+      "item": "Schedule III Division II sets layout for Ind AS companies",
+      "kind": "claim",
+      "locator": "Schedule III",
+      "check_needed": true,
+      "destination": "equation"
+    },
+    {
+      "id": 5,
+      "item": "Every event moves two sides; mismatch = missing entry",
+      "kind": "mechanism",
+      "locator": "double entry",
+      "check_needed": false,
+      "destination": "why-balances + lab"
+    },
+    {
+      "id": 6,
+      "item": "Non-current vs current: 12 months / operating cycle",
+      "kind": "definition",
+      "locator": "Schedule III general instructions 1-3",
+      "check_needed": true,
+      "destination": "long-lived, short-lived"
+    },
+    {
+      "id": 7,
+      "item": "PP&E net of depreciation",
+      "kind": "definition",
+      "locator": "TCPL Note 3",
+      "check_needed": false,
+      "destination": "long-lived"
+    },
+    {
+      "id": 8,
+      "item": "CWIP = being built, moves to PP&E when ready",
+      "kind": "definition",
+      "locator": "Schedule III line; TCPL note 3 CWIP ageing",
+      "check_needed": false,
+      "destination": "long-lived"
+    },
+    {
+      "id": 9,
+      "item": "Goodwill = consideration above fair value of identifiable net assets; example 30/20/10",
+      "kind": "definition+example",
+      "locator": "TCPL policy p.421",
+      "check_needed": true,
+      "destination": "long-lived"
+    },
+    {
+      "id": 10,
+      "item": "Goodwill not amortised, tested yearly; finite intangibles amortised",
+      "kind": "claim",
+      "locator": "TCPL policy p.422, note 6 pp.436-438",
+      "check_needed": true,
+      "destination": "long-lived trace"
+    },
+    {
+      "id": 11,
+      "item": "Inventory, trade receivables, cash, other current",
+      "kind": "definition",
+      "locator": "Schedule III",
+      "check_needed": false,
+      "destination": "short-lived"
+    },
+    {
+      "id": 12,
+      "item": "Share capital = face value x shares; premium goes to other equity",
+      "kind": "definition",
+      "locator": "TCPL notes 13-14 p.445-447",
+      "check_needed": true,
+      "destination": "equity, lab"
+    },
+    {
+      "id": 13,
+      "item": "Other equity = retained profit + premium",
+      "kind": "definition",
+      "locator": "TCPL note 14(b) p.447",
+      "check_needed": true,
+      "destination": "equity"
+    },
+    {
+      "id": 14,
+      "item": "Non-controlling interest one-liner",
+      "kind": "definition",
+      "locator": "Schedule III Division II; TCPL BS, note 35(b) p.460",
+      "check_needed": true,
+      "destination": "equity, TCPL"
+    },
+    {
+      "id": 15,
+      "item": "Book equity vs market cap (Ramu 250 vs 1,000)",
+      "kind": "number",
+      "locator": "plan; P/B deferred to Part 14",
+      "check_needed": false,
+      "destination": "equity"
+    },
+    {
+      "id": 16,
+      "item": "Equity roll 218 + 50 - 18 = 250",
+      "kind": "mechanism",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "roll, lab compare"
+    },
+    {
+      "id": 17,
+      "item": "Proposed dividend not yet a liability; needs AGM approval",
+      "kind": "claim",
+      "locator": "TCPL note 14(a)(ii) p.446",
+      "check_needed": true,
+      "destination": "roll trace"
+    },
+    {
+      "id": 18,
+      "item": "Borrowings long/short, trade payables, provisions",
+      "kind": "definition",
+      "locator": "TCPL BS, note 15, policy p.~430",
+      "check_needed": true,
+      "destination": "owed"
+    },
+    {
+      "id": 19,
+      "item": "Provision = expected cost, uncertain amount/timing",
+      "kind": "definition",
+      "locator": "TCPL policy (provisions)",
+      "check_needed": true,
+      "destination": "owed"
+    },
+    {
+      "id": 20,
+      "item": "Lab: events (machine cash/loan, credit sale, dividend, shares), reset, FY25 vs FY26",
+      "kind": "mechanism",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "lab"
+    },
+    {
+      "id": 21,
+      "item": "TCPL consolidated BS mapped to the shape",
+      "kind": "number",
+      "locator": "TCPL AR p.414",
+      "check_needed": true,
+      "destination": "TCPL panel"
+    },
+    {
+      "id": 22,
+      "item": "Goodwill movement FY26 (+569.50 FX, -16.02 impairment) and FY25 additions 863.75",
+      "kind": "number",
+      "locator": "TCPL note 6 pp.436-438",
+      "check_needed": true,
+      "destination": "TCPL panel"
+    },
+    {
+      "id": 23,
+      "item": "Net cash 2,978 cr reconciled to 2,977.49 from Note 36 and notes 8, 13, 15",
+      "kind": "number",
+      "locator": "AGM slide 88; AR note 36 p.469",
+      "check_needed": true,
+      "destination": "net cash panel"
+    },
+    {
+      "id": 24,
+      "item": "Cash pooling: 1,595.17 overdraft offset by cash",
+      "kind": "number",
+      "locator": "TCPL notes 13, 15 pp.445, 448",
+      "check_needed": true,
+      "destination": "net cash trace"
+    },
+    {
+      "id": 25,
+      "item": "Deferred: working-capital days (12), ratios (10,11), P/B (14), amortisation (6), cash flow (5)",
+      "kind": "context",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "named, not taught"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 4,
+      "claim": "Schedule III Division II is the Ind AS layout; lists PP&E, CWIP, goodwill, other intangibles, inventories, trade receivables, cash, equity share capital, other equity; NCI shown within equity",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://oss-data-in.vaquill.ai/legislation/REG_MCA_mcaacts28234scheduleiiigeneralinstructio/act.pdf",
+      "passage": "Division II balance sheet format and instruction (ii) on NCI within equity",
+      "locator": "Division II BS format; General Instructions",
+      "page_use": "panel 2; copy is a third-party host of the MCA text (mca.gov.in itself returned 403)"
+    },
+    {
+      "inventory_id": 6,
+      "claim": "Current if realised/settled in operating cycle or within twelve months",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://oss-data-in.vaquill.ai/legislation/REG_MCA_mcaacts28234scheduleiiigeneralinstructio/act.pdf",
+      "passage": "General Instructions 1-3",
+      "locator": "instructions 1-3",
+      "page_use": "panels 4,5"
+    },
+    {
+      "inventory_id": 9,
+      "claim": "Goodwill is excess of consideration over identifiable net assets",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Accounting policy (e)(i) Goodwill",
+      "locator": "printed p.421",
+      "page_use": "panel 4"
+    },
+    {
+      "inventory_id": 10,
+      "claim": "Goodwill tested for impairment annually; indefinite brands not amortised; finite intangibles amortised; goodwill amortisation row blank",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Goodwill is tested for impairment annually; Note 6 tables",
+      "locator": "printed pp.422, 436-438",
+      "page_use": "panel 4 trace"
+    },
+    {
+      "inventory_id": 12,
+      "claim": "TCPL: 989,561,780 shares x Re 1 = Rs 98.96 cr",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Note 14(a)",
+      "locator": "printed p.445 (arithmetic: 98.956 cr)",
+      "page_use": "TCPL panel"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "Final dividend recommended by board is subject to AGM approval",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Note 14(a)(ii)",
+      "locator": "printed p.446",
+      "page_use": "panel 7 trace. Ind AS 10 not opened; page does not cite it"
+    },
+    {
+      "inventory_id": 21,
+      "claim": "Consolidated BS 31 Mar 2026: total assets 34,452.96; goodwill 11,883.90; other intangibles 7,111.76; PP&E 2,161.26; CWIP 459.90; inventories 3,526.76; receivables 1,148.33; cash 3,046.57; share capital 98.96; other equity 21,688.57; NCI 1,401.33; total equity 23,188.86; borrowings 302.14+1,818.17=2,120.31; trade payables 3,875.30",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Consolidated Balance Sheet as at March 31, 2026 (audited, Deloitte Haskins & Sells)",
+      "locator": "printed p.414 (PDF page 12)",
+      "page_use": "TCPL panel"
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Goodwill 11,330.42 -> 11,883.90 = +569.50 FX, -16.02 Bangladesh impairment; FY25 business-combination addition 863.75 (India 544.52, US 319.23); FY25 cash paid for subsidiaries 1,809.00; Capital Foods 75%, Organic India 100%",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Note 6 goodwill by CGU; cash flow statement; Note 35(a)",
+      "locator": "printed pp.416,436-438,458",
+      "page_use": "TCPL panel. The notes do not itself tie the 863.75 to the two named deals; the page says only that the group paid for subsidiaries and lists those two among them"
+    },
+    {
+      "inventory_id": 23,
+      "claim": "AGM slide: net cash Rs 2,978 cr, cash and equivalents net of total borrowings at 31 Mar 2026. Note 36: borrowings 2,120.31; cash incl bank deposits 3,396.51; current investments 868.20; inter-corporate loans 833.09 (247.28 + 585.81, Note 8); adjusted net cash 2,977.49",
+      "verdict": "Mostly supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf ; https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "passage": "Note 36 Capital Management; AGM slide 88 footnote",
+      "locator": "AR printed p.469; AGM presentation slide 88",
+      "page_use": "net cash panel. 3,396.51 = 3,046.57 + 373.92 - 23.98 (my arithmetic, Note 13). Slide figure 2,978 vs audited 2,977.49: 0.51 cr apart, cause not stated in either document, page says rounded up"
+    },
+    {
+      "inventory_id": 24,
+      "claim": "1,595.17 cr of bank overdraft is cash-pooled, offset by cash; derived ex-pool borrowings ~525 and cash ~1,451",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Notes 13 and 15",
+      "locator": "printed pp.445, 448",
+      "page_use": "net cash trace (525.14 and 1,451.40 are my subtraction)"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "TCPL recognises provisions for a present obligation from a past event with probable outflow and reliable estimate",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Accounting policy: provisions",
+      "locator": "printed p.~424",
+      "page_use": "page uses a plainer wording"
+    },
+    {
+      "inventory_id": 0,
+      "claim": "Reconcile revenue: AGM slide Rs 20,290 cr vs press Rs 20,280 cr",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Consolidated Statement of P&L: Revenue from Operations 20,290.43 (Note 21)",
+      "locator": "printed p.415",
+      "page_use": "not on the page (P&L is Part 3); audited figure matches the slide, the 20,280 press figure does not match the statement"
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "heading": "snapshot"
+    },
+    {
+      "id": 2,
+      "heading": "equation"
+    },
+    {
+      "id": 3,
+      "heading": "why it balances"
+    },
+    {
+      "id": 4,
+      "heading": "long-lived assets"
+    },
+    {
+      "id": 5,
+      "heading": "short-lived assets"
+    },
+    {
+      "id": 6,
+      "heading": "equity"
+    },
+    {
+      "id": 7,
+      "heading": "equity roll"
+    },
+    {
+      "id": 8,
+      "heading": "owed"
+    },
+    {
+      "id": 9,
+      "heading": "lab"
+    },
+    {
+      "id": 10,
+      "heading": "TCPL balance sheet"
+    },
+    {
+      "id": 11,
+      "heading": "net cash"
+    },
+    {
+      "id": 12,
+      "heading": "so what"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Ramu canonical FY26/FY25 numbers",
+      "goods cost 50% of price on credit sale; tax and other costs ignored",
+      "new shares at Rs 100, face value Rs 10, premium to other equity",
+      "refusal when cash/stock/reserves insufficient"
+    ],
+    "units": {
+      "money": "Rs crore",
+      "shares": "crore"
+    },
+    "independent_calculation_method": "Python oracle written from the plan rules; Playwright drives real buttons/sliders and compares window.labResults",
+    "cases": [
+      {
+        "name": "default FY26",
+        "expected": "assets 400, E+L 400, gap 0",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "machine cash 20",
+        "expected": "cash 20, PPE 240, total 400",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "machine loan 20",
+        "expected": "PPE 240, borrow 120, total 420",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "credit sale 20",
+        "expected": "rec 65, inv 45, res 160, total 410",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "dividend 2.00",
+        "expected": "cash 20, res 130, total 380",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "issue 1 cr shares",
+        "expected": "cash 140, sc 110, res 240, total 500",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "FY25 preset",
+        "expected": "353/353",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "compare ledger",
+        "expected": "218 + 50 - 18 = 250",
+        "observed": "present",
+        "passed": true
+      },
+      {
+        "name": "30 random walks x 25 events with random slider values (incl. refusals)",
+        "expected": "state equals oracle, gap 0, no negative line",
+        "observed": "3033 checks, 0 fails",
+        "passed": true
+      },
+      {
+        "name": "forced imbalance (cash+7)",
+        "expected": "beam tilts, label TILTED gap 7",
+        "observed": "observed in screenshot",
+        "passed": true
+      }
+    ],
+    "invariants": [
+      "assets == equity+liabilities after every event",
+      "no line below zero",
+      "equity == assets - liabilities"
+    ],
+    "tolerance": "exact (integers), 1e-6 float",
+    "axis_and_clipping": "axis grows in steps of 100 from 400, no clipping, zero-based bars"
+  },
+  "verification": {
+    "lint": "check_explainer: 0 errors, 0 warnings",
+    "supplementary_checks": [
+      "check_render: 0 errors (collisions, lab ticks/bars at defaults, presets, slider extremes, 390px overflow)",
+      "card lint 0 errors, 1 warning (neutral grey fill, intended by brief)"
+    ],
+    "screenshots": [
+      "scratchpad shots/desktop-NN.png phone-NN.png, lab-*.png, card-d.png"
+    ],
+    "screenshot_inspection": "Viewed desktop 00-12, phone 10, lab desktop default/events/cmp/tilt, lab phone events, card. Sticky masthead overlaps tall element screenshots (capture artefact). Fixed: label collision in panel 6, ledger narrow column, spacing after figures, phone ledger stacking.",
+    "coverage_review": "all 25 inventory rows placed",
+    "semantic_review": "self-reviewed; no second reviewer",
+    "artifact_sha256": "06865d16cbaca37a068cac6d4e42c0e82a0d23a1ba08fa284f5410665f2dc640"
+  },
+  "publication": {
+    "status": "not-attempted (instructed not to publish)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
