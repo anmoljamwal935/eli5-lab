@@ -49,7 +49,7 @@
         <p class="sb-status">${esc(status)}</p>
       </div>
       <div class="sb-visual">
-        <div class="sb-scroll"><svg class="sb-svg" viewBox="${Object.keys(S.tracks).length === 1 ? '0 60 760 100' : '0 0 760 230'}" role="group" aria-label="Series map: ${n} parts${trackKeys.length > 1 ? ` across ${trackKeys.length} tracks` : ''}"></svg></div>
+        <div class="sb-scroll"><svg class="sb-svg" viewBox="${Object.keys(S.tracks).length === 1 ? '0 60 760 100' : Object.keys(S.tracks).length === 3 ? '0 0 760 244' : '0 0 760 230'}" role="group" aria-label="Series map: ${n} parts${trackKeys.length > 1 ? ` across ${trackKeys.length} tracks` : ''}"></svg></div>
         <p class="sb-caption" aria-live="polite"></p>
         <p class="sb-legend" style="${colors(S.tracks[trackKeys[0]].color)}"><span><i class="lg-live"></i>Published</span><span><i class="lg-read"></i>Read</span><span><i class="lg-soon"></i>Coming soon</span></p>
       </div>`;
@@ -60,6 +60,8 @@
     const Y = Object.fromEntries(trackKeys.map((t, k) => [t, lanesY[k]]));
     const last = trackKeys.length - 1, above = t => trackKeys.indexOf(t) < last || last === 0;
     const hasBonus = !!S.bonus, xEnd = hasBonus ? 680 : 720, x0 = 46, dx = n > 1 ? (xEnd - x0) / (n - 1) : 0;
+    // Long series pack their dots closer: shrink dots, halo, hit area and numbers so neighbours never overlap.
+    const rLive = Math.min(12, dx * 0.42), rSoon = Math.min(9, dx * 0.34), k = rLive / 12, dense = dx < 24;
     trackKeys.forEach((t, k) => {
       add('line', { x1: 20, y1: Y[t], x2: 740, y2: Y[t], class: 'sb-lane' });
       add('text', { x: 20, y: k === last && last > 0 ? Y[t] + 52 : Y[t] - 40, class: 'sb-lane-name', style: colors(S.tracks[t].color) }, svg, S.tracks[t].name.toUpperCase());
@@ -79,12 +81,13 @@
       const g = p.file ? add('a', { href: '?id=' + encodeURIComponent(p.id), 'data-sb-open': p.id, 'aria-label': describe(p) }) : add('g', { tabindex: 0, role: 'img', 'aria-label': describe(p) });
       g.setAttribute('class', 'sb-node' + (p.file ? ' live' : ' soon') + (isRead ? ' read' : '') + (isNext ? ' next' : ''));
       g.setAttribute('style', bonus ? '--cd:var(--sb-gold);--cl:var(--sb-gold)' : `--cd:${tr.color};--cl:${tr.lightColor || LIGHT[String(tr.color).toLowerCase()] || tr.color}`);
-      if (isNext) add('circle', { cx: x, cy: y, r: 19, class: 'sb-halo' }, g);
-      add('circle', { cx: x, cy: y, r: 22, class: 'sb-hit' }, g);
+      if (isNext) add('circle', { cx: x, cy: y, r: bonus ? 19 : rLive + 7, class: 'sb-halo' }, g);
+      add('circle', { cx: x, cy: y, r: bonus ? 22 : Math.min(22, Math.max(10, dx * 0.55)), class: 'sb-hit' }, g);
       if (bonus) add('path', { d: `M${x} ${y - 15}L${x + 15} ${y}L${x} ${y + 15}L${x - 15} ${y}Z`, class: 'sb-dot' }, g);
-      else add('circle', { cx: x, cy: y, r: p.file ? 12 : 9, class: 'sb-dot' }, g);
-      if (isRead) add('path', { d: `M${x - 5} ${y}l3.5 3.5 6.5-7`, class: 'sb-tick' }, g);
-      add('text', { x, y: bonus ? y + 34 : y + (above(p.track) ? -22 : 32), class: 'sb-num' }, g, bonus ? 'bonus' : String(i + 1));
+      else add('circle', { cx: x, cy: y, r: p.file ? rLive : rSoon, class: 'sb-dot' }, g);
+      if (isRead) add('path', { d: `M${x - 5 * k} ${y}l${3.5 * k} ${3.5 * k} ${6.5 * k}-${7 * k}`, class: 'sb-tick' }, g);
+      const num = add('text', { x, y: bonus ? y + 34 : y + (above(p.track) ? -(10 + rLive) : 20 + rLive), class: 'sb-num' }, g, bonus ? 'bonus' : String(i + 1));
+      if (dense && !bonus) num.style.fontSize = '10px';
       g.addEventListener('mouseenter', () => setCap(p));
       g.addEventListener('focus', () => setCap(p));
     }
