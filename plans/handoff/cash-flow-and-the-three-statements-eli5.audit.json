@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "Tata Consumer Products Integrated Annual Report 2025-26",
+    "author": "Tata Consumer Products Ltd (auditor Deloitte Haskins & Sells LLP, report dated 8 May 2026)",
+    "verified_date": "2026-11-08",
+    "sections": "428 PDF pages; consolidated statements printed pp. 414-418 (PDF 328-332)",
+    "language": "English",
+    "capture_mode": "downloaded PDF, pdftotext -layout, then page-located; sha256 e5e1f09838183e22dbf3fc11056894b197401f462cc7966ff295419e4e660b8d",
+    "other_sources": [
+      {
+        "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+        "sha256": "fda0e0d75eb7d11d7ac8093215024a1d0130957da5b70454c773f9d175878126",
+        "use": "FCF/EBITDA 107%, EBITDA 2,815, dividend Rs 10 (cross-check only)"
+      },
+      {
+        "url": "https://ca2013.com/indian-accounting-standard-ind-7/",
+        "use": "Ind AS 7 text paras 18, 31, 33, 34 (a reproduction of the MCA-notified standard; MCA original not opened)"
+      }
+    ],
+    "beginning_middle_ending_evidence": "Topic build from primary documents, not a video/article. Statements read in full: balance sheet, P&L, equity statement, cash flow (both pages), MD&A financial review p.223, dividend section p.177, FCF chart p.57.",
+    "limitations": [
+      "Ind AS 7 and Ind AS 10 wording read from ca2013.com reproduction and web search summaries, not the MCA gazette.",
+      "TCPL does not publish the FCF/EBITDA bridge, so 107% is checked only to within about 1 point (106%).",
+      "Press reports of Rs 20,280 cr revenue were not located; audited line is 20,290.43 (p.415)."
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Cash flow statement has three buckets: operating, investing, financing; opening + net = closing",
+      "kind": "definition",
+      "locator": "Ind AS 7; TCPL pp.417-418",
+      "check": true,
+      "destination": "p02"
+    },
+    {
+      "id": "I2",
+      "item": "Indirect method: PBT, add back non-cash, move finance cost/interest income out, working capital, tax paid",
+      "kind": "mechanism",
+      "locator": "Ind AS 7 para 18; TCPL p.417",
+      "check": true,
+      "destination": "p03"
+    },
+    {
+      "id": "I3",
+      "item": "Direct vs indirect allowed; Ramu and TCPL use indirect",
+      "kind": "claim",
+      "locator": "Ind AS 7 para 18",
+      "check": true,
+      "destination": "p03"
+    },
+    {
+      "id": "I4",
+      "item": "Working capital changes: assets up uses cash, liabilities up provides cash (-8,-7,+5=-10)",
+      "kind": "mechanism",
+      "locator": "plan canonical",
+      "check": false,
+      "destination": "p04"
+    },
+    {
+      "id": "I5",
+      "item": "Investing: capex -45, interest received +4 = -41; financing: +10, -10, -18 = -18",
+      "kind": "number",
+      "locator": "plan canonical",
+      "check": false,
+      "destination": "p05"
+    },
+    {
+      "id": "I6",
+      "item": "Ind AS 7: interest paid and dividends paid financing; interest/dividends received investing (non-financial entities)",
+      "kind": "claim",
+      "locator": "Ind AS 7 paras 31,33,34",
+      "check": true,
+      "destination": "p05"
+    },
+    {
+      "id": "I7",
+      "item": "Capex found from balance sheets: 190+42-12=220, CWIP +3, total 45",
+      "kind": "example",
+      "locator": "arithmetic",
+      "check": false,
+      "destination": "p05 go-deeper"
+    },
+    {
+      "id": "I8",
+      "item": "Why profit != cash: depreciation +12, working capital -10, capex -45, borrowing +10, dividend -18 = PAT 50 to -1",
+      "kind": "mechanism",
+      "locator": "arithmetic",
+      "check": false,
+      "destination": "p06"
+    },
+    {
+      "id": "I9",
+      "item": "Three statements connect: PAT->reserves, capex->fixed assets, WC<->current items, net cash = BS cash; 47=47",
+      "kind": "mechanism",
+      "locator": "arithmetic",
+      "check": false,
+      "destination": "p07, lab2"
+    },
+    {
+      "id": "I10",
+      "item": "Indian dividend timing: FY25 dividend paid in FY26, FY26 in FY27; Ind AS 10 no liability at year end",
+      "kind": "claim",
+      "locator": "Ind AS 10 para 12; TCPL p.177",
+      "check": true,
+      "destination": "p08, p11"
+    },
+    {
+      "id": "I11",
+      "item": "Lab 1: sell on credit, profit up, cash not",
+      "kind": "mechanism",
+      "locator": "model",
+      "check": false,
+      "destination": "lab1"
+    },
+    {
+      "id": "I12",
+      "item": "Lab 2: event tracer (credit sale, machine with loan, dividend, depreciation) with balance and cash tie-out checks",
+      "kind": "mechanism",
+      "locator": "model",
+      "check": false,
+      "destination": "lab2"
+    },
+    {
+      "id": "I13",
+      "item": "TCPL consolidated CFO 2,421.85, CFI -1,398.17, CFF -1,075.39, net -51.71, closing 1,412.79",
+      "kind": "number",
+      "locator": "TCPL pp.417-418",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I14",
+      "item": "TCPL CFO vs net profit 1,546.80 (1.57x)",
+      "kind": "number",
+      "locator": "TCPL pp.415,417",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I15",
+      "item": "TCPL FCF/EBITDA 107% defined before capex and tax; reproduces ~106% from cash generated from operations; 70% after capex",
+      "kind": "claim",
+      "locator": "TCPL p.57 footnote 4, p.417, p.223",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I16",
+      "item": "TCPL cash flow cash is net of bank overdraft; FX line",
+      "kind": "mechanism",
+      "locator": "TCPL p.418",
+      "check": true,
+      "destination": "p11 go-deeper"
+    },
+    {
+      "id": "I17",
+      "item": "Deferred: FCF/CFO quality (Part 13), accounting choices (Part 6), working-capital days (Part 12), banks (Part 29)",
+      "kind": "context",
+      "locator": "plan",
+      "check": false,
+      "destination": "named in p04,p06,p11,p12"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I1",
+      "claim": "Three-way split and reconciliation shape",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.417-418 statement layout",
+      "page_use": "p02, p11"
+    },
+    {
+      "inventory_id": "I2",
+      "claim": "Indirect method steps",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-7/",
+      "locator": "Ind AS 7 para 18 quoted; TCPL p.417 uses it",
+      "page_use": "p03"
+    },
+    {
+      "inventory_id": "I6",
+      "claim": "Interest paid financing; interest and dividends received investing; dividends paid financing (Ind AS 7 removes the IAS 7 options for non-financial entities)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-7/",
+      "locator": "paras 31, 33, 34 and Appendix 1; TCPL p.417 interest received 94.23 and dividend income 12.03 in investing, p.418 finance cost paid and dividend paid in financing",
+      "page_use": "p05"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "Dividend declared after the reporting period is not a liability at that date",
+      "verdict": "Mostly supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "web search summaries of Ind AS 10 para 12 (taxmann, ca2013); MCA original not opened",
+      "locator": "para 12",
+      "page_use": "p08"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "TCPL: Rs 10 recommended for FY26, AGM 10 Jun 2026, paid on/after 15 Jun 2026, outflow Rs 989.56 cr",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.177 (PDF 91)",
+      "page_use": "p11"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "FY26 dividend paid Rs 820.30 cr consolidated = 816.34 to owners + 3.96 NCI; FY25 DPS 8.25",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.416 equity statement, p.418; AGM presentation p.10 for DPS history",
+      "page_use": "p11"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "CFO 2,421.85; CFI (1,398.17); CFF (1,075.39); net (51.71); opening 1,377.72; FX +86.78; closing 1,412.79 (sum checked: 1377.72+2421.85-1398.17-1075.39+86.78=1412.79)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "pp.417-418 (PDF 331-332)",
+      "page_use": "p11"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Profit for the year 1,546.80; D&A 626.68",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.415 (PDF 329); p.417",
+      "page_use": "p11"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "FCF to EBITDA consolidated 107%, standalone 103% FY26; footnote 4 'Free Cash Flow before Capex and Tax'",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.57 (PDF 30); AGM presentation p.10 also says 107%",
+      "page_use": "p11"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Cash generated from operations 2,985.16 / EBITDA 2,815 = 106.05%; (2,421.85-448.57)/2,815 = 70.1%",
+      "verdict": "Supported (own arithmetic)",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.417; EBITDA p.223 (MD&A)",
+      "page_use": "p11 - TCPL does not publish its bridge, so 107% vs 106% gap is unexplained"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Bank overdraft 1,633.78 + CF cash 1,412.79 = BS cash 3,046.57",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.418 reconciliation; p.414 balance sheet",
+      "page_use": "p11 go-deeper"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "Revenue from operations 20,290.43 (reconciles AGM Rs 20,290 cr; press Rs 20,280 not found in audited statement)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.415",
+      "page_use": "p11 go-deeper"
+    },
+    {
+      "inventory_id": "I3",
+      "claim": "Ramu example numbers: CFO 58, CFI -41, CFF -18, net -1, 41->40; BS 400/400, 353/353; equity roll",
+      "verdict": "Supported (internal arithmetic)",
+      "as_of": "2026-11-08",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "locator": "canonical accounts",
+      "page_use": "all"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p01",
+      "heading": "Profit ₹50 cr, cash down ₹1 cr",
+      "visual": "3 bars, scale 4.5px/cr"
+    },
+    {
+      "id": "p02",
+      "heading": "Three buckets, one bridge",
+      "visual": "cash waterfall 41 to 40"
+    },
+    {
+      "id": "p03",
+      "heading": "Start at profit, undo the accounting",
+      "visual": "CFO waterfall 67 to 58"
+    },
+    {
+      "id": "p04",
+      "heading": "Bigger balance sheet, less cash",
+      "visual": "FY25/FY26 bar pairs"
+    },
+    {
+      "id": "p05",
+      "heading": "Machines, loans and dividends",
+      "visual": "CFI/CFF waterfalls"
+    },
+    {
+      "id": "p06",
+      "heading": "Five reasons profit is not cash",
+      "visual": "waterfall 50 to -1"
+    },
+    {
+      "id": "p07",
+      "heading": "Every balance-sheet change has a reason",
+      "visual": "change bars 47=47"
+    },
+    {
+      "id": "p08",
+      "heading": "FY26's dividend is paid in FY27",
+      "visual": "timeline columns, 4.5px/cr"
+    },
+    {
+      "id": "p09",
+      "heading": "Sell more on credit",
+      "visual": "lab1"
+    },
+    {
+      "id": "p10",
+      "heading": "One event, three statements",
+      "visual": "lab2"
+    },
+    {
+      "id": "p11",
+      "heading": "TCPL's cash flow, same shape",
+      "visual": "waterfall, 0.1px/cr own scale"
+    },
+    {
+      "id": "p12",
+      "heading": "Three questions for any cash flow",
+      "visual": "text (So what)"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Extra sales earn Ramu's 50% gross margin; materials bought and paid in cash in the year",
+      "Tax 25% of extra profit, paid in cash in the year",
+      "Share c of extra sales unpaid at 31 March",
+      "Tracer events: credit sale (same model), machine bought on last day with a loan (no depreciation yet), dividend paid in the year, extra depreciation tax-deductible at 25%",
+      "Cash below zero would need a loan; not modelled, disclosed on page"
+    ],
+    "units": {
+      "money": "Rs crore",
+      "c": "%"
+    },
+    "independent_calculation_method": "Python Fractions oracle rebuilding each statement from line items by a separate route (labtest.py in the scratchpad), compared against browser window.labResults / tracerResults with tolerance 1e-9",
+    "cases": [
+      {
+        "name": "lab1 default (0,100%)",
+        "expected": {
+          "pat": 50,
+          "cfo": 58,
+          "cash": 40
+        },
+        "observed": {
+          "pat": 50,
+          "cfo": 58,
+          "cash": 40
+        },
+        "pass": true
+      },
+      {
+        "name": "lab1 all 55 combos S=0..100 step10 x c in 0,25,50,75,100",
+        "pass": true
+      },
+      {
+        "name": "tracer default CFO58 CFI-41 CFF-18 net-1 cash 41->40",
+        "observed": [
+          58,
+          -41,
+          -18,
+          -1,
+          41,
+          40
+        ],
+        "pass": true
+      },
+      {
+        "name": "tracer 5 events x amounts 0..60 step 10 (35 cases): P&L, BS, CF and three checks",
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "assets = equity+liabilities",
+      "CF closing cash = BS cash",
+      "reserves = 118 + PAT - dividend paid"
+    ],
+    "tolerance": "1e-9 (exact in binary-friendly fractions)",
+    "axis_and_clipping": "Lab1 axis fixed at +-100 (all reachable values lie within: max 95.5); tracer chart fixed at +-60 (max |change| 60). No clipping possible.",
+    "deviation": "Default state is Ramu's canonical FY26 (zero extra sales / event 'as reported'), as required by the series brief, so the lab's defaults show no profit-cash gap beyond the canonical 50 vs 58; presets give the visible gap."
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_explainer.py: 0 errors, 0 warnings",
+      "check_render.py: 0 errors (all presets, all slider extremes, 390px overflow)",
+      "labtest.py: 0 mismatches, 0 JS errors, no NaN/Infinity text",
+      "check_card.py: 0 errors, 0 warnings",
+      "manual 390px check: scrollWidth 390, only figures scroll"
+    ],
+    "screenshots": "/tmp/claude-0/-home-user-eli5-lab/71a409af-6d2c-5264-b080-22762699e3b0/scratchpad/shots (desktop-NN, phone-NN, lab1-*, lab2*-*, card.png); inspected: hero, panels 1,3,4,5,7,8,9,10,11 and lab states at desktop, tracer at phone",
+    "coverage_review": "done: every inventory row located on page",
+    "semantic_review": "done by the author only; masthead overlay in element screenshots is a screenshot artefact of the sticky header",
+    "artifact_sha256": "adae7dfec628a45975c77b007b14993f2ace991e8415f017d3187fd2338ac9da",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 11,
+        "panels": 12,
+        "notes": 0
+      },
+      "artifact_sha256": "adae7dfec628a45975c77b007b14993f2ace991e8415f017d3187fd2338ac9da",
+      "artifact_path": "/home/user/eli5-lab/explainers/cash-flow-and-the-three-statements-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (by instruction: owner's main session publishes)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
