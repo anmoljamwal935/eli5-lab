@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ROE, ROCE and DuPont — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (here: cash) | coral #ff8059 = money going out | gold #f5c76a = what belongs to shareholders
+       rose #ec6a94 = what is owed | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       ROE extras: neutral greys = assets / EBIT (profit before anyone is paid). Gold = profit and equity, rose = debt, teal = sales. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    /* ROE lab */
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+    .lab .steps output{min-width:12ch}
+    .steps button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab .flag{margin:10px 0 0;font:12px/1.5 var(--font-mono);letter-spacing:.04em;color:var(--faint)}
+    .lab .flag.on{color:#ec6a94}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+  </style>
+</head>
+<body data-series-id="roe-roce-dupont-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 15 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>ROE, ROCE and DuPont</h1>
+      <p class="lede">Profit means little until you ask how much money it took to earn. ROE and ROCE are that question, and DuPont shows that one return can be reached by three very different roads.</p>
+      <p class="source-note">Built from Tata Consumer Products’ audited FY2026 consolidated statements, as printed in its Integrated Annual Report 2025-26, and the arithmetic of the ratios themselves · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="the-profit-and-loss-eli5.html">Part 3</a> reads sales down to profit after tax, <a href="the-balance-sheet-eli5.html">Part 4</a> reads what a company owns, owes and keeps, and <a href="cash-flow-and-the-three-statements-eli5.html">Part 5</a> shows profit is not cash. This part divides one by the other. Facts carry a tag: <span class="tag">public</span> is a figure from TCPL’s audited statements, <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd, a small tea business. All amounts are ₹ crore (cr). Part 9 covers growth, Part 11 covers debt, Part 23 covers the cost of capital. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, equity</span>
+        <span><i style="background:#ec6a94"></i>what is owed: debt</span>
+        <span><i style="background:#c9c6c0"></i>EBIT, assets</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The question</p>
+      <h2>Same profit, different capital</h2>
+      <p>Two tea shops each earn ₹10 cr a year <span class="tag">example</span>. Shop A needed ₹50 cr to get there. Shop B needed more. Both profits are equal, yet one owner is plainly better off. Press the buttons to change Shop B’s capital. This is a one-off pair of shops; it does not change Ramu’s accounts.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Two shops that each earn 10 crore: shop A uses 50 crore of capital and shop B uses an amount you can change; the capital bars and the 10 crore profit bars share one scale" id="shopsChart"></svg>
+      </figure>
+      <div class="steps"><button type="button" class="secondary" id="shopMinus">− ₹50 cr</button><button type="button" class="secondary" id="shopPlus">+ ₹50 cr</button><output id="shopOut" role="status" aria-live="polite"></output></div>
+      <p id="shopMsg" style="margin-top:14px"></p>
+      <p>A return is profit divided by the money that earned it. It lets you compare a small shop with a giant, or this year with last.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Return on the owners’ money</p>
+      <h2>ROE: profit per rupee of equity</h2>
+      <p><b>ROE</b>, return on equity, is profit after tax divided by shareholders’ equity. Ramu earned ₹50 cr on ₹250 cr of equity: 20% <span class="tag">example</span>. Each rupee the owners have in the business earned 20 paise. Profit is after interest and tax, because the owners are paid last.</p>
+      <figure>
+        <svg viewBox="0 0 800 210" role="img" aria-label="Ramu's equity of 250 crore as one gold bar, the first 50 crore solid to show that profit of 50 crore is one fifth of it: ROE 20 percent"><text x="40" y="40" text-anchor="start" fill="#f1eee8" font-size="16">profit ₹50 cr</text><text x="300" y="40" text-anchor="start" fill="#a5a29c" font-size="16">rest of equity ₹200 cr</text><rect x="40" y="52" width="100" height="44" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="140" y="52" width="400" height="44" fill="#f5c76a" opacity="0.45" stroke="#202020" stroke-width="2"/><text x="90" y="80" text-anchor="middle" fill="#202020" font-size="16">50</text><text x="340" y="80" text-anchor="middle" fill="#f1eee8" font-size="16">200</text><path d="M40 124 L540 124" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M40 118 L40 130" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M540 118 L540 130" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="290" y="154" text-anchor="middle" fill="#f1eee8" font-size="16">equity ₹250 cr · profit is 1 in 5</text><text x="40" y="196" text-anchor="start" fill="#a5a29c" font-size="16">2 px = ₹1 cr</text></svg>
+      </figure>
+      <span class="eq">ROE = profit after tax ÷ equity = 50 ÷ 250 = 20%</span>
+      <p>Equity here is the owners’ own share. In consolidated accounts that means equity attributable to the company’s shareholders, not the slice outsiders hold in subsidiaries (Part 4 covers non-controlling interest). The profit on top must match: profit attributable to owners.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Return on all the money</p>
+      <h2>ROCE: operating profit per rupee employed</h2>
+      <p><b>ROCE</b>, return on capital employed, divides <b>EBIT</b> (earnings before interest and tax, Part 3) by capital employed: equity plus debt. Ramu’s EBIT is ₹73 cr and its capital employed is 250 + 100 = ₹350 cr: 20.9% <span class="tag">example</span>. EBIT is counted before interest because lenders’ money is in the denominator, so lenders’ pay belongs in the numerator.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="EBIT of 73 crore drawn above Ramu's capital employed of 350 crore, which is equity 250 (gold) plus debt 100 (rose), on one scale"><text x="40" y="40" text-anchor="start" fill="#a5a29c" font-size="16">EARNED BEFORE ANYONE IS PAID</text><rect x="40" y="52" width="146" height="40" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="113" y="78" text-anchor="middle" fill="#202020" font-size="16">EBIT 73</text><text x="40" y="128" text-anchor="start" fill="#a5a29c" font-size="16">ALL THE MONEY IN THE BUSINESS</text><rect x="40" y="140" width="500" height="44" fill="#f5c76a" opacity="0.45" stroke="#202020" stroke-width="2"/><rect x="540" y="140" width="200" height="44" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="290" y="168" text-anchor="middle" fill="#f1eee8" font-size="16">Equity 250</text><text x="640" y="168" text-anchor="middle" fill="#202020" font-size="16">Debt 100</text><path d="M40 214 L740 214" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M40 208 L40 220" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M740 208 L740 220" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="390" y="244" text-anchor="middle" fill="#f1eee8" font-size="16">capital employed ₹350 cr · 73 ÷ 350 = 20.9%</text><text x="40" y="286" text-anchor="start" fill="#a5a29c" font-size="16">2 px = ₹1 cr</text></svg>
+      </figure>
+      <span class="eq">ROCE = EBIT ÷ (equity + debt) = 73 ÷ 350 = 20.9%</span>
+      <p>ROCE ignores how the business is financed, so a company with debt and one without can be compared fairly. That is why it sits beside ROE on many Indian stock screens. Capital employed has other definitions (assets minus current liabilities is common); this series uses equity plus borrowings, and says so wherever it matters.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">One more, briefly</p>
+      <h2>ROA, and three denominators</h2>
+      <p><b>ROA</b>, return on assets, is profit divided by everything the company owns: ₹50 cr ÷ ₹400 cr = 12.5% <span class="tag">example</span>. It asks how hard the assets work, whoever paid for them. Same profit, three bases: assets, equity, and equity plus debt. The numerators differ too: ROCE uses EBIT.</p>
+      <figure>
+        <svg viewBox="0 0 800 345" role="img" aria-label="Ramu's three returns on one scale: ROA divides profit 50 by assets 400 (12.5 percent), ROE divides 50 by equity 250 (20.0), ROCE divides EBIT 73 by equity plus debt 350 (20.9)"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">ROA · profit ÷ all assets</text><rect x="40" y="40" width="640" height="28" fill="#8a8680" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="694" y="62" text-anchor="start" fill="#f1eee8" font-size="16">12.5%</text><rect x="40" y="74" width="80" height="16" fill="#f5c76a"/><text x="130" y="88" text-anchor="start" fill="#a5a29c" font-size="16">profit 50</text><text x="40" y="134" text-anchor="start" fill="#a5a29c" font-size="16">ROE · profit ÷ equity</text><rect x="40" y="144" width="400" height="28" fill="#f5c76a" opacity="0.45" stroke="#202020" stroke-width="2"/><text x="454" y="166" text-anchor="start" fill="#f1eee8" font-size="16">20.0%</text><rect x="40" y="178" width="80" height="16" fill="#f5c76a"/><text x="130" y="192" text-anchor="start" fill="#a5a29c" font-size="16">profit 50</text><text x="40" y="238" text-anchor="start" fill="#a5a29c" font-size="16">ROCE · EBIT ÷ equity + debt</text><rect x="40" y="248" width="400" height="28" fill="#f5c76a" opacity="0.45" stroke="#202020" stroke-width="2"/><rect x="440" y="248" width="160" height="28" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="614" y="270" text-anchor="start" fill="#f1eee8" font-size="16">20.9%</text><rect x="40" y="282" width="116.8" height="16" fill="#c9c6c0"/><text x="166.8" y="296" text-anchor="start" fill="#a5a29c" font-size="16">EBIT 73</text><text x="40" y="338" text-anchor="start" fill="#a5a29c" font-size="16">1.6 px = ₹1 cr · denominators 400, 250, 350</text></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: why ROA has several versions</summary>
+        <p>Some analysts use EBIT after tax over assets, or average assets. Here ROA is profit after tax over closing total assets, because that is the version DuPont splits cleanly (two panels on).</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Which balance?</p>
+      <h2>Closing or average balances</h2>
+      <p>Equity changes during the year, so the denominator needs a choice. This series uses <b>closing</b> balances: the number printed on the balance sheet, so you can check it. <b>Average</b> (opening plus closing, halved) fits better when capital moved a lot in the year, as with a rights issue or acquisition. For Ramu, average equity is (218 + 250) ÷ 2 = 234 and ROE is 21.4% <span class="tag">example</span>. The canonical 20% uses closing equity.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Three bases for Ramu's ROE: opening equity 218 crore gives 22.9 percent, average 234 gives 21.4, closing 250 gives 20.0, which this series uses"><text x="40" y="32" text-anchor="start" fill="#a5a29c" font-size="16">RAMU'S EQUITY · PROFIT ₹50 CR</text><text x="40" y="64" text-anchor="start" fill="#a5a29c" font-size="16">31 Mar 2025 · 218</text><rect x="40" y="72" width="436" height="30" fill="#f5c76a" opacity="0.45" stroke="#202020" stroke-width="2"/><text x="490" y="94" text-anchor="start" fill="#f1eee8" font-size="16">22.9%</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">average · 234</text><rect x="40" y="148" width="468" height="30" fill="#f5c76a" opacity="0.25" stroke="#202020" stroke-width="2"/><text x="522" y="170" text-anchor="start" fill="#f1eee8" font-size="16">21.4%</text><text x="40" y="216" text-anchor="start" fill="#a5a29c" font-size="16">31 Mar 2026 · 250</text><rect x="40" y="224" width="500" height="30" fill="#f5c76a" opacity="0.45" stroke="#202020" stroke-width="2"/><text x="554" y="246" text-anchor="start" fill="#f1eee8" font-size="16">20.0% · used here</text><text x="40" y="278" text-anchor="start" fill="#a5a29c" font-size="16">2 px = ₹1 cr</text></svg>
+      </figure>
+      <p>When comparing companies, use the same basis for both. The real-report panels later show TCPL on both.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">DuPont</p>
+      <h2>ROE is margin × turnover × leverage</h2>
+      <p>Multiply and cancel: profit ÷ sales, times sales ÷ assets, times assets ÷ equity, leaves profit ÷ equity. So ROE splits into <b>net margin</b> (how much of each sale is kept), <b>asset turnover</b> (sales per rupee of assets) and the <b>equity multiplier</b> (assets per rupee of equity). Ramu: 10% × 1.25 × 1.6 = 20% <span class="tag">example</span>.</p>
+      <figure>
+        <svg viewBox="0 0 800 394" role="img" aria-label="For each rupee of Ramu's equity: 1.60 rupees of assets (equity gold plus debt rose), 2.00 rupees of sales (teal), and 0.20 rupees of profit (gold) which is the 20 percent ROE"><text x="40" y="46" text-anchor="start" fill="#a5a29c" font-size="16">start: owners’ money</text><rect x="40" y="56" width="200" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="252" y="81" text-anchor="start" fill="#f1eee8" font-size="16">₹1.00</text><text x="40" y="122" text-anchor="start" fill="#a5a29c" font-size="16">× 1.6 equity multiplier</text><rect x="40" y="132" width="200" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="240" y="132" width="120" height="36" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="372" y="157" text-anchor="start" fill="#f1eee8" font-size="16">₹1.60 of assets</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">× 1.25 asset turnover</text><rect x="40" y="208" width="400" height="36" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="452" y="233" text-anchor="start" fill="#f1eee8" font-size="16">₹2.00 of sales</text><text x="40" y="274" text-anchor="start" fill="#a5a29c" font-size="16">× 10% net margin</text><rect x="40" y="284" width="40" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="92" y="309" text-anchor="start" fill="#f1eee8" font-size="16">₹0.20 profit = ROE 20%</text><text x="40" y="374" text-anchor="start" fill="#a5a29c" font-size="16">200 px = ₹1 of owners’ money</text></svg>
+      </figure>
+      <span class="eq">50 ÷ 500 × 500 ÷ 400 × 400 ÷ 250 = 10% × 1.25 × 1.6 = 20%</span>
+      <p>Read it per rupee of owners’ money: ₹1 supports ₹1.60 of assets, which make ₹2.00 of sales, of which ₹0.20 is kept. A weak ROE can sit in any of the three.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Three dials, one ROE</h2>
+      <p>Turn the dials. The box has the three factors as its edges, and its volume is ROE; each edge is on its own scale. Start from Ramu’s canonical 10% × 1.25 × 1.6 <span class="tag">example</span>. Then press the presets: three different businesses, all at 20%. Assumptions: the three factors are independent here, which real businesses seldom are, and ROCE stays at Ramu’s fixed 73 ÷ 350, since three dials cannot fix EBIT or debt. The risk flag is a teaching marker (multiplier of 5 or more), not an accounting rule.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="margin">Net margin <output id="margin-o"></output></label><input id="margin" type="range" min="1" max="30" step="0.5" value="10"></div>
+          <div class="control"><label for="turn">Asset turnover <output id="turn-o"></output></label><input id="turn" type="range" min="0.05" max="4" step="0.05" value="1.25"></div>
+          <div class="control"><label for="mult">Equity multiplier <output id="mult-o"></output></label><input id="mult" type="range" min="1" max="12" step="0.1" value="1.6"></div>
+          <p class="group-label">THE SAME 20% THREE WAYS</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="ramu">Ramu Chai · canonical</button>
+            <button type="button" class="secondary" data-p="brand">High-margin brand</button>
+            <button type="button" class="secondary" data-p="retail">Fast-turnover retailer</button>
+            <button type="button" class="secondary" data-p="lender">Lender-like · risky</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+          <p class="flag" id="flag"></p>
+        </div>
+        <div class="lab-chart">
+          <svg id="dupontBox" viewBox="0 0 560 300" role="img" aria-label="A box whose three edges are net margin, asset turnover and equity multiplier; its volume is the return on equity"></svg>
+          <svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars of net margin, return on assets, return on equity and Ramu's fixed ROCE in percent on one axis"></svg>
+        </div>
+      </div>
+      <div class="ledger" id="ledger"></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>Leverage lifts ROE and thins the cushion</h2>
+      <p>The multiplier is borrowing in disguise: assets paid for by someone other than the owners. It lifts ROE, but a thin equity cushion is also what absorbs losses first. Take two firms with ₹100 cr of equity <span class="tag">example</span>. A 10% fall in asset values costs the first (multiplier 1.6) ₹16 cr. The second (10×) loses all its equity.</p>
+      <figure>
+        <svg viewBox="0 0 800 340" role="img" aria-label="Two firms with 100 crore of equity: assets of 160 crore lose 16 crore and equity falls to 84; assets of 1,000 crore lose 100 crore, which wipes out all the equity"><text x="40" y="38" text-anchor="start" fill="#a5a29c" font-size="16">multiplier 1.6×</text><rect x="40" y="50" width="60" height="40" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="100" y="50" width="36" height="40" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><rect x="90.4" y="50" width="9.6" height="40" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="150" y="76" text-anchor="start" fill="#f1eee8" font-size="16">assets ₹160</text><text x="40" y="116" text-anchor="start" fill="#f1eee8" font-size="16">10% fall = −₹16 cr · equity ₹100 → ₹84</text><text x="40" y="178" text-anchor="start" fill="#a5a29c" font-size="16">multiplier 10×</text><rect x="40" y="190" width="60" height="40" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="100" y="190" width="540" height="40" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><rect x="40" y="190" width="60" height="40" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="654" y="216" text-anchor="start" fill="#f1eee8" font-size="16">assets ₹1,000</text><text x="40" y="256" text-anchor="start" fill="#f1eee8" font-size="16">10% fall = −₹100 cr · equity ₹100 → ₹0</text><text x="40" y="320" text-anchor="start" fill="#a5a29c" font-size="16">0.6 px = ₹1 cr · coral = a 10% fall in assets</text></svg>
+      </figure>
+      <p>That is why the lender-like preset is flagged: it reaches 20% with a multiplier of 10. Part 11, “Debt: how much is too much”, covers how to judge it. Banks and other lenders are built this way; Part 29 covers them.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why returns compound</p>
+      <h2>A high return, kept, compounds</h2>
+      <p>A business that earns 20% on equity and keeps 60% of profit (Ramu pays out 40% <span class="tag">example</span>) grows its equity by 20% × 60% = 12% a year, with no outside money. At 8% the same rule gives 4.8%. Same start, ₹250 cr; five years later ₹441 cr against ₹316 cr. One-off illustration, assuming new money earns the same return.</p>
+      <figure>
+        <svg viewBox="0 0 800 345" role="img" aria-label="Equity of 250 crore compounding for five years when 60 percent of profit is kept: at a 20 percent return it grows to about 441 crore, at 8 percent to about 316 crore"><rect x="40" y="16" width="14" height="14" fill="#f5c76a"/><text x="62" y="29" text-anchor="start" fill="#f1eee8" font-size="16">earns 20% on equity</text><rect x="300" y="16" width="14" height="14" fill="#f5c76a" opacity="0.4"/><text x="322" y="29" text-anchor="start" fill="#f1eee8" font-size="16">earns 8% on equity</text><rect x="60" y="169.5" width="40" height="130.5" fill="#f5c76a"/><rect x="104" y="169.5" width="40" height="130.5" fill="#f5c76a" opacity="0.4"/><text x="102" y="326" text-anchor="middle" fill="#a5a29c" font-size="16">now</text><rect x="180" y="153.8" width="40" height="146.2" fill="#f5c76a"/><rect x="224" y="163.2" width="40" height="136.8" fill="#f5c76a" opacity="0.4"/><text x="222" y="326" text-anchor="middle" fill="#a5a29c" font-size="16">yr 1</text><rect x="300" y="136.3" width="40" height="163.7" fill="#f5c76a"/><rect x="344" y="156.7" width="40" height="143.3" fill="#f5c76a" opacity="0.4"/><text x="342" y="326" text-anchor="middle" fill="#a5a29c" font-size="16">yr 2</text><rect x="420" y="116.6" width="40" height="183.4" fill="#f5c76a"/><rect x="464" y="149.8" width="40" height="150.2" fill="#f5c76a" opacity="0.4"/><text x="462" y="326" text-anchor="middle" fill="#a5a29c" font-size="16">yr 3</text><rect x="540" y="94.6" width="40" height="205.4" fill="#f5c76a"/><rect x="584" y="142.6" width="40" height="157.4" fill="#f5c76a" opacity="0.4"/><text x="582" y="326" text-anchor="middle" fill="#a5a29c" font-size="16">yr 4</text><rect x="660" y="70" width="40" height="230" fill="#f5c76a"/><rect x="704" y="135" width="40" height="165" fill="#f5c76a" opacity="0.4"/><text x="702" y="326" text-anchor="middle" fill="#a5a29c" font-size="16">yr 5</text><path d="M40 300 L760 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="80" y="159.5" text-anchor="middle" fill="#f1eee8" font-size="16">₹250</text><text x="680" y="60" text-anchor="middle" fill="#f1eee8" font-size="16">₹441</text><text x="724" y="125" text-anchor="middle" fill="#f1eee8" font-size="16">₹316</text></svg>
+      </figure>
+      <p>This links to Part 9, growth worth paying for: growth needs capital, and the return on that capital decides whether it is worth it. Whether a return is high enough depends on what the money costs; Part 23 compares ROCE with the cost of capital.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: ROE and its three factors</h2>
+      <p>Tata Consumer Products, consolidated, year to 31 March 2026 <span class="tag">public</span>. Profit attributable to owners was ₹1,542.30 cr; equity attributable to owners ₹21,787.53 cr. ROE on closing equity is 7.08%; on average equity, using FY25’s ₹20,001.08 cr, it is 7.38%.</p>
+      <span class="eq">closing: 1,542.30 ÷ 21,787.53 = <b>7.08%</b></span>
+      <span class="eq">average equity: (21,787.53 + 20,001.08) ÷ 2 = 20,894.31 · 1,542.30 ÷ 20,894.31 = <b>7.38%</b></span>
+      <span class="eq">DuPont: 1,542.30 ÷ 20,290.43 (7.60%) × 20,290.43 ÷ 34,452.96 (0.589) × 34,452.96 ÷ 21,787.53 (1.581) = <b>7.08%</b></span>
+      <figure>
+        <svg viewBox="0 0 800 416" role="img" aria-label="For each rupee of TCPL's owners' equity: 1.58 rupees of assets, 0.93 rupees of sales and 0.07 rupees of profit, drawn on the same scale as Ramu Chai's 1.60, 2.00 and 0.20 shown dashed"><text x="40" y="46" text-anchor="start" fill="#a5a29c" font-size="16">start: owners’ money</text><rect x="40" y="56" width="200" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="252" y="81" text-anchor="start" fill="#f1eee8" font-size="16">₹1.00</text><text x="40" y="122" text-anchor="start" fill="#a5a29c" font-size="16">× 1.58 equity multiplier</text><rect x="40" y="132" width="200" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="240" y="132" width="116.3" height="36" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><path d="M360 128 L360 172" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="372" y="157" text-anchor="start" fill="#f1eee8" font-size="16">₹1.58 of assets</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">× 0.59 asset turnover</text><rect x="40" y="208" width="186.3" height="36" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M440 204 L440 248" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="452" y="233" text-anchor="start" fill="#f1eee8" font-size="16">₹0.93 of sales</text><text x="40" y="274" text-anchor="start" fill="#a5a29c" font-size="16">× 7.6% net margin</text><rect x="40" y="284" width="14.2" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M80 280 L80 324" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="92" y="309" text-anchor="start" fill="#f1eee8" font-size="16">₹0.07 profit = ROE 7.1%</text><path d="M40 360 L70 360" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="80" y="365" text-anchor="start" fill="#a5a29c" font-size="16">dashed = Ramu Chai</text><text x="40" y="396" text-anchor="start" fill="#a5a29c" font-size="16">200 px = ₹1 of owners’ money</text></svg>
+      </figure>
+      <p>Compared with Ramu, the margin and leverage are not far off; the turnover is the gap. TCPL’s ₹20,290 cr of sales sit on ₹34,453 cr of assets, 0.59 times, and 55% of those assets are goodwill and other intangibles. It also raised equity through a rights issue in FY25, ₹2,980.57 cr net of expenses <span class="tag">public</span>, which enlarged the equity base. A year earlier the same ratio, ₹1,278.47 cr over ₹20,001.08 cr, was 6.4%.</p>
+      <div class="field-grid">
+        <div><b>₹1,542.30 cr owners’ profit</b><span>Profit for the year ₹1,546.80 cr less ₹4.50 cr for outsiders</span><em>CONSOLIDATED P&amp;L · P. 415</em></div>
+        <div><b>₹21,787.53 cr owners’ equity</b><span>FY25: ₹20,001.08 cr. Total equity ₹23,188.86 cr includes ₹1,401.33 cr non-controlling interest</span><em>CONSOLIDATED BALANCE SHEET · P. 414</em></div>
+        <div><b>₹2,980.57 cr rights issue</b><span>Proceeds, net of expenses, in FY25’s cash flow statement; none in FY26</span><em>CASH FLOW, FINANCING · P. 418</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s ROCE, with and without acquisitions</h2>
+      <p>EBIT here is EBITDA less depreciation and amortisation, the same construction as Ramu: ₹20,290.43 cr revenue less ₹11,855.64 cr materials, ₹1,661.00 cr employee costs and ₹3,981.99 cr other expenses is EBITDA of ₹2,791.80 cr; less ₹626.68 cr D&A is <b>EBIT ₹2,165.12 cr</b> <span class="tag">public</span>. That is before other income (₹164.75 cr) and before exceptional items (−₹20.06 cr). Capital employed is total equity ₹23,188.86 cr plus borrowings ₹2,120.31 cr (₹302.14 cr non-current plus ₹1,818.17 cr current): ₹25,309.17 cr.</p>
+      <span class="eq">ROCE = 2,165.12 ÷ 25,309.17 = <b>8.55%</b> (average capital employed 24,274.06: 8.92%)</span>
+      <figure>
+        <svg viewBox="0 0 800 336" role="img" aria-label="TCPL's capital employed of 25,309 crore split into goodwill 11,884, other intangibles 7,112 and the rest 6,314, with ROCE of 8.6 percent on all of it, 16.1 percent without goodwill and 34.3 percent without goodwill and intangibles"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16">CAPITAL EMPLOYED · ₹25,309 CR</text><rect x="40" y="50" width="281.7" height="44" fill="#c9c6c0" stroke="#f1eee8" stroke-width="2"/><rect x="321.7" y="50" width="168.6" height="44" fill="#a5a29c" stroke="#202020" stroke-width="2"/><rect x="490.3" y="50" width="149.7" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="180.9" y="78" text-anchor="middle" fill="#202020" font-size="16">Goodwill 11,884</text><text x="406" y="78" text-anchor="middle" fill="#202020" font-size="16">Intangibles 7,112</text><text x="565.2" y="78" text-anchor="middle" fill="#202020" font-size="16">Rest 6,314</text><path d="M40 130 L640 130" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M40 124 L40 136" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M640 124 L640 136" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="340" y="158" text-anchor="middle" fill="#f1eee8" font-size="16">all of it · ROCE 8.6%</text><path d="M321.7 190 L640 190" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M321.7 184 L321.7 196" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M640 184 L640 196" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="480.9" y="218" text-anchor="middle" fill="#f1eee8" font-size="16">without goodwill · 16.1%</text><path d="M490.3 250 L640 250" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M490.3 244 L490.3 256" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M640 244 L640 256" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="565.2" y="278" text-anchor="middle" fill="#f1eee8" font-size="16">without both · 34.3%</text><text x="40" y="322" text-anchor="start" fill="#a5a29c" font-size="16">1 px ≈ ₹42 cr · EBIT ₹2,165.12 cr in every ROCE</text></svg>
+      </figure>
+      <span class="eq">without goodwill: 2,165.12 ÷ (25,309.17 − 11,883.90 = 13,425.27) = <b>16.13%</b></span>
+      <span class="eq">without goodwill and other intangibles: 2,165.12 ÷ (13,425.27 − 7,111.76 = 6,313.51) = <b>34.29%</b></span>
+      <p><b>What each tells an investor.</b> The 8.6% judges the whole bargain: what the business earns on every rupee put in, including the premium paid for acquired businesses such as Capital Foods and Organic India. It speaks to how well acquisitions have paid back so far. The 34.3% judges the underlying operating engine: factories, stock and dues from customers. It shows the business itself is not capital-hungry, but flatters, because it pretends the acquisitions were free. The truth for a buyer of the shares sits between, and each number alone misleads.</p>
+      <details class="trace"><summary>Go deeper: choices behind these numbers</summary>
+        <p>Other intangibles of ₹7,111.76 cr are mostly brands and trademarks (₹6,882.03 cr); ₹103.56 cr is software and the rest customer, patent and distribution assets <span class="tag">public</span>. Goodwill rose in FY26 partly from translating overseas goodwill into rupees (₹569.50 cr), less a ₹16.02 cr impairment. Amortisation of other intangibles was ₹342.67 cr in FY26 and is already deducted in EBIT; adding it back would lift the last figure to 39.7%, my arithmetic.</p>
+        <p>A wider EBIT, profit before tax plus finance costs (₹2,172.78 cr + ₹137.03 cr = ₹2,309.81 cr), includes other income and exceptional items and gives 9.1% on closing capital. Lease liabilities (₹699.20 cr) are not in capital employed here; adding them gives 8.3%. Cash (₹3,046.57 cr) also sits in capital employed, which pulls ROCE down.</p>
+      </details>
+      <div class="field-grid">
+        <div><b>₹11,883.90 cr goodwill</b><span>Note 6; ₹7,111.76 cr of other intangibles beside it</span><em>BALANCE SHEET · P. 414 · NOTE 6 · PP. 436–437</em></div>
+        <div><b>₹2,120.31 cr borrowings</b><span>₹302.14 cr non-current plus ₹1,818.17 cr current; FY25 total ₹1,848.65 cr</span><em>CONSOLIDATED BALANCE SHEET · P. 414</em></div>
+        <div><b>₹2,165.12 cr EBIT</b><span>Worked from the P&amp;L lines above; D&amp;A ₹626.68 cr</span><em>CONSOLIDATED P&amp;L · P. 415</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements in its Integrated Annual Report 2025-26 (printed pages as cited). Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions for any return</h2>
+      <ol class="checks">
+        <li><b>Which profit, which capital?</b> Check numerator and denominator match, and whether closing or average is used.</li>
+        <li><b>Which factor drives it?</b> Margin, turnover or leverage: the same ROE can come from very different businesses.</li>
+        <li><b>How much cushion sits behind it?</b> A high ROE built on a high multiplier is borrowed strength.</li>
+      </ol>
+      <p>Ramu earns 20% on its equity. Part 11, “Debt: how much is too much”, asks how much of that comes from borrowing, and what happens when interest rates rise.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Profit only means something against the money that earned it: ROE and ROCE divide one by the other, and DuPont shows the same return can come from a fat margin, fast turnover or heavy borrowing, which are very different risks.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',DKC='#202020',GOLD='#f5c76a',TEAL='#76d5c1',ROSE='#ec6a94',COR='#ff8059',LGR='#c9c6c0';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const R=(x,y,w,h,fill,op,st)=>`<rect x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" width="${(+w).toFixed(1)}" height="${(+h).toFixed(1)}" fill="${fill}"${op?` opacity="${op}"`:''}${st?` stroke="${st}" stroke-width="2"`:''}/>`;
+    // ---- shops demo: two shops, same profit, different capital
+    const SHOP={profit:10,capA:50,capB:200,min:50,max:300,step:50};
+    const pct=(p,c)=>(100*p/c);
+    function drawShops(){
+      const k=2,a=SHOP.capA,b=SHOP.capB,p=SHOP.profit;let s='',y=30;
+      for(const [name,cap] of [['SHOP A · capital ₹'+a+' cr',a],['SHOP B · capital ₹'+b+' cr',b]]){
+        s+=T(40,y,name,'start',MUTC)+R(40,y+10,cap*k,30,GOLD,.45,DKC)+T(40+cap*k+14,y+32,'return '+pct(p,cap).toFixed(1)+'%');
+        s+=R(40,y+48,p*k,16,GOLD)+T(40+p*k+10,y+62,'profit ₹'+p+' cr','start',MUTC);y+=118;
+      }
+      s+=T(40,y,'2 px = ₹1 cr','start',MUTC);
+      $('shopsChart').innerHTML=s;
+      $('shopOut').textContent='Shop B capital ₹'+b+' cr';
+      $('shopMinus').disabled=b<=SHOP.min;$('shopPlus').disabled=b>=SHOP.max;
+      $('shopMsg').textContent='Shop A: '+p+' ÷ '+a+' = '+pct(p,a).toFixed(1)+'%. Shop B: '+p+' ÷ '+b+' = '+pct(p,b).toFixed(1)+'%. Same profit, '+(b/a).toFixed(0)+' times the money tied up in B.';
+      window.shopResults={valid:true,capB:b,retA:pct(p,a),retB:pct(p,b)};
+    }
+    $('shopMinus').addEventListener('click',()=>{SHOP.capB=Math.max(SHOP.min,SHOP.capB-SHOP.step);drawShops();});
+    $('shopPlus').addEventListener('click',()=>{SHOP.capB=Math.min(SHOP.max,SHOP.capB+SHOP.step);drawShops();});
+    drawShops();
+    // ---- DuPont lab. compute() is the only formula: ROE = margin x turnover x multiplier
+    const ids=['margin','turn','mult'];
+    const labConfig={format:v=>(Math.round(v*10)/10)+'%',sliderFormats:[v=>(+v).toFixed(1)+'%',v=>(+v).toFixed(2)+'×',v=>(+v).toFixed(1)+'×']};
+    const RAMU_ROCE=100*73/350;
+    const PRESETS={ramu:[10,1.25,1.6,'Ramu Chai: 10% × 1.25 × 1.6 = 20%. Mid margin, mid turnover, light borrowing.'],
+      brand:[25,0.5,1.6,'High-margin brand: keeps ₹25 of every ₹100 of sales, but heavy assets turn only 0.5 times. Still 20%.'],
+      retail:[5,2.5,1.6,'Fast-turnover retailer: keeps only ₹5 per ₹100, but turns its assets 2.5 times. Still 20%.'],
+      lender:[20,0.1,10,'Lender-like business: tiny turnover, but assets are 10 times the equity. Still 20%, and risky: a 10% fall in assets wipes out the equity.']};
+    const nice=x=>{const p=Math.pow(10,Math.floor(Math.log10(x)));for(const m of [1,1.2,1.5,2,2.5,3,4,5,6,8,10]) if(m*p>=x-1e-9) return m*p;return 10*p;};
+    function compute(m,t,u){
+      const roa=m*t, roe=roa*u, cushion=100/u;
+      return {margin:m,turn:t,mult:u,roa,roe,cushion,risky:u>=5};
+    }
+    function draw(){
+      const v=ids.map(id=>+$(id).value), c=compute(v[0],v[1],v[2]);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      // box: each edge on its own scale
+      const x0=40,y0=250,W=Math.max(6,190*c.margin/30),H=Math.max(6,150*c.turn/4),dx=Math.max(6,110*c.mult/12),dy=dx*0.5;
+      let b='';
+      const poly=(pts,fill)=>`<path d="M${pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')} Z" fill="${fill}" stroke="#57534f" stroke-width="1.5"/>`;
+      b+=poly([[x0,y0],[x0+W,y0],[x0+W,y0-H],[x0,y0-H]],'rgba(165,162,156,.18)');
+      b+=poly([[x0,y0-H],[x0+W,y0-H],[x0+W+dx,y0-H-dy],[x0+dx,y0-H-dy]],'rgba(165,162,156,.30)');
+      b+=poly([[x0+W,y0],[x0+W+dx,y0-dy],[x0+W+dx,y0-H-dy],[x0+W,y0-H]],'rgba(165,162,156,.10)');
+      b+=`<path d="M${x0} ${y0} L${(x0+W).toFixed(1)} ${y0}" stroke="${GOLD}" stroke-width="5" fill="none"/><path d="M${x0} ${y0} L${x0} ${(y0-H).toFixed(1)}" stroke="${TEAL}" stroke-width="5" fill="none"/><path d="M${(x0+W).toFixed(1)} ${y0} L${(x0+W+dx).toFixed(1)} ${(y0-dy).toFixed(1)}" stroke="${ROSE}" stroke-width="5" fill="none"/>`;
+      b+=T(366,70,'net margin '+c.margin.toFixed(1)+'%','start',GOLD)+T(366,100,'turnover '+c.turn.toFixed(2)+'×','start',TEAL)+T(366,130,'multiplier '+c.mult.toFixed(1)+'×','start',ROSE);
+      b+=`<text x="366" y="180" text-anchor="start" fill="${FGC}" font-size="24">ROE ${c.roe.toFixed(1)}%</text>`+T(366,206,'= the box volume','start',MUTC);
+      b+=T(366,240,'equity '+c.cushion.toFixed(1)+'% of assets','start',MUTC);
+      if(c.risky) b+=T(366,266,'RISKY: thin cushion','start',COR);
+      b+=T(40,288,'each edge on its own scale','start',MUTC);
+      $('dupontBox').innerHTML=b;
+      // bars: one axis, zero at the left
+      const rows=[['Net margin',c.margin,GOLD,.35],['ROA (× turnover)',c.roa,GOLD,.62],['ROE (× multiplier)',c.roe,GOLD,1],['ROCE (Ramu, fixed)',RAMU_ROCE,LGR,1]];
+      const m=nice(Math.max(...rows.map(r=>r[1]))), X0=236, XEND=504, k=(XEND-X0)/m, sx=val=>X0+val*k;
+      let s=`<path d="M${X0} 14 L${X0} 246" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      rows.forEach((r,i)=>{const y=24+i*54;
+        s+=T(14,y+20,r[0],'start',MUTC)+T(226,y+20,r[1].toFixed(1)+'%','end')+`<rect data-v="${r[1]}" x="${X0}" y="${y}" width="${(r[1]*k).toFixed(2)}" height="26" fill="${r[2]}" opacity="${r[3]}"/>`;});
+      if(20<=m) s+=`<path d="M${sx(20).toFixed(1)} 14 L${sx(20).toFixed(1)} 246" stroke="${FGC}" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>`;
+      [0,m/2,m].forEach((t,i)=>{s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="268" text-anchor="${['start','middle','end'][i]}" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;});
+      s+=T(14,292,'dashed = canonical 20% · axis grows','start',MUTC);
+      $('labChart').innerHTML=s;
+      $('flag').textContent=c.risky?'RISKY: with a multiplier of '+c.mult.toFixed(1)+'×, assets falling '+c.cushion.toFixed(1)+'% would erase the equity.':'Cushion: assets can fall '+c.cushion.toFixed(1)+'% before the equity is gone.';
+      $('flag').className='flag'+(c.risky?' on':'');
+      const rows2=[['Profit per ₹100 of sales','₹'+c.margin.toFixed(2)],['Sales per ₹1 of assets','₹'+c.turn.toFixed(2)],['Assets per ₹1 of equity','₹'+c.mult.toFixed(2)],
+        ['ROA = margin × turnover',c.margin.toFixed(1)+'% × '+c.turn.toFixed(2)+' = '+c.roa.toFixed(2)+'%'],
+        ['ROE = ROA × multiplier',c.roa.toFixed(2)+'% × '+c.mult.toFixed(1)+' = '+c.roe.toFixed(2)+'%'],
+        ['ROE vs canonical 20%',(c.roe-20>=0?'+':'−')+Math.abs(c.roe-20).toFixed(2)+' points'],
+        ['Equity as share of assets','1 ÷ '+c.mult.toFixed(1)+' = '+c.cushion.toFixed(1)+'%'],
+        ['Ramu ROCE (fixed example)','EBIT 73 ÷ capital employed 350 = '+RAMU_ROCE.toFixed(1)+'%']];
+      $('ledger').innerHTML=rows2.map(([a,bb])=>`<span>${a}</span><span>${bb}</span>`).join('');
+      window.labResults={valid:[c.roa,c.roe,c.cushion].every(Number.isFinite),margin:c.margin,turn:c.turn,mult:c.mult,roa:c.roa,roe:c.roe,roce:RAMU_ROCE,cushion:c.cushion,risky:c.risky,axis:m};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];ids.forEach((id,i)=>$(id).value=p[i]);draw();$('msg').textContent=p[3];}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
