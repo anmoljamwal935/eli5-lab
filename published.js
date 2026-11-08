@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "growth-worth-paying-for-eli5",
+    "title": "Growth that’s worth paying for",
+    "category": "Monetary Architecture",
+    "minutes": 30,
+    "summary": "Part 9: CAGR, compounding, base effects, and growth that costs too much",
+    "bullets": [
+      "CAGR is the steady rate; averaging yearly growth overstates it",
+      "Bought, diluted or cash-hungry growth is worth less than it looks",
+      "Growth is worth paying for when it earns more than its capital costs"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CAGR",
+      "BASE",
+      "CASH"
+    ],
+    "file": "explainers/growth-worth-paying-for-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Five rising columns of revenue with a dashed line of dots showing one steady growth rate through their tops\"><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 9</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#a5a29c\">ONE STEADY RATE</text></g><path d=\"M24 135H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"24\" y=\"75.6\" width=\"44\" height=\"59.4\" fill=\"#76d5c1\"/><rect x=\"81\" y=\"69.3\" width=\"44\" height=\"65.7\" fill=\"#76d5c1\"/><rect x=\"138\" y=\"62.1\" width=\"44\" height=\"72.9\" fill=\"#76d5c1\"/><rect x=\"195\" y=\"54.0\" width=\"44\" height=\"81.0\" fill=\"#76d5c1\"/><rect x=\"252\" y=\"45.0\" width=\"44\" height=\"90.0\" fill=\"#76d5c1\"/><polyline points=\"46,75.6 103,69.1 160,61.9 217,53.9 274,45.0\" fill=\"none\" stroke=\"#f1eee8\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/><circle cx=\"46\" cy=\"75.6\" r=\"3.5\" fill=\"#202020\" stroke=\"#f1eee8\" stroke-width=\"1.5\"/><circle cx=\"103\" cy=\"69.1\" r=\"3.5\" fill=\"#202020\" stroke=\"#f1eee8\" stroke-width=\"1.5\"/><circle cx=\"160\" cy=\"61.9\" r=\"3.5\" fill=\"#202020\" stroke=\"#f1eee8\" stroke-width=\"1.5\"/><circle cx=\"217\" cy=\"53.9\" r=\"3.5\" fill=\"#202020\" stroke=\"#f1eee8\" stroke-width=\"1.5\"/><circle cx=\"274\" cy=\"45.0\" r=\"3.5\" fill=\"#202020\" stroke=\"#f1eee8\" stroke-width=\"1.5\"/></svg>",
+    "part": 9
+  },
+  {
     "id": "margins-and-operating-leverage-eli5",
     "title": "Margins and operating leverage",
     "category": "Monetary Architecture",
