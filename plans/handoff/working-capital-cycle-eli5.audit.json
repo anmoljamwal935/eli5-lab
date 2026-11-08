@@ -1,0 +1,825 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26, Consolidated Financial Statements; AGM presentation; Tata Steel Integrated Report & Annual Accounts 2025-26 (consolidated)",
+    "author": "Tata Consumer Products Ltd (auditor Deloitte Haskins & Sells LLP); Tata Steel Ltd (auditor Price Waterhouse & Co LLP)",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "TCPL printed pp.414, 415, 417-418, 482 and IAR p.56 and AGM slide 10; Tata Steel F2-F3, F142-F144, notes 14 and 27",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext -layout for TCPL; Tata Steel PDFs fetched with the WebFetch tool (tatasteel.com returns 403 to curl, not circumvented) then pdftotext -layout",
+    "beginning_middle_end_evidence": "Statements read in full for the cited pages; AGM slide and IAR p.56 rendered to images and read; Tata Steel ratio page F3 rendered and read",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "https://www.tatasteel.com/investors/integrated-report-2025-26/pdf/Consolidated.pdf",
+      "https://www.tatasteel.com/investors/integrated-report-2025-26/pdf/Financial%20Highlights.pdf"
+    ],
+    "limitations": "No aggregator used. TCPL does not print the formula for its 21-day NWC in the pages read, so the gap to the 9.9 days here is shown, not reconciled. NSE iXBRL results filing for Tata Steel returned HTTP 503 and was not used; Tata Steel figures come from the annual-report PDF on tatasteel.com. Cash-flow inventory change (200.03) vs balance-sheet fall (73.15) bridge not traced. Ramu numbers are plan canonical; derived figures (65.07 from days, 6.1/3.9 split, retailer example) labelled."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Working capital = cash stuck in running the business; Ramu 55+45-35=65",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "p-problem"
+    },
+    {
+      "id": 2,
+      "item": "Operating vs accounting working capital (155-80=75)",
+      "kind": "definition",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "p-problem (go deeper)"
+    },
+    {
+      "id": 3,
+      "item": "Inventory, receivable, payable days; cost vs sales base; 80/33/51",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "p-clocks"
+    },
+    {
+      "id": 4,
+      "item": "Cash conversion cycle 62 days; one rupee timeline",
+      "kind": "mechanism",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "p-cycle, lab"
+    },
+    {
+      "id": 5,
+      "item": "Growth needs more working capital; FY26 absorbed 10 = ~6.1 growth + ~3.9 longer cycle (FY25 58 -> 62)",
+      "kind": "mechanism+number",
+      "locator": "plan canonical; derived",
+      "check_needed": false,
+      "destination": "p-growth, lab"
+    },
+    {
+      "id": 6,
+      "item": "Negative working capital (retailers, FMCG distributors); one-off retailer 30/0/60",
+      "kind": "mechanism",
+      "locator": "one-off example",
+      "check_needed": false,
+      "destination": "p-negative, lab preset"
+    },
+    {
+      "id": 7,
+      "item": "Current ratio 1.94, quick ratio 1.25 and their limits",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "p-ratios, lab readout"
+    },
+    {
+      "id": 8,
+      "item": "Warning signs: receivables/inventory growing faster than sales (17.0%, 18.4% vs 11.1%); Part 20 for full",
+      "kind": "misconception",
+      "locator": "derived from canonical balances",
+      "check_needed": false,
+      "destination": "p-warning"
+    },
+    {
+      "id": 9,
+      "item": "TCPL days FY26/FY25 from statements; cost of goods 11,855.64 / 10,069.28",
+      "kind": "number",
+      "locator": "TCPL consolidated P&L p.415, BS p.414",
+      "check_needed": true,
+      "destination": "p-tcpl-days"
+    },
+    {
+      "id": 10,
+      "item": "TCPL working capital released 145.19 cr (FY25 +4.77)",
+      "kind": "number",
+      "locator": "TCPL cash flow p.417",
+      "check_needed": true,
+      "destination": "p-tcpl-days"
+    },
+    {
+      "id": 11,
+      "item": "TCPL's own NWC 21 days, India business -2 day; IAR operating working capital days 21/26; why definitions differ",
+      "kind": "number+claim",
+      "locator": "AGM slide 10; IAR p.56; note 41 p.482",
+      "check_needed": true,
+      "destination": "p-tcpl-own"
+    },
+    {
+      "id": 12,
+      "item": "TCPL current ratio 1.57, quick 1.03",
+      "kind": "number",
+      "locator": "BS p.414; note 41 p.482",
+      "check_needed": true,
+      "destination": "p-tcpl-own"
+    },
+    {
+      "id": 13,
+      "item": "Tata Steel days, cycle FY26/FY25, ratios, inventory share of assets",
+      "kind": "number",
+      "locator": "Tata Steel consolidated BS F142-F143, P&L F144, notes 14 F190, 27 F214, ratios F3",
+      "check_needed": true,
+      "destination": "p-tata"
+    },
+    {
+      "id": 14,
+      "item": "Lab: sliders, readouts, FY25/FY26 compare, stepper, presets",
+      "kind": "mechanism",
+      "locator": "plan lab",
+      "check_needed": false,
+      "destination": "lab"
+    },
+    {
+      "id": 15,
+      "item": "Hand-off to Part 13 free cash flow and earnings quality",
+      "kind": "context",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p-sowhat"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 9,
+      "claim": "TCPL FY26 COGS 7788.16+4108.23-40.75=11855.64; FY25 6997.40+3434.37-362.49=10069.28; inv days 108.58/130.49; DSO 20.66/18.02; DPO 119.31/127.18; CCC 9.93/21.34",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415; balance sheet p.414",
+      "page_treatment": "tagged public; working shown"
+    },
+    {
+      "inventory_id": 10,
+      "claim": "Working-capital change +145.19 (FY25 +4.77): receivables/other -291.07, inventories +200.03, payables/other +236.23",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "cash flow p.417",
+      "page_treatment": "tagged public"
+    },
+    {
+      "inventory_id": 11,
+      "claim": "AGM slide 10 shows NWC days 59 (FY20) -> 21 (FY26) and \"India business NWC at -2 day\"; IAR p.56 Days of Operating Working Capital 21 (FY26), 26 (FY25). No formula printed in pages read. Task brief says \"21 days (India business)\"; the slide shows 21 as the group figure and -2 for India.",
+      "verdict": "Mostly supported; brief wording corrected",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage_and_locator": "AGM slide 10 (rendered and read); IAR printed p.56 (rendered and read)",
+      "page_treatment": "page states what slide shows; own arithmetic 14.4 / 21.9 labelled mine; exact reconciliation not claimed"
+    },
+    {
+      "inventory_id": 12,
+      "claim": "TCPL current ratio 10317.09/6578.56=1.568 matches note 41 1.57; quick 1.032; own turnover ratios 5.69/20.11/4.26",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "BS p.414; note 41 p.482",
+      "page_treatment": "tagged public"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Tata Steel group FY26: inventories 47,249.22 (FY25 44,589.94); receivables 4,916.89 (5,260.06); trade payables 1,898.89+32,613.49+297.76=34,810.14 (29,314.38); COGS 74,468.93+18,159.14+989.62=93,617.69 (FY25 95,000.65); revenue 2,32,139.94 (2,18,542.51); days 184.2/7.7/135.7 -> 56.2 (FY25 171.3/8.8/112.6 -> 67.5); own ratios inventory 73 days, debtors 8, current ratio 0.80",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tatasteel.com/investors/integrated-report-2025-26/pdf/Consolidated.pdf ; https://www.tatasteel.com/investors/integrated-report-2025-26/pdf/Financial%20Highlights.pdf",
+      "supporting_passage_and_locator": "BS F142-F143, P&L F144, note 14 F190, note 27 F214; ratios F3",
+      "page_treatment": "tagged public; method caveat (materials-only denominator) on page"
+    },
+    {
+      "inventory_id": 5,
+      "claim": "FY26 absorption split: growth 55*(500/450-1)=6.11; cycle 65-55-6.11=3.89",
+      "verdict": "Supported (recomputed from plan canonical)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "supporting_passage_and_locator": "Ramu canonical accounts",
+      "page_treatment": "labelled one way to split"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p-problem",
+      "heading": "Cash stuck in running the business",
+      "visual": "stacked bars 4px=Rs1cr"
+    },
+    {
+      "id": "p-clocks",
+      "heading": "Inventory, receivable and payable days",
+      "visual": "three bars 5px=1 day"
+    },
+    {
+      "id": "p-cycle",
+      "heading": "The gap Ramu has to fund",
+      "visual": "day timeline 5px=1 day"
+    },
+    {
+      "id": "p-growth",
+      "heading": "A bigger business needs more working capital",
+      "visual": "waterfall 6px=Rs1cr"
+    },
+    {
+      "id": "lab",
+      "heading": "One rupee round the cycle",
+      "visual": "stepper timeline + day bars (labChart)"
+    },
+    {
+      "id": "p-negative",
+      "heading": "When customers pay first",
+      "visual": "day timeline 6px=1 day"
+    },
+    {
+      "id": "p-ratios",
+      "heading": "Current ratio, quick ratio, and their limits",
+      "visual": "stacked bars 4px=Rs1cr"
+    },
+    {
+      "id": "p-warning",
+      "heading": "When balances outgrow sales",
+      "visual": "growth bars 20px=1%"
+    },
+    {
+      "id": "p-tcpl-days",
+      "heading": "TCPL: its cash cycle from the statements",
+      "visual": "day timelines FY26/FY25 4px=1 day"
+    },
+    {
+      "id": "p-tcpl-own",
+      "heading": "TCPL’s own 21 days, and the ratios",
+      "visual": "four bars 15px=1 day"
+    },
+    {
+      "id": "p-tata",
+      "heading": "Tata Steel: a heavy-inventory contrast",
+      "visual": "day timelines 3px=1 day"
+    },
+    {
+      "id": "p-sowhat",
+      "heading": "Three questions for any company",
+      "visual": "text (allowed)"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": "Ramu FY26 sales 500, cost of materials 250 (50%), 365 days; days stay as set so next-year cash tied up = this year x (1+growth); hit to CFO = -(extra cash tied up) before any profit change; ratios hold cash 40, other current assets 15, short-term borrowings 30 and other liabilities 15 at FY26 values",
+    "units": "days; Rs crore; ratio",
+    "independent_calculation_method": "labtest.py: own Python oracle, drives the page with Playwright, never calls page compute()",
+    "cases": [
+      {
+        "case": "default FY26",
+        "inputs": [
+          80,
+          33,
+          51,
+          12
+        ],
+        "expected": {
+          "ccc": 62,
+          "t0": 65.0685,
+          "hit": -7.8082,
+          "cr": 1.9392,
+          "qr": 1.2536
+        },
+        "observed": {
+          "ccc": 62.0,
+          "t0": 65.1,
+          "hit": -7.8,
+          "cr": 1.94,
+          "qr": 1.25
+        },
+        "passed": true
+      },
+      {
+        "case": "FY25 days",
+        "inputs": [
+          76,
+          31,
+          49,
+          12
+        ],
+        "expected": {
+          "ccc": 58,
+          "t0": 60.9589,
+          "hit": -7.3151,
+          "cr": 1.9032,
+          "qr": 1.2406
+        },
+        "observed": {
+          "ccc": 58.0,
+          "t0": 61.0,
+          "hit": -7.3,
+          "cr": 1.9,
+          "qr": 1.24
+        },
+        "passed": true
+      },
+      {
+        "case": "customers pay first",
+        "inputs": [
+          30,
+          2,
+          60,
+          12
+        ],
+        "expected": {
+          "ccc": -28,
+          "t0": -17.8082,
+          "hit": 2.137,
+          "cr": 0.9093,
+          "qr": 0.6706
+        },
+        "observed": {
+          "ccc": -28.0,
+          "t0": -17.8,
+          "hit": 2.1,
+          "cr": 0.91,
+          "qr": 0.67
+        },
+        "passed": true
+      },
+      {
+        "case": "stock piling up",
+        "inputs": [
+          110,
+          33,
+          51,
+          12
+        ],
+        "expected": {
+          "ccc": 92,
+          "t0": 85.6164,
+          "hit": -10.274,
+          "cr": 2.1962,
+          "qr": 1.2536
+        },
+        "observed": {
+          "ccc": 92.0,
+          "t0": 85.6,
+          "hit": -10.3,
+          "cr": 2.2,
+          "qr": 1.25
+        },
+        "passed": true
+      },
+      {
+        "case": "compare on default",
+        "inputs": [
+          80,
+          33,
+          51,
+          12
+        ],
+        "expected": {
+          "ccc": 62,
+          "t0": 65.0685,
+          "hit": -7.8082,
+          "cr": 1.9392,
+          "qr": 1.2536
+        },
+        "observed": {
+          "ccc": 62.0,
+          "t0": 65.1,
+          "hit": -7.8,
+          "cr": 1.94,
+          "qr": 1.25
+        },
+        "passed": true
+      },
+      {
+        "case": "compare on retailer",
+        "inputs": [
+          30,
+          2,
+          60,
+          40
+        ],
+        "expected": {
+          "ccc": -28,
+          "t0": -17.8082,
+          "hit": 7.1233,
+          "cr": 0.9093,
+          "qr": 0.6706
+        },
+        "observed": {
+          "ccc": -28.0,
+          "t0": -17.8,
+          "hit": 7.1,
+          "cr": 0.91,
+          "qr": 0.67
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/0/0/0",
+        "inputs": [
+          20,
+          0,
+          0,
+          0
+        ],
+        "expected": {
+          "ccc": 20,
+          "t0": 13.6986,
+          "hit": -0.0,
+          "cr": 1.5266,
+          "qr": 1.2222
+        },
+        "observed": {
+          "ccc": 20.0,
+          "t0": 13.7,
+          "hit": 0.0,
+          "cr": 1.53,
+          "qr": 1.22
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/0/0/40",
+        "inputs": [
+          20,
+          0,
+          0,
+          40
+        ],
+        "expected": {
+          "ccc": 20,
+          "t0": 13.6986,
+          "hit": -5.4795,
+          "cr": 1.5266,
+          "qr": 1.2222
+        },
+        "observed": {
+          "ccc": 20.0,
+          "t0": 13.7,
+          "hit": -5.5,
+          "cr": 1.53,
+          "qr": 1.22
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/0/120/0",
+        "inputs": [
+          20,
+          0,
+          120,
+          0
+        ],
+        "expected": {
+          "ccc": -100,
+          "t0": -68.4932,
+          "hit": -0.0,
+          "cr": 0.5401,
+          "qr": 0.4324
+        },
+        "observed": {
+          "ccc": -100.0,
+          "t0": -68.5,
+          "hit": 0.0,
+          "cr": 0.54,
+          "qr": 0.43
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/0/120/40",
+        "inputs": [
+          20,
+          0,
+          120,
+          40
+        ],
+        "expected": {
+          "ccc": -100,
+          "t0": -68.4932,
+          "hit": 27.3973,
+          "cr": 0.5401,
+          "qr": 0.4324
+        },
+        "observed": {
+          "ccc": -100.0,
+          "t0": -68.5,
+          "hit": 27.4,
+          "cr": 0.54,
+          "qr": 0.43
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/90/0/0",
+        "inputs": [
+          20,
+          90,
+          0,
+          0
+        ],
+        "expected": {
+          "ccc": 110,
+          "t0": 136.9863,
+          "hit": -0.0,
+          "cr": 4.2664,
+          "qr": 3.9619
+        },
+        "observed": {
+          "ccc": 110.0,
+          "t0": 137.0,
+          "hit": 0.0,
+          "cr": 4.27,
+          "qr": 3.96
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/90/0/40",
+        "inputs": [
+          20,
+          90,
+          0,
+          40
+        ],
+        "expected": {
+          "ccc": 110,
+          "t0": 136.9863,
+          "hit": -54.7945,
+          "cr": 4.2664,
+          "qr": 3.9619
+        },
+        "observed": {
+          "ccc": 110.0,
+          "t0": 137.0,
+          "hit": -54.8,
+          "cr": 4.27,
+          "qr": 3.96
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/90/120/0",
+        "inputs": [
+          20,
+          90,
+          120,
+          0
+        ],
+        "expected": {
+          "ccc": -10,
+          "t0": 54.7945,
+          "hit": -0.0,
+          "cr": 1.5094,
+          "qr": 1.4017
+        },
+        "observed": {
+          "ccc": -10.0,
+          "t0": 54.8,
+          "hit": 0.0,
+          "cr": 1.51,
+          "qr": 1.4
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 20/90/120/40",
+        "inputs": [
+          20,
+          90,
+          120,
+          40
+        ],
+        "expected": {
+          "ccc": -10,
+          "t0": 54.7945,
+          "hit": -21.9178,
+          "cr": 1.5094,
+          "qr": 1.4017
+        },
+        "observed": {
+          "ccc": -10.0,
+          "t0": 54.8,
+          "hit": -21.9,
+          "cr": 1.51,
+          "qr": 1.4
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/0/0/0",
+        "inputs": [
+          150,
+          0,
+          0,
+          0
+        ],
+        "expected": {
+          "ccc": 150,
+          "t0": 102.7397,
+          "hit": -0.0,
+          "cr": 3.5053,
+          "qr": 1.2222
+        },
+        "observed": {
+          "ccc": 150.0,
+          "t0": 102.7,
+          "hit": 0.0,
+          "cr": 3.51,
+          "qr": 1.22
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/0/0/40",
+        "inputs": [
+          150,
+          0,
+          0,
+          40
+        ],
+        "expected": {
+          "ccc": 150,
+          "t0": 102.7397,
+          "hit": -41.0959,
+          "cr": 3.5053,
+          "qr": 1.2222
+        },
+        "observed": {
+          "ccc": 150.0,
+          "t0": 102.7,
+          "hit": -41.1,
+          "cr": 3.51,
+          "qr": 1.22
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/0/120/0",
+        "inputs": [
+          150,
+          0,
+          120,
+          0
+        ],
+        "expected": {
+          "ccc": 30,
+          "t0": 20.5479,
+          "hit": -0.0,
+          "cr": 1.2402,
+          "qr": 0.4324
+        },
+        "observed": {
+          "ccc": 30.0,
+          "t0": 20.5,
+          "hit": 0.0,
+          "cr": 1.24,
+          "qr": 0.43
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/0/120/40",
+        "inputs": [
+          150,
+          0,
+          120,
+          40
+        ],
+        "expected": {
+          "ccc": 30,
+          "t0": 20.5479,
+          "hit": -8.2192,
+          "cr": 1.2402,
+          "qr": 0.4324
+        },
+        "observed": {
+          "ccc": 30.0,
+          "t0": 20.5,
+          "hit": -8.2,
+          "cr": 1.24,
+          "qr": 0.43
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/90/0/0",
+        "inputs": [
+          150,
+          90,
+          0,
+          0
+        ],
+        "expected": {
+          "ccc": 240,
+          "t0": 226.0274,
+          "hit": -0.0,
+          "cr": 6.2451,
+          "qr": 3.9619
+        },
+        "observed": {
+          "ccc": 240.0,
+          "t0": 226.0,
+          "hit": 0.0,
+          "cr": 6.25,
+          "qr": 3.96
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/90/0/40",
+        "inputs": [
+          150,
+          90,
+          0,
+          40
+        ],
+        "expected": {
+          "ccc": 240,
+          "t0": 226.0274,
+          "hit": -90.411,
+          "cr": 6.2451,
+          "qr": 3.9619
+        },
+        "observed": {
+          "ccc": 240.0,
+          "t0": 226.0,
+          "hit": -90.4,
+          "cr": 6.25,
+          "qr": 3.96
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/90/120/0",
+        "inputs": [
+          150,
+          90,
+          120,
+          0
+        ],
+        "expected": {
+          "ccc": 120,
+          "t0": 143.8356,
+          "hit": -0.0,
+          "cr": 2.2095,
+          "qr": 1.4017
+        },
+        "observed": {
+          "ccc": 120.0,
+          "t0": 143.8,
+          "hit": 0.0,
+          "cr": 2.21,
+          "qr": 1.4
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme 150/90/120/40",
+        "inputs": [
+          150,
+          90,
+          120,
+          40
+        ],
+        "expected": {
+          "ccc": 120,
+          "t0": 143.8356,
+          "hit": -57.5342,
+          "cr": 2.2095,
+          "qr": 1.4017
+        },
+        "observed": {
+          "ccc": 120.0,
+          "t0": 143.8,
+          "hit": -57.5,
+          "cr": 2.21,
+          "qr": 1.4
+        },
+        "passed": true
+      }
+    ],
+    "tolerance": "ccc exact; Rs readouts 0.051 (1-decimal rounding); ratios 0.0051; bar ends 0.01 px",
+    "invariants": "ccc=I+R-P; tied=(I*250+R*500-P*250)/365; hit=-tied*g; defaults 62 days, 1.94, 1.25, hit -7.8; FY25 preset 58; compare message 58 -> 62 = 4 days longer; stepper day order 0/51/80/113; bars start at zero and end at tick-scale value; all values inside axis",
+    "axis_and_clipping_policy": "axis = nice ceiling of largest value (never clips); negative cycle extends left with at least hi/3 so tick labels do not collide; ticks lo/0/hi or 0/hi/2/hi"
+  },
+  "verification": {
+    "artifact_sha256": "54cd34a61348add5d9ff3621b9190b0ab5ecdc2dda009a44ba9ab2783ab761b9",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 12,
+        "notes": 0
+      },
+      "artifact_sha256": "54cd34a61348add5d9ff3621b9190b0ab5ecdc2dda009a44ba9ab2783ab761b9",
+      "artifact_path": "/home/user/eli5-lab/explainers/working-capital-cycle-eli5.html"
+    },
+    "browser_check_render": "0 errors (defaults, 4 presets, slider extremes, 390px)",
+    "lab_independent_test": "labtest.py 22 cases, 0 failed (defaults, FY25, 2 presets, compare on, 16 slider-extreme corners; stepper order; zero-growth and negative-cycle invariants); no JS errors",
+    "screenshots": "desktop-00..12 and phone-00..12 from check_render, plus lab default/compare/retailer at 1280 and 390 inspected: problem, clocks, cycle, waterfall, lab, retailer, ratios, warning, TCPL x2, Tata Steel, phone TCPL panel. Fixes made from inspection: retailer guide line crossed a label; negative-axis tick labels collided; negative money showed as \"₹-17.8\"; compare toggle was unstyled; \"15\" label unreadable. Phone: wide diagrams scroll sideways by house design (\"swipe\").",
+    "coverage_review": "all 15 inventory rows located on page",
+    "semantic_review": "Hit-to-CFO redefined during review: first version compared a preset against Ramu FY26 baseline and showed +85 cr for the retailer preset; now growth x cash tied up at the days as set. Ratios in the lab hold cash fixed (disclosed). Tata Steel days use series method with materials-only denominator, caveat on page. Brief said TCPL \"21 days (India business)\"; slide shows 21 days group and -2 India; page follows the slide.",
+    "card": "plans/handoff/working-capital-cycle-eli5.card.svg, check_card 0 errors/0 warnings; not rendered on the homepage (no dry run, shared files untouched)"
+  },
+  "publication": {
+    "status": "not published; handed off (branch claude/fa-part-12-working-capital)"
+  }
+}
