@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "pe-ratio-eli5",
+    "title": "P/E: what it says and when it lies",
+    "category": "Monetary Architecture",
+    "minutes": 24,
+    "summary": "Part 7: P/E and EPS you can drive, and five ways P/E misleads",
+    "bullets": [
+      "EPS is profit per share; P/E is price in years of EPS",
+      "Trailing and forward P/E differ by which profit you use",
+      "One-offs, cyclical peaks, losses, growth and debt all fool P/E"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PROFIT",
+      "PRICE",
+      "P/E"
+    ],
+    "file": "explainers/pe-ratio-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A lavender price bar above twenty gold tiles, each one year of profit per share, showing a price worth 20 years of earnings.\"><rect x=\"24\" y=\"48\" width=\"272\" height=\"26\" fill=\"#c3b8ff\"/><rect x=\"24.0\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"37.6\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"51.2\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"64.8\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"78.4\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"92.0\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"105.6\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"119.2\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"132.8\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"146.4\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"160.0\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"173.6\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"187.2\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"200.8\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"214.4\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"228.0\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"241.6\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"255.2\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"268.8\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"282.4\" y=\"84\" width=\"12.4\" height=\"24\" fill=\"#f5c76a\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#f5c76a\">PART 7</text><text x=\"24\" y=\"136\" fill=\"#a5a29c\">PRICE IN YEARS</text></g></svg>",
+    "part": 7
+  },
+  {
     "id": "accounting-choices-eli5",
     "title": "Accounting choices that change profit",
     "category": "Monetary Architecture",
