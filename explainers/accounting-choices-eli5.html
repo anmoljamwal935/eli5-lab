@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Accounting choices that change profit — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (same colour, same meaning in every part): teal #76d5c1 = money coming in; coral #ff8059 = money going out;
+       gold #f5c76a = what belongs to shareholders (profit, equity, dividends); rose #ec6a94 = what is owed; lavender #c3b8ff = the market's view (not used in this part).
+       Neutral grey #9a968f = what the company owns, and accounting adjustments. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  
+/* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    /* Field grids: cell outlines, so an unfilled last row stays empty instead of showing a grey block */
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+  
+
+    /* Part 6 additions: lab toggles and notes */
+    .events{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+    .events button[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:1px}
+    .events button{padding:8px 12px}.events button:disabled{opacity:.45;cursor:not-allowed}
+    .tstory{margin-top:12px;font-size:15px;line-height:1.6;color:var(--fg)}
+    .lab>.control,.lab .controls>.control{max-width:460px;margin-top:10px}.lab .controls>.control input{width:100%}
+    .field-grid.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  </style>
+</head>
+<body data-series-id="accounting-choices-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 30 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Accounting choices that change profit</h1>
+      <p class="lede">Two honest accountants can report different profits for the same year, with the same cash in the bank. This part shows the choices behind that, how much room they leave, and why companies publish an “adjusted” profit beside the reported one.</p>
+      <p class="source-note">Built from Ind AS 1, 16, 33, 36, 37 and 38, Schedule II of the Companies Act 2013, and Tata Consumer Products’ Integrated Annual Report 2025-26, facts checked against the audited statements · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p><a href="the-profit-and-loss-eli5.html">Part 3</a> built the P&amp;L, <a href="the-balance-sheet-eli5.html">Part 4</a> the balance sheet and <a href="cash-flow-and-the-three-statements-eli5.html">Part 5</a> showed that profit is not cash. Here we meet Ramu Chai Ltd, a fictional tea company, again, and ask how much of its profit is a choice. All amounts are ₹ crore. Tags: <span class="tag">example</span> is a made-up but consistent number, <span class="tag">public</span> is a published figure, a standard’s wording or plain arithmetic. Real figures are Tata Consumer Products (TCPL), frozen at FY2026, the year to 31 March 2026; educational, not a recommendation. The ₹20 cr spend used below is a one-off example added on top of Ramu’s FY26; it is not in Ramu’s accounts.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders</span>
+        <span><i style="background:#ec6a94"></i>what is owed</span>
+        <span><i style="background:#9a968f"></i>what it owns, adjustments</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The puzzle</p>
+      <h2>Same ₹20 cr, two different profits</h2>
+      <p>Suppose Ramu spends ₹20 cr on a new blending line, on top of its FY26 <span class="tag">example</span>. Book it as a cost and profit after tax falls from ₹50 cr to ₹35 cr. Book it as an asset, spread over five years, and profit is ₹47.15 cr. The cash is the same: free cash flow, ₹13 cr in Part 5 (operations 58 less capex 45), becomes −₹7 cr either way.</p>
+      <figure><svg viewBox="0 0 800 190" role="img" aria-label="Three bars on one scale for year one: profit after tax 35 if the 20 crore is expensed, 47.15 if capitalised over five years, and cash after the spend minus 7 either way."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Profit: expensed</text><rect x="260.0" y="12.0" width="157.5" height="24.0" fill="#f5c76a"/><text x="425.5" y="30.0" fill="#f1eee8" font-size="16">35</text><line x1="417.5" y1="36.0" x2="417.5" y2="56.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">Profit: capitalised</text><rect x="260.0" y="56.0" width="212.2" height="24.0" fill="#f5c76a"/><text x="480.2" y="74.0" fill="#f1eee8" font-size="16">47.15</text><line x1="472.2" y1="80.0" x2="472.2" y2="100.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Cash after the spend</text><rect x="228.5" y="100.0" width="31.5" height="24.0" fill="#ff8059"/><text x="268.0" y="118.0" fill="#f1eee8" font-size="16">−7</text><line x1="260.0" y1="12.0" x2="260.0" y2="124.0" stroke="#57534f"/><line x1="260" y1="160" x2="305.0" y2="160" stroke="#a5a29c" stroke-width="2"/><line x1="260" y1="155" x2="260" y2="165" stroke="#a5a29c"/><line x1="305.0" y1="155" x2="305.0" y2="165" stroke="#a5a29c"/><text x="317.0" y="165.0" fill="#a5a29c" font-size="16">10 cr on this scale</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Accrual, in one line</p>
+      <h2>Match the cost to the years it helps</h2>
+      <p>Part 5 showed that profit is not cash. The reason is the <b>accrual basis</b>: Ind AS 1 says financial statements, except the cash flow statement, are prepared on it <span class="tag">public</span>. A cost is charged when it is used up, not when it is paid. A machine that helps for five years is charged across five years (ignoring scrap value for now), while the cash leaves on day one.</p>
+      <figure><svg viewBox="0 0 800 262" role="img" aria-label="Two rows on one vertical scale: the 20 crore cash payment is one tall block in year one; the cost charged to profit is five equal blocks of 4, one in each of five years."><text x="20.0" y="85.0" fill="#f1eee8" font-size="16">Cash paid</text><rect x="200.0" y="20.0" width="100.0" height="120.0" fill="#ff8059"/><text x="250.0" y="85.0" fill="#202020" font-size="16" text-anchor="middle">20</text><line x1="20.0" y1="165.0" x2="780.0" y2="165.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="207.0" fill="#f1eee8" font-size="16">Cost charged</text><rect x="200.0" y="190.0" width="100.0" height="24.0" fill="#ff8059"/><text x="250.0" y="208.0" fill="#202020" font-size="16" text-anchor="middle">4</text><text x="250.0" y="244.0" fill="#f1eee8" font-size="16" text-anchor="middle">Year 1</text><rect x="310.0" y="190.0" width="100.0" height="24.0" fill="#ff8059"/><text x="360.0" y="208.0" fill="#202020" font-size="16" text-anchor="middle">4</text><text x="360.0" y="244.0" fill="#f1eee8" font-size="16" text-anchor="middle">Year 2</text><rect x="420.0" y="190.0" width="100.0" height="24.0" fill="#ff8059"/><text x="470.0" y="208.0" fill="#202020" font-size="16" text-anchor="middle">4</text><text x="470.0" y="244.0" fill="#f1eee8" font-size="16" text-anchor="middle">Year 3</text><rect x="530.0" y="190.0" width="100.0" height="24.0" fill="#ff8059"/><text x="580.0" y="208.0" fill="#202020" font-size="16" text-anchor="middle">4</text><text x="580.0" y="244.0" fill="#f1eee8" font-size="16" text-anchor="middle">Year 4</text><rect x="640.0" y="190.0" width="100.0" height="24.0" fill="#ff8059"/><text x="690.0" y="208.0" fill="#202020" font-size="16" text-anchor="middle">4</text><text x="690.0" y="244.0" fill="#f1eee8" font-size="16" text-anchor="middle">Year 5</text><line x1="770.0" y1="80.0" x2="770.0" y2="140.0" stroke="#a5a29c" stroke-width="2"/><line x1="765.0" y1="80.0" x2="775.0" y2="80.0" stroke="#a5a29c"/><line x1="765.0" y1="140.0" x2="775.0" y2="140.0" stroke="#a5a29c"/><text x="758.0" y="115.0" fill="#a5a29c" font-size="16" text-anchor="end">10 cr</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Capitalise or expense</p>
+      <h2>Does the spend help beyond this year?</h2>
+      <p>To <b>expense</b> a spend is to charge it to the P&amp;L at once. To <b>capitalise</b> it is to put it on the balance sheet as an asset and charge it gradually. The test is whether it creates a benefit lasting beyond the year. Repairs and research are expensed. A new line or acquired software is capitalised. Ind AS 38 expenses research and capitalises development only when feasibility, intent and resources are shown <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="Day-one effect of the 20 crore on one scale: expensing cuts profit by 20 and adds no asset; capitalising leaves profit unchanged and adds 20 to assets."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Expense: profit</text><rect x="270.0" y="12.0" width="160.0" height="24.0" fill="#ff8059"/><text x="438.0" y="30.0" fill="#f1eee8" font-size="16">−20</text><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">Expense: assets</text><line x1="430.0" y1="60.0" x2="430.0" y2="76.0" stroke="#f1eee8" stroke-width="2"/><text x="440.0" y="74.0" fill="#a5a29c" font-size="16">0</text><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Capitalise: profit</text><line x1="430.0" y1="104.0" x2="430.0" y2="120.0" stroke="#f1eee8" stroke-width="2"/><text x="440.0" y="118.0" fill="#a5a29c" font-size="16">0</text><text x="20.0" y="162.0" fill="#f1eee8" font-size="16">Capitalise: assets</text><rect x="430.0" y="144.0" width="160.0" height="24.0" fill="#9a968f"/><text x="598.0" y="162.0" fill="#f1eee8" font-size="16">+20</text><line x1="430.0" y1="6.0" x2="430.0" y2="190.0" stroke="#57534f"/><line x1="430" y1="226" x2="510.0" y2="226" stroke="#a5a29c" stroke-width="2"/><line x1="430" y1="221" x2="430" y2="231" stroke="#a5a29c"/><line x1="510.0" y1="221" x2="510.0" y2="231" stroke="#a5a29c"/><text x="522.0" y="231.0" fill="#a5a29c" font-size="16">10 cr on this scale</text></svg></figure>
+      <p>Pre-tax, day one. The choice does not make a project better or worse; it decides which year’s profit carries the cost. Part 20 covers the red flag: costs capitalised that should have been expensed.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Depreciation</p>
+      <h2>Straight line or written-down value</h2>
+      <p><b>Depreciation</b> is the yearly charge for a capitalised asset: cost less scrap value, spread over its useful life. Most assets keep a small scrap value; Schedule II says it should be at most 5% of cost <span class="tag">public</span>, so we use ₹1 cr. <b>Straight line</b> charges the same each year. <b>Written-down value</b> charges a fixed percentage of what is left, so the charge starts high and shrinks. Ind AS 16 asks only that the method match how the benefits are used up <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 428" role="img" aria-label="Yearly charge to profit on a 20 crore machine with 1 crore scrap value over five years: straight line 3.80 each year, written-down value 9.01 falling to 0.82; both total 19."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Year 1</text><rect x="150.0" y="12.0" width="76.0" height="20.0" fill="#ff8059"/><text x="234.0" y="28.0" fill="#f1eee8" font-size="16">3.80</text><rect x="150.0" y="36.0" width="180.3" height="20.0" fill="#ff8059" opacity=".45"/><text x="338.3" y="52.0" fill="#a5a29c" font-size="16">9.01</text><text x="20.0" y="86.0" fill="#f1eee8" font-size="16">Year 2</text><rect x="150.0" y="68.0" width="76.0" height="20.0" fill="#ff8059"/><text x="234.0" y="84.0" fill="#f1eee8" font-size="16">3.80</text><rect x="150.0" y="92.0" width="99.0" height="20.0" fill="#ff8059" opacity=".45"/><text x="257.0" y="108.0" fill="#a5a29c" font-size="16">4.95</text><text x="20.0" y="142.0" fill="#f1eee8" font-size="16">Year 3</text><rect x="150.0" y="124.0" width="76.0" height="20.0" fill="#ff8059"/><text x="234.0" y="140.0" fill="#f1eee8" font-size="16">3.80</text><rect x="150.0" y="148.0" width="54.4" height="20.0" fill="#ff8059" opacity=".45"/><text x="212.4" y="164.0" fill="#a5a29c" font-size="16">2.72</text><text x="20.0" y="198.0" fill="#f1eee8" font-size="16">Year 4</text><rect x="150.0" y="180.0" width="76.0" height="20.0" fill="#ff8059"/><text x="234.0" y="196.0" fill="#f1eee8" font-size="16">3.80</text><rect x="150.0" y="204.0" width="29.9" height="20.0" fill="#ff8059" opacity=".45"/><text x="187.9" y="220.0" fill="#a5a29c" font-size="16">1.49</text><text x="20.0" y="254.0" fill="#f1eee8" font-size="16">Year 5</text><rect x="150.0" y="236.0" width="76.0" height="20.0" fill="#ff8059"/><text x="234.0" y="252.0" fill="#f1eee8" font-size="16">3.80</text><rect x="150.0" y="260.0" width="16.4" height="20.0" fill="#ff8059" opacity=".45"/><text x="174.4" y="276.0" fill="#a5a29c" font-size="16">0.82</text><text x="20.0" y="310.0" fill="#f1eee8" font-size="16">Total</text><rect x="150.0" y="292.0" width="380.0" height="20.0" fill="#ff8059"/><text x="538.0" y="308.0" fill="#f1eee8" font-size="16">19</text><rect x="150.0" y="316.0" width="380.0" height="20.0" fill="#ff8059" opacity=".45"/><text x="538.0" y="332.0" fill="#a5a29c" font-size="16">19</text><line x1="150.0" y1="6.0" x2="150.0" y2="340.0" stroke="#57534f"/><line x1="150" y1="376" x2="250.0" y2="376" stroke="#a5a29c" stroke-width="2"/><line x1="150" y1="371" x2="150" y2="381" stroke="#a5a29c"/><line x1="250.0" y1="371" x2="250.0" y2="381" stroke="#a5a29c"/><text x="262.0" y="381.0" fill="#a5a29c" font-size="16">5 cr on this scale</text><text x="150.0" y="410.0" fill="#a5a29c" font-size="16">solid = straight line · pale = written-down value</text></svg></figure>
+      <details class="trace"><summary>Go deeper: the written-down rate</summary>
+<p>To reach a ₹1 cr scrap value from ₹20 cr in five years, the yearly rate is 1 − (1 ÷ 20)^(1/5) = 45.07% of the opening book value: 9.01, then 4.95, 2.72, 1.49 and 0.82 <span class="tag">example</span>. Both methods charge ₹19 cr in total. They differ only in timing. A written-down method front-loads the cost, so profit is lower early and higher later.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Useful life</p>
+      <h2>A longer life, a smaller yearly charge</h2>
+      <p>Useful life is an <b>estimate</b>. Spread the same ₹19 cr over 3 years and the charge is ₹6.33 cr a year; over 15, ₹1.27 cr. Schedule II lists lives for tangible assets: 15 years for general plant and machinery, 8 for continuous process plant, 6 for servers, 3 for laptops, 10 for furniture, 8 for most cars and 60 for RCC buildings <span class="tag">public</span>. A company may use another life but must disclose why. Schedule II fixes lives, not the method.</p>
+      <figure><svg viewBox="0 0 800 232" role="img" aria-label="Yearly charge to profit for a machine with 19 crore to spread: 6.33 over a 3-year life, 3.80 over 5, 1.90 over 10 and 1.27 over 15, each totalling 19."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Life 3 years</text><rect x="150.0" y="12.0" width="221.7" height="24.0" fill="#ff8059"/><text x="379.7" y="30.0" fill="#f1eee8" font-size="16">6.33 a year × 3 = 19</text><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">Life 5 years</text><rect x="150.0" y="56.0" width="133.0" height="24.0" fill="#ff8059"/><text x="291.0" y="74.0" fill="#f1eee8" font-size="16">3.80 a year × 5 = 19</text><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Life 10 years</text><rect x="150.0" y="100.0" width="66.5" height="24.0" fill="#ff8059"/><text x="224.5" y="118.0" fill="#f1eee8" font-size="16">1.90 a year × 10 = 19</text><text x="20.0" y="162.0" fill="#f1eee8" font-size="16">Life 15 years</text><rect x="150.0" y="144.0" width="44.3" height="24.0" fill="#ff8059"/><text x="202.3" y="162.0" fill="#f1eee8" font-size="16">1.27 a year × 15 = 19</text><line x1="150.0" y1="6.0" x2="150.0" y2="174.0" stroke="#57534f"/><line x1="150" y1="202" x2="220.0" y2="202" stroke="#a5a29c" stroke-width="2"/><line x1="150" y1="197" x2="150" y2="207" stroke="#a5a29c"/><line x1="220.0" y1="197" x2="220.0" y2="207" stroke="#a5a29c"/><text x="232.0" y="207.0" fill="#a5a29c" font-size="16">2 cr on this scale</text></svg></figure>
+      <p>Lives are reviewed at least every year-end; a change is a change in estimate and applies from then on, so earlier years are not restated <span class="tag">public</span>. For intangibles, Schedule II hands the question to the accounting standards.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Acquired intangibles and goodwill</p>
+      <h2>Brands wear out on paper, goodwill is tested</h2>
+      <p>When a company buys a business it splits the price. What it can name and value goes in separately: machines, a brand, customer lists. The leftover premium is <b>goodwill</b>. A brand with a finite life is <b>amortised</b> (depreciation’s word for intangibles). Goodwill, and a brand judged to last indefinitely, are not amortised; instead they are tested for impairment every year, and a write-down is never reversed <span class="tag">public</span>. Part 4 introduced goodwill; this is its cost to profit. Illustrated here with a made-up ₹60 cr purchase that is not in Ramu’s accounts <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 290" role="img" aria-label="A 60 crore purchase split on one scale: net assets 20, brand 25, goodwill 15. The brand costs 2.50 a year for ten years; goodwill costs nothing a year but can be written down once if its tested value falls."><text x="100.0" y="28.0" fill="#f1eee8" font-size="16">Price paid 60</text><line x1="100.0" y1="36.0" x2="100.0" y2="44.0" stroke="#57534f" stroke-dasharray="3 3"/><line x1="700.0" y1="36.0" x2="700.0" y2="44.0" stroke="#57534f" stroke-dasharray="3 3"/><line x1="100.0" y1="40.0" x2="700.0" y2="40.0" stroke="#a5a29c"/><rect x="100.0" y="52.0" width="200.0" height="36.0" fill="#9a968f"/><text x="200.0" y="76.0" fill="#202020" font-size="16" text-anchor="middle">Net assets 20</text><rect x="300.0" y="52.0" width="250.0" height="36.0" fill="#b8b4ad"/><text x="425.0" y="76.0" fill="#202020" font-size="16" text-anchor="middle">Brand 25</text><rect x="550.0" y="52.0" width="150.0" height="36.0" fill="#d6d2cb"/><text x="625.0" y="76.0" fill="#202020" font-size="16" text-anchor="middle">Goodwill 15</text><text x="20.0" y="130.0" fill="#f1eee8" font-size="16">Brand: yearly charge</text><rect x="300.0" y="112.0" width="25.0" height="24.0" fill="#ff8059"/><text x="333.0" y="130.0" fill="#f1eee8" font-size="16">2.50 a year for 10 years</text><text x="20.0" y="174.0" fill="#f1eee8" font-size="16">Goodwill: yearly charge</text><line x1="300.0" y1="160.0" x2="300.0" y2="184.0" stroke="#f1eee8" stroke-width="2"/><text x="310.0" y="174.0" fill="#f1eee8" font-size="16">0, tested every year</text><text x="20.0" y="218.0" fill="#f1eee8" font-size="16">If goodwill falls by 5</text><rect x="300.0" y="200.0" width="50.0" height="24.0" fill="#ff8059"/><text x="358.0" y="218.0" fill="#f1eee8" font-size="16">−5, once</text><line x1="300.0" y1="100.0" x2="300.0" y2="232.0" stroke="#57534f"/><line x1="300" y1="264" x2="400.0" y2="264" stroke="#a5a29c" stroke-width="2"/><line x1="300" y1="259" x2="300" y2="269" stroke="#a5a29c"/><line x1="400.0" y1="259" x2="400.0" y2="269" stroke="#a5a29c"/><text x="412.0" y="269.0" fill="#a5a29c" font-size="16">10 cr on this scale</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Provisions and estimates</p>
+      <h2>A provision books cost before cash</h2>
+      <p>A <b>provision</b> is a liability of uncertain size, such as warranty claims, unpaid-customer losses or a legal claim. Ind AS 37 requires one when there is a present obligation from a past event, an outflow is probable and the amount can be reliably estimated <span class="tag">public</span>. Profit takes the hit now, cash only when the claim is paid. The estimate is reviewed each period, so a changed guess moves profit without moving cash. Part 20 covers abuse.</p>
+      <figure><svg viewBox="0 0 800 190" role="img" aria-label="Profit before tax on one scale: 67 as booked; 72 if a provision estimate were 5 lower; 62 if it were 5 higher. The 5-crore slice is an estimate, not cash."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Estimate ₹5 cr lower</text><rect x="250.0" y="12.0" width="301.5" height="24.0" fill="#f5c76a"/><rect x="551.5" y="12.0" width="22.5" height="24.0" fill="#f5c76a" opacity=".45"/><text x="582.0" y="30.0" fill="#f1eee8" font-size="16">72</text><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">As booked</text><rect x="250.0" y="56.0" width="301.5" height="24.0" fill="#f5c76a"/><text x="559.5" y="74.0" fill="#f1eee8" font-size="16">67</text><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Estimate ₹5 cr higher</text><rect x="250.0" y="100.0" width="279.0" height="24.0" fill="#f5c76a"/><rect x="529.0" y="100.0" width="22.5" height="24.0" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 3"/><text x="559.5" y="118.0" fill="#f1eee8" font-size="16">62</text><line x1="250.0" y1="6.0" x2="250.0" y2="130.0" stroke="#57534f"/><line x1="250" y1="164" x2="295.0" y2="164" stroke="#a5a29c" stroke-width="2"/><line x1="250" y1="159" x2="250" y2="169" stroke="#a5a29c"/><line x1="295.0" y1="159" x2="295.0" y2="169" stroke="#a5a29c"/><text x="307.0" y="169.0" fill="#a5a29c" font-size="16">10 cr on this scale</text></svg></figure>
+      <p>The bars are a what-if on Ramu’s profit before tax of ₹67 cr <span class="tag">example</span>: a different estimate, same business, same cash.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">One-offs and exceptional items</p>
+      <h2>“One-off” is a label, not a fact</h2>
+      <p>Ind AS 1 requires material items of income or expense to be shown separately <span class="tag">public</span>; it has no “extraordinary” category, and each company decides what it calls exceptional (Part 3 listed TCPL’s). Moving a cost into that line changes the label, not the profit before tax. Whether it is truly one-off is for the reader: if a “one-off” appears year after year, treat it as a cost of doing business.</p>
+      <figure><svg viewBox="0 0 800 190" role="img" aria-label="A waterfall: profit before a 20 crore one-off is 67; the one-off takes 20 away; profit before tax is 47."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Profit before one-off</text><rect x="250.0" y="12.0" width="301.5" height="24.0" fill="#f5c76a"/><text x="559.5" y="30.0" fill="#f1eee8" font-size="16">67</text><line x1="551.5" y1="36.0" x2="551.5" y2="56.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">One-off cost</text><rect x="461.5" y="56.0" width="90.0" height="24.0" fill="#ff8059"/><text x="559.5" y="74.0" fill="#f1eee8" font-size="16">−20</text><line x1="461.5" y1="80.0" x2="461.5" y2="100.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Profit before tax</text><rect x="250.0" y="100.0" width="211.5" height="24.0" fill="#f5c76a"/><text x="469.5" y="118.0" fill="#f1eee8" font-size="16">47</text><line x1="250" y1="164" x2="295.0" y2="164" stroke="#a5a29c" stroke-width="2"/><line x1="250" y1="159" x2="250" y2="169" stroke="#a5a29c"/><line x1="295.0" y1="159" x2="295.0" y2="169" stroke="#a5a29c"/><text x="307.0" y="169.0" fill="#a5a29c" font-size="16">10 cr on this scale</text></svg></figure>
+      <p>Here a ₹20 cr one-off sits under Ramu’s ₹67 cr profit before it <span class="tag">example</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Reported vs adjusted EPS</p>
+      <h2>Why companies publish an adjusted profit</h2>
+      <p><b>EPS</b>, earnings per share, is profit for the owners divided by shares; Part 7 covers it, and the P/E built on it, in full. Ind AS 33 defines basic and diluted EPS. A company may add other per-share amounts, but must state the basis and reconcile it to a reported line <span class="tag">public</span>. Companies publish an adjusted figure to show a business without a charge that does not recur or does not use cash. A careful reader asks what was left out, and whether gains were removed as readily as costs.</p>
+      <figure><svg viewBox="0 0 800 150" role="img" aria-label="Two EPS bars on one scale: reported EPS 3.50 after the 20 crore one-off; adjusted EPS 5.00, with the 1.50 per share the one-off cost after tax added back as a dashed slice."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Reported EPS</text><rect x="200.0" y="12.0" width="210.0" height="24.0" fill="#f5c76a"/><text x="418.0" y="30.0" fill="#f1eee8" font-size="16">3.50</text><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">Adjusted EPS</text><rect x="200.0" y="56.0" width="210.0" height="24.0" fill="#f5c76a"/><rect x="410.0" y="56.0" width="90.0" height="24.0" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 3"/><text x="508.0" y="74.0" fill="#f1eee8" font-size="16">5.00</text><line x1="200.0" y1="6.0" x2="200.0" y2="90.0" stroke="#57534f"/><line x1="200" y1="124" x2="260.0" y2="124" stroke="#a5a29c" stroke-width="2"/><line x1="200" y1="119" x2="200" y2="129" stroke="#a5a29c"/><line x1="260.0" y1="119" x2="260.0" y2="129" stroke="#a5a29c"/><text x="272.0" y="129.0" fill="#a5a29c" font-size="16">₹1 of EPS on this scale</text></svg></figure>
+      <p>On Ramu’s example: ₹20 cr × (1 − 25%) = ₹15 cr, or ₹1.50 a share over 10 cr shares <span class="tag">example</span>. Reported EPS ₹3.50; leave the one-off out and it is ₹5.00. Both are true; they answer different questions.</p>
+    </section>
+
+    <section class="panel" id="lab1">
+      <p class="kicker">Try it · one spend, five years</p>
+      <h2>Choose how Ramu books the ₹20 cr</h2>
+      <p>The one-off spend sits on top of Ramu’s FY26 <span class="tag">example</span>, held flat for five years: profit after tax ₹50 cr, free cash flow ₹13 cr, 10 cr shares. Tax expense is 25% of book profit; tax actually paid is set by tax law’s own rules, so it does not move with the book choice (the gap is deferred tax). Scrap value is 5% of the spend, sold for cash at the end of life. Set the spend to 0 to see Ramu’s FY26 as reported.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="events" role="group" aria-label="Accounting treatment">
+            <button type="button" class="secondary" data-t="cap" aria-pressed="true">Capitalise it</button>
+            <button type="button" class="secondary" data-t="exp" aria-pressed="false">Expense it</button>
+          </div>
+          <div class="events" role="group" aria-label="Depreciation method">
+            <button type="button" class="secondary" data-m="sl" aria-pressed="true">Straight line</button>
+            <button type="button" class="secondary" data-m="wdv" aria-pressed="false">Written-down value</button>
+          </div>
+          <div class="control"><label for="sp">Spend (₹ cr) <output id="sp-o"></output></label><input id="sp" type="range" min="0" max="40" step="5" value="20"></div>
+          <div class="control"><label for="lf">Useful life <output id="lf-o"></output></label><input id="lf" type="range" min="2" max="10" step="1" value="5"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="20,5,cap,sl">Capitalise, straight line</button>
+            <button type="button" class="secondary" data-p="20,5,exp,sl">Expense it all</button>
+            <button type="button" class="secondary" data-p="20,5,cap,wdv">Capitalise, written-down</button>
+            <button type="button" class="secondary" data-p="0,5,cap,sl">No spend: Ramu’s FY26</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 560 520" role="img" aria-label="For each of five years, a bar of profit after tax and a bar of cash after the spend, in crore, on one axis."></svg></div>
+      </div></div>
+      <p class="tstory" id="lab1-note"></p>
+      <p>Gold is reported profit after tax; teal (coral when negative) is free cash flow after the spend, which is ₹13 cr a year before it. A life above five years is cut off at year five; the ledger shows the rest.</p>
+      <details class="trace"><summary>Go deeper: why the lab holds cash tax fixed</summary>
+<p>Tax law has its own depreciation rules, set apart from the books, so changing how Ramu books the spend changes the tax <i>expense</i> in the P&amp;L (with the difference carried as deferred tax) but not the tax <i>paid</i>. Part 5 made the same point about tax paid versus tax expense. The lab leaves out any cash tax saving from deducting the spend, which would be the same in every setting <span class="tag">example</span>.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: reported ₹15.59, adjusted ₹17.30</h2>
+      <p>TCPL, Tata Consumer Products, bought Capital Foods and Organic India. The brands and relationships bought with them are amortised, which lowers reported profit without costing any cash this year. TCPL’s consolidated basic EPS for FY26 is ₹15.59; its AGM presentation shows adjusted EPS of ₹17.30, “adjusted for amortization expenses of Capital Foods and Organic India” <span class="tag">public</span>. Data frozen at FY2026; educational, not a recommendation.</p>
+      <figure><svg viewBox="0 0 800 190" role="img" aria-label="TCPL FY2026 basic EPS 15.59 plus 1.71 of amortisation add-back gives adjusted EPS 17.30, on one scale in rupees per share."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Reported basic EPS</text><rect x="250.0" y="12.0" width="311.8" height="24.0" fill="#f5c76a"/><text x="569.8" y="30.0" fill="#f1eee8" font-size="16">15.59</text><line x1="561.8" y1="36.0" x2="561.8" y2="56.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">+ Amortisation add-back</text><rect x="561.8" y="56.0" width="34.2" height="24.0" fill="#9a968f"/><text x="604.0" y="74.0" fill="#f1eee8" font-size="16">+1.71</text><line x1="596.0" y1="80.0" x2="596.0" y2="100.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Adjusted EPS</text><rect x="250.0" y="100.0" width="346.0" height="24.0" fill="#f5c76a"/><text x="604.0" y="118.0" fill="#f1eee8" font-size="16">17.30</text><line x1="250.0" y1="6.0" x2="250.0" y2="130.0" stroke="#57534f"/><line x1="250" y1="164" x2="290.0" y2="164" stroke="#a5a29c" stroke-width="2"/><line x1="250" y1="159" x2="250" y2="169" stroke="#a5a29c"/><line x1="290.0" y1="159" x2="290.0" y2="169" stroke="#a5a29c"/><text x="302.0" y="169.0" fill="#a5a29c" font-size="16">₹2 of EPS on this scale</text></svg></figure>
+      <div class="field-grid g2">
+        <div><b>Reported EPS</b><span>Basic ₹15.59 (diluted ₹15.58) = profit attributable to owners ₹1,542.30 cr ÷ 98.95 cr weighted shares. The audited note has basic and diluted only.</span><em>public · Note 30, p. 456</em></div>
+        <div><b>Adjusted EPS</b><span>₹17.30, a gap of ₹1.71 a share, about ₹169 cr after tax (derived: 1.71 × 98.95 cr shares; TCPL does not print the rupee amount, so this is an estimate). It is in the AGM deck, not in the audited statements.</span><em>public · AGM presentation slides 8 and 10</em></div>
+        <div><b>Amortisation in the notes</b><span>D&amp;A ₹626.68 cr = depreciation of plant 187.61 + right-of-use assets 96.40 + amortisation of intangibles 342.67. Of the amortisation, brands and trademarks are ₹251.74 cr (all brands, not only the two acquisitions).</span><em>public · Note 27, p. 455; Note 6, p. 437</em></div>
+        <div><b>Goodwill</b><span>₹11,883.90 cr net = cost 12,413.06 less accumulated impairment 529.16. FY26 impairment ₹16.02 cr. Not amortised; tested every year; an impairment is not reversed. Brands of ₹2,093.33 cr are treated as indefinite-life, also tested rather than amortised.</span><em>public · Note 6, pp. 436–437; policy p. 422</em></div>
+      </div>
+      <figure><svg viewBox="0 0 800 276" role="img" aria-label="TCPL FY2026 depreciation and amortisation in crore on one scale: plant depreciation 187.61, right-of-use 96.40, amortisation of intangibles 342.67 of which brands 251.74; total 626.68."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">PP&amp;E depreciation</text><rect x="240.0" y="12.0" width="140.7" height="24.0" fill="#ff8059"/><text x="388.7" y="30.0" fill="#f1eee8" font-size="16">187.61</text><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">Right-of-use assets</text><rect x="240.0" y="56.0" width="72.3" height="24.0" fill="#ff8059"/><text x="320.3" y="74.0" fill="#f1eee8" font-size="16">96.40</text><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Amortisation (all)</text><rect x="240.0" y="100.0" width="257.0" height="24.0" fill="#ff8059"/><text x="505.0" y="118.0" fill="#f1eee8" font-size="16">342.67</text><text x="20.0" y="162.0" fill="#f1eee8" font-size="16">of which brands</text><rect x="240.0" y="144.0" width="188.8" height="24.0" fill="#ff8059" opacity=".55"/><text x="436.8" y="162.0" fill="#f1eee8" font-size="16">251.74</text><text x="20.0" y="206.0" fill="#f1eee8" font-size="16">Total D&amp;A</text><rect x="240.0" y="188.0" width="470.0" height="24.0" fill="#9a968f"/><text x="718.0" y="206.0" fill="#f1eee8" font-size="16">626.68</text><line x1="240.0" y1="6.0" x2="240.0" y2="218.0" stroke="#57534f"/><line x1="240" y1="246" x2="315.0" y2="246" stroke="#a5a29c" stroke-width="2"/><line x1="240" y1="241" x2="240" y2="251" stroke="#a5a29c"/><line x1="315.0" y1="241" x2="315.0" y2="251" stroke="#a5a29c"/><text x="327.0" y="251.0" fill="#a5a29c" font-size="16">100 cr on this scale</text></svg></figure>
+      <p>Amortisation is 55% of TCPL’s D&amp;A (342.67 of 626.68). EBITDA, which Part 3 defined, leaves all of it out; EBIT does not. The cash flow statement ignores it too: the full ₹626.68 cr of D&amp;A is added back to profit (Part 5).</p>
+      <p>Exceptional items net to −₹20.06 cr (FY25: −₹5.11 cr). Part 3 listed them; here is the arithmetic. Gains: ₹55.57 cr from remeasuring contingent consideration (an earn-out for an acquisition, revalued by estimate) and ₹35.36 cr profit on selling non-core assets, total 90.93. Costs: asset write-down 69.06, the statutory impact of the new Labour Codes 25.91 and goodwill impairment 16.02, total 110.99. The cash flow statement lists the same five components and reverses them out of operating profit <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 316" role="img" aria-label="TCPL FY2026 exceptional items in crore, one scale: gains 55.57 and 35.36, costs 69.06, 25.91 and 16.02, netting to minus 20.06."><text x="20.0" y="30.0" fill="#f1eee8" font-size="16">Earn-out revalued</text><rect x="330.0" y="12.0" width="166.7" height="24.0" fill="#76d5c1"/><text x="504.7" y="30.0" fill="#f1eee8" font-size="16">+55.57</text><line x1="496.7" y1="36.0" x2="496.7" y2="56.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="74.0" fill="#f1eee8" font-size="16">Non-core asset sale</text><rect x="496.7" y="56.0" width="106.1" height="24.0" fill="#76d5c1"/><text x="610.8" y="74.0" fill="#f1eee8" font-size="16">+35.36</text><line x1="602.8" y1="80.0" x2="602.8" y2="100.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="118.0" fill="#f1eee8" font-size="16">Asset write-down</text><rect x="395.6" y="100.0" width="207.2" height="24.0" fill="#ff8059"/><text x="610.8" y="118.0" fill="#f1eee8" font-size="16">−69.06</text><line x1="395.6" y1="124.0" x2="395.6" y2="144.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="162.0" fill="#f1eee8" font-size="16">New labour codes</text><rect x="317.9" y="144.0" width="77.7" height="24.0" fill="#ff8059"/><text x="403.6" y="162.0" fill="#f1eee8" font-size="16">−25.91</text><line x1="317.9" y1="168.0" x2="317.9" y2="188.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="206.0" fill="#f1eee8" font-size="16">Goodwill impairment</text><rect x="269.8" y="188.0" width="48.1" height="24.0" fill="#ff8059"/><text x="338.0" y="206.0" fill="#f1eee8" font-size="16">−16.02</text><line x1="269.8" y1="212.0" x2="269.8" y2="232.0" stroke="#57534f" stroke-dasharray="3 3"/><text x="20.0" y="250.0" fill="#f1eee8" font-size="16">Net exceptional</text><rect x="269.8" y="232" width="60.2" height="24" fill="none" stroke="#f1eee8" stroke-width="2"/><text x="338.0" y="250.0" fill="#f1eee8" font-size="16">−20.06</text><line x1="330.0" y1="6.0" x2="330.0" y2="262.0" stroke="#57534f"/><line x1="330" y1="292" x2="390.0" y2="292" stroke="#a5a29c" stroke-width="2"/><line x1="330" y1="287" x2="330" y2="297" stroke="#a5a29c"/><line x1="390.0" y1="287" x2="390.0" y2="297" stroke="#a5a29c"/><text x="402.0" y="297.0" fill="#a5a29c" font-size="16">20 cr on this scale</text></svg></figure>
+      <div class="field-grid g2">
+        <div><b>Depreciation policy</b><span>Plant and equipment: straight line over the lives in Schedule II of the Companies Act or a technical evaluation; land is not depreciated. Buildings 28–60 years, plant and machinery 3–25, furniture and office equipment 2–16, vehicles 4–10. Finite-life brands 10–25, customer relationships 8–20, distribution networks 8–10, software 3–8. Lives and residual values are reviewed each year-end and changed prospectively.</span><em>public · pp. 421–423</em></div>
+        <div><b>Capitalise or expense</b><span>Research is expensed; software development is capitalised only when feasibility and benefits are shown; repairs are expensed. R&amp;D in FY26: ₹47.27 cr expensed, ₹0.38 cr capitalised. TCPL lists goodwill and intangibles, useful lives, tax, employee benefits and financial instruments as its critical estimates.</span><em>public · Note 31, p. 456; policy pp. 421–423, 432</em></div>
+      </div>
+      <details class="trace"><summary>Go deeper: the two columns in the AGM deck</summary>
+      <p>The AGM table has two EPS columns. Before exceptional items: basic ₹15.64, adjusted ₹17.35. As reported: basic ₹15.59, adjusted ₹17.30. The ₹1.71 gap is the same in both, and the exceptional items moved EPS by only ₹0.05, because the gains and costs largely cancel and the goodwill impairment carries no tax shield in the figures given <span class="tag">public</span>. The amortisation adjustment is the bigger one.</p></details>
+      <p class="source-note">Sources: <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">TCPL Integrated Annual Report 2025-26</a>, printed pages as cited above (printed page = PDF page + 86); <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf">AGM presentation, 10 June 2026</a>. Schedule II lives from the Companies Act 2013 text reproduced at ca2013.com; Ind AS wording read at the same site.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions for any profit figure</h2>
+      <p><b>1. When did the cost reach profit?</b> Was it expensed or capitalised, and does a peer treat it the same way? <b>2. What lives and estimates are behind it?</b> Compare depreciation lives with Schedule II and peers, and watch for lives that lengthen. <b>3. What was adjusted, and is it adjusted every year?</b> An adjusted figure that removes only costs deserves a second look. In every case the cash flow statement stays the same, so profit and cash should be read together.</p>
+      <p>These choices change when profit shows up, not what the business earned in total. <b>Next, Part 7, “P/E: what it says and when it lies”</b>, takes EPS, reported or adjusted, and divides the share price by it, and shows when that ratio misleads.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Accounting choices decide which year carries a cost, not whether the cash left; over an asset’s life the total is the same, so read profit beside cash and ask what was adjusted.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Lab: one spend on top of Ramu Chai's canonical FY26 (all example, ₹ crore). The default state is the capitalised, straight-line, 5-year case.
+    const $=id=>document.getElementById(id);
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const n2=v=>{const r=Math.round(Math.abs(v)*100+1e-7)/100;return (v<0&&r!==0?'−':'')+r.toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1')};
+    const money=v=>(Math.round(Math.abs(v)*100)<1?'':v<0?'−':'')+'₹'+n2(Math.abs(v))+' cr';
+    const fmt0=v=>(v<0?'−':'')+'₹'+Math.abs(v)+' cr';
+    const TEAL='#76d5c1',CORAL='#ff8059',GOLD='#f5c76a';
+    const ids=['sp','lf'];
+    const labConfig={format:fmt0, sliderFormats:[v=>'₹'+v+' cr',v=>v+' years'], minSpan:90, maxSpan:90, step:30};
+    const PAT0=50, FCF0=13, SHARES=10, TAX=0.25, SCRAP=0.05;
+    let treat='cap', method='sl';
+    // Model. Spend S at the start of year 1; scrap value R=5% of S, sold for cash at the end of year L.
+    // Expensed: S charged in year 1, then a gain R when the scrap is sold. Capitalised: straight line (S-R)/L a year, or a fixed
+    // written-down rate r=1-(R/S)^(1/L) on the opening book value; scrap is sold at book value (no gain).
+    function compute(S,L,T,M){
+      const R=SCRAP*S, r=S>0?1-Math.pow(R/S,1/L):0, e=[], charge=[];
+      let bv=S;
+      for(let t=1;t<=L;t++){
+        let c;
+        if(T==='exp') c=t===1?S:0;
+        else if(M==='sl') c=(S-R)/L;
+        else {const nb=S*Math.pow(1-r,t); c=bv-nb; bv=nb;}
+        charge.push(c); e.push(-c+((T==='exp'&&t===L)?R:0));
+      }
+      const pat=[],cash=[];
+      for(let t=1;t<=5;t++){
+        const et=t<=L?e[t-1]:0;
+        pat.push(PAT0+(1-TAX)*et);
+        cash.push(FCF0-(t===1?S:0)+(t===L?R:0));
+      }
+      const hit5=-e.slice(0,5).reduce((a,b)=>a+b,0), hitTotal=-e.reduce((a,b)=>a+b,0);
+      return {R,e,charge,pat,cash,hit5,hitRest:hitTotal-hit5,hitTotal,netCash:S-R,eps1:pat[0]/SHARES};
+    }
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      document.querySelectorAll('[data-t]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===treat)));
+      document.querySelectorAll('[data-m]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.m===method));b.disabled=treat==='exp';});
+      const r=compute(v[0],v[1],treat,method);
+      const all=r.pat.concat(r.cash);
+      if(all.some(x=>!Number.isFinite(x))) throw new Error('Lab returned non-finite results');
+      const lo=-30,hi=60,X0=110,W=370, sx=x=>X0+(Math.max(lo,Math.min(hi,x))-lo)*W/(hi-lo), zero=sx(0);
+      const top=36, gh=64, bottom=top+5*gh+8;
+      $('labChart').setAttribute('viewBox',`0 0 560 ${bottom+96}`);
+      let s='';
+      for(let i=0;i<5;i++){
+        const y=top+i*gh;
+        s+=`<text x="20" y="${y+16}" fill="#a5a29c" font-size="16">Year ${i+1}</text>`;
+        [[r.pat[i],GOLD],[r.cash[i],r.cash[i]<0?CORAL:TEAL]].forEach(([val,col],j)=>{
+          const yy=y+j*26,x=sx(val);
+          s+=`<rect data-v="${val}" x="${Math.min(x,zero)}" y="${yy}" width="${Math.abs(x-zero)}" height="20" fill="${col}"/>`;
+          s+=`<text x="${(val<0?zero:x)+8}" y="${yy+16}" fill="#f1eee8" font-size="16">${esc(n2(val))}</text>`;
+        });
+      }
+      s+=`<line x1="${zero}" y1="${top-8}" x2="${zero}" y2="${bottom-4}" stroke="#57534f"/>`;
+      s+=[-30,0,30,60].map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+22}" text-anchor="${['start','middle','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt0(t))}</text>`).join('');
+      s+=`<rect x="110" y="${bottom+44}" width="14" height="14" fill="${GOLD}"/><text x="132" y="${bottom+57}" fill="#f1eee8" font-size="16">Profit after tax</text>`;
+      s+=`<rect x="300" y="${bottom+44}" width="14" height="14" fill="${TEAL}"/><text x="322" y="${bottom+57}" fill="#f1eee8" font-size="16">Cash after the spend</text>`;
+      $('labChart').innerHTML=s;
+      const L=[['Spend',money(v[0])],['Scrap value, 5%, sold at end of life',money(r.R)],['Cost to spread over the life',money(v[0]-r.R)],
+        ['Cost charged in year 1',money(r.charge[0])],['Profit after tax, year 1',money(r.pat[0])],
+        ['EPS year 1, reported','₹'+n2(r.eps1)],['EPS year 1, before this spend','₹'+n2(PAT0/SHARES)],
+        ['Charged to profit, years 1–5',money(r.hit5)],['Still to charge after year 5',money(r.hitRest)],
+        ["Total over the asset's life",money(r.hitTotal)],['Net cash out over the life',money(r.netCash)]];
+      $('ledger').innerHTML=L.map(([k,x])=>`<span>${esc(k)}</span><span>${esc(x)}</span>`).join('');
+      const how=treat==='exp'?'expensed':(method==='sl'?'capitalised, straight line':'capitalised, written-down');
+      $('lab1-note').textContent=v[0]===0?'No spend: this is Ramu’s FY26 as reported, profit after tax ₹50 cr, free cash flow ₹13 cr, every year.':
+        `${how[0].toUpperCase()+how.slice(1)} over ${v[1]} years: year-1 profit after tax is ${money(r.pat[0])}, but cash after the spend is ${money(r.cash[0])} in every setting. Over the asset’s life ${money(r.hitTotal)} is charged to profit and ${money(r.netCash)} leaves in cash: the same total.`;
+      window.labResults={valid:true,pat:r.pat,cash:r.cash,hit5:r.hit5,hitRest:r.hitRest,hitTotal:r.hitTotal,netCash:r.netCash,eps1:r.eps1,rows:all};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>{treat=b.dataset.t;update()}));
+    document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{method=b.dataset.m;update()}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.p.split(',');$('sp').value=p[0];$('lf').value=p[1];treat=p[2];method=p[3];update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

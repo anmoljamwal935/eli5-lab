@@ -1,0 +1,568 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "Tata Consumer Products Integrated Annual Report 2025-26 (plus AGM presentation, Schedule II text, Ind AS texts)",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-08",
+    "sections": "428 PDF pages; printed page = PDF page + 86",
+    "language": "English",
+    "capture_mode": "downloaded PDFs, pdftotext -layout, page-located. IAR sha256 e5e1f09838183e22dbf3fc11056894b197401f462cc7966ff295419e4e660b8d; AGM sha256 fda0e0d75eb7d11d7ac8093215024a1d0130957da5b70454c773f9d175878126",
+    "other_sources": [
+      {
+        "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+        "use": "adjusted EPS 17.30/17.35, basic 15.64/15.59, footnote"
+      },
+      {
+        "url": "https://ca2013.com/wp-content/uploads/2015/07/Schedule2.pdf",
+        "use": "Schedule II text (reproduction)"
+      },
+      {
+        "url": "https://ca2013.com/",
+        "use": "Ind AS 1, 16, 33, 36, 37, 38 text pages"
+      }
+    ],
+    "beginning_middle_ending_evidence": "Topic build from primary documents, not a video/article. Read in full: consolidated P&L (p.415), cash flow (p.417), Notes 6, 27, 29, 30, 31 (pp.436-437, 455-456), policies 2.2(b)-(e), (r), (s) and 2.3 (pp.421-423, 431-432), AGM slides 8 and 10.",
+    "limitations": [
+      "Schedule II read from the ca2013.com reproduction, not the MCA original; it may predate later amendments.",
+      "Ind AS 8 and Ind AS 103 text not read; prospective treatment of estimate changes is evidenced by Ind AS 16 para 51 and TCPL policy text.",
+      "Ind AS 38 page text read to 100,000 of 105,492 characters; Ind AS 36 and Ind AS 1 to 100,000 characters (the paragraphs quoted were all found).",
+      "The Rs 169 cr after-tax amortisation add-back is derived from the per-share gap, not printed by TCPL.",
+      "The brief says to find the amortisation figure in the notes: the notes give total intangible amortisation 342.67 and brands 251.74, but not a split by Capital Foods and Organic India."
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Accrual vs cash: statements on accrual basis except cash flow; cost charged when used up",
+      "kind": "definition",
+      "locator": "Ind AS 1 para 27",
+      "check": true,
+      "destination": "p02"
+    },
+    {
+      "id": "I2",
+      "item": "Same spend, different year-1 profit (Ramu one-off Rs 20 cr: 35 expensed vs 47.15 capitalised SL 5y; cash -7 either way)",
+      "kind": "example",
+      "locator": "derived from plan canonicals (PAT 50, FCF 13)",
+      "check": false,
+      "destination": "p01, lab"
+    },
+    {
+      "id": "I3",
+      "item": "Capitalise vs expense test; research expensed, development capitalised only if criteria met",
+      "kind": "mechanism",
+      "locator": "Ind AS 38 paras 54, 57; TCPL pp.421-423",
+      "check": true,
+      "destination": "p03"
+    },
+    {
+      "id": "I4",
+      "item": "Depreciation = (cost - residual)/life; residual at most 5% of cost",
+      "kind": "definition",
+      "locator": "Schedule II Part A para 1, Note 5",
+      "check": true,
+      "destination": "p04"
+    },
+    {
+      "id": "I5",
+      "item": "Straight line vs written-down value; Ind AS 16 requires method to match pattern of benefits",
+      "kind": "mechanism",
+      "locator": "Ind AS 16 paras 60, 62",
+      "check": true,
+      "destination": "p04, lab"
+    },
+    {
+      "id": "I6",
+      "item": "WDV rate 1-(R/C)^(1/n)=45.07%; charges 9.01,4.95,2.72,1.49,0.82; total 19",
+      "kind": "number",
+      "locator": "arithmetic",
+      "check": false,
+      "destination": "p04 go-deeper"
+    },
+    {
+      "id": "I7",
+      "item": "Schedule II lives: general P&M 15, continuous process 8, servers 6, laptops 3, furniture 10, cars 8, RCC buildings 60; different life needs disclosure; method not prescribed",
+      "kind": "claim",
+      "locator": "Schedule II Part A 3(i), Part C, Note 3",
+      "check": true,
+      "destination": "p05"
+    },
+    {
+      "id": "I8",
+      "item": "Useful life reviewed at least each year-end; change is a change in estimate, applied prospectively",
+      "kind": "claim",
+      "locator": "Ind AS 16 para 51; TCPL p.422, p.432",
+      "check": true,
+      "destination": "p05, p11"
+    },
+    {
+      "id": "I9",
+      "item": "Intangibles: Schedule II defers to accounting standards (Part A 3(iii))",
+      "kind": "claim",
+      "locator": "Schedule II Part A",
+      "check": true,
+      "destination": "p05"
+    },
+    {
+      "id": "I10",
+      "item": "Acquired brand finite life amortised; goodwill and indefinite-life brands not amortised, tested annually; goodwill impairment not reversed",
+      "kind": "mechanism",
+      "locator": "Ind AS 38 paras 107-108; Ind AS 36 paras 10(b), 124; TCPL pp.422, 432",
+      "check": true,
+      "destination": "p06"
+    },
+    {
+      "id": "I11",
+      "item": "Illustrative Rs 60 cr purchase: net assets 20, brand 25 (10y), goodwill 15; brand 2.50/yr; goodwill 0; impairment -5 once",
+      "kind": "example",
+      "locator": "invented example, labelled",
+      "check": false,
+      "destination": "p06"
+    },
+    {
+      "id": "I12",
+      "item": "Provision criteria: present obligation, probable outflow, reliable estimate; reviewed each period",
+      "kind": "definition",
+      "locator": "Ind AS 37 paras 14, 59",
+      "check": true,
+      "destination": "p07"
+    },
+    {
+      "id": "I13",
+      "item": "Estimate what-if on PBT 67 (72 / 67 / 62)",
+      "kind": "example",
+      "locator": "invented what-if on canonical PBT",
+      "check": false,
+      "destination": "p07"
+    },
+    {
+      "id": "I14",
+      "item": "Material items disclosed separately; no extraordinary category; label does not change PBT",
+      "kind": "claim",
+      "locator": "Ind AS 1 paras 87, 97-98; TCPL policy p.431",
+      "check": true,
+      "destination": "p08"
+    },
+    {
+      "id": "I15",
+      "item": "Ramu one-off 20 under PBT 67 gives 47",
+      "kind": "example",
+      "locator": "arithmetic",
+      "check": false,
+      "destination": "p08"
+    },
+    {
+      "id": "I16",
+      "item": "EPS defined by Ind AS 33; additional per-share amounts need stated basis and reconciliation; why companies adjust; what to ask",
+      "kind": "claim",
+      "locator": "Ind AS 33 para 73",
+      "check": true,
+      "destination": "p09"
+    },
+    {
+      "id": "I17",
+      "item": "Ramu EPS 3.50 reported vs 5.00 adjusted (20 x 0.75 / 10 = 1.50)",
+      "kind": "example",
+      "locator": "arithmetic",
+      "check": false,
+      "destination": "p09"
+    },
+    {
+      "id": "I18",
+      "item": "TCPL basic EPS 15.59, diluted 15.58; owners profit 1,542.30; weighted shares 98.95 cr",
+      "kind": "number",
+      "locator": "IAR Note 30 p.456",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I19",
+      "item": "TCPL adjusted EPS 17.30 (17.35 before exceptional items; basic 15.64); footnote: adjusted for amortization of Capital Foods and Organic India; gap 1.71 = about Rs 169 cr after tax (derived)",
+      "kind": "number",
+      "locator": "AGM presentation slides 8, 10",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I20",
+      "item": "TCPL D&A 626.68 = PP&E 187.61 + ROU 96.40 + intangibles 342.67; brands 251.74; amortisation 55% of D&A",
+      "kind": "number",
+      "locator": "IAR Note 27 p.455; Note 6 p.437",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I21",
+      "item": "TCPL goodwill net 11,883.90 = 12,413.06 - 529.16; FY26 impairment 16.02; indefinite-life brands 2,093.33",
+      "kind": "number",
+      "locator": "IAR Note 6 pp.436-437",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I22",
+      "item": "TCPL exceptional items -20.06 (FY25 -5.11): +55.57 +35.36 -69.06 -25.91 -16.02; reversed in cash flow statement",
+      "kind": "number",
+      "locator": "IAR Note 29 p.456; cash flow p.417",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I23",
+      "item": "TCPL depreciation and useful-life policy (straight line; lives by class; Schedule II or technical evaluation; land not depreciated)",
+      "kind": "claim",
+      "locator": "IAR pp.421-423",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I24",
+      "item": "TCPL R&D FY26: 47.27 expensed, 0.38 capitalised; critical estimates list",
+      "kind": "number",
+      "locator": "IAR Note 31 p.456; p.432",
+      "check": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I25",
+      "item": "Hand-off: Part 7 covers EPS and P/E in full; Part 20 covers red flags; Part 3, 4, 5 recaps",
+      "kind": "context",
+      "locator": "series plan",
+      "check": false,
+      "destination": "p03, p07, p09, p12"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I1",
+      "claim": "Ind AS 1 para 27: financial statements prepared on accrual basis except cash flow information",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-1/",
+      "locator": "para 27 quoted"
+    },
+    {
+      "inventory_id": "I3",
+      "claim": "Ind AS 38 para 54 research expensed; para 57 development criteria",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-38/",
+      "locator": "paras 54, 57 quoted; page text read to 100,000 characters"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Residual value generally not more than 5% of original cost; depreciable amount = cost - residual",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/wp-content/uploads/2015/07/Schedule2.pdf",
+      "locator": "Part A para 1; Note 5. Source is the ca2013.com reproduction of the Schedule II text, MCA original not opened; reproduction may predate later amendments"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "Ind AS 16 para 60 method reflects pattern; para 62 lists straight-line, diminishing balance, units of production",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-16/",
+      "locator": "paras 60, 62 quoted"
+    },
+    {
+      "inventory_id": "I7",
+      "claim": "Schedule II Part C lives and the disclosure rule for a different life; Part A 3(i)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/wp-content/uploads/2015/07/Schedule2.pdf",
+      "locator": "Part C items IV(i)(a) 15 yrs, IV(i)(b) 8 yrs, XII(i) 6, (ii) 3, V 10, VI.3 8, I(a) 60; Part A 3(i); Note 3. Same reproduction caveat as I4. Page says method is not prescribed: Schedule II lists lives and asks for disclosure of the method used"
+    },
+    {
+      "inventory_id": "I8",
+      "claim": "Ind AS 16 para 51 review at each year-end; TCPL p.422 \"any change in estimate is accounted for on a prospective basis\"",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-16/",
+      "locator": "para 51 quoted; Ind AS 8 text itself not read (its para 36 not retrieved), prospective treatment evidenced by TCPL policy text pp.422, 432"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "Ind AS 38 paras 107-108; Ind AS 36 paras 10(b) and 124; TCPL policy p.422 and p.432",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-36/",
+      "locator": "quoted; Ind AS 103 not read"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Ind AS 37 para 14 criteria, para 59 review",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-37/",
+      "locator": "paras 14, 59 quoted"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Ind AS 1 para 87 no extraordinary items; para 97 material items disclosed separately",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/indian-accounting-standard-ind-1/",
+      "locator": "paras 87, 97, 98 quoted. TCPL policy (r) p.431 read in the IAR"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Ind AS 33 para 73 additional per-share amounts: basis, equal prominence, reconciliation",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://ca2013.com/wp-content/uploads/2017/03/INDAS33.pdf",
+      "locator": "para 73 read from the PDF"
+    },
+    {
+      "inventory_id": "I18",
+      "claim": "Basic EPS 15.59, diluted 15.58; 989,535,734 weighted shares; 1,542.30 owners profit",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "PDF p.370 = printed p.456, Note 30. 1,542.30/98.9536 = 15.586"
+    },
+    {
+      "inventory_id": "I19",
+      "claim": "Adjusted EPS 17.30 / 17.35; footnote \"Adjusted for amortization expenses of Capital Foods and Organic India\"",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "locator": "AGM PDF p.8 table and p.10. Gap 1.71 x 98.9536 cr = about Rs 169.2 cr after tax is DERIVED (rounding band about +/-0.5 cr); TCPL does not print this amount. The annual report text does not contain adjusted EPS (searched)"
+    },
+    {
+      "inventory_id": "I20",
+      "claim": "D&A split and brand amortisation",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "Note 27 PDF p.369 = printed p.455; Note 6 PDF p.351 = printed p.437 (brands 251.74)"
+    },
+    {
+      "inventory_id": "I21",
+      "claim": "Goodwill cost, impairment, net; indefinite-life brands 2,093.33",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "Note 6 printed pp.436-437"
+    },
+    {
+      "inventory_id": "I22",
+      "claim": "Exceptional items components",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "Note 29 printed p.456; cash flow statement printed p.417 lists the same components"
+    },
+    {
+      "inventory_id": "I23",
+      "claim": "Depreciation policy and lives",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "printed pp.421-423 (PDF 335-337)"
+    },
+    {
+      "inventory_id": "I24",
+      "claim": "R&D 47.27 revenue / 0.38 capital; critical estimates",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "Note 31 printed p.456; policy 2.3 printed p.432"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p01",
+      "heading": "Same ₹20 cr, two different profits",
+      "visual": "3 bars one scale: 35, 47.15, cash -7"
+    },
+    {
+      "id": "p02",
+      "heading": "Match the cost to the years it helps",
+      "visual": "cash block 20 vs five blocks of 4, shared vertical scale"
+    },
+    {
+      "id": "p03",
+      "heading": "Does the spend help beyond this year?",
+      "visual": "day-one effect bars: -20 profit / +20 assets"
+    },
+    {
+      "id": "p04",
+      "heading": "Straight line or written-down value",
+      "visual": "paired yearly bars 3.80 vs 9.01..0.82, totals 19"
+    },
+    {
+      "id": "p05",
+      "heading": "A longer life, a smaller yearly charge",
+      "visual": "bars 6.33 / 3.80 / 1.90 / 1.27"
+    },
+    {
+      "id": "p06",
+      "heading": "Brands wear out on paper, goodwill is tested",
+      "visual": "stacked 60 = 20+25+15; yearly charge bars"
+    },
+    {
+      "id": "p07",
+      "heading": "A provision books cost before cash",
+      "visual": "PBT 72 / 67 / 62 on one scale"
+    },
+    {
+      "id": "p08",
+      "heading": "“One-off” is a label, not a fact",
+      "visual": "waterfall 67 - 20 = 47"
+    },
+    {
+      "id": "p09",
+      "heading": "Why companies publish an adjusted profit",
+      "visual": "EPS 3.50 vs 5.00 (+1.50 dashed)"
+    },
+    {
+      "id": "p10",
+      "heading": "Choose how Ramu books the ₹20 cr",
+      "visual": "lab: 5 years of profit and cash bars"
+    },
+    {
+      "id": "p11",
+      "heading": "TCPL: reported ₹15.59, adjusted ₹17.30",
+      "visual": "EPS bridge; D&A split; exceptional waterfall; field grids"
+    },
+    {
+      "id": "p12",
+      "heading": "Three questions for any profit figure",
+      "visual": "text (so-what, hand-off to Part 7)"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "One-off spend S (default 20) at start of year 1, on top of canonical FY26 held flat for five years: PAT 50, free cash flow 13 (CFO 58 - capex 45), 10 cr shares. Not part of Ramu canonical accounts.",
+      "Scrap value 5% of S (Schedule II ceiling), sold for cash at the end of life L; if capitalised, sold at book value (no gain); if expensed, a gain equal to scrap in year L.",
+      "Straight line: (S-R)/L a year. Written-down: fixed rate 1-(R/S)^(1/L) on opening book value.",
+      "Tax expense 25% of book profit; cash tax is set by tax law and fixed across choices (difference is deferred tax); any cash tax saving from deducting the spend is left out.",
+      "Chart shows years 1-5; a life above 5 is cut off and the ledger shows charge after year 5."
+    ],
+    "units": {
+      "money": "Rs crore",
+      "eps": "Rs per share",
+      "life": "years"
+    },
+    "independent_calculation_method": "Python closed-form oracle (labtest.py in scratchpad; e_t via q=(R/S)^(1/L) geometric form, not the page loop) driving the page through Playwright and reading window.labResults; static drawings computed by a separate generator (svgs.py).",
+    "cases": [
+      {
+        "name": "default capitalise SL 5y S=20",
+        "expected_pat": [
+          47.15,
+          47.15,
+          47.15,
+          47.15,
+          47.15
+        ],
+        "expected_cash": [
+          -7,
+          13,
+          13,
+          13,
+          14
+        ],
+        "observed": "same",
+        "pass": true
+      },
+      {
+        "name": "expense it all",
+        "expected_pat": [
+          35,
+          50,
+          50,
+          50,
+          50.75
+        ],
+        "expected_cash": [
+          -7,
+          13,
+          13,
+          13,
+          14
+        ],
+        "observed": "same",
+        "pass": true
+      },
+      {
+        "name": "capitalise WDV",
+        "expected_pat_year1": 43.2392,
+        "expected_pat": [
+          43.2392,
+          46.2864,
+          47.9602,
+          48.8796,
+          49.3846
+        ],
+        "observed": "same",
+        "pass": true
+      },
+      {
+        "name": "no spend (canonical Ramu)",
+        "expected_pat": [
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "expected_cash": [
+          13,
+          13,
+          13,
+          13,
+          13
+        ],
+        "eps1": 5,
+        "observed": "same",
+        "pass": true
+      },
+      {
+        "name": "full grid S 0..40 step 5 x L 2..10 x cap/exp x SL/WDV",
+        "count": 324,
+        "max_abs_error": 1.4e-14,
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "total charged to profit over life == net cash out == S - 5% S for every setting (324 cases)",
+      "cash after spend identical across treatment and method for every setting",
+      "spend 0 reproduces canonical PAT 50 and FCF 13"
+    ],
+    "tolerance": "1e-9 absolute (observed max 1.4e-14)",
+    "axis_and_clipping": "Fixed axis -30..60 (cash minimum 13-40=-27, PAT maximum 51.5); ticks and bars from one scale function; no clipping at any input. Years above 5 are disclosed in the ledger."
+  },
+  "verification": {
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 13,
+        "panels": 12,
+        "notes": 0
+      },
+      "artifact_sha256": "105c53d9a0fa5bf3a5ca668e1d126d67900cb5b1934db2a4c54f01bc6b4da6e8",
+      "artifact_path": "/home/user/eli5-lab/explainers/accounting-choices-eli5.html"
+    },
+    "supplementary_checks": [
+      "check_explainer.py: 0 errors, 0 warnings (13 diagrams, 12 panels)",
+      "check_render.py: 0 errors (all presets, all slider min/max combinations, 390px overflow)",
+      "labtest.py: 324 grid cases + 4 presets + canonical anchors, 0 mismatches, 0 JS errors",
+      "check_card.py: 0 errors, 0 warnings; card rendered and looked at"
+    ],
+    "screenshots": "scratchpad shots/desktop-00..12.png and phone-00..12.png; inspected desktop 01-04, 06, 07, 10, 11 and phone 05, 10: all arrows/labels clear, no clipping beyond the intended swipe-scroll of wide figures at 390px; lab ledger and chart agree",
+    "coverage_review": "done: every inventory row located on the page",
+    "semantic_review": "done by the author only; the 169 cr figure is flagged as derived on the page",
+    "artifact_sha256": "105c53d9a0fa5bf3a5ca668e1d126d67900cb5b1934db2a4c54f01bc6b4da6e8"
+  },
+  "publication": {
+    "status": "not-attempted (by instruction: the owner main session publishes)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
