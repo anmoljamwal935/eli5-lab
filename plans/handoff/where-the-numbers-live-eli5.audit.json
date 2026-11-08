@@ -1,0 +1,2531 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "Tata Consumer Products Limited, Integrated Annual Report 2025-26",
+    "author": "Tata Consumer Products Limited",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "428 PDF sheets, about 514 printed pages; whole PDF read as text for the sections used",
+    "language": "English",
+    "caption_type": "n/a (document)",
+    "capture_mode": "direct download from tataconsumer.com; pdftotext -layout; printed page numbers from footers",
+    "beginning_middle_ending_evidence": "Contents (PDF p.4), statements (pp.344-418), segment note (p.477), AOC-1 (p.486), AGM notice (p.489), back cover (PDF p.428)",
+    "other_sources": [
+      {
+        "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/Consolidated_Results.pdf",
+        "what": "Q4 FY26 consolidated results filing (company-hosted copy; scanned images, read visually from rendered pages 1,4,5,6,7)"
+      },
+      {
+        "url": "https://www.sebi.gov.in/sebi_data/attachdocs/1441284401427.pdf",
+        "what": "SEBI LODR Regulations 2015 gazette"
+      },
+      {
+        "url": "https://www.sebi.gov.in/sebi_data/faqfiles/apr-2025/1745399101865.pdf",
+        "what": "SEBI FAQs for LODR, updated 23 Apr 2025"
+      }
+    ],
+    "limitations": [
+      "BSE and NSE sites were not read: the BSE API call was blocked as bot-check circumvention and not retried, NSE archive downloads failed. The Q4 filing was taken from the company investor page, which hosts the same signed statement.",
+      "LODR text is the 2015 gazette plus the 2025 FAQ; amendments after 2015 were not individually verified, page carries a check-current-text note.",
+      "Concall transcript timing (five working days) not verified against the notified Schedule III text.",
+      "Page numbers are printed numbers; the PDF has 86-page offset after p.90.",
+      "Q4 filing figures were read from images, not extracted text; they match the annual totals (20,290.43, 1,546.80) in the same table."
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Annual report sections: Board/Directors report, MD&A, financial statements, notes, auditor report (+governance, BRSR, chairman letter)",
+      "kind": "definition",
+      "source_locator": "map panel",
+      "check_needed": true,
+      "destination": "panel-02"
+    },
+    {
+      "id": "I2",
+      "item": "Which sections are inside the auditor opinion (statements, notes) and which are not",
+      "kind": "mechanism",
+      "source_locator": "AR auditor report p.334: other information not covered",
+      "check_needed": true,
+      "destination": "panel-02"
+    },
+    {
+      "id": "I3",
+      "item": "Audit vs limited review vs unaudited vs spoken: assurance levels",
+      "kind": "mechanism",
+      "source_locator": "Q4 filing auditor report",
+      "check_needed": true,
+      "destination": "panel-01"
+    },
+    {
+      "id": "I4",
+      "item": "Exchange filings on BSE/NSE under SEBI LODR: Reg 31 (21 days), Reg 33 (45 days quarterly, 60 days annual incl. last quarter), Reg 30 events",
+      "kind": "claim",
+      "source_locator": "LODR gazette 2015; SEBI FAQ 2025",
+      "check_needed": true,
+      "destination": "panel-03"
+    },
+    {
+      "id": "I5",
+      "item": "Investor presentations and concall transcripts as unaudited management voice; transcript timing",
+      "kind": "claim",
+      "source_locator": "Schedule III Para A(15)",
+      "check_needed": true,
+      "destination": "panel-04 (field guide)"
+    },
+    {
+      "id": "I6",
+      "item": "Where to find filings: BSE corporate announcements, NSE corporate filings, company investor page",
+      "kind": "context",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-04"
+    },
+    {
+      "id": "I7",
+      "item": "Standalone vs consolidated definition; eliminations; subsidiaries/associates/JVs; NCI",
+      "kind": "definition",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-05"
+    },
+    {
+      "id": "I8",
+      "item": "Standalone vs consolidated gap can go either way (toy and TCPL)",
+      "kind": "example",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-05, panel-12"
+    },
+    {
+      "id": "I9",
+      "item": "Quarter is a slice of the fiscal year (Apr-Mar); Q4 = audited year minus nine months",
+      "kind": "mechanism",
+      "source_locator": "Q4 filing auditor Other Matters",
+      "check_needed": true,
+      "destination": "panel-06"
+    },
+    {
+      "id": "I10",
+      "item": "YoY vs QoQ definitions",
+      "kind": "definition",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-07"
+    },
+    {
+      "id": "I11",
+      "item": "Seasonality makes QoQ mislead; YoY compares like with like",
+      "kind": "mechanism",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-08, lab"
+    },
+    {
+      "id": "I12",
+      "item": "TTM definition; equals annual at fiscal year end; smooth, slow to turn",
+      "kind": "definition",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-09, lab"
+    },
+    {
+      "id": "I13",
+      "item": "Ramu Chai canonical quarters, revenue and PAT, FY25-FY26",
+      "kind": "number",
+      "source_locator": "plan canonical accounts",
+      "check_needed": true,
+      "destination": "panel-06..10, lab"
+    },
+    {
+      "id": "I14",
+      "item": "TCPL FY26 report page map",
+      "kind": "number",
+      "source_locator": "AR contents + footers",
+      "check_needed": true,
+      "destination": "panel-11"
+    },
+    {
+      "id": "I15",
+      "item": "TCPL standalone vs consolidated revenue, profit, EPS, goodwill, assets, dividends from subsidiaries",
+      "kind": "number",
+      "source_locator": "AR pp.344-345, 414-415, 379",
+      "check_needed": true,
+      "destination": "panel-12"
+    },
+    {
+      "id": "I16",
+      "item": "TCPL Q4 FY26, Q3 FY26, Q4 FY25 consolidated revenue and profit; audited/unaudited headings",
+      "kind": "number",
+      "source_locator": "Q4 results filing p.7 of PDF",
+      "check_needed": true,
+      "destination": "panel-13"
+    },
+    {
+      "id": "I17",
+      "item": "Revenue 20,290 (AGM presentation) vs 20,280 (press) reconciliation",
+      "kind": "number",
+      "source_locator": "AR p.415",
+      "check_needed": true,
+      "destination": "panel-12 (audited figure used) / audit"
+    },
+    {
+      "id": "I18",
+      "item": "Hand-off to Part 3 (P&L); deferred: Part 4 NCI, Part 7 TTM P/E, Part 19 shareholding",
+      "kind": "context",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-14"
+    },
+    {
+      "id": "I19",
+      "item": "Frozen at FY2026; educational not a recommendation",
+      "kind": "context",
+      "source_locator": "",
+      "check_needed": false,
+      "destination": "panel-11 note"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I4",
+      "claim": "Quarterly results within 45 days (other than last quarter): Reg 33(3)(a)",
+      "verdict": "Supported (as notified 2015; later amendments not individually checked)",
+      "as_of": "as-of 2015 gazette",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/1441284401427.pdf",
+      "supporting_passage_and_locator": "\"submit quarterly and year-to-date standalone financial results ... within forty-five days of end of each quarter, other than the last quarter\" (Reg 33(3)(a))",
+      "page_treatment": "page note: check current text"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Annual audited results within 60 days of FY end; last quarter audited or limited-reviewed with them",
+      "verdict": "Supported",
+      "as_of": "2025-04-23",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/faqfiles/apr-2025/1745399101865.pdf",
+      "supporting_passage_and_locator": "FAQ Q21-22: Reg 33(3)(d) sixty days; 33(3)(e) last quarter audited or limited reviewed",
+      "page_treatment": "stated on page"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Shareholding pattern quarterly within 21 days: Reg 31(1)(b)",
+      "verdict": "Supported (2015 text)",
+      "as_of": "2015",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/1441284401427.pdf",
+      "supporting_passage_and_locator": "\"on a quarterly basis, within twenty one days from the end of each quarter\"",
+      "page_treatment": "page note"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Reg 30: material events disclosed",
+      "verdict": "Supported",
+      "as_of": "2015",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/1441284401427.pdf",
+      "supporting_passage_and_locator": "Reg 30(1)-(3), Schedule III",
+      "page_treatment": "stated generally"
+    },
+    {
+      "inventory_id": "I1",
+      "claim": "Annual report must contain audited statements, consolidated statements, cash flow, directors report, MD&A; BRSR for top listed",
+      "verdict": "Supported (2015 text; BRSR threshold since changed, page says \"biggest\")",
+      "as_of": "2015",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/1441284401427.pdf",
+      "supporting_passage_and_locator": "Reg 34(2)(a)-(f)",
+      "page_treatment": "page says \"for the biggest listed companies\""
+    },
+    {
+      "inventory_id": "I2",
+      "claim": "Auditor opinion does not cover other information: Board report, MD&A, BRSR",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf (printed p.334)",
+      "supporting_passage_and_locator": "\"Our opinion on the standalone financial statements does not cover the other information\"",
+      "page_treatment": "used on map"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "Concall recordings within 24h/next trading day; transcripts within five working days",
+      "verdict": "Mostly supported / Time-sensitive: seen in SEBI board papers and exchange notices, notified Schedule III text not read; NSE archive blocked by bot protection",
+      "as_of": "2025",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/meetingfiles/apr-2021/1619067296590_1.pdf (proposal)",
+      "supporting_passage_and_locator": "five working days for transcripts",
+      "page_treatment": "page says \"about five working days\" and attributes as an expectation"
+    },
+    {
+      "inventory_id": "I9",
+      "claim": "Q4 is balancing figure between audited full year and nine-month YTD, which was limited-reviewed",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/Consolidated_Results.pdf (PDF p.4 Other Matters)",
+      "supporting_passage_and_locator": "\"the balancing figure between audited figures in respect of the full financial year and the published year to date figures up to the third quarter ... subject to limited review\"",
+      "page_treatment": "quoted on page"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Filing column headings: Dec quarter Unaudited; years Audited",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/Consolidated_Results.pdf (PDF p.7)",
+      "supporting_passage_and_locator": "read from rendered image",
+      "page_treatment": "page"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "TCPL printed pages: Board report 176, MD&A 210, CG 230, BRSR 264, standalone auditor 333, BS 344, P&L 345, SOCIE 346, CF 347, notes 349-402, consolidated auditor 404, BS 414, P&L 415, SOCIE 416, CF 417, notes 419-485, AOC-1 486, notice 489; ten-year highlights 175; chairman 38, CEO 42, highlights 54",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "printed page = PDF page + 86 from PDF p.90 onward (footers read for 407 pages); contents page PDF p.4; front section is two-page spreads",
+      "page_treatment": "page"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Standalone: revenue 14,700.05; other income 549.05; PAT 1,635.15; basic EPS 16.52; goodwill 3,859.95; total assets 22,629.90; non-current investments 9,710.29; D&A 229.14; dividend from subsidiaries and associates 463.73; Capital Foods investment 3,881.25",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf printed pp.344,345,379,365-366",
+      "supporting_passage_and_locator": "read from extracted text of the audited statements",
+      "page_treatment": "page"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Consolidated: revenue 20,290.43; other income 164.75; profit for the year 1,546.80; EPS 15.59; goodwill 11,883.90; total assets 34,452.96; D&A 626.68; share of associates/JV loss 90.70; non-current investments 285.70; FY25 revenue 17,618.30",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf printed pp.414,415",
+      "supporting_passage_and_locator": "read from extracted text",
+      "page_treatment": "page"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Revenue: AGM presentation 20,290 = audited consolidated 20,290.43 (p.415). The 20,280 figure in press reports (plan note) is not in the audited statements, the filing or the AR; not repeated on page",
+      "verdict": "Supported (audited number used); press figure unverified",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "AR text search: only 20,290 appears",
+      "page_treatment": "audit only"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Consolidated Q4 FY26 / Q3 FY26 / Q4 FY25 revenue from operations 5,433.62 / 5,112.00 / 4,608.22; group net profit 424.02 / 384.52 / 348.72; derived YoY +17.9% / +21.6%, QoQ +6.3% / +10.3%",
+      "verdict": "Supported (read visually from scanned filing page 7)",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/Consolidated_Results.pdf",
+      "supporting_passage_and_locator": "results table",
+      "page_treatment": "page"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Results approved 8 May 2026 = day 38 after 31 March",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf p.345 signature date; https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/Consolidated_Results.pdf auditor report date",
+      "supporting_passage_and_locator": "Mumbai, May 08, 2026",
+      "page_treatment": "page"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "Ramu quarters FY26 115/120/140/125 revenue, 11/12/15/12 PAT; FY25 105/108/125/112, 10/10.5/13/10.5",
+      "verdict": "Supported against plan (sums 500/450, 50/44)",
+      "as_of": "plan",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "supporting_passage_and_locator": "canonical accounts",
+      "page_treatment": "example tag"
+    }
+  ],
+  "panels": [
+    {
+      "id": "panel-01",
+      "heading": "Not every number is checked equally"
+    },
+    {
+      "id": "panel-02",
+      "heading": "Tap a section of the annual report (lab 1)"
+    },
+    {
+      "id": "panel-03",
+      "heading": "What gets filed, and when"
+    },
+    {
+      "id": "panel-04",
+      "heading": "Six documents, six jobs (field guide)"
+    },
+    {
+      "id": "panel-05",
+      "heading": "Two sets of books: parent and group"
+    },
+    {
+      "id": "panel-06",
+      "heading": "A quarter is a slice of the year"
+    },
+    {
+      "id": "panel-07",
+      "heading": "Compare with last year, or last quarter"
+    },
+    {
+      "id": "panel-08",
+      "heading": "Why QoQ misleads a seasonal business"
+    },
+    {
+      "id": "panel-09",
+      "heading": "TTM: the latest four quarters, added"
+    },
+    {
+      "id": "panel-10",
+      "heading": "Same quarter, three different stories (lab 2)"
+    },
+    {
+      "id": "panel-11",
+      "heading": "TCPL's FY26 report, page by page"
+    },
+    {
+      "id": "panel-12",
+      "heading": "TCPL: the parent against the whole group"
+    },
+    {
+      "id": "panel-13",
+      "heading": "TCPL's quarters, from the results filing"
+    },
+    {
+      "id": "panel-14",
+      "heading": "Three questions before you trust a number (so what, hand-off to Part 3)"
+    },
+    {
+      "note": "scales: toy 4px=Rs1; Ramu slice 1.4px=Rs1; YoY/QoQ 2px=Rs1; season 1.2px=Rs1 and 5px=1%; TTM top 1px=Rs1 bottom 1px=Rs4; pages 1.4px=1 page; TCPL gap 450px=Rs34,453cr; TCPL quarters 0.05px=Rs1cr"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Canonical Ramu Chai quarters; sliders replace only FY26 Q3 and Q4 of the chosen measure",
+      "YoY needs the same quarter a year earlier (FY26 only); QoQ starts Q2 FY25; TTM starts Q4 FY25"
+    ],
+    "units": {
+      "revenue": "Rs crore",
+      "profit": "Rs crore",
+      "yoy_qoq": "percent"
+    },
+    "independent_calculation_method": "scratchpad lab_test.py: exact Fraction arithmetic in Python, compared with window.labResults and DOM bar geometry; 80 cases: defaults, 4 presets, 4 slider extremes and one arbitrary point for 2 measures x 4 views; map tabs and band clicks",
+    "cases": [
+      {
+        "case": "default",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          140,
+          125
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          140.0,
+          125.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          140,
+          125
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          140.0,
+          125.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          160.0,
+          140.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          160,
+          140
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          160.0,
+          140.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          140.0,
+          112.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          140,
+          112
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          140.0,
+          112.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          125.0,
+          112.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          125,
+          112
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          125.0,
+          112.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=90",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          100.0,
+          90.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          100,
+          90
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          100.0,
+          90.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=180",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          100.0,
+          180.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          100,
+          180
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          100.0,
+          180.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=90",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          180.0,
+          90.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          180,
+          90
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          180.0,
+          90.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=180",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          180.0,
+          180.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          180,
+          180
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          180.0,
+          180.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "rev",
+        "mode": "q",
+        "inputs": [
+          133.0,
+          101.0
+        ],
+        "observed": [
+          105,
+          108,
+          125,
+          112,
+          115,
+          120,
+          133,
+          101
+        ],
+        "expected": [
+          105.0,
+          108.0,
+          125.0,
+          112.0,
+          115.0,
+          120.0,
+          133.0,
+          101.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "default",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          12.0,
+          11.607143
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          12.0,
+          11.607143
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          12.0,
+          11.607143
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          12.0,
+          11.607143
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          160.0,
+          140.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          28.0,
+          25
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          28.0,
+          25.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          140.0,
+          112.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          12.0,
+          0
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          12.0,
+          0.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          125.0,
+          112.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          0,
+          0
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          0.0,
+          0.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=90",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          100.0,
+          90.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          -20.0,
+          -19.642857
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          -20.0,
+          -19.642857
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=180",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          100.0,
+          180.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          -20.0,
+          60.714286
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          -20.0,
+          60.714286
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=90",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          180.0,
+          90.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          44.0,
+          -19.642857
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          44.0,
+          -19.642857
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=180",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          180.0,
+          180.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          44.0,
+          60.714286
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          44.0,
+          60.714286
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "rev",
+        "mode": "yoy",
+        "inputs": [
+          133.0,
+          101.0
+        ],
+        "observed": [
+          9.52381,
+          11.111111,
+          6.4,
+          -9.821429
+        ],
+        "expected": [
+          9.52381,
+          11.111111,
+          6.4,
+          -9.821429
+        ],
+        "pass_": true
+      },
+      {
+        "case": "default",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          16.666667,
+          -10.714286
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          16.666667,
+          -10.714286
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          16.666667,
+          -10.714286
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          16.666667,
+          -10.714286
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          160.0,
+          140.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          33.333333,
+          -12.5
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          33.333333,
+          -12.5
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          140.0,
+          112.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          16.666667,
+          -20.0
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          16.666667,
+          -20.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          125.0,
+          112.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          4.166667,
+          -10.4
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          4.166667,
+          -10.4
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=90",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          100.0,
+          90.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          -16.666667,
+          -10.0
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          -16.666667,
+          -10.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=180",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          100.0,
+          180.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          -16.666667,
+          80
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          -16.666667,
+          80.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=90",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          180.0,
+          90.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          50,
+          -50
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          50.0,
+          -50.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=180",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          180.0,
+          180.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          50,
+          0
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          50.0,
+          0.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "rev",
+        "mode": "qoq",
+        "inputs": [
+          133.0,
+          101.0
+        ],
+        "observed": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          10.833333,
+          -24.06015
+        ],
+        "expected": [
+          2.857143,
+          15.740741,
+          -10.4,
+          2.678571,
+          4.347826,
+          10.833333,
+          -24.06015
+        ],
+        "pass_": true
+      },
+      {
+        "case": "default",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          487,
+          500
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          487.0,
+          500.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          140.0,
+          125.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          487,
+          500
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          487.0,
+          500.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          160.0,
+          140.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          507,
+          535
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          507.0,
+          535.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          140.0,
+          112.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          487,
+          487
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          487.0,
+          487.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          125.0,
+          112.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          472,
+          472
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          472.0,
+          472.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=90",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          100.0,
+          90.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          447,
+          425
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          447.0,
+          425.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=100,s4=180",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          100.0,
+          180.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          447,
+          515
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          447.0,
+          515.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=90",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          180.0,
+          90.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          527,
+          505
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          527.0,
+          505.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=180,s4=180",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          180.0,
+          180.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          527,
+          595
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          527.0,
+          595.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "rev",
+        "mode": "ttm",
+        "inputs": [
+          133.0,
+          101.0
+        ],
+        "observed": [
+          450,
+          460,
+          472,
+          480,
+          469
+        ],
+        "expected": [
+          450.0,
+          460.0,
+          472.0,
+          480.0,
+          469.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "default",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          15,
+          12
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          15.0,
+          12.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          15,
+          12
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          15.0,
+          12.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          18.0,
+          14.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          18,
+          14
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          18.0,
+          14.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          15.0,
+          10.5
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          15,
+          10.5
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          15.0,
+          10.5
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          13.0,
+          10.5
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          13,
+          10.5
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          13.0,
+          10.5
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=6",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          8.0,
+          6.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          8,
+          6
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          8.0,
+          6.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=24",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          8.0,
+          24.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          8,
+          24
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          8.0,
+          24.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=6",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          24.0,
+          6.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          24,
+          6
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          24.0,
+          6.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=24",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          24.0,
+          24.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          24,
+          24
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          24.0,
+          24.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "pat",
+        "mode": "q",
+        "inputs": [
+          15.5,
+          9.0
+        ],
+        "observed": [
+          10,
+          10.5,
+          13,
+          10.5,
+          11,
+          12,
+          15.5,
+          9
+        ],
+        "expected": [
+          10.0,
+          10.5,
+          13.0,
+          10.5,
+          11.0,
+          12.0,
+          15.5,
+          9.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "default",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          15.384615,
+          14.285714
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          15.384615,
+          14.285714
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          15.384615,
+          14.285714
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          15.384615,
+          14.285714
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          18.0,
+          14.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          38.461538,
+          33.333333
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          38.461538,
+          33.333333
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          15.0,
+          10.5
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          15.384615,
+          0
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          15.384615,
+          0.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          13.0,
+          10.5
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          0,
+          0
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          0.0,
+          0.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=6",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          8.0,
+          6.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          -38.461538,
+          -42.857143
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          -38.461538,
+          -42.857143
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=24",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          8.0,
+          24.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          -38.461538,
+          128.571429
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          -38.461538,
+          128.571429
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=6",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          24.0,
+          6.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          84.615385,
+          -42.857143
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          84.615385,
+          -42.857143
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=24",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          24.0,
+          24.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          84.615385,
+          128.571429
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          84.615385,
+          128.571429
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "pat",
+        "mode": "yoy",
+        "inputs": [
+          15.5,
+          9.0
+        ],
+        "observed": [
+          10.0,
+          14.285714,
+          19.230769,
+          -14.285714
+        ],
+        "expected": [
+          10.0,
+          14.285714,
+          19.230769,
+          -14.285714
+        ],
+        "pass_": true
+      },
+      {
+        "case": "default",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          25,
+          -20.0
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          25.0,
+          -20.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          25,
+          -20.0
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          25.0,
+          -20.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          18.0,
+          14.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          50,
+          -22.222222
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          50.0,
+          -22.222222
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          15.0,
+          10.5
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          25,
+          -30.0
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          25.0,
+          -30.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          13.0,
+          10.5
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          8.333333,
+          -19.230769
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          8.333333,
+          -19.230769
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=6",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          8.0,
+          6.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          -33.333333,
+          -25
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          -33.333333,
+          -25.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=24",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          8.0,
+          24.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          -33.333333,
+          200
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          -33.333333,
+          200.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=6",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          24.0,
+          6.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          100,
+          -75
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          100.0,
+          -75.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=24",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          24.0,
+          24.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          100,
+          0
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          100.0,
+          0.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "pat",
+        "mode": "qoq",
+        "inputs": [
+          15.5,
+          9.0
+        ],
+        "observed": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          29.166667,
+          -41.935484
+        ],
+        "expected": [
+          5.0,
+          23.809524,
+          -19.230769,
+          4.761905,
+          9.090909,
+          29.166667,
+          -41.935484
+        ],
+        "pass_": true
+      },
+      {
+        "case": "default",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          48.5,
+          50
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          48.5,
+          50.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Ramu’s real year",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          15.0,
+          12.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          48.5,
+          50
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          48.5,
+          50.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Festive spike, Q4 holds",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          18.0,
+          14.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          51.5,
+          55
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          51.5,
+          55.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Q4 slump",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          15.0,
+          10.5
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          48.5,
+          48.5
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          48.5,
+          48.5
+        ],
+        "pass_": true
+      },
+      {
+        "case": "preset Growth stalls",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          13.0,
+          10.5
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          46.5,
+          46.5
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          46.5,
+          46.5
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=6",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          8.0,
+          6.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          41.5,
+          37
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          41.5,
+          37.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=8,s4=24",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          8.0,
+          24.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          41.5,
+          55
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          41.5,
+          55.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=6",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          24.0,
+          6.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          57.5,
+          53
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          57.5,
+          53.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "extreme s3=24,s4=24",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          24.0,
+          24.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          57.5,
+          71
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          57.5,
+          71.0
+        ],
+        "pass_": true
+      },
+      {
+        "case": "arbitrary",
+        "metric": "pat",
+        "mode": "ttm",
+        "inputs": [
+          15.5,
+          9.0
+        ],
+        "observed": [
+          44,
+          45,
+          46.5,
+          49,
+          47.5
+        ],
+        "expected": [
+          44.0,
+          45.0,
+          46.5,
+          49.0,
+          47.5
+        ],
+        "pass_": true
+      }
+    ],
+    "invariants": [
+      "TTM at Q4 FY26 on defaults = 500 = FY26 revenue; TTM at Q4 FY25 = 450",
+      "PAT TTM 50 and 44",
+      "defaults are the canonical numbers for each measure",
+      "bars start at zero; tick scale matches bar ends (check_render)"
+    ],
+    "tolerance": "1e-9 on values, 1e-6 px on geometry",
+    "axis_and_clipping": "axis rounds up to cover every value; no clipping; zero left edge unless a value is negative"
+  },
+  "verification": {
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 14,
+        "notes": 2
+      },
+      "artifact_sha256": "67244dfa6951f42439c0c7f95f654a8e16ddf481fe0fe7a5dcf79bd7db1321d0",
+      "artifact_path": "/home/user/eli5-lab/explainers/where-the-numbers-live-eli5.html"
+    },
+    "check_render": "0 errors (desktop, 390px, every preset and slider extreme)",
+    "supplementary_checks": [
+      "lab_test.py 80 cases 0 failures 0 JS errors",
+      "all screenshots opened and inspected, desktop and 390px; sticky masthead appears over element screenshots (capture artefact)",
+      "one box-style diagram (the report map, allowed once); no sentences in SVG; font 16+"
+    ],
+    "screenshots": "scratchpad shots (not committed)",
+    "card": "plans/handoff/where-the-numbers-live-eli5.md; check_card.py 0 errors 0 warnings; rendered via dry run at 1280 and 390px",
+    "coverage_review": "every inventory row mapped to a panel; I17 only in audit and reply by design",
+    "semantic_review": "done by the author; no independent reviewer",
+    "artifact_sha256": "67244dfa6951f42439c0c7f95f654a8e16ddf481fe0fe7a5dcf79bd7db1321d0",
+    "artifact_path": "explainers/where-the-numbers-live-eli5.html"
+  },
+  "publication": {
+    "status": "not-attempted (owner publishes after Part 0)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
