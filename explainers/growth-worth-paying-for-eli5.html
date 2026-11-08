@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Growth that’s worth paying for — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       SERIES COLOUR KEY (Fundamental analysis, from scratch). Same colour = same meaning in every part:
+       teal #76d5c1 = money coming in (sales) · coral #ff8059 = money going out (capex, costs)
+       gold #f5c76a = what belongs to shareholders (profit, EPS) · rose #ec6a94 = what is owed (debt, funding gap)
+       lavender #c3b8ff = the market's view (price, multiples; not used in this part). Neutral grey #9a968f = bought growth, share count. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+    /* Part 9 additions: pickers, steppers, readouts */
+    .lab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+    .picks button[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:1px}
+    .picks button:disabled,.stepper button:disabled{opacity:.35;cursor:default}
+    .stepper{display:flex;align-items:center;gap:8px;margin-bottom:14px;font:13px/1.2 var(--font-mono);color:var(--muted)}
+    .stepper b{min-width:54px;text-align:center;color:var(--fg);font-weight:600;font-size:16px}
+    .stepper .lbl{min-width:46px}
+    .stepper button{height:34px;width:34px;padding:0}
+    .readout{margin:12px 0 0;font-size:15px;line-height:1.6;color:var(--fg)}
+    .lab .control{margin-bottom:14px}
+    .lab .control input{width:100%}
+    .field-grid.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+    .eli5-study-container .lab-chart svg{display:block;width:100%;height:auto}
+  </style>
+</head>
+<body data-series-id="growth-worth-paying-for-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+    <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 30 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Growth that’s worth paying for</h1>
+      <p class="lede">A company growing 20% a year sounds better than one growing 10%. But growth can be flattered by a bad year, bought from someone else, spread over more shares, or paid for with cash the business does not have. Learn to read growth, and to ask what it cost.</p>
+      <p class="source-note">Built from Ramu Chai’s canonical accounts (fictional) and Tata Consumer Products’ Integrated Annual Report 2025-26, facts checked against the audited statements and AGM presentation · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Ramu Chai Ltd is our fictional tea company. Already covered: <a href="where-the-numbers-live-eli5.html">Part 2</a> showed YoY, QoQ and TTM; <a href="the-profit-and-loss-eli5.html">Part 3</a> the profit and loss; <a href="the-balance-sheet-eli5.html">Part 4</a> the balance sheet; <a href="cash-flow-and-the-three-statements-eli5.html">Part 5</a> cash flow. All amounts are ₹ crore. Tags: <span class="tag">example</span> is a made-up but consistent number, <span class="tag">public</span> is a figure published by TCPL.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders</span>
+        <span><i style="background:#ec6a94"></i>what is owed, funding gap</span>
+        <span><i style="background:#9a968f"></i>bought growth, share count</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The headline</p>
+      <h2>Growth is a ratio of two years</h2>
+      <p>Year-on-year (YoY) growth is this year divided by last year, minus one. Ramu’s revenue went from ₹450 cr to ₹500 cr in FY26: 500 ÷ 450 − 1 = 11.1% <span class="tag">example</span>. <a href="where-the-numbers-live-eli5.html">Part 2</a> used YoY for quarters. Here are five years of Ramu, on one scale.</p>
+      <figure><svg viewBox="0 0 800 346" role="img" aria-label="Five columns of Ramu Chai revenue, FY22 330 to FY26 500 in crore, with the year-on-year growth between each pair."><rect x="65.0" y="138.0" width="90.0" height="132.0" fill="#76d5c1" data-v="330"/><text x="110" y="128" fill="#f1eee8" font-size="16" text-anchor="middle">330</text><text x="110" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY22</text><rect x="205.0" y="124.0" width="90.0" height="146.0" fill="#76d5c1" data-v="365"/><text x="250" y="114" fill="#f1eee8" font-size="16" text-anchor="middle">365</text><text x="250" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY23</text><rect x="345.0" y="108.0" width="90.0" height="162.0" fill="#76d5c1" data-v="405"/><text x="390" y="98" fill="#f1eee8" font-size="16" text-anchor="middle">405</text><text x="390" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY24</text><rect x="485.0" y="90.0" width="90.0" height="180.0" fill="#76d5c1" data-v="450"/><text x="530" y="80" fill="#f1eee8" font-size="16" text-anchor="middle">450</text><text x="530" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY25</text><rect x="625.0" y="70.0" width="90.0" height="200.0" fill="#76d5c1" data-v="500"/><text x="670" y="60" fill="#f1eee8" font-size="16" text-anchor="middle">500</text><text x="670" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY26</text><text x="20" y="40" fill="#a5a29c" font-size="16" text-anchor="start">YoY</text><text x="180" y="40" fill="#f1eee8" font-size="16" text-anchor="middle">+10.6%</text><text x="320" y="40" fill="#f1eee8" font-size="16" text-anchor="middle">+11.0%</text><text x="460" y="40" fill="#f1eee8" font-size="16" text-anchor="middle">+11.1%</text><text x="600" y="40" fill="#f1eee8" font-size="16" text-anchor="middle">+11.1%</text><text x="20" y="330" fill="#a5a29c" font-size="16" text-anchor="start">1 px of height = ₹2.5 cr; revenue in ₹ cr</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">One steady rate</p>
+      <h2>CAGR: the steady rate between two years</h2>
+      <p>The compound annual growth rate (CAGR) is the single steady yearly rate that would turn the starting figure into the ending one. Revenue went from ₹330 cr (FY22) to ₹500 cr (FY26) <span class="tag">example</span>. Count the years between the bars: four, not five.</p>
+      <span class="eq">CAGR = (end ÷ start)^(1 ÷ years) − 1 = (500 ÷ 330)^(1/4) − 1 = 10.95%</span>
+      <figure><svg viewBox="0 0 800 386" role="img" aria-label="The same five revenue columns with a dashed line of dots showing one steady growth rate of 10.95 percent that lands on each bar top."><rect x="65.0" y="138.0" width="90.0" height="132.0" fill="#76d5c1" data-v="330"/><text x="110" y="128" fill="#f1eee8" font-size="16" text-anchor="middle">330</text><text x="110" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY22</text><rect x="205.0" y="124.0" width="90.0" height="146.0" fill="#76d5c1" data-v="365"/><text x="250" y="114" fill="#f1eee8" font-size="16" text-anchor="middle">365</text><text x="250" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY23</text><rect x="345.0" y="108.0" width="90.0" height="162.0" fill="#76d5c1" data-v="405"/><text x="390" y="98" fill="#f1eee8" font-size="16" text-anchor="middle">405</text><text x="390" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY24</text><rect x="485.0" y="90.0" width="90.0" height="180.0" fill="#76d5c1" data-v="450"/><text x="530" y="80" fill="#f1eee8" font-size="16" text-anchor="middle">450</text><text x="530" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY25</text><rect x="625.0" y="70.0" width="90.0" height="200.0" fill="#76d5c1" data-v="500"/><text x="670" y="60" fill="#f1eee8" font-size="16" text-anchor="middle">500</text><text x="670" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">FY26</text><polyline points="110,138.0 250,123.6 390,107.5 530,89.7 670,70.0" fill="none" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><circle cx="110" cy="138.0" r="5" fill="none" stroke="#f1eee8" stroke-width="2"/><circle cx="250" cy="123.6" r="5" fill="none" stroke="#f1eee8" stroke-width="2"/><circle cx="390" cy="107.5" r="5" fill="none" stroke="#f1eee8" stroke-width="2"/><circle cx="530" cy="89.7" r="5" fill="none" stroke="#f1eee8" stroke-width="2"/><circle cx="670" cy="70.0" r="5" fill="none" stroke="#f1eee8" stroke-width="2"/><line x1="110" y1="312" x2="670" y2="312" stroke="#a5a29c" stroke-width="2"/><line x1="110" y1="306" x2="110" y2="318" stroke="#a5a29c" stroke-width="2"/><line x1="670" y1="306" x2="670" y2="318" stroke="#a5a29c" stroke-width="2"/><text x="400" y="340" fill="#a5a29c" font-size="16" text-anchor="middle">4 years of growth, 5 bars</text><line x1="20" y1="366" x2="56" y2="366" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><text x="66" y="372" fill="#a5a29c" font-size="16" text-anchor="start">steady 10.95% a year</text></svg></figure>
+    </section>
+
+    <section class="panel" id="labA">
+      <p class="kicker">Try it · CAGR calculator</p>
+      <h2>Pick two years, read the growth</h2>
+      <p>Choose revenue, profit or EPS, then step the start and end year. Ramu’s history is steady, so CAGR and the average of yearly rates nearly match. The jumpy what-if keeps FY22 and FY26 the same but changes the years between; it is a one-off <span class="tag">example</span>, revenue only, and not Ramu’s accounts.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="picks" id="metricPicks" role="group" aria-label="Choose a measure">
+            <button type="button" class="secondary" data-m="rev" aria-pressed="true">Revenue</button>
+            <button type="button" class="secondary" data-m="pat" aria-pressed="false">Profit (PAT)</button>
+            <button type="button" class="secondary" data-m="eps" aria-pressed="false">EPS</button>
+          </div>
+          <div class="picks" id="modePicks" role="group" aria-label="Choose a history">
+            <button type="button" class="secondary" data-h="actual" aria-pressed="true">Ramu’s actual history</button>
+            <button type="button" class="secondary" data-h="jumpy" aria-pressed="false">Jumpy what-if</button>
+          </div>
+          <div class="stepper"><span class="lbl">Start</span><button type="button" class="secondary" id="sMinus" aria-label="Earlier start year">−</button><b id="sOut">FY22</b><button type="button" class="secondary" id="sPlus" aria-label="Later start year">+</button></div>
+          <div class="stepper"><span class="lbl">End</span><button type="button" class="secondary" id="eMinus" aria-label="Earlier end year">−</button><b id="eOut">FY26</b><button type="button" class="secondary" id="ePlus" aria-label="Later end year">+</button></div>
+          <div class="ledger" id="cagrLedger"></div>
+        </div>
+        <div class="lab-chart"><svg id="cagrChart" viewBox="0 0 520 300" role="img" aria-label="Columns of the chosen measure for the chosen years with the year-on-year growth between them."></svg></div>
+      </div></div>
+      <p class="readout" id="cagrNote"></p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The trap</p>
+      <h2>Why averaging growth overstates it</h2>
+      <p>Say Ramu’s ₹500 cr rises 50%, then falls 50% <span class="tag">example</span>. The average of the two rates is 0%, yet revenue ends at ₹375 cr, 25% lower. The fall applies to a bigger number. An average of yearly rates is never below the CAGR, and the more the rates jump, the larger the overstatement.</p>
+      <figure><svg viewBox="0 0 800 404" role="img" aria-label="Three columns: revenue 500 rises 50 percent to 750 then falls 50 percent to 375, below the dashed starting level."><line x1="95" y1="140" x2="705" y2="140" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><text x="712" y="145" fill="#a5a29c" font-size="16" text-anchor="start">start</text><rect x="95.0" y="140.0" width="110.0" height="150.0" fill="#76d5c1" data-v="500"/><text x="150" y="130" fill="#f1eee8" font-size="16" text-anchor="middle">500</text><text x="150" y="316" fill="#a5a29c" font-size="16" text-anchor="middle">Year 0</text><rect x="345.0" y="65.0" width="110.0" height="225.0" fill="#76d5c1" data-v="750"/><text x="400" y="55" fill="#f1eee8" font-size="16" text-anchor="middle">750</text><text x="400" y="316" fill="#a5a29c" font-size="16" text-anchor="middle">Year 1</text><rect x="595.0" y="177.5" width="110.0" height="112.5" fill="#76d5c1" data-v="375"/><text x="650" y="167.5" fill="#f1eee8" font-size="16" text-anchor="middle">375</text><text x="650" y="316" fill="#a5a29c" font-size="16" text-anchor="middle">Year 2</text><text x="275" y="112" fill="#f1eee8" font-size="16" text-anchor="middle">+50%</text><text x="525" y="112" fill="#f1eee8" font-size="16" text-anchor="middle">−50%</text><text x="20" y="356" fill="#f5c76a" font-size="16" text-anchor="start">Average of +50% and −50%: 0%</text><text x="20" y="384" fill="#ff8059" font-size="16" text-anchor="start">Actual change, 500 to 375: −25%</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Compounding</p>
+      <h2>Growth on growth, and the rule of 72</h2>
+      <p>Compounding means each year’s growth is earned on last year’s growth too. A shortcut: years to double ≈ 72 ÷ the growth rate in %. At 12% that is 6 years; exactly, 6.1. It works best between about 6% and 12% and drifts at the extremes.</p>
+      <figure><svg viewBox="0 0 800 324" role="img" aria-label="Four bars showing exact years to double at 6, 12, 18 and 24 percent growth, each with a tick for the rule of 72 estimate close by."><text x="20" y="60" fill="#a5a29c" font-size="16" text-anchor="start">6% a year</text><rect x="170.0" y="40.0" width="333.1" height="28.0" fill="#76d5c1" data-v="11.90"/><line x1="506" y1="34" x2="506" y2="74" stroke="#f1eee8" stroke-width="3"/><text x="560" y="60" fill="#f1eee8" font-size="16" text-anchor="start">exact 11.9 · rule 12.0</text><text x="20" y="122" fill="#a5a29c" font-size="16" text-anchor="start">12% a year</text><rect x="170.0" y="102.0" width="171.3" height="28.0" fill="#76d5c1" data-v="6.12"/><line x1="338" y1="96" x2="338" y2="136" stroke="#f1eee8" stroke-width="3"/><text x="560" y="122" fill="#f1eee8" font-size="16" text-anchor="start">exact 6.1 · rule 6.0</text><text x="20" y="184" fill="#a5a29c" font-size="16" text-anchor="start">18% a year</text><rect x="170.0" y="164.0" width="117.3" height="28.0" fill="#76d5c1" data-v="4.19"/><line x1="282" y1="158" x2="282" y2="198" stroke="#f1eee8" stroke-width="3"/><text x="560" y="184" fill="#f1eee8" font-size="16" text-anchor="start">exact 4.2 · rule 4.0</text><text x="20" y="246" fill="#a5a29c" font-size="16" text-anchor="start">24% a year</text><rect x="170.0" y="226.0" width="90.2" height="28.0" fill="#76d5c1" data-v="3.22"/><line x1="254" y1="220" x2="254" y2="260" stroke="#f1eee8" stroke-width="3"/><text x="560" y="246" fill="#f1eee8" font-size="16" text-anchor="start">exact 3.2 · rule 3.0</text><rect x="20.0" y="290.0" width="14.0" height="14.0" fill="#76d5c1"/><text x="42" y="303" fill="#a5a29c" font-size="16" text-anchor="start">exact doubling time</text><line x1="250" y1="288" x2="250" y2="306" stroke="#f1eee8" stroke-width="3"/><text x="262" y="303" fill="#a5a29c" font-size="16" text-anchor="start">rule of 72</text><text x="560" y="303" fill="#a5a29c" font-size="16" text-anchor="start">28 px = 1 year</text></svg></figure>
+    </section>
+
+    <section class="panel" id="labB">
+      <p class="kicker">Try it · compounding curve</p>
+      <h2>Drag the rate, drag the years</h2>
+      <p>Start from Ramu’s FY26 revenue of ₹500 cr <span class="tag">example</span>. The teal curve compounds at a steady rate. The dashed grey line adds the same rupees each year instead. A white marker shows the rule of 72, a ring the exact doubling. This is an illustration at a constant rate, not a forecast.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="gr">Growth a year <output id="gr-o"></output></label><input id="gr" type="range" min="1" max="30" step="1" value="11"></div>
+          <div class="control"><label for="yrs">Years <output id="yrs-o"></output></label><input id="yrs" type="range" min="1" max="20" step="1" value="7"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="11,7">Ramu’s trend</button>
+            <button type="button" class="secondary" data-p="5,14">Slow grower</button>
+            <button type="button" class="secondary" data-p="24,6">Fast grower</button>
+            <button type="button" class="secondary" data-p="30,5">Where the rule slips</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 350" role="img" aria-label="A curve of revenue compounding from 500 crore at the chosen rate, a dashed straight line of simple growth, and markers where it doubles."></svg></div>
+      </div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Base effects</p>
+      <h2>A low base flatters growth</h2>
+      <p>Growth is measured against last year. After a bad year the base is small, so a rebound prints a big number. Ramu falls from ₹500 cr to ₹375 cr (−25%), then returns to ₹500 cr: +33.3%, yet revenue has gone nowhere <span class="tag">example</span>. A fall of 10% needs +11% to recover, 25% needs +33%, 50% needs +100%.</p>
+      <figure><svg viewBox="0 0 800 316" role="img" aria-label="Columns of revenue 500, then 375 after a bad year, then 500 again: a 33.3 percent rebound that only restores the starting level."><line x1="95" y1="120" x2="705" y2="120" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><rect x="95.0" y="120.0" width="110.0" height="150.0" fill="#76d5c1" data-v="500"/><text x="150" y="110" fill="#f1eee8" font-size="16" text-anchor="middle">500</text><text x="150" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">Year 0</text><rect x="345.0" y="157.5" width="110.0" height="112.5" fill="#76d5c1" data-v="375"/><text x="400" y="147.5" fill="#f1eee8" font-size="16" text-anchor="middle">375</text><text x="400" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">Year 1</text><rect x="595.0" y="120.0" width="110.0" height="150.0" fill="#76d5c1" data-v="500"/><text x="650" y="110" fill="#f1eee8" font-size="16" text-anchor="middle">500</text><text x="650" y="296" fill="#a5a29c" font-size="16" text-anchor="middle">Year 2</text><text x="275" y="100" fill="#ff8059" font-size="16" text-anchor="middle">−25%</text><text x="525" y="100" fill="#76d5c1" font-size="16" text-anchor="middle">+33.3%</text><text x="650" y="76" fill="#a5a29c" font-size="16" text-anchor="middle">back where it started</text></svg></figure>
+    </section>
+
+    <section class="panel" id="labC">
+      <p class="kicker">Try it · base effect</p>
+      <h2>A big number on a small base</h2>
+      <p>Pick a path for the next two years, starting from ₹500 cr. These are one-off what-ifs <span class="tag">example</span>, not Ramu’s FY27 estimate. Compare the latest YoY with where revenue stands against the start.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="picks" id="basePicks" role="group" aria-label="Choose a path">
+            <button type="button" class="secondary" data-b="steady" aria-pressed="false">Steady +10%</button>
+            <button type="button" class="secondary" data-b="rebound" aria-pressed="true">Bad year, full rebound</button>
+            <button type="button" class="secondary" data-b="partial" aria-pressed="false">Bad year, partial rebound</button>
+            <button type="button" class="secondary" data-b="deep" aria-pressed="false">Deep dip, big bounce</button>
+          </div>
+          <div class="ledger" id="baseLedger"></div>
+        </div>
+        <div class="lab-chart"><svg id="baseChart" viewBox="0 0 520 300" role="img" aria-label="Three columns of revenue for year zero, one and two with the year-on-year change between them."></svg></div>
+      </div></div>
+      <p class="readout" id="baseNote"></p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Organic or bought</p>
+      <h2>Where the growth came from</h2>
+      <p>Organic growth comes from selling more of what you already own. Acquired growth comes from buying another business and adding its sales. In one what-if, Ramu’s revenue goes from ₹500 cr to ₹600 cr (+20%), but ₹75 cr of the ₹100 cr is bought, so organic growth is only +5% <span class="tag">example</span>. The purchase cost cash (<a href="cash-flow-and-the-three-statements-eli5.html">Part 5</a>’s investing section) and adds goodwill (<a href="the-balance-sheet-eli5.html">Part 4</a>). It also counts only from the day it closes, so the following year gets extra months of it.</p>
+      <figure><svg viewBox="0 0 800 288" role="img" aria-label="Two bars on one scale: revenue 500, then 600 where 25 of the extra 100 is organic and 75 comes from a business bought."><text x="40" y="40" fill="#a5a29c" font-size="16" text-anchor="start">Year 0</text><rect x="40.0" y="52.0" width="600.0" height="36.0" fill="#76d5c1" data-v="500"/><text x="654" y="76" fill="#f1eee8" font-size="16" text-anchor="start">500</text><text x="40" y="140" fill="#a5a29c" font-size="16" text-anchor="start">Year 1</text><rect x="40.0" y="152.0" width="600.0" height="36.0" fill="#76d5c1" data-v="500"/><rect x="640.0" y="152.0" width="30.0" height="36.0" fill="#76d5c1" stroke="#f1eee8" stroke-width="2"/><rect x="670.0" y="152.0" width="90.0" height="36.0" fill="#9a968f"/><text x="655" y="142" fill="#f1eee8" font-size="16" text-anchor="middle">+25</text><text x="715" y="142" fill="#f1eee8" font-size="16" text-anchor="middle">+75</text><line x1="40" y1="100" x2="40" y2="200" stroke="#a5a29c" stroke-width="2"/><rect x="20.0" y="226.0" width="14.0" height="14.0" fill="#76d5c1" stroke="#f1eee8" stroke-width="2"/><text x="42" y="239" fill="#a5a29c" font-size="16" text-anchor="start">organic: sold more</text><rect x="300.0" y="226.0" width="14.0" height="14.0" fill="#9a968f"/><text x="322" y="239" fill="#a5a29c" font-size="16" text-anchor="start">bought with another business</text><text x="20" y="268" fill="#a5a29c" font-size="16" text-anchor="start">1.2 px = ₹1 cr; revenue in ₹ cr</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Share count</p>
+      <h2>Profit can grow while EPS lags</h2>
+      <p>Earnings per share (EPS) is profit divided by shares. New shares cut the same profit into more slices. Say Ramu’s profit grows 15%, from ₹50 cr to ₹57.5 cr, but it issues 1 cr new shares: EPS rises only to ₹5.23, +4.5%, not +15% <span class="tag">example</span>. The money raised should earn a return; if it does not, EPS falls behind.</p>
+      <figure><svg viewBox="0 0 800 332" role="img" aria-label="Three profit bars cut into one slice per share: 50 crore in 10 slices, 57.5 crore in 10 slices, and 57.5 crore in 11 thinner slices."><text x="20" y="40" fill="#a5a29c" font-size="16" text-anchor="start">FY26: ₹50 cr, 10 cr shares</text><rect x="20.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="60.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="100.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="140.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="180.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="220.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="260.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="300.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="340.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="380.0" y="52.0" width="40.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="440" y="78" fill="#f1eee8" font-size="16" text-anchor="start">₹5.00 a share</text><text x="20" y="130" fill="#a5a29c" font-size="16" text-anchor="start">Year 1: ₹57.5 cr, 10 cr shares</text><rect x="20.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="66.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="112.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="158.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="204.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="250.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="296.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="342.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="388.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="434.0" y="142.0" width="46.0" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="500" y="168" fill="#f1eee8" font-size="16" text-anchor="start">₹5.75 a share</text><text x="20" y="220" fill="#a5a29c" font-size="16" text-anchor="start">Year 1: ₹57.5 cr, 11 cr shares</text><rect x="20.0" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="61.8" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="103.6" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="145.5" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="187.3" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="229.1" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="270.9" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="312.7" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="354.5" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="396.4" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="438.2" y="232.0" width="41.8" height="40.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="500" y="258" fill="#f1eee8" font-size="16" text-anchor="start">₹5.23 a share</text><text x="20" y="312" fill="#a5a29c" font-size="16" text-anchor="start">1 slice = one share’s profit; 8 px = ₹1 cr</text></svg></figure>
+    </section>
+
+    <section class="panel" id="labD">
+      <p class="kicker">Try it · dilution</p>
+      <h2>Issue shares, watch EPS</h2>
+      <p>Start from Ramu’s FY26: profit ₹50 cr, 10 cr shares, EPS ₹5.00, share price ₹100 <span class="tag">example</span>. Pick next year’s profit growth (the default is the +15% estimate) and issue new shares at ₹100. The profit growth is your assumption and ignores what the new money earns.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="picks" id="pgPicks" role="group" aria-label="Choose profit growth">
+            <button type="button" class="secondary" data-g="0" aria-pressed="false">Profit flat</button>
+            <button type="button" class="secondary" data-g="10" aria-pressed="false">+10%</button>
+            <button type="button" class="secondary" data-g="15" aria-pressed="true">+15%</button>
+            <button type="button" class="secondary" data-g="20" aria-pressed="false">+20%</button>
+          </div>
+          <div class="control"><label for="ns">New shares issued <output id="ns-o"></output></label><input id="ns" type="range" min="0" max="3" step="0.5" value="0"></div>
+          <div class="picks" id="nsPicks" role="group" aria-label="Quick share issues">
+            <button type="button" class="secondary" data-n="0" aria-pressed="true">No new shares</button>
+            <button type="button" class="secondary" data-n="1" aria-pressed="false">1 for 10 issue</button>
+          </div>
+          <div class="ledger" id="dilLedger"></div>
+        </div>
+        <div class="lab-chart"><svg id="dilChart" viewBox="0 0 520 300" role="img" aria-label="Two bars comparing profit growth with EPS growth after the chosen share issue."></svg></div>
+      </div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Growth that eats cash</p>
+      <h2>Fast growth needs money first</h2>
+      <p>Growing means stocking more tea, waiting longer for customers to pay, and building capacity. In FY26 Ramu’s ₹50 cr profit became ₹58 cr of operating cash, but ₹10 cr stayed stuck in stock and customers and ₹45 cr went on capex, leaving ₹13 cr <span class="tag">example</span>. <a href="the-balance-sheet-eli5.html">Part 4</a> and Part 5 set this up; Part 12 teaches working capital and Part 13 free cash flow.</p>
+      <figure><svg viewBox="0 0 800 312" role="img" aria-label="Bars on one scale: Ramu profit 50, cash from operations 58, working capital absorbed 10, capex 45, leaving 13."><text x="20" y="40" fill="#a5a29c" font-size="16" text-anchor="start">Profit after tax</text><rect x="250.0" y="20.0" width="400.0" height="28.0" fill="#f5c76a" data-v="50"/><text x="662" y="40" fill="#f1eee8" font-size="16" text-anchor="start">50</text><text x="20" y="88" fill="#a5a29c" font-size="16" text-anchor="start">Cash from operations</text><rect x="250.0" y="68.0" width="464.0" height="28.0" fill="#76d5c1" data-v="58"/><text x="726" y="88" fill="#f1eee8" font-size="16" text-anchor="start">58</text><text x="20" y="136" fill="#a5a29c" font-size="16" text-anchor="start">Working capital</text><rect x="250.0" y="116.0" width="80.0" height="28.0" fill="#ff8059" data-v="10"/><text x="342" y="136" fill="#f1eee8" font-size="16" text-anchor="start">10</text><text x="20" y="184" fill="#a5a29c" font-size="16" text-anchor="start">Capex</text><rect x="250.0" y="164.0" width="360.0" height="28.0" fill="#ff8059" data-v="45"/><text x="622" y="184" fill="#f1eee8" font-size="16" text-anchor="start">45</text><text x="20" y="232" fill="#a5a29c" font-size="16" text-anchor="start">Left after capex</text><rect x="250.0" y="212.0" width="104.0" height="28.0" fill="#76d5c1" data-v="13"/><text x="366" y="232" fill="#f1eee8" font-size="16" text-anchor="start">13</text><text x="20" y="292" fill="#a5a29c" font-size="16" text-anchor="start">8 px = ₹1 cr; Ramu FY26, ₹ cr</text></svg></figure>
+      <p>How much capital does growth need? Ramu holds about ₹62 of fixed assets and working capital per ₹100 of sales (₹310 cr over ₹500 cr; derived from the balance sheet <span class="tag">example</span>). If that held, +10% sales needs about ₹31 cr, covered by the ₹30 cr kept after a 40% dividend. +20% or +30% is not.</p>
+      <figure><svg viewBox="0 0 800 272" role="img" aria-label="Three bars of new capital needed for 10, 20 and 30 percent sales growth, 31, 62 and 93 crore, against 30 crore of kept profit."><text x="20" y="72" fill="#a5a29c" font-size="16" text-anchor="start">+10% sales</text><rect x="150.0" y="52.0" width="120.0" height="28.0" fill="#f5c76a" data-v="30.0"/><rect x="270.0" y="52.0" width="4.0" height="28.0" fill="#ec6a94" data-v="1.0"/><text x="286" y="72" fill="#f1eee8" font-size="16" text-anchor="start">31 needed</text><text x="20" y="128" fill="#a5a29c" font-size="16" text-anchor="start">+20% sales</text><rect x="150.0" y="108.0" width="120.0" height="28.0" fill="#f5c76a" data-v="30.0"/><rect x="270.0" y="108.0" width="128.0" height="28.0" fill="#ec6a94" data-v="32.0"/><text x="410" y="128" fill="#f1eee8" font-size="16" text-anchor="start">62 needed</text><text x="20" y="184" fill="#a5a29c" font-size="16" text-anchor="start">+30% sales</text><rect x="150.0" y="164.0" width="120.0" height="28.0" fill="#f5c76a" data-v="30.0"/><rect x="270.0" y="164.0" width="252.0" height="28.0" fill="#ec6a94" data-v="63.0"/><text x="534" y="184" fill="#f1eee8" font-size="16" text-anchor="start">93 needed</text><line x1="270" y1="36" x2="270" y2="214" stroke="#f1eee8" stroke-width="2" stroke-dasharray="5 5"/><text x="270" y="28" fill="#f1eee8" font-size="16" text-anchor="middle">profit kept: 30</text><rect x="20.0" y="236.0" width="14.0" height="14.0" fill="#f5c76a"/><text x="42" y="249" fill="#a5a29c" font-size="16" text-anchor="start">paid from kept profit</text><rect x="250.0" y="236.0" width="14.0" height="14.0" fill="#ec6a94"/><text x="272" y="249" fill="#a5a29c" font-size="16" text-anchor="start">borrowed or raised</text><text x="500" y="249" fill="#a5a29c" font-size="16" text-anchor="start">4 px = ₹1 cr</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Worth paying for</p>
+      <h2>Growth is good only if it pays</h2>
+      <p>Two one-off plans <span class="tag">example</span>, both adding ₹5 cr of profit. Plan X spends ₹20 cr, a 25% return. Plan Y spends ₹50 cr, a 10% return, about what Ramu pays to borrow (₹10 cr interest on ₹100 cr). Same growth, very different value. Part 10 teaches ROCE, profit on all the capital in use: Ramu’s is 20.9% <span class="tag">example</span>. Growth earning above its cost adds value; below it, growth destroys it. Part 15 covers pairing growth with price (PEG).</p>
+      <figure><svg viewBox="0 0 800 290" role="img" aria-label="Two growth plans on one scale: Plan X spends 20 crore to add 5 crore of profit, Plan Y spends 50 crore for the same 5 crore."><text x="20" y="60" fill="#f1eee8" font-size="16" text-anchor="start">Plan X</text><rect x="150.0" y="40.0" width="120.0" height="28.0" fill="#ff8059" data-v="20"/><text x="282" y="60" fill="#f1eee8" font-size="16" text-anchor="start">₹20 cr in</text><rect x="150.0" y="80.0" width="30.0" height="28.0" fill="#76d5c1" data-v="5"/><text x="192" y="100" fill="#f1eee8" font-size="16" text-anchor="start">₹5 cr profit added</text><text x="560" y="80" fill="#f5c76a" font-size="16" text-anchor="start">25% return</text><text x="20" y="170" fill="#f1eee8" font-size="16" text-anchor="start">Plan Y</text><rect x="150.0" y="150.0" width="300.0" height="28.0" fill="#ff8059" data-v="50"/><text x="462" y="170" fill="#f1eee8" font-size="16" text-anchor="start">₹50 cr in</text><rect x="150.0" y="190.0" width="30.0" height="28.0" fill="#76d5c1" data-v="5"/><text x="192" y="210" fill="#f1eee8" font-size="16" text-anchor="start">₹5 cr profit added</text><text x="560" y="190" fill="#ec6a94" font-size="16" text-anchor="start">10% return</text><text x="20" y="270" fill="#a5a29c" font-size="16" text-anchor="start">6 px = ₹1 cr; one-off what-if</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: acquired growth, diluted EPS</h2>
+      <p>Tata Consumer Products (TCPL) consolidated, year to 31 March 2026, ₹ crore <span class="tag">public</span>. Revenue from operations was 20,290.43 against 17,618.30: <b>+15.2%</b>. Profit for the year was 1,546.80 against 1,287.10: <b>+20.2%</b> (the AGM presentation says +15% and +20%). Basic EPS grew less than owners’ profit. Data frozen at FY2026; educational, not a recommendation.</p>
+      <figure><svg viewBox="0 0 800 312" role="img" aria-label="Bars of TCPL growth FY26 over FY25: revenue 15.2 percent, group profit 20.2, owners profit 20.6, basic EPS 19.4, average share count 1.1."><text x="20" y="40" fill="#a5a29c" font-size="16" text-anchor="start">Revenue</text><rect x="200.0" y="20.0" width="303.4" height="28.0" fill="#76d5c1" data-v="15.17"/><text x="515.4" y="40" fill="#f1eee8" font-size="16" text-anchor="start">+15.2%</text><text x="20" y="88" fill="#a5a29c" font-size="16" text-anchor="start">Group profit</text><rect x="200.0" y="68.0" width="403.6" height="28.0" fill="#f5c76a" data-v="20.18"/><text x="615.6" y="88" fill="#f1eee8" font-size="16" text-anchor="start">+20.2%</text><text x="20" y="136" fill="#a5a29c" font-size="16" text-anchor="start">Owners’ profit</text><rect x="200.0" y="116.0" width="412.8" height="28.0" fill="#f5c76a" data-v="20.64"/><text x="624.8" y="136" fill="#f1eee8" font-size="16" text-anchor="start">+20.6%</text><text x="20" y="184" fill="#a5a29c" font-size="16" text-anchor="start">Basic EPS</text><rect x="200.0" y="164.0" width="387.4" height="28.0" fill="#f5c76a" data-v="19.37"/><text x="599.4" y="184" fill="#f1eee8" font-size="16" text-anchor="start">+19.4%</text><text x="20" y="232" fill="#a5a29c" font-size="16" text-anchor="start">Average shares</text><rect x="200.0" y="212.0" width="22.2" height="28.0" fill="#9a968f" data-v="1.11"/><text x="234.2" y="232" fill="#f1eee8" font-size="16" text-anchor="start">+1.1%</text><text x="20" y="292" fill="#a5a29c" font-size="16" text-anchor="start">20 px = 1 percentage point; TCPL FY26 vs FY25</text></svg></figure>
+      <div class="field-grid g2">
+        <div><b>Profit +20.6%, EPS +19.4%</b><span>Profit attributable to owners 1,542.30 vs 1,278.47. Basic EPS ₹15.59 vs ₹13.06. Weighted average shares 98.95 cr vs 97.87 cr (+1.1%). 1.2064 ÷ 1.0111 − 1 = 19.3%: the share count explains the gap. The AGM shows basic EPS growth +19%.</span><em>public · p. 415, note 30 p. 456; AGM slide 8</em></div>
+        <div><b>The FY25 rights issue</b><span>3,66,23,802 new shares at ₹818, one for every 26 held (record date 27 July 2024), allotted in FY25. Share capital rose from ₹95.28 cr at 1 April 2024 to ₹98.95 cr. Net proceeds ₹2,980.57 cr in FY25’s financing cash flow. It reaches FY26’s weighted average because FY25 counted the new shares for only part of that year.</span><em>public · pp. 178, 418, 416</em></div>
+        <div><b>Acquired growth</b><span>Capital Foods (75% owned) and Organic India (100%) were acquired in FY25: FY25’s cash flow shows “Acquisition of Subsidiaries” of ₹1,809.00 cr. FY26 slides give their revenue as ₹839 cr and ₹478 cr, “combined, grew 12%”. Exact closing dates are not in these documents, and no group-level organic growth figure is published, so this page does not compute one.</span><em>public · p. 417 (FY25 column), p. 181; AGM slide 25</em></div>
+        <div><b>“Growth businesses”</b><span>TCPL’s own grouping: Tata Sampann, ready-to-drink, Tata Soulfull, ready to eat, vending, Capital Foods and Organic India. It grew 24% in FY26 and rose from 28% to 31% of the India branded business. The AGM puts it at over ₹4,000 cr of revenue.</span><em>public · pp. 56, 223; AGM slide 15</em></div>
+        <div><b>Did growth eat cash?</b><span>Not in FY26. Cash from operations was 2,421.85 against capex of 448.57; working capital released 145.19 as inventories fell 200.03. The cash drain came in FY25: acquisitions of ₹1,809.00 cr. That year’s financing section also shows ₹2,980.57 cr from the rights issue and a net ₹1,164.49 cr repaid on commercial paper “for acquisition funding”.</span><em>public · pp. 417–418</em></div>
+        <div><b>Capital the growth needs</b><span>Goodwill 11,883.90 plus other intangibles 7,111.76 is 18,995.66 cr, about 55% of total assets of 34,452.96. Bought growth must earn a return on that capital. Part 10 shows how to measure it.</span><em>public · balance sheet p. 414</em></div>
+      </div>
+      <p>A multi-year CAGR is left out: this report prints only FY25 comparatives, and earlier years would need those years’ own annual reports.</p>
+      <p class="source-note">Sources: <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">TCPL Integrated Annual Report 2025-26</a> (consolidated statements, printed pp. 414–418, 456; Board’s report p. 178), the <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">consolidated statements PDF</a>, and the <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf">AGM presentation, 10 June 2026</a>. The report’s MD&amp;A (p. 223) prints last year’s EPS as ₹13.60; the audited note 30 says ₹13.06, which this page uses.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Four questions for any growth number</h2>
+      <p><b>1. Growth from what to what?</b> Prefer a multi-year CAGR to one YoY, and ask whether last year was a bad base. <b>2. Whose growth is it?</b> Split organic from bought. <b>3. Per share?</b> Compare profit growth with EPS growth. <b>4. At what cost?</b> Check cash from operations beside capex, and the return on the capital the growth needed.</p>
+      <p><b>Next, Part 10, “ROE, ROCE and DuPont”</b>, measures that last question: how much profit a company earns on the money put into it.</p>
+      
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Growth is worth paying for when it is steady, mostly organic, not diluted away per share, and earns more on the capital it needs than that capital costs.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Four labs. All start from Ramu Chai's canonical numbers (example, ₹ crore). Each result is also exposed on window for testing.
+    const $=id=>document.getElementById(id);
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const TEAL='#76d5c1',CORAL='#ff8059',GOLD='#f5c76a',ROSE='#ec6a94',GREY='#9a968f';
+    const pc=(p,d=1)=>(p>0.00001?'+':p<-0.00001?'−':'')+Math.abs(p).toFixed(d)+'%';
+    const fmtINR=x=>{const s=String(Math.round(x));if(s.length<=3)return s;return s.slice(0,-3).replace(/\B(?=(\d{2})+(?!\d))/g,',')+','+s.slice(-3)};
+    const setPressed=(groupId,pred)=>document.querySelectorAll('#'+groupId+' button').forEach(b=>b.setAttribute('aria-pressed',pred(b)?'true':'false'));
+    const rows=(el,list)=>{el.innerHTML=list.map(([k,v])=>`<span>${esc(k)}</span><span>${esc(v)}</span>`).join('')};
+
+    /* ---------- Lab A: CAGR calculator ---------- */
+    const DATA={rev:[330,365,405,450,500],pat:[30,34,39,44,50],eps:[3.00,3.40,3.90,4.40,5.00]};
+    const JUMPY=[330,440,330,400,500];
+    const YR=['FY22','FY23','FY24','FY25','FY26'];
+    const A={m:'rev',h:'actual',s:0,e:4};
+    const fv=(m,v)=>m==='eps'?'₹'+v.toFixed(2):String(Math.round(v*100)/100);
+    function updateA(){
+      const v=A.h==='jumpy'?JUMPY:DATA[A.m], n=A.e-A.s, sl=v.slice(A.s,A.e+1);
+      const yoy=[];for(let i=0;i<n;i++)yoy.push(sl[i+1]/sl[i]-1);
+      const cagr=Math.pow(sl[n]/sl[0],1/n)-1, avg=yoy.reduce((a,b)=>a+b,0)/n, gap=(avg-cagr)*100;
+      window.cagrResults={valid:true,m:A.m,h:A.h,start:A.s,end:A.e,n,yoy:yoy.map(x=>x*100),cagr:cagr*100,avg:avg*100,gap,check:sl[0]*Math.pow(1+cagr,n)};
+      $('sOut').textContent=YR[A.s];$('eOut').textContent=YR[A.e];
+      $('sMinus').disabled=A.s<=0;$('sPlus').disabled=A.s+1>=A.e;$('eMinus').disabled=A.e-1<=A.s;$('ePlus').disabled=A.e>=4;
+      setPressed('metricPicks',b=>b.dataset.m===A.m);setPressed('modePicks',b=>b.dataset.h===A.h);
+      document.querySelectorAll('#metricPicks button').forEach(b=>b.disabled=A.h==='jumpy'&&b.dataset.m!=='rev');
+      const cnt=n+1,pitch=440/cnt,bw=Math.min(64,pitch*.62),mx=Math.max(...sl),base=235,sc=170/mx;
+      let s='';
+      sl.forEach((val,i)=>{
+        const cx=40+pitch*(i+.5),h=val*sc;
+        s+=`<rect data-v="${val}" x="${(cx-bw/2).toFixed(1)}" y="${(base-h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${A.m==='eps'&&A.h!=='jumpy'?GOLD:A.m==='pat'&&A.h!=='jumpy'?GOLD:TEAL}"/>`;
+        s+=`<text x="${cx.toFixed(1)}" y="${(base-h-10).toFixed(1)}" fill="#f1eee8" font-size="16" text-anchor="middle">${esc(fv(A.m,val))}</text>`;
+        s+=`<text x="${cx.toFixed(1)}" y="260" fill="#a5a29c" font-size="16" text-anchor="middle">${YR[A.s+i]}</text>`;
+        if(i<n)s+=`<text x="${(cx+pitch/2).toFixed(1)}" y="26" fill="#f1eee8" font-size="16" text-anchor="middle">${pc(yoy[i]*100)}</text>`;
+      });
+      s+=`<text x="20" y="288" fill="#f1eee8" font-size="16">CAGR ${cagr*100>=0?'':'−'}${Math.abs(cagr*100).toFixed(2)}%</text><text x="500" y="288" fill="#a5a29c" font-size="16" text-anchor="end">average ${(avg*100).toFixed(2)}%</text>`;
+      $('cagrChart').innerHTML=s;
+      rows($('cagrLedger'),[['Start → end',fv(A.m,sl[0])+' → '+fv(A.m,sl[n])],['Years of growth',String(n)],['CAGR',(cagr*100).toFixed(2)+'%'],['Average of yearly rates',(avg*100).toFixed(2)+'%'],['Average minus CAGR',gap.toFixed(2)+' points'],['Start × (1+CAGR)^years',fv(A.m,window.cagrResults.check)]]);
+      $('cagrNote').textContent=gap<0.05?'Steady growth: the average and the CAGR nearly match, and the average can never be lower.':`The average of the yearly rates overstates the growth by ${gap.toFixed(2)} points. CAGR is the rate that actually lands on the end figure.`;
+    }
+    document.querySelectorAll('#metricPicks button').forEach(b=>b.addEventListener('click',()=>{A.m=b.dataset.m;updateA()}));
+    document.querySelectorAll('#modePicks button').forEach(b=>b.addEventListener('click',()=>{A.h=b.dataset.h;if(A.h==='jumpy')A.m='rev';updateA()}));
+    $('sMinus').addEventListener('click',()=>{if(A.s>0)A.s--;updateA()});
+    $('sPlus').addEventListener('click',()=>{if(A.s+1<A.e)A.s++;updateA()});
+    $('eMinus').addEventListener('click',()=>{if(A.e-1>A.s)A.e--;updateA()});
+    $('ePlus').addEventListener('click',()=>{if(A.e<4)A.e++;updateA()});
+
+    /* ---------- Lab B: compounding curve (#labChart) ---------- */
+    const ids=['gr','yrs'];
+    const labConfig={format:v=>String(+(+v).toFixed(1))+'y'};
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const g=+$('gr').value/100,n=+$('yrs').value;
+      $('gr-o').textContent=(g*100).toFixed(0)+'%';$('yrs-o').textContent=n+(n===1?' year':' years');
+      const start=500,final=start*Math.pow(1+g,n),simple=start*(1+g*n),exact=Math.log(2)/Math.log(1+g),r72=72/(g*100);
+      if(![final,simple,exact,r72].every(Number.isFinite))throw new Error('Lab returned non-finite results');
+      const top=Math.max(final,simple,1000),mag=Math.pow(10,Math.floor(Math.log10(top))),stp=mag/2,ymax=Math.ceil(top/stp)*stp;
+      const X0=80,X1=500,Y0=270,Y1=40,sx=t=>X0+t/n*(X1-X0),sy=v=>Y0-v/ymax*(Y0-Y1);
+      let s=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#57534f" stroke-width="2"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" stroke="#57534f" stroke-width="2"/>`;
+      s+=`<line x1="${X0}" y1="${sy(1000).toFixed(1)}" x2="${X1}" y2="${sy(1000).toFixed(1)}" stroke="#a5a29c" stroke-width="1" stroke-dasharray="3 4"/>`;
+      s+=`<line x1="${X0}" y1="${sy(start).toFixed(1)}" x2="${X1}" y2="${sy(simple).toFixed(1)}" stroke="${GREY}" stroke-width="2" stroke-dasharray="6 5"/>`;
+      let d='';for(let i=0;i<=60;i++){const t=n*i/60;d+=(i?'L':'M')+sx(t).toFixed(1)+' '+sy(start*Math.pow(1+g,t)).toFixed(1)}
+      s+=`<path d="${d}" fill="none" stroke="${TEAL}" stroke-width="3"/>`;
+      if(r72<=n)s+=`<line x1="${sx(r72).toFixed(1)}" y1="${Y1}" x2="${sx(r72).toFixed(1)}" y2="${Y0}" stroke="#f1eee8" stroke-width="3"/>`;
+      if(exact<=n)s+=`<circle cx="${sx(exact).toFixed(1)}" cy="${sy(1000).toFixed(1)}" r="6" fill="none" stroke="#f1eee8" stroke-width="2"/>`;
+      s+=`<text x="74" y="${Y0+5}" fill="#a5a29c" font-size="16" text-anchor="end">0</text><text x="74" y="${Y1+5}" fill="#a5a29c" font-size="16" text-anchor="end">${fmtINR(ymax)}</text>`;
+      [0,n/2,n].forEach((t,i)=>{s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(1)}" y="294" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(labConfig.format(t))}</text>`});
+      s+=`<text x="20" y="324" fill="#f1eee8" font-size="16">rule of 72: ${r72.toFixed(1)} yrs · exact ${exact.toFixed(1)} yrs${r72>n||exact>n?' · off chart':''}</text>`;
+      s+=`<text x="20" y="346" fill="#a5a29c" font-size="16">after ${n} yrs: ₹${fmtINR(final)} cr, simple ₹${fmtINR(simple)} cr</text>`;
+      $('labChart').innerHTML=s;
+      rows($('ledger'),[['Start revenue (FY26)','₹500 cr'],['Growth a year',(g*100).toFixed(0)+'%'],['Years',String(n)],['Compounded',`₹${fmtINR(final)} cr`],['Simple (same ₹ each year)',`₹${fmtINR(simple)} cr`],['Compounding adds',`₹${fmtINR(final-simple)} cr`],['Years to double, exact',exact.toFixed(2)],['Rule of 72 says',r72.toFixed(2)],['Rule minus exact',(r72-exact).toFixed(2)+' yrs']]);
+      window.labResults={valid:true,truth:final,rows:[final,simple],axis:ymax,final,simple,exact,r72,ymax};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+
+    /* ---------- Lab C: base effect ---------- */
+    const PATHS={steady:[500,550,605],rebound:[500,375,500],partial:[500,375,450],deep:[500,250,500]};
+    const B={k:'rebound'};
+    function updateC(){
+      const v=PATHS[B.k],y1=v[1]/v[0]-1,y2=v[2]/v[1]-1,tot=v[2]/v[0]-1,cg=Math.sqrt(v[2]/v[0])-1,avg=(y1+y2)/2;
+      const rec=y1<0?-y1/(1+y1):null;
+      window.baseResults={valid:true,path:v.slice(),y1:y1*100,y2:y2*100,total:tot*100,cagr2:cg*100,avg:avg*100,recovery:rec===null?null:rec*100};
+      setPressed('basePicks',b=>b.dataset.b===B.k);
+      const mx=Math.max(...v),sc=170/mx,base=235,pitch=140,bw=70;let s='';
+      v.forEach((val,i)=>{const cx=90+i*pitch*1.3,h=val*sc;
+        s+=`<rect data-v="${val}" x="${(cx-bw/2).toFixed(1)}" y="${(base-h).toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" fill="${TEAL}"/>`;
+        s+=`<text x="${cx.toFixed(1)}" y="${(base-h-10).toFixed(1)}" fill="#f1eee8" font-size="16" text-anchor="middle">${fmtINR(val)}</text>`;
+        s+=`<text x="${cx.toFixed(1)}" y="260" fill="#a5a29c" font-size="16" text-anchor="middle">Year ${i}</text>`;
+        if(i<2){const c2=90+(i+1)*pitch*1.3,r=i===0?y1:y2;s+=`<text x="${((cx+c2)/2).toFixed(1)}" y="26" fill="${r<0?CORAL:'#f1eee8'}" font-size="16" text-anchor="middle">${pc(r*100)}</text>`}});
+      s+=`<text x="20" y="288" fill="#f1eee8" font-size="16">Latest YoY ${pc(y2*100)}</text><text x="500" y="288" fill="#a5a29c" font-size="16" text-anchor="end">vs start ${pc(tot*100)}</text>`;
+      $('baseChart').innerHTML=s;
+      rows($('baseLedger'),[['Revenue path',v.join(' → ')],['YoY, year 1',pc(y1*100)],['YoY, year 2',pc(y2*100)],['Change vs year 0',pc(tot*100)],['2-year CAGR',pc(cg*100)],['Average of the two YoY',pc(avg*100)],['Rebound needed after the fall',rec===null?'none (no fall)':pc(rec*100)]]);
+      $('baseNote').textContent=y1<0?`Year 2 prints ${pc(y2*100)}, but revenue is ${tot===0?'exactly where it started':tot<0?'still below where it started':'above where it started'} (${pc(tot*100)}). The average of the two rates says ${pc(avg*100)}; the two-year CAGR says ${pc(cg*100)}.`:'Steady growth: each YoY figure is honest because the base is not distorted.';
+    }
+    document.querySelectorAll('#basePicks button').forEach(b=>b.addEventListener('click',()=>{B.k=b.dataset.b;updateC()}));
+
+    /* ---------- Lab D: dilution ---------- */
+    const D={pg:15};
+    function updateD(){
+      const ns=+$('ns').value,pat0=50,sh0=10,pat1=pat0*(1+D.pg/100),sh1=sh0+ns,eps0=pat0/sh0,eps1=pat1/sh1,eg=(eps1/eps0-1)*100,gap=D.pg-eg;
+      const need=pat1*ns/sh0,proceeds=ns*100;
+      if(![eps1,eg,gap].every(Number.isFinite))throw new Error('Lab returned non-finite results');
+      $('ns-o').textContent=ns.toFixed(1)+' cr shares';
+      setPressed('pgPicks',b=>+b.dataset.g===D.pg);setPressed('nsPicks',b=>+b.dataset.n===ns);
+      window.dilResults={valid:true,pg:D.pg,ns,pat1,sh1,eps0,eps1,eg,gap,proceeds,need};
+      const vals=[['Profit growth',D.pg],['EPS growth',eg]],neg=vals.some(r=>r[1]<0),m=Math.max(20,Math.ceil(Math.max(...vals.map(r=>Math.abs(r[1])))/10)*10);
+      const x0=neg?260:60,span=neg?200:400,sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m,ticks=neg?[-m,0,m]:[0,m/2,m];
+      const bottom=70+vals.length*82,h=bottom+50;$('dilChart').setAttribute('viewBox',`0 0 520 ${h}`);let s='';
+      vals.forEach(([nm,val],i)=>{const y=80+i*82,x=sx(val);
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${nm}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${pc(val)}</text><rect data-v="${val}" x="${Math.min(x,x0).toFixed(1)}" y="${y}" width="${Math.abs(x-x0).toFixed(1)}" height="26" fill="${GOLD}"/>`});
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${pc(t,0)}</text>`).join('');
+      $('dilChart').innerHTML=s;
+      rows($('dilLedger'),[['Profit next year',`₹${pat1.toFixed(2)} cr`],['Shares',`${sh1.toFixed(1)} cr`],['Money raised at ₹100',`₹${proceeds.toFixed(0)} cr`],['EPS',`₹${eps1.toFixed(2)} (was ₹5.00)`],['Profit growth',pc(D.pg)],['EPS growth',pc(eg)],['Gap, in points',gap.toFixed(1)],['Profit the new money must add',ns>0?`₹${need.toFixed(2)} cr`:'none'],['…as a return on the money',ns>0?(need/proceeds*100).toFixed(2)+'%':'none']]);
+    }
+    document.querySelectorAll('#pgPicks button').forEach(b=>b.addEventListener('click',()=>{D.pg=+b.dataset.g;updateD()}));
+    document.querySelectorAll('#nsPicks button').forEach(b=>b.addEventListener('click',()=>{$('ns').value=b.dataset.n;updateD()}));
+    $('ns').addEventListener('input',updateD);
+    updateA();update();updateC();updateD();
+
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
