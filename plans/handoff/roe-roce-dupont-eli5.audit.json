@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26, Consolidated Financial Statements",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "printed pp.403-485; read pp.414, 415, 417-418, 436-437",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext -layout",
+    "beginning_middle_end_evidence": "Balance sheet p.414, P&L p.415, cash flow pp.417-418, note 6 pp.436-437 read in full",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf (full report, not opened; consolidated statements only)"
+    ],
+    "limitations": "AGM presentation not used; adjusted EPS not quoted. EBITDA recomputed from P&L lines, not taken from the report's MD&A. Ramu numbers are plan canonical, derived figures labelled one-off."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Profit alone says nothing without the capital behind it; two shops, same profit",
+      "kind": "mechanism",
+      "locator": "shops demo",
+      "check_needed": false,
+      "destination": "shops"
+    },
+    {
+      "id": 2,
+      "item": "ROE = profit after tax / equity; Ramu 50/250 = 20%",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "roe"
+    },
+    {
+      "id": 3,
+      "item": "ROE uses owners' profit and owners' equity (excludes NCI)",
+      "kind": "definition",
+      "locator": "TCPL p.414-415",
+      "check_needed": true,
+      "destination": "roe"
+    },
+    {
+      "id": 4,
+      "item": "ROCE = EBIT / (equity + debt); Ramu 73/350 = 20.9%",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "roce"
+    },
+    {
+      "id": 5,
+      "item": "ROCE is financing-neutral; common on Indian screens (context, unsourced)",
+      "kind": "claim",
+      "locator": "context",
+      "check_needed": true,
+      "destination": "roce"
+    },
+    {
+      "id": 6,
+      "item": "ROA = profit / total assets; Ramu 12.5%",
+      "kind": "definition",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "three denominators"
+    },
+    {
+      "id": 7,
+      "item": "Closing vs average balances; series uses closing; Ramu avg ROE 21.4%",
+      "kind": "mechanism",
+      "locator": "derived from FY25/FY26 canonical",
+      "check_needed": false,
+      "destination": "closing-average"
+    },
+    {
+      "id": 8,
+      "item": "DuPont: ROE = margin x turnover x multiplier; 10% x 1.25 x 1.6",
+      "kind": "definition+number",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "dupont, lab"
+    },
+    {
+      "id": 9,
+      "item": "Same 20% three ways: brand, retailer, lender-like (risky)",
+      "kind": "example",
+      "locator": "one-off examples",
+      "check_needed": false,
+      "destination": "lab"
+    },
+    {
+      "id": 10,
+      "item": "Leverage lifts ROE but thins cushion; 10% asset fall",
+      "kind": "mechanism",
+      "locator": "derived",
+      "check_needed": false,
+      "destination": "leverage"
+    },
+    {
+      "id": 11,
+      "item": "High ROCE + reinvestment compounds; ROE x retention; link Part 9, Part 23",
+      "kind": "mechanism",
+      "locator": "derived",
+      "check_needed": false,
+      "destination": "compounding"
+    },
+    {
+      "id": 12,
+      "item": "TCPL ROE closing 7.08% / average 7.38%",
+      "kind": "number",
+      "locator": "TCPL p.414-415",
+      "check_needed": true,
+      "destination": "tcpl-roe"
+    },
+    {
+      "id": 13,
+      "item": "TCPL EBIT 2,165.12 (EBITDA - D&A, before other income and exceptionals)",
+      "kind": "number",
+      "locator": "TCPL p.415",
+      "check_needed": true,
+      "destination": "tcpl-roce"
+    },
+    {
+      "id": 14,
+      "item": "TCPL ROCE 8.55% / ex-goodwill 16.13% / ex-goodwill+intangibles 34.29%",
+      "kind": "number",
+      "locator": "TCPL p.414-415, note 6 p.437",
+      "check_needed": true,
+      "destination": "tcpl-roce"
+    },
+    {
+      "id": 15,
+      "item": "TCPL DuPont 7.60% x 0.589 x 1.581",
+      "kind": "number",
+      "locator": "TCPL p.414-415",
+      "check_needed": true,
+      "destination": "tcpl-roe"
+    },
+    {
+      "id": 16,
+      "item": "TCPL rights issue FY25 net 2,980.57",
+      "kind": "number",
+      "locator": "TCPL cash flow p.418",
+      "check_needed": true,
+      "destination": "tcpl-roe"
+    },
+    {
+      "id": 17,
+      "item": "What each ROCE variant tells an investor",
+      "kind": "interpretation",
+      "locator": "own analysis",
+      "check_needed": false,
+      "destination": "tcpl-roce"
+    },
+    {
+      "id": 18,
+      "item": "Hand-off to Part 11 (debt)",
+      "kind": "context",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "so-what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 12,
+      "claim": "1,542.30/21,787.53=7.079%; average equity 20,894.305 -> 7.381%",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415; balance sheet p.414",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "20,290.43-11,855.64-1,661.00-3,981.99=2,791.80; -626.68 = 2,165.12",
+      "verdict": "Supported (recomputed; ties to PBT before exceptional 2,192.84 + finance 137.03 - other income 164.75)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Capital employed 23,188.86+2,120.31=25,309.17; ROCE 8.555%; ex goodwill 13,425.27 -> 16.127%; ex both 6,313.51 -> 34.293%; average CE 24,274.06 -> 8.919%",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "balance sheet p.414; note 6 pp.436-437",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "Margin 7.601% x turnover 0.5889 x multiplier 1.5813 = 7.079%",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "p.414-415",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Proceeds from Rights Issue (net of expenses) FY25 2,980.57, FY26 nil",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "cash flow p.418",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 3,
+      "claim": "Profit attributable to owners 1,542.30; NCI 4.50; equity attributable 21,787.53",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "p.414-415",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 5,
+      "claim": "ROCE is a staple on Indian screens; financing-neutral",
+      "verdict": "Opinion / unverified context, stated generally without naming a source",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "none",
+      "page_treatment": "tagged public; working shown on page"
+    }
+  ],
+  "panels": [
+    {
+      "id": "shops",
+      "heading": "Same profit, different capital",
+      "visual": "two bars, one scale (2px=Rs1cr), stepper"
+    },
+    {
+      "id": "roe",
+      "heading": "ROE: profit per rupee of equity",
+      "visual": "bar, 2px=Rs1cr"
+    },
+    {
+      "id": "roce",
+      "heading": "ROCE",
+      "visual": "EBIT over equity+debt, 2px=Rs1cr"
+    },
+    {
+      "id": "three-denominators",
+      "heading": "ROA, and three denominators",
+      "visual": "three bars, 1.6px=Rs1cr"
+    },
+    {
+      "id": "closing-average",
+      "heading": "Closing or average balances",
+      "visual": "bars, 2px=Rs1cr"
+    },
+    {
+      "id": "dupont",
+      "heading": "ROE is margin x turnover x leverage",
+      "visual": "cascade per Re1 equity, 200px=Re1"
+    },
+    {
+      "id": "lab",
+      "heading": "Three dials, one ROE",
+      "visual": "box + bars, live"
+    },
+    {
+      "id": "leverage",
+      "heading": "Leverage lifts ROE and thins the cushion",
+      "visual": "two bars, 0.6px=Rs1"
+    },
+    {
+      "id": "compounding",
+      "heading": "A high return, kept, compounds",
+      "visual": "paired bars"
+    },
+    {
+      "id": "tcpl-roe",
+      "heading": "TCPL: ROE and its three factors",
+      "visual": "cascade on Ramu scale"
+    },
+    {
+      "id": "tcpl-roce",
+      "heading": "TCPL's ROCE, with and without acquisitions",
+      "visual": "bar, 1px~Rs42cr, brackets"
+    },
+    {
+      "id": "so-what",
+      "heading": "Three questions for any return",
+      "visual": "text"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": "ROE=margin x turnover x multiplier; factors independent; ROCE fixed at Ramu 73/350; risk flag = multiplier>=5 (teaching marker)",
+    "units": "percent, x",
+    "independent_calculation_method": "labtest.py with its own Python oracle (not the page compute()) driven through Playwright",
+    "cases": [
+      {
+        "case": "default 10/1.25/1.6",
+        "expected_roe": 20,
+        "observed_roe": 20,
+        "pass": true
+      },
+      {
+        "case": "brand 25/0.5/1.6",
+        "expected_roe": 20,
+        "observed_roe": 20,
+        "pass": true
+      },
+      {
+        "case": "retailer 5/2.5/1.6",
+        "expected_roe": 20,
+        "observed_roe": 20,
+        "pass": true
+      },
+      {
+        "case": "lender 20/0.1/10",
+        "expected_roe": 20,
+        "observed_roe": 20,
+        "pass": true
+      },
+      {
+        "case": "all-min 1/0.05/1",
+        "expected_roe": 0.05,
+        "observed_roe": 0.05,
+        "pass": true
+      },
+      {
+        "case": "all-max 30/4/12",
+        "expected_roe": 1440,
+        "observed_roe": 1440,
+        "pass": true
+      },
+      {
+        "case": "(0,1,1)",
+        "expected_roe": 48,
+        "observed_roe": 48,
+        "pass": true
+      },
+      {
+        "case": "(1,0,1)",
+        "expected_roe": 18,
+        "observed_roe": 18,
+        "pass": true
+      },
+      {
+        "case": "mid 7.5/0.8/3.3",
+        "expected_roe": 19.8,
+        "observed_roe": 19.8,
+        "pass": true
+      }
+    ],
+    "tolerance": "1e-9 relative; bar widths 0.02px",
+    "invariants": "ROA=margin*turnover; ROE=ROA*multiplier; cushion=100/multiplier; bars start at zero and end at axis value; axis >= largest bar",
+    "axis_and_clipping_policy": "axis = nice ceiling of largest bar (never clips); ticks 0, m/2, m; zero at left"
+  },
+  "verification": {
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 12,
+        "notes": 0
+      },
+      "artifact_sha256": "13e93c6be1a37eddce9ebcee0b2a24682881b59c24075030d65eb7660ff09c93",
+      "artifact_path": "/home/user/eli5-lab/explainers/roe-roce-dupont-eli5.html"
+    },
+    "browser_check_render": "0 errors (defaults, 4 presets, 8 slider extremes, 390px)",
+    "screenshots": "desktop-00..12, phone-00..12 inspected: shops, three-denominators, dupont, lab (all-max state), leverage, compounding, tcpl-roe, tcpl-roce, so-what, phone lab; fixed cramped stepper buttons and loosened 'premium paid for brands' wording",
+    "coverage_review": "all 18 inventory rows located on page",
+    "semantic_review": "EBIT definition stated; ROCE excludes leases and counts cash in capital employed (disclosed in go-deeper); no management targets claimed",
+    "card": "plans/handoff/roe-roce-dupont-eli5.card.svg, check_card 0 errors, rendered and viewed",
+    "artifact_sha256": "13e93c6be1a37eddce9ebcee0b2a24682881b59c24075030d65eb7660ff09c93"
+  },
+  "publication": {
+    "status": "not published; handed off to owner's main session"
+  }
+}
