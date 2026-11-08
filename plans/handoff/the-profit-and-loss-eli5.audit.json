@@ -1,0 +1,558 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "Tata Consumer Products Ltd, Integrated Annual Report 2025-26: Consolidated financial statements (and MD&A, press release, NSE results filing)",
+    "author": "Tata Consumer Products Limited; auditors Deloitte Haskins & Sells LLP (report dated 8 May 2026)",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "statement p.415; notes 21-30 pp.453-456; MD&A pp.223-224",
+    "language": "English",
+    "caption_type": "n/a",
+    "capture_mode": "direct PDF/HTML download, text extracted with pdftotext",
+    "beginning_middle_ending_evidence": "Read the whole consolidated statement of profit and loss to the auditor signature block, and notes 21-30 in full",
+    "sampled_visual_timestamps": [],
+    "source_paths_outside_repo": "/tmp/claude-0/-home-user-eli5-lab/ffb40e0f-d8b2-5636-a114-d4a04f188035/scratchpad/src/",
+    "other_sources": [
+      "https://nsearchives.nseindia.com/corporate/ixbrl/INTEGRATED_FILING_INDAS_156448_08052026213320_iXBRL_WEB.html",
+      "https://www.tataconsumer.com/iar-2025-26/docs/mda.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/TCPL_Q4FY26_press_release.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "plans/fundamental-analysis-series.md"
+    ],
+    "limitations": "Topic-built part (no single source). Data frozen at FY2026. Schedule III / Ind AS 1 text not read (MCA 403); two claims marked Mostly supported. Aggregators were never used for figures."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "A P&L subtracts costs from revenue in a fixed order down to profit",
+      "kind": "mechanism",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 1"
+    },
+    {
+      "id": 2,
+      "item": "Revenue from operations = main-business sales (TCPL note 21: goods, services, other operating revenue)",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 2, real report"
+    },
+    {
+      "id": 3,
+      "item": "Revenue = volume x price (100 crore cups x Rs 5)",
+      "kind": "example",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 2"
+    },
+    {
+      "id": 4,
+      "item": "Cost of materials consumed",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 3"
+    },
+    {
+      "id": 5,
+      "item": "Employee benefits expense",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 3"
+    },
+    {
+      "id": 6,
+      "item": "Other expenses (rent, ads, power, freight)",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 3"
+    },
+    {
+      "id": 7,
+      "item": "Schedule III layout lists costs by nature; purchases of stock-in-trade and changes in inventories (TCPL 7,788.16 + 4,108.23 - 40.75)",
+      "kind": "claim",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 3 go-deeper"
+    },
+    {
+      "id": 8,
+      "item": "Gross profit is not a reported line",
+      "kind": "claim",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 3 go-deeper"
+    },
+    {
+      "id": 9,
+      "item": "EBITDA is not an Ind AS line; everyone computes it; definitions differ",
+      "kind": "claim",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 4, real report"
+    },
+    {
+      "id": 10,
+      "item": "EBITDA reached from the top and from the bottom (PBT 67 + 10 + 12 - 4 = 85)",
+      "kind": "mechanism",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 4"
+    },
+    {
+      "id": 11,
+      "item": "Depreciation vs amortisation; spreading a purchase (120 over 10 years = 12)",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 5"
+    },
+    {
+      "id": 12,
+      "item": "EBIT = EBITDA - D&A",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 5"
+    },
+    {
+      "id": 13,
+      "item": "Other income (interest on cash, not from the business)",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 6, real report"
+    },
+    {
+      "id": 14,
+      "item": "Finance costs (interest on borrowings)",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 6, real report"
+    },
+    {
+      "id": 15,
+      "item": "Exceptional items: one-offs on their own line; can distort year-on-year change",
+      "kind": "mechanism",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 7, real report"
+    },
+    {
+      "id": 16,
+      "item": "Ind AS has no extraordinary line; exceptional loosely defined",
+      "kind": "claim",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 7 note"
+    },
+    {
+      "id": 17,
+      "item": "Profit before tax, tax (current + deferred)",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 8"
+    },
+    {
+      "id": 18,
+      "item": "Profit after tax; owners of parent vs non-controlling interests",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "panel 8, real report"
+    },
+    {
+      "id": 19,
+      "item": "EPS teaser: PAT / 10 crore shares = Rs 5 (Part 7 teaches it)",
+      "kind": "example",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 8"
+    },
+    {
+      "id": 20,
+      "item": "Margins: mention only (Part 8)",
+      "kind": "context",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 3"
+    },
+    {
+      "id": 21,
+      "item": "Share of profit/loss of associates and JVs (TCPL line Ramu lacks)",
+      "kind": "definition",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "real report"
+    },
+    {
+      "id": 22,
+      "item": "TCPL FY2026 consolidated figures mapped onto the waterfall",
+      "kind": "number",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": true,
+      "destination": "real report"
+    },
+    {
+      "id": 23,
+      "item": "Drivable waterfall lab",
+      "kind": "mechanism",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 9 (lab)"
+    },
+    {
+      "id": 24,
+      "item": "Three questions for any P&L",
+      "kind": "context",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 11"
+    },
+    {
+      "id": 25,
+      "item": "Hand-off to Part 4, The balance sheet",
+      "kind": "context",
+      "locator": "plan scope + TCPL FY26 statements",
+      "check_needed": false,
+      "destination": "panel 11"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 22,
+      "claim": "TCPL FY2026 consolidated revenue from operations Rs 20,290.43 crore",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Consolidated Statement of Profit and Loss, IAR 2025-26 printed page 415 (PDF page 13 of consolidated.pdf); Note 21 page 453; same figure 20,29,043.00 lakh in the NSE results filing https://nsearchives.nseindia.com/corporate/ixbrl/INTEGRATED_FILING_INDAS_156448_08052026213320_iXBRL_WEB.html",
+      "correction_on_page": "Page states 20,290.43 and says some press reports quote 20,280. The 20,280 figure was seen only in an aggregator summary (Multibagg, via search results, not opened) and does not match the audited statement."
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Statement lines: other income 164.75; materials consumed 7,788.16; purchases 4,108.23; inventory change (40.75); employee 1,661.00; finance 137.03; D&A 626.68; other 3,981.99; exceptional (20.06); tax 535.28 (current 545.27, deferred (9.99)); associates (90.70); profit for the year 1,546.80; owners 1,542.30; NCI 4.50; basic EPS 15.59",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "page 415; also the NSE filing in lakh; arithmetic re-derived with exact fractions: pre-exceptional PBT 2,192.84, PBT 2,172.78, PAT 1,637.50, group 1,546.80"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Other income 164.75 = interest 101.38 (89.80 + 11.58) + dividends 11.83 + gains on current investments 28.55 + other non-operating 22.99; about 7.5% of pre-exceptional PBT",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 22, page 453; 164.75 / 2,192.84 = 7.51%"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Finance costs 137.03 (FY25 290.20) = 83.41 + lease interest 40.96 + defined benefit 12.66",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 26, page 455. The note does not say why costs fell; page says so."
+    },
+    {
+      "inventory_id": 15,
+      "claim": "Exceptional items FY26 net (20.06): +55.57 contingent-consideration fair value gain, +35.36 sale of non-core assets, (69.06) asset write-down, (25.91) new Labour Codes, (16.02) goodwill impairment; gross +90.93 / (110.99); FY25 +120.00 vs (125.11)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 29, page 456; filing note 3 and note 2 (Labour Codes notified 21 Nov 2025) in https://nsearchives.nseindia.com/corporate/ixbrl/INTEGRATED_FILING_INDAS_156448_08052026213320_iXBRL_WEB.html"
+    },
+    {
+      "inventory_id": 9,
+      "claim": "TCPL management EBITDA Rs 2,815 crore; the statement-derived sum (revenue - materials - employee - other expenses) is 2,791.80; the 23.2 crore gap is not reconciled",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/mda.pdf",
+      "locator": "MD&A performance snapshot, printed page 223 (PDF page 14); EBIT 2,188 there vs 2,165 here (same definition gap). No EBITDA row in the audited statement or the NSE filing table. Page says definitions differ and does not explain the gap."
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Net cash Rs 2,978 crore at 31 March 2026 (cash incl. current investments and ICDs 5,098)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/mda.pdf",
+      "locator": "MD&A page 224 (PDF page 15)"
+    },
+    {
+      "inventory_id": 22,
+      "claim": "AGM-presentation figures from the plan (revenue 20,290; EBITDA 2,815; group net profit 1,547; basic EPS 15.59; net cash 2,978) reconcile to the audited statement / MD&A / press release",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/TCPL_Q4FY26_press_release.pdf",
+      "locator": "press release and MD&A read; the AGM presentation PDF itself was downloaded but the page does not rely on it"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "Schedule III (Ind AS) P&L lists expenses by nature, with Exceptional items between profit before exceptional items and tax and profit before tax",
+      "verdict": "Mostly supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Shown by TCPL's statement layout (page 415) and the NSE filing table. Schedule III text itself not read: MCA site returned 403.",
+      "correction_on_page": "Page states the layout as TCPL shows it"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Ind AS has no extraordinary-items line; exceptional items are loosely defined",
+      "verdict": "Mostly supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "",
+      "locator": "Search results quoting commentary (bcajonline.org, taxguru.in, taxclue.in) only; Ind AS 1 para 87 text not opened. TCPL statement has no extraordinary line (primary).",
+      "correction_on_page": "Stated briefly as a general fact in a note; OPEN: verify against Ind AS 1 text before publication if desired."
+    },
+    {
+      "inventory_id": 1,
+      "claim": "Ramu Chai FY26 numbers (500, 250, 60, 105, 85, 12, 73, 4, 10, 67, 17, 50, EPS 5) match the plan canonical accounts; cash 40 x ~10% = 4, debt 100 x ~10% = 10",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "locator": "canonical accounts; exact-fraction oracle reproduces all lines"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "Hypothetical: a Rs 12 crore gain makes PBT 79, then 67 reads as a 15% fall (67/79 - 1 = -15.2%)",
+      "verdict": "Opinion / prediction",
+      "as_of": "2026-11-08",
+      "evidence_url": "",
+      "locator": "arithmetic on an explicitly hypothetical example, not in the canonical accounts"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "From 500 crore of sales to 50 crore",
+      "inventory_ids": [
+        1
+      ],
+      "visual": "static waterfall, Ramu base case, axis 0-500"
+    },
+    {
+      "id": "p2",
+      "heading": "Revenue is cups times price",
+      "inventory_ids": [
+        2,
+        3
+      ],
+      "visual": "area rectangle 4px/cup x 24px/rupee"
+    },
+    {
+      "id": "p3",
+      "heading": "Three costs before wear and finance",
+      "inventory_ids": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        20
+      ],
+      "visual": "revenue bar and same bar cut up, 1.4px/crore"
+    },
+    {
+      "id": "p4",
+      "heading": "EBITDA: profit before wear and finance",
+      "inventory_ids": [
+        9,
+        10
+      ],
+      "visual": "two bars to 85, 6.8px/crore"
+    },
+    {
+      "id": "p5",
+      "heading": "Depreciation spreads a big purchase",
+      "inventory_ids": [
+        11,
+        12
+      ],
+      "visual": "ten slices of 12, 6px/crore"
+    },
+    {
+      "id": "p6",
+      "heading": "Other income and finance costs",
+      "inventory_ids": [
+        13,
+        14
+      ],
+      "visual": "two blocks, area = interest, 5px/crore"
+    },
+    {
+      "id": "p7",
+      "heading": "Exceptional items: the one-offs",
+      "inventory_ids": [
+        15,
+        16
+      ],
+      "visual": "what-if bars 79 vs 67, 6px/crore"
+    },
+    {
+      "id": "p8",
+      "heading": "Tax, profit after tax, and EPS",
+      "inventory_ids": [
+        17,
+        18,
+        19
+      ],
+      "visual": "67 split 50/17, ten tiles of 5, 8px/crore"
+    },
+    {
+      "id": "p9",
+      "heading": "Drive Ramus P&L yourself",
+      "inventory_ids": [
+        23
+      ],
+      "visual": "live waterfall with base-case dashed outlines"
+    },
+    {
+      "id": "p10",
+      "heading": "Tata Consumers FY2026 P&L",
+      "inventory_ids": [
+        2,
+        9,
+        13,
+        14,
+        15,
+        18,
+        21,
+        22
+      ],
+      "visual": "two waterfalls (scale x10 apart) plus exceptional-items waterfall"
+    },
+    {
+      "id": "p11",
+      "heading": "Three questions for any P&L",
+      "inventory_ids": [
+        24,
+        25
+      ],
+      "visual": "text panel (So what)"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "materials = cups x cost per cup",
+      "employees 60, D&A 12, other income 4 fixed",
+      "other expenses are the slider value in Rs crore (do not move with volume)",
+      "borrowings 100, finance cost = 100 x rate",
+      "tax = 17/67 of positive PBT, none on a loss",
+      "10 crore shares for the EPS teaser"
+    ],
+    "units": {
+      "cups": "crore cups",
+      "price": "Rs per cup",
+      "material cost": "Rs per cup",
+      "other expenses": "Rs crore",
+      "interest rate": "% on Rs 100 crore (stepper, not a slider: the lab gate allows four sliders)"
+    },
+    "independent_calculation_method": "scratchpad/tests/lab_test.py: exact Fraction arithmetic written separately from the page, driven through Playwright; compares model outputs (tolerance 1e-9), then rebuilds the pixel scale from the drawn ticks and checks every bar start and end (tolerance 2.01px for the 2px minimum width)",
+    "cases": [
+      {
+        "name": "default (canonical)",
+        "inputs": [
+          100,
+          5,
+          2.5,
+          105,
+          10
+        ],
+        "expected": "rev 500, mat 250, EBITDA 85, EBIT 73, fin 10, PBT 67, tax 17, PAT 50, EPS 5",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "preset Tea up 20%",
+        "inputs": [
+          100,
+          5,
+          3,
+          105,
+          10
+        ],
+        "expected": "from exact-fraction oracle",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "preset Rate hike",
+        "inputs": [
+          100,
+          5,
+          2.5,
+          105,
+          16
+        ],
+        "expected": "from oracle",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "preset Price cut, more cups",
+        "inputs": [
+          115,
+          4.5,
+          2.5,
+          105,
+          10
+        ],
+        "expected": "from oracle",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "all 16 slider min/max combinations x interest rate 0/10/20",
+        "inputs": "48 cases",
+        "expected": "oracle",
+        "observed": "match",
+        "passed": true
+      },
+      {
+        "name": "interior (87, 4.35, 2.85, 93, 13.5) and big loss (60, 3, 4, 160, 20)",
+        "inputs": "2 cases",
+        "expected": "oracle",
+        "observed": "match; loss gives zero tax and negative bars",
+        "passed": true
+      }
+    ],
+    "invariants": [
+      "running total after the last step equals PAT",
+      "subtotal bars equal running totals",
+      "default state equals the canonical accounts"
+    ],
+    "tolerance": "1e-9 on values; 2.01px on bars",
+    "axis_and_clipping": "axis spans min(0, lowest running total) to the highest, rounded to a nice step with at most 6 ticks; nothing is clipped; bars with value 0 are not drawn; non-zero bars have a 2px minimum width"
+  },
+  "verification": {
+    "lint": "check_explainer.py: 0 errors, 0 warnings (12 diagrams, 11 panels, 2 notes)",
+    "supplementary_checks": [
+      "check_render.py: 0 errors (defaults, 4 presets, 16 slider extremes, 390px overflow)",
+      "TCPL arithmetic re-derived with exact fractions from the statement text and cross-checked against the filing in lakh",
+      "card: check_card.py 0 errors; rendered on home page at 1280px and 390px"
+    ],
+    "browser_errors": "none",
+    "screenshots": {
+      "dir": "/tmp/claude-0/-home-user-eli5-lab/ffb40e0f-d8b2-5636-a114-d4a04f188035/scratchpad/shots",
+      "inspected": "desktop-00..11 and phone-01,09,10 viewed; fixed: caption clipping, muddy other-income cut in panel 4, rose used for a non-debt label, axis to 30,000 in TCPL chart, magnification label (about 10x)",
+      "card": [
+        "/tmp/claude-0/-home-user-eli5-lab/ffb40e0f-d8b2-5636-a114-d4a04f188035/scratchpad/card-desktop.png",
+        "/tmp/claude-0/-home-user-eli5-lab/ffb40e0f-d8b2-5636-a114-d4a04f188035/scratchpad/card-phone.png"
+      ]
+    },
+    "coverage_review": "every inventory row located on the page (see panels)",
+    "semantic_review": "self-review only; no independent human review",
+    "artifact_sha256": "685461c9f8914c3c4bda45af4a229d8bc8cfd0749ba97f42e46ec01b4fdc8772",
+    "card_svg": "plans/handoff/the-profit-and-loss-eli5.card.svg"
+  },
+  "publication": {
+    "status": "not published (instructed not to publish); dry run done and reverted",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
