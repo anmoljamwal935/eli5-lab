@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The balance sheet — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (here: cash) | coral #ff8059 = money going out | gold #f5c76a = what belongs to shareholders
+       rose #ec6a94 = what is owed | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Balance-sheet extras: neutral greys = assets that are not cash. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    /* Balance-sheet lab */
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+  </style>
+</head>
+<body data-series-id="the-balance-sheet-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 12 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>The balance sheet</h1>
+      <p class="lede">A balance sheet is a photograph of a company on one date: what it owns, what it owes, and what is left for its shareholders. The two sides always match, and you can watch why.</p>
+      <p class="source-note">Built from the Schedule III layout of the Companies Act 2013 and Tata Consumer Products’ audited FY2026 consolidated statements, as printed in its annual report · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Part 3 followed sales down to profit after tax. This part reads the other main statement. Facts carry a tag: <span class="tag">public</span> means a figure from TCPL’s audited statements or from a rule, <span class="tag">example</span> means a made-up number for our teaching company, Ramu Chai Ltd, a small tea business. All amounts are ₹ crore (cr). Part 2 covers consolidated versus standalone; Parts 10, 11 and 12 turn these lines into ratios. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>cash</span>
+        <span><i style="background:#8a8680"></i>other assets</span>
+        <span><i style="background:#f5c76a"></i>equity: belongs to shareholders</span>
+        <span><i style="background:#ec6a94"></i>owed: debt and bills</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The snapshot</p>
+      <h2>A photograph, not a film</h2>
+      <p>A P&amp;L is a film: it adds up a whole year of sales and costs, and Part 3 covers it. A balance sheet is a photograph of one instant, here the close of 31 March. Ramu Chai’s two photographs, a year apart, differ by whatever the year changed.</p>
+      <figure>
+        <svg viewBox="0 0 800 335" role="img" aria-label="Two photographs of Ramu Chai a year apart: total 353 crore on 31 March 2025 and 400 crore on 31 March 2026, each split into equity (gold) and amounts owed (rose); the year of profit and loss flows between them"><rect x="98.0" y="130.1" width="44.0" height="119.9" fill="#f5c76a"/><rect x="98.0" y="55.85" width="44.0" height="74.25" fill="#ec6a94"/><text x="120" y="45.85" text-anchor="middle" fill="#f1eee8" font-size="16" >₹353 cr</text><text x="120" y="272" text-anchor="middle" fill="#a5a29c" font-size="16" >31 Mar 2025</text><rect x="658.0" y="112.5" width="44.0" height="137.5" fill="#f5c76a"/><rect x="658.0" y="30" width="44.0" height="82.5" fill="#ec6a94"/><text x="680" y="20" text-anchor="middle" fill="#f1eee8" font-size="16" >₹400 cr</text><text x="680" y="272" text-anchor="middle" fill="#a5a29c" font-size="16" >31 Mar 2026</text><text x="150" y="196.05" text-anchor="start" fill="#f1eee8" font-size="16" >equity 218</text><text x="150" y="98.975" text-anchor="start" fill="#f1eee8" font-size="16" >owed 135</text><text x="650" y="187.25" text-anchor="end" fill="#f1eee8" font-size="16" >equity 250</text><text x="650" y="77.25" text-anchor="end" fill="#f1eee8" font-size="16" >owed 150</text><rect x="120.0" y="292" width="560.0" height="30" fill="#8a8680" opacity="0.35" stroke="#a5a29c" stroke-width="1.5"/><text x="400" y="313" text-anchor="middle" fill="#f1eee8" font-size="16" >FY26: a year of flows (Part 3)</text><text x="30" y="22" text-anchor="start" fill="#a5a29c" font-size="16" >11 px = ₹20 cr</text></svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The one equation</p>
+      <h2>Assets = liabilities + equity</h2>
+      <p>On 31 March 2026 Ramu owns ₹400 cr of things <span class="tag">example</span>. It owes ₹150 cr to lenders, suppliers and others. What is left, ₹250 cr, belongs to shareholders: that is <b>equity</b>. One total, two views: what the company has, and who paid for it.</p>
+      <figure>
+        <svg viewBox="0 0 800 318" role="img" aria-label="Ramu Chai on 31 March 2026: assets of 400 crore drawn as one bar, and equity 250 (gold) plus amounts owed 150 (rose) drawn as an equally long bar"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16" >WHAT RAMU OWNS</text><rect x="40.0" y="80" width="352.0" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="216" y="108" text-anchor="middle" fill="#202020" font-size="16" >PP&amp;E 220</text><rect x="392.0" y="80" width="40.0" height="44" fill="#a5a29c" stroke="#202020" stroke-width="2"/><path d="M412.0 80.0 L412.0 72.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="412" y="68" text-anchor="middle" fill="#f1eee8" font-size="16" >CWIP 25</text><rect x="432.0" y="80" width="88.0" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="476" y="108" text-anchor="middle" fill="#202020" font-size="16" >Stock 55</text><rect x="520.0" y="80" width="72.0" height="44" fill="#a5a29c" stroke="#202020" stroke-width="2"/><path d="M556.0 80.0 L556.0 72.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="556" y="68" text-anchor="middle" fill="#f1eee8" font-size="16" >Receivables 45</text><rect x="592.0" y="80" width="24.0" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><path d="M604.0 124.0 L604.0 132.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="604" y="146" text-anchor="middle" fill="#f1eee8" font-size="16" >Other 15</text><rect x="616.0" y="80" width="64.0" height="44" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M648.0 80.0 L648.0 46.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="648" y="42" text-anchor="middle" fill="#f1eee8" font-size="16" >Cash 40</text><text x="690" y="108" text-anchor="start" fill="#f1eee8" font-size="16" >₹400 cr</text><text x="40" y="154" text-anchor="start" fill="#a5a29c" font-size="16" >WHO PAID FOR IT</text><rect x="40.0" y="200" width="400.0" height="44" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="240" y="228" text-anchor="middle" fill="#202020" font-size="16" >Equity 250</text><rect x="440.0" y="200" width="160.0" height="44" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="520" y="228" text-anchor="middle" fill="#202020" font-size="16" >Borrowings 100</text><rect x="600.0" y="200" width="56.0" height="44" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><path d="M628.0 200.0 L628.0 192.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="628" y="188" text-anchor="middle" fill="#f1eee8" font-size="16" >Payables 35</text><rect x="656.0" y="200" width="24.0" height="44" fill="#ec6a94" opacity="0.4" stroke="#202020" stroke-width="2"/><path d="M668.0 244.0 L668.0 252.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="668" y="266" text-anchor="middle" fill="#f1eee8" font-size="16" >Other 15</text><text x="690" y="228" text-anchor="start" fill="#f1eee8" font-size="16" >₹400 cr</text><text x="40" y="300" text-anchor="start" fill="#a5a29c" font-size="16" >16 px = ₹10 cr</text></svg>
+      </figure>
+      <p>In India the layout is set by Schedule III of the Companies Act 2013, Division II for companies reporting under Ind AS <span class="tag">public</span>. Assets come first, non-current before current; then equity; then liabilities. TCPL’s statement, later on this page, follows it line by line.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why it balances</p>
+      <h2>Every event is written down twice</h2>
+      <p>Equity is defined as assets minus liabilities, so the sides match by construction. And every real event changes two things by the same amount: buy a machine and cash falls as the machine appears. One pan never moves alone; a mismatch means a missing entry, not a real gap.</p>
+      <figure>
+        <svg viewBox="0 0 800 318" role="img" aria-label="Two scales. Left: only the assets pan gets 20 crore heavier and the beam tips, which never happens. Right: both pans gain 20 crore and the beam stays level"><text x="190" y="30" text-anchor="middle" fill="#a5a29c" font-size="16" >ONE SIDE MOVES</text><text x="590" y="30" text-anchor="middle" fill="#a5a29c" font-size="16" >BOTH SIDES MOVE</text><path d="M190.0 90.0 L168.0 232.0" stroke="#a5a29c" stroke-width="3" fill="none"/><path d="M190.0 90.0 L212.0 232.0" stroke="#a5a29c" stroke-width="3" fill="none"/><path d="M120.0 232.0 L260.0 232.0" stroke="#a5a29c" stroke-width="4" fill="none"/><path d="M80.8 103.4 L299.2 76.6" stroke="#f1eee8" stroke-width="5" fill="none"/><path d="M80.8 103.4 L25.8 158.4" stroke="#73706a" stroke-width="1.5" fill="none"/><path d="M80.8 103.4 L135.8 158.4" stroke="#73706a" stroke-width="1.5" fill="none"/><path d="M299.2 76.6 L244.2 131.6" stroke="#73706a" stroke-width="1.5" fill="none"/><path d="M299.2 76.6 L354.2 131.6" stroke="#73706a" stroke-width="1.5" fill="none"/><rect x="25.8" y="158.406" width="110.0" height="9" fill="#8a8680"/><rect x="244.2" y="131.594" width="68.8" height="9" fill="#f5c76a"/><rect x="312.9" y="131.594" width="41.2" height="9" fill="#ec6a94"/><text x="80.8199" y="192.406" text-anchor="middle" fill="#f1eee8" font-size="16" >Assets ₹420</text><text x="299.18" y="165.594" text-anchor="middle" fill="#f1eee8" font-size="16" >Equity + owed ₹400</text><path d="M590.0 90.0 L568.0 232.0" stroke="#a5a29c" stroke-width="3" fill="none"/><path d="M590.0 90.0 L612.0 232.0" stroke="#a5a29c" stroke-width="3" fill="none"/><path d="M520.0 232.0 L660.0 232.0" stroke="#a5a29c" stroke-width="4" fill="none"/><path d="M480.0 90.0 L700.0 90.0" stroke="#f1eee8" stroke-width="5" fill="none"/><path d="M480.0 90.0 L425.0 145.0" stroke="#73706a" stroke-width="1.5" fill="none"/><path d="M480.0 90.0 L535.0 145.0" stroke="#73706a" stroke-width="1.5" fill="none"/><path d="M700.0 90.0 L645.0 145.0" stroke="#73706a" stroke-width="1.5" fill="none"/><path d="M700.0 90.0 L755.0 145.0" stroke="#73706a" stroke-width="1.5" fill="none"/><rect x="425.0" y="145" width="110.0" height="9" fill="#8a8680"/><rect x="645.0" y="145" width="65.5" height="9" fill="#f5c76a"/><rect x="710.5" y="145" width="44.5" height="9" fill="#ec6a94"/><text x="480" y="179" text-anchor="middle" fill="#f1eee8" font-size="16" >Assets ₹420</text><text x="700" y="179" text-anchor="middle" fill="#f1eee8" font-size="16" >Equity + owed ₹420</text><text x="190" y="62" text-anchor="middle" fill="#a5a29c" font-size="16" >never happens</text><text x="400" y="296" text-anchor="middle" fill="#f1eee8" font-size="22" >Assets = liabilities + equity</text></svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Left side: long-lived</p>
+      <h2>Machines, work in progress, goodwill</h2>
+      <p>Non-current assets will not turn into cash within twelve months or one operating cycle <span class="tag">public</span>. Ramu’s ₹220 cr of plant and machinery (PP&amp;E) is shown after depreciation. Its ₹25 cr of capital work in progress (CWIP) is machines still being built; they move into PP&amp;E once ready <span class="tag">example</span>.</p>
+      <figure>
+        <svg viewBox="0 0 800 370" role="img" aria-label="Ramu's plant of 220 crore and work in progress of 25 crore on one bar; below, a 30 crore purchase split into 20 crore of identifiable assets and 10 crore of goodwill"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16" >RAMU'S LONG-LIVED ASSETS · ₹245 CR</text><rect x="40.0" y="86" width="352.0" height="40" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="216" y="112" text-anchor="middle" fill="#202020" font-size="16" >PP&amp;E 220</text><rect x="392.0" y="86" width="40.0" height="40" fill="#a5a29c" stroke="#202020" stroke-width="2"/><path d="M412.0 86.0 L412.0 78.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="412" y="74" text-anchor="middle" fill="#f1eee8" font-size="16" >CWIP 25</text><text x="444" y="112" text-anchor="start" fill="#a5a29c" font-size="16" >net of depreciation</text><text x="40" y="184" text-anchor="start" fill="#a5a29c" font-size="16" >IF RAMU PAID ₹30 CR FOR A MASALA BRAND (EXAMPLE)</text><rect x="40.0" y="244" width="32.0" height="40" fill="#8a8680" stroke="#202020" stroke-width="2"/><path d="M56.0 244.0 L56.0 236.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="107.36" y="232" text-anchor="middle" fill="#f1eee8" font-size="16" >Assets it can name 20</text><rect x="72.0" y="244" width="16.0" height="40" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><path d="M80.0 284.0 L80.0 292.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="80" y="306" text-anchor="middle" fill="#f1eee8" font-size="16" >Goodwill 10</text><text x="100" y="270" text-anchor="start" fill="#f1eee8" font-size="16" >price paid ₹30 cr</text><text x="40" y="348" text-anchor="start" fill="#a5a29c" font-size="16" >16 px = ₹10 cr</text></svg>
+      </figure>
+      <p><b>Goodwill</b> is what a buyer pays above the fair value of the assets it can name. If Ramu paid ₹30 cr for a masala brand whose nameable assets are worth ₹20 cr, ₹10 cr is goodwill <span class="tag">example</span>. Ramu has none today; TCPL has a lot.</p>
+      <details class="trace"><summary>Go deeper: what happens to goodwill after the deal</summary>
+        <p>Goodwill is not amortised. TCPL tests it for impairment every year, by cash-generating unit <span class="tag">public</span>. Brands and other intangibles with a finite life are amortised over their lives, the story of Part 6 on accounting choices.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Left side: short-lived</p>
+      <h2>Stock, customers who owe, cash</h2>
+      <p>Current assets should turn into cash within twelve months or one operating cycle <span class="tag">public</span>. Ramu holds ₹55 cr of stock (inventory), ₹45 cr that customers owe it (trade receivables), ₹40 cr of cash and ₹15 cr of other current assets <span class="tag">example</span>. How long stock and dues sit is Part 12.</p>
+      <figure>
+        <svg viewBox="0 0 800 290" role="img" aria-label="Ramu's 400 crore of assets on one bar: 245 crore long-lived on the left, then stock 55, receivables 45, other 15 and cash 40 (teal) making the 155 crore that turns to cash within a year"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16" >ALL OF RAMU'S ASSETS · ₹400 CR</text><rect x="40.0" y="92" width="392.0" height="44" fill="#8a8680" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="236" y="120" text-anchor="middle" fill="#f1eee8" font-size="16" >Non-current 245</text><rect x="432.0" y="92" width="88.0" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="476" y="120" text-anchor="middle" fill="#202020" font-size="16" >Stock 55</text><rect x="520.0" y="92" width="72.0" height="44" fill="#a5a29c" stroke="#202020" stroke-width="2"/><path d="M556.0 92.0 L556.0 84.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="556" y="80" text-anchor="middle" fill="#f1eee8" font-size="16" >Receivables 45</text><rect x="592.0" y="92" width="24.0" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><path d="M604.0 136.0 L604.0 144.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="604" y="158" text-anchor="middle" fill="#f1eee8" font-size="16" >Other 15</text><rect x="616.0" y="92" width="64.0" height="44" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M648.0 92.0 L648.0 58.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="648" y="54" text-anchor="middle" fill="#f1eee8" font-size="16" >Cash 40</text><path d="M40.0 168.0 L432.0 168.0" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M40.0 162.0 L40.0 174.0" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M432.0 162.0 L432.0 174.0" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="236" y="198" text-anchor="middle" fill="#f1eee8" font-size="16" >due after a year · ₹245 cr</text><path d="M436.0 168.0 L680.0 168.0" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M436.0 162.0 L436.0 174.0" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M680.0 162.0 L680.0 174.0" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="558" y="198" text-anchor="middle" fill="#f1eee8" font-size="16" >within a year · ₹155 cr</text><text x="40" y="268" text-anchor="start" fill="#a5a29c" font-size="16" >16 px = ₹10 cr</text></svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Right side: owners</p>
+      <h2>Equity: share capital plus reserves</h2>
+      <p>Share capital is face value times shares: ₹10 × 10 cr shares = ₹100 cr, a printed number and not the share price. Other equity, or reserves, is profit kept plus any premium paid above face value: ₹150 cr. Together, ₹250 cr <span class="tag">example</span>. In consolidated accounts, <b>non-controlling interest</b> adds the share of subsidiaries that outsiders own.</p>
+      <figure>
+        <svg viewBox="0 0 800 342" role="img" aria-label="Ramu equity of 250 crore (share capital 100 and reserves 150, gold) beside a market capitalisation of 1,000 crore (lavender) drawn on the same scale"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16" >BOOK EQUITY · WHAT THE ACCOUNTS SAY</text><rect x="40.0" y="92" width="64.0" height="40" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M72.0 92.0 L72.0 84.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="90.72" y="80" text-anchor="middle" fill="#f1eee8" font-size="16" >Share capital 100</text><rect x="104.0" y="92" width="96.0" height="40" fill="#f5c76a" opacity="0.62" stroke="#202020" stroke-width="2"/><path d="M152.0 132.0 L152.0 140.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="152" y="154" text-anchor="middle" fill="#f1eee8" font-size="16" >Reserves 150</text><text x="212" y="118" text-anchor="start" fill="#f1eee8" font-size="16" >₹250 cr</text><text x="40" y="202" text-anchor="start" fill="#a5a29c" font-size="16" >MARKET CAP · WHAT INVESTORS PAY</text><rect x="40.0" y="244" width="640.0" height="40" fill="#c3b8ff"/><text x="360" y="270" text-anchor="middle" fill="#202020" font-size="16" >Market cap 1,000</text><text x="40" y="322" text-anchor="start" fill="#a5a29c" font-size="16" >64 px = ₹100 cr</text></svg>
+      </figure>
+      <p>At ₹100 a share the market values Ramu at ₹1,000 cr, four times its book equity. That gap is the market’s view, not the accounts’; Part 14 covers P/B.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Profit flows in</p>
+      <h2>Profit becomes reserves; dividends leave</h2>
+      <p>Equity was ₹218 cr on 31 March 2025. Add FY26 profit after tax of ₹50 cr, the last line of the P&amp;L. Subtract the FY25 dividend paid in FY26, ₹1.80 a share or ₹18 cr: 218 + 50 − 18 = 250. Only reserves move; share capital stays at ₹100 cr <span class="tag">example</span>.</p>
+      <figure>
+        <svg viewBox="0 0 800 312" role="img" aria-label="Waterfall: equity of 218 crore at the start, plus 50 crore profit, minus 18 crore dividend, ends at 250 crore"><rect x="40.0" y="40" width="436.0" height="36" fill="#f5c76a"/><text x="52" y="64" text-anchor="start" fill="#202020" font-size="16" >31 Mar 2025 · 218</text><path d="M476.0 76.0 L476.0 100.0" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><rect x="476.0" y="100" width="100.0" height="36" fill="#f5c76a" opacity="0.62"/><text x="588" y="124" text-anchor="start" fill="#f1eee8" font-size="16" >+50 profit after tax</text><path d="M576.0 136.0 L576.0 160.0" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><rect x="540.0" y="160" width="36.0" height="36" fill="#ff8059"/><text x="588" y="184" text-anchor="start" fill="#f1eee8" font-size="16" >−18 dividend paid</text><path d="M540.0 196.0 L540.0 220.0" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><rect x="40.0" y="220" width="500.0" height="36" fill="#f5c76a"/><text x="52" y="244" text-anchor="start" fill="#202020" font-size="16" >31 Mar 2026 · 250</text><text x="40" y="292" text-anchor="start" fill="#a5a29c" font-size="16" >20 px = ₹10 cr</text></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: the dividend that has not left yet</summary>
+        <p>Ramu proposes ₹2 a share (₹20 cr) for FY26, to be paid in FY27 <span class="tag">example</span>. It is not subtracted yet: a final dividend recommended by the board needs shareholders’ approval at the AGM, as TCPL’s note on share capital says <span class="tag">public</span>. So Ramu’s FY26 balance sheet carries no dividend payable.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Right side: owed</p>
+      <h2>Loans, suppliers and provisions</h2>
+      <p>Ramu owes banks ₹100 cr, of which ₹70 cr is long-term and ₹30 cr falls due within a year. It owes suppliers ₹35 cr for tea and packaging bought on credit (trade payables). The last ₹15 cr is provisions and other liabilities <span class="tag">example</span>. A <b>provision</b> is a cost expected to arrive whose amount or timing is not yet fixed. Part 11 turns debt into ratios.</p>
+      <figure>
+        <svg viewBox="0 0 800 316" role="img" aria-label="Ramu's 150 crore of amounts owed as four bars: long-term loans 70, short-term loans 30, trade payables 35 and provisions and other 15"><text x="40" y="66" text-anchor="start" fill="#a5a29c" font-size="16" >Long-term loans</text><rect x="250.0" y="40" width="112.0" height="38" fill="#ec6a94"/><text x="374" y="66" text-anchor="start" fill="#f1eee8" font-size="16" >₹70 cr · due after a year</text><text x="40" y="124" text-anchor="start" fill="#a5a29c" font-size="16" >Short-term loans</text><rect x="250.0" y="98" width="48.0" height="38" fill="#ec6a94"/><text x="310" y="124" text-anchor="start" fill="#f1eee8" font-size="16" >₹30 cr · due within a year</text><text x="40" y="182" text-anchor="start" fill="#a5a29c" font-size="16" >Trade payables</text><rect x="250.0" y="156" width="56.0" height="38" fill="#ec6a94" opacity="0.62"/><text x="318" y="182" text-anchor="start" fill="#f1eee8" font-size="16" >₹35 cr · owed to suppliers</text><text x="40" y="240" text-anchor="start" fill="#a5a29c" font-size="16" >Provisions, other</text><rect x="250.0" y="214" width="24.0" height="38" fill="#ec6a94" opacity="0.4"/><text x="286" y="240" text-anchor="start" fill="#f1eee8" font-size="16" >₹15 cr · expected costs, other dues</text><text x="40" y="296" text-anchor="start" fill="#a5a29c" font-size="16" >16 px = ₹10 cr</text></svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Try to unbalance the scale</h2>
+      <p>This is Ramu’s FY26 balance sheet <span class="tag">example</span>. Press an event: each one moves both sides by the same amount, and the beam stays level. Assumptions: tea costs half its selling price (Ramu’s 50% gross margin), tax and other costs are ignored, and new shares sell at the ₹100 market price. Dividends cannot exceed cash or reserves.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="machine">Machine cost <output id="machine-o"></output></label><input id="machine" type="range" min="5" max="40" step="5" value="20"></div>
+          <div class="control"><label for="sale">Credit sale <output id="sale-o"></output></label><input id="sale" type="range" min="4" max="40" step="2" value="20"></div>
+          <div class="control"><label for="dps">Dividend <output id="dps-o"></output></label><input id="dps" type="range" min="0.5" max="4" step="0.5" value="2"></div>
+          <div class="control"><label for="newsh">New shares <output id="newsh-o"></output></label><input id="newsh" type="range" min="0.5" max="2" step="0.5" value="1"></div>
+          <p class="group-label">EVENTS</p>
+          <div class="events">
+            <button type="button" id="b-mcash" data-ev="machine-cash">Buy machine · cash</button>
+            <button type="button" id="b-mloan" data-ev="machine-loan">Buy machine · loan</button>
+            <button type="button" id="b-sale" data-ev="credit-sale">Sell on credit</button>
+            <button type="button" id="b-div" data-ev="dividend">Pay a dividend</button>
+            <button type="button" id="b-shares" data-ev="issue-shares">Issue new shares</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+          <p class="group-label">RESET AND COMPARE</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-state="fy26">FY26 · reset to canonical</button>
+            <button type="button" class="secondary" data-state="fy25">FY25 year-end</button>
+            <button type="button" class="secondary" data-state="cmp">FY26 vs FY25</button>
+          </div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 640" role="img" aria-label="A balance scale for Ramu Chai with the assets pan and the equity-plus-liabilities pan, and below it a bar for every balance-sheet line in rupees crore"></svg></div>
+      </div>
+      <div class="ledger" id="ledger"></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s balance sheet, same shape</h2>
+      <p>Tata Consumer Products’ consolidated balance sheet at 31 March 2026 <span class="tag">public</span> uses the same layout. On one scale, goodwill alone is 34% of the ₹34,453 cr total, and with other intangibles 55%. Plant and work in progress are under 8%. Ramu is machine-heavy; TCPL is brand-heavy.</p>
+      <figure>
+        <svg viewBox="0 0 800 490" role="img" aria-label="TCPL consolidated balance sheet at 31 March 2026 on one scale: assets led by goodwill (11,884 crore) and other intangibles (7,112 crore), and equity and liabilities led by other equity (21,689 crore)"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16" >ASSETS · ₹34,453 CR</text><rect x="40.0" y="120" width="220.8" height="44" fill="#c9c6c0" stroke="#f1eee8" stroke-width="3"/><text x="150.378" y="148" text-anchor="middle" fill="#202020" font-size="16" >Goodwill 11,884</text><rect x="260.8" y="120" width="132.1" height="44" fill="#a5a29c" stroke="#202020" stroke-width="2"/><path d="M326.8 120.0 L326.8 112.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="326.81" y="108" text-anchor="middle" fill="#f1eee8" font-size="16" >Other intangibles 7,112</text><rect x="392.9" y="120" width="48.7" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><path d="M417.2 164.0 L417.2 172.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="417.21" y="186" text-anchor="middle" fill="#f1eee8" font-size="16" >PP&amp;E + CWIP 2,621</text><rect x="441.6" y="120" width="46.8" height="44" fill="#a5a29c" stroke="#202020" stroke-width="2"/><path d="M465.0 120.0 L465.0 86.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="464.952" y="82" text-anchor="middle" fill="#f1eee8" font-size="16" >Other non-current 2,519</text><rect x="488.3" y="120" width="65.5" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><path d="M521.1 164.0 L521.1 198.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="521.106" y="212" text-anchor="middle" fill="#f1eee8" font-size="16" >Inventories 3,527</text><rect x="553.9" y="120" width="21.3" height="44" fill="#a5a29c" stroke="#202020" stroke-width="2"/><path d="M564.5 120.0 L564.5 112.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="564.528" y="108" text-anchor="middle" fill="#f1eee8" font-size="16" >Receivables 1,148</text><rect x="575.2" y="120" width="56.6" height="44" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M603.5 164.0 L603.5 172.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="603.491" y="186" text-anchor="middle" fill="#f1eee8" font-size="16" >Cash 3,047</text><rect x="631.8" y="120" width="48.2" height="44" fill="#8a8680" stroke="#202020" stroke-width="2"/><path d="M655.9 120.0 L655.9 86.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="655.894" y="82" text-anchor="middle" fill="#f1eee8" font-size="16" >Other current 2,595</text><text x="40" y="244" text-anchor="start" fill="#a5a29c" font-size="16" >EQUITY AND LIABILITIES · ₹34,453 CR</text><rect x="40.0" y="330" width="1.8" height="44" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M40.9 330.0 L40.9 322.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="86.56" y="318" text-anchor="middle" fill="#f1eee8" font-size="16" >Share capital 99</text><rect x="41.8" y="330" width="402.9" height="44" fill="#f5c76a" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="243.282" y="358" text-anchor="middle" fill="#202020" font-size="16" >Other equity 21,689</text><rect x="444.7" y="330" width="26.0" height="44" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M457.7 330.0 L457.7 322.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="457.742" y="318" text-anchor="middle" fill="#f1eee8" font-size="16" >NCI 1,401</text><rect x="470.8" y="330" width="39.4" height="44" fill="#ec6a94" stroke="#202020" stroke-width="2"/><path d="M490.5 374.0 L490.5 382.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="490.451" y="396" text-anchor="middle" fill="#f1eee8" font-size="16" >Borrowings 2,120</text><rect x="510.1" y="330" width="72.0" height="44" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><path d="M546.1 330.0 L546.1 296.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="546.138" y="292" text-anchor="middle" fill="#f1eee8" font-size="16" >Payables 3,875</text><rect x="582.1" y="330" width="97.9" height="44" fill="#ec6a94" opacity="0.4" stroke="#202020" stroke-width="2"/><path d="M631.1 330.0 L631.1 322.0" stroke="#73706a" stroke-width="1.5" fill="none"/><text x="631.066" y="318" text-anchor="middle" fill="#f1eee8" font-size="16" >Other owed 5,268</text><text x="40" y="470" text-anchor="start" fill="#a5a29c" font-size="16" >1 px ≈ ₹54 cr</text></svg>
+      </figure>
+      <p>Goodwill rose ₹553 cr in FY26 with no new deal: ₹569.50 cr from translating overseas goodwill into rupees, less a ₹16.02 cr impairment in Bangladesh <span class="tag">public</span>. The big step came in FY25, when goodwill added through business combinations was ₹863.75 cr and the group paid ₹1,809 cr for subsidiaries <span class="tag">public</span>; its subsidiaries now include Capital Foods (75% owned) and Organic India (100%). Outsiders’ 25% of Capital Foods is most of the ₹1,401 cr of non-controlling interest.</p>
+      <div class="field-grid">
+        <div><b>₹11,883.90 cr goodwill</b><span>Consolidated balance sheet, then Note 6 for the split by unit</span><em>REPORT PP. 414, 436–438</em></div>
+        <div><b>₹98.96 cr share capital</b><span>98,95,61,780 shares × ₹1 face value; the rest of the money raised sits in other equity</span><em>BALANCE SHEET, NOTE 14 · PP. 414, 445</em></div>
+        <div><b>₹2,120.31 cr borrowings</b><span>₹302.14 cr non-current plus ₹1,818.17 cr current; a trade payables line of ₹3,875.30 cr sits beside it</span><em>BALANCE SHEET, NOTE 15 · PP. 414, 448</em></div>
+        <div><b>₹23,188.86 cr total equity</b><span>₹21,787.53 cr for shareholders plus ₹1,401.33 cr non-controlling interest</span><em>CONSOLIDATED BALANCE SHEET · P. 414</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Cash against borrowings: where ₹2,978 cr comes from</h2>
+      <p>The AGM presentation says net cash was ₹2,978 cr <span class="tag">public</span>. The balance sheet has no line with that name; it comes from the company’s own “adjusted net (cash)/debt” in its capital-management note: cash and bank deposits, plus current investments and inter-corporate loans, less all borrowings. It adds up to ₹2,977.49 cr; the presentation’s ₹2,978 cr is that figure rounded up.</p>
+      <figure>
+        <svg viewBox="0 0 800 376" role="img" aria-label="Waterfall from cash and bank deposits 3,396.51 crore, plus current investments 868.20 and inter-corporate loans 833.09, minus borrowings 2,120.31, to adjusted net cash of 2,977.49 crore"><text x="40" y="70" text-anchor="start" fill="#a5a29c" font-size="16" >Cash + bank deposits</text><rect x="232.0" y="44" width="298.9" height="38" fill="#76d5c1"/><text x="540.893" y="70" text-anchor="start" fill="#f1eee8" font-size="16" >3,396.51</text><path d="M530.9 82.0 L530.9 102.0" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="40" y="128" text-anchor="start" fill="#a5a29c" font-size="16" >Current investments</text><rect x="530.9" y="102" width="76.4" height="38" fill="#76d5c1"/><text x="617.294" y="128" text-anchor="start" fill="#f1eee8" font-size="16" >+868.20</text><path d="M607.3 140.0 L607.3 160.0" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="40" y="186" text-anchor="start" fill="#a5a29c" font-size="16" >Inter-corporate loans</text><rect x="607.3" y="160" width="73.3" height="38" fill="#76d5c1"/><text x="690.606" y="186" text-anchor="start" fill="#f1eee8" font-size="16" >+833.09</text><path d="M680.6 198.0 L680.6 218.0" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="40" y="244" text-anchor="start" fill="#a5a29c" font-size="16" >Less: total borrowings</text><rect x="494.0" y="218" width="186.6" height="38" fill="#ec6a94"/><text x="484.019" y="244" text-anchor="end" fill="#f1eee8" font-size="16" >−2,120.31</text><path d="M494.0 256.0 L494.0 276.0" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="40" y="302" text-anchor="start" fill="#f1eee8" font-size="16" >= Adjusted net cash</text><rect x="232.0" y="276" width="262.0" height="38" fill="#76d5c1" opacity="0.75"/><text x="504.019" y="302" text-anchor="start" fill="#f1eee8" font-size="16" >2,977.49</text><text x="40" y="356" text-anchor="start" fill="#a5a29c" font-size="16" >1 px ≈ ₹11 cr</text></svg>
+      </figure>
+      <p>Cash and bank deposits of ₹3,396.51 cr are the balance sheet’s cash and cash equivalents (₹3,046.57 cr) plus other bank balances (₹373.92 cr), less ₹23.98 cr in the unclaimed dividend account. Current investments are liquid mutual funds (₹868.20 cr); inter-corporate loans are ₹247.28 cr non-current plus ₹585.81 cr current deposits <span class="tag">public</span>. Lease liabilities of ₹699.20 cr are not counted as borrowings in this measure.</p>
+      <details class="trace"><summary>Go deeper: cash that is also debt</summary>
+        <p>₹1,595.17 cr of the ₹1,633.78 cr of bank overdrafts is part of a cash-pooling arrangement, matched by an equal amount inside cash and cash equivalents <span class="tag">public</span>. Strip that pair out and borrowings are about ₹525 cr and cash about ₹1,451 cr, my arithmetic from the notes. Net cash does not change, but gross cash and gross debt both look bigger than they are.</p>
+        <p>The balance sheet alone, with no adjustments, shows cash and equivalents of ₹3,046.57 cr against borrowings of ₹2,120.31 cr: ₹926.26 cr more cash than debt.</p>
+      </details>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements in its Integrated Annual Report 2025-26, and its AGM presentation of June 2026. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions for any balance sheet</h2>
+      <ol class="checks">
+        <li><b>What is it made of?</b> Machines, goodwill, stock or cash decide how a company behaves.</li>
+        <li><b>Who paid for it?</b> Owners’ equity and lenders’ money carry very different obligations.</li>
+        <li><b>What falls due within a year?</b> Compare cash and stock with short-term loans and payables.</li>
+      </ol>
+      <p>Ramu earned ₹50 cr in FY26, yet its cash went from ₹41 cr to ₹40 cr. A balance sheet shows where the money is parked, not how it moved. Part 5, “Cash flow, and how the three connect”, follows the money.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A balance sheet is a photograph of one date, and it always balances because every event moves two things by the same amount: what a company owns equals what it owes plus what is left for its owners.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Balance-sheet lab: state is the whole balance sheet; every event changes it and the chart is drawn from it.
+    // Nothing forces the two sides to match: the beam tilts by (assets - equity - liabilities), which stays 0 only
+    // because each event moves both sides by the same amount.
+    const $=id=>document.getElementById(id);
+    const NEUT1='#8a8680',NEUT2='#a5a29c',TEAL='#76d5c1',GOLD='#f5c76a',ROSE='#ec6a94',CORAL='#ff8059',FGC='#f1eee8',MUTC='#a5a29c';
+    const FY26={ppe:220,cwip:25,inv:55,rec:45,oca:15,cash:40,sc:100,res:150,borrow:100,pay:35,oliab:15};
+    const FY25={ppe:190,cwip:22,inv:47,rec:38,oca:15,cash:41,sc:100,res:118,borrow:90,pay:30,oliab:15};
+    const ROWS_A=[['ppe','PP&E',NEUT1,1],['cwip','CWIP',NEUT2,1],['inv','Inventory',NEUT1,1],['rec','Receivables',NEUT2,1],['oca','Other current',NEUT1,1],['cash','Cash',TEAL,1]];
+    const ROWS_E=[['sc','Share capital',GOLD,1],['res','Other equity',GOLD,.62],['borrow','Borrowings',ROSE,1],['pay','Payables',ROSE,.62],['oliab','Other liab.',ROSE,.4]];
+    const NAMES={ppe:'PP&E',cwip:'CWIP',inv:'inventory',rec:'receivables',oca:'other current',cash:'cash',sc:'share capital',res:'other equity',borrow:'borrowings',pay:'payables',oliab:'other liabilities'};
+    const sumA=s=>s.ppe+s.cwip+s.inv+s.rec+s.oca+s.cash, sumE=s=>s.sc+s.res+s.borrow+s.pay+s.oliab, liab=s=>s.borrow+s.pay+s.oliab;
+    const sgn=d=>(d>0?'+':'−')+Math.abs(d);
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const ids=['machine','sale','dps','newsh'];
+    const labConfig={format:v=>'₹'+v, sliderFormats:[v=>'₹'+v+' cr',v=>'₹'+v+' cr',v=>'₹'+(+v).toFixed(2)+' a share',v=>(+v).toFixed(1)+' cr shares']};
+    const PRICE=100, FACE=10, GROSS_COST_SHARE=0.5;
+    const st={cur:{...FY26},prev:null,cmp:false,log:'Start: Ramu Chai, 31 March 2026',msg:'Start from the canonical FY26 numbers. Press an event.'};
+    const vals=()=>ids.map(id=>+$(id).value);
+    function describe(a,b){const A=[],E=[];
+      for(const [k] of ROWS_A){const d=b[k]-a[k]; if(d) A.push(NAMES[k]+' '+sgn(d));}
+      for(const [k] of ROWS_E){const d=b[k]-a[k]; if(d) E.push(NAMES[k]+' '+sgn(d));}
+      return {A:A.join(', ')||'no change',E:E.join(', ')||'no change'};}
+    function fire(kind){
+      const [m,sale,dps,newsh]=vals(), c=st.cur, n={...c}; let log='';
+      if(kind==='machine-cash'){
+        if(c.cash<m) return {ok:false,msg:'Ramu has only ₹'+c.cash+' cr of cash, not ₹'+m+' cr. Try the loan, or issue shares first.'};
+        n.cash-=m; n.ppe+=m; log='Bought a ₹'+m+' cr machine, paid cash';
+      }else if(kind==='machine-loan'){
+        n.ppe+=m; n.borrow+=m; log='Bought a ₹'+m+' cr machine with a bank loan';
+      }else if(kind==='credit-sale'){
+        const cost=sale*GROSS_COST_SHARE;
+        if(c.inv<cost) return {ok:false,msg:'Ramu has only ₹'+c.inv+' cr of stock, and this sale uses ₹'+cost+' cr of it.'};
+        n.rec+=sale; n.inv-=cost; n.res+=sale-cost; log='Sold ₹'+sale+' cr of tea on credit (cost ₹'+cost+' cr from stock)';
+      }else if(kind==='dividend'){
+        const shares=c.sc/FACE, amt=Math.round(dps*shares*100)/100;
+        if(c.cash<amt) return {ok:false,msg:'A ₹'+amt+' cr dividend needs cash, and Ramu has only ₹'+c.cash+' cr.'};
+        if(c.res<amt) return {ok:false,msg:'The reserves hold only ₹'+c.res+' cr, so they cannot cover a ₹'+amt+' cr dividend.'};
+        n.cash-=amt; n.res-=amt; log='Paid a dividend of ₹'+dps.toFixed(2)+' × '+shares+' cr shares = ₹'+amt+' cr';
+      }else if(kind==='issue-shares'){
+        const raised=Math.round(newsh*PRICE*100)/100, fv=Math.round(newsh*FACE*100)/100;
+        n.cash+=raised; n.sc+=fv; n.res+=raised-fv; log='Issued '+newsh+' cr shares at ₹'+PRICE+' (face value ₹'+FACE+')';
+      }
+      st.prev=c; st.cur=n; st.log=log;
+      return {ok:true,msg:'Done. Look at both sides: they moved by the same amount.'};
+    }
+    function draw(){
+      const c=st.cur, A=sumA(c), E=sumE(c), gap=Math.round((A-E)*100)/100;
+      const base=st.cmp?FY25:st.prev;
+      const mx=Math.max(A,E,st.cmp?sumA(FY25):0), m=Math.max(400,Math.ceil(mx/100)*100);
+      const X0=224,XEND=500,sx=v=>X0+Math.max(0,Math.min(m,v))*(XEND-X0)/m, k=(XEND-X0)/m;
+      let s='';
+      // the scale: the beam tilts only if the two sides differ
+      const tilt=Math.max(-12,Math.min(12,gap*0.5))*Math.PI/180, cx=260, half=170, by=60;
+      const lx=cx-half*Math.cos(tilt), ly=by+half*Math.sin(tilt), rx=cx+half*Math.cos(tilt), ry=by-half*Math.sin(tilt);
+      s+=`<path d="M${cx} ${by} L${cx-16} 160" stroke="${NEUT2}" stroke-width="3" fill="none"/><path d="M${cx} ${by} L${cx+16} 160" stroke="${NEUT2}" stroke-width="3" fill="none"/><path d="M${cx-60} 160 L${cx+60} 160" stroke="${NEUT2}" stroke-width="4" fill="none"/>`;
+      s+=`<path d="M${lx.toFixed(1)} ${ly.toFixed(1)} L${rx.toFixed(1)} ${ry.toFixed(1)}" stroke="${FGC}" stroke-width="5" fill="none"/>`;
+      for(const [bx,byy] of [[lx,ly],[rx,ry]]) s+=`<path d="M${bx.toFixed(1)} ${byy.toFixed(1)} L${(bx-55).toFixed(1)} ${(byy+50).toFixed(1)}" stroke="#73706a" stroke-width="1.5" fill="none"/><path d="M${bx.toFixed(1)} ${byy.toFixed(1)} L${(bx+55).toFixed(1)} ${(byy+50).toFixed(1)}" stroke="#73706a" stroke-width="1.5" fill="none"/>`;
+      const eqw=110*c.sc/Math.max(1,E)+110*c.res/Math.max(1,E);
+      s+=`<rect x="${(lx-55).toFixed(1)}" y="${(ly+50).toFixed(1)}" width="110" height="9" fill="${NEUT1}"/>`;
+      s+=`<rect x="${(rx-55).toFixed(1)}" y="${(ry+50).toFixed(1)}" width="${eqw.toFixed(1)}" height="9" fill="${GOLD}"/><rect x="${(rx-55+eqw).toFixed(1)}" y="${(ry+50).toFixed(1)}" width="${(110-eqw).toFixed(1)}" height="9" fill="${ROSE}"/>`;
+      s+=`<text x="${lx.toFixed(1)}" y="${(ly+84).toFixed(1)}" text-anchor="middle" fill="${FGC}" font-size="16">Assets ₹${A}</text>`;
+      s+=`<text x="${rx.toFixed(1)}" y="${(ry+84).toFixed(1)}" text-anchor="middle" fill="${FGC}" font-size="16">Equity + owed ₹${E}</text>`;
+      s+=`<text x="${cx}" y="188" text-anchor="middle" fill="${gap===0?FGC:CORAL}" font-size="16">${gap===0?'level · gap ₹0':'TILTED · gap ₹'+gap}</text>`;
+      // rows
+      const bh=18, pitch=28;
+      const ghost=(key,y)=>st.cmp?`<path d="M${sx(FY25[key]).toFixed(1)} ${y-4} L${sx(FY25[key]).toFixed(1)} ${y+bh+4}" stroke="${FGC}" stroke-width="2" stroke-dasharray="3 3" fill="none"/>`:'';
+      const delta=(cur,old,y)=>{if(!base) return ''; const d=Math.round((cur-old)*100)/100; return d?`<text x="212" y="${y+14}" text-anchor="end" fill="${FGC}" font-size="16">${sgn(d)}</text>`:'';};
+      function group(title,rows,startY,total,totalName,fy25sum){
+        let y=startY; let out=`<text x="14" y="${y-14}" fill="${MUTC}" font-size="16">${title}</text>`;
+        if(st.cmp) out+=`<text x="${XEND}" y="${y-14}" text-anchor="end" fill="${MUTC}" font-size="16">dashed = FY25</text>`;
+        out+=`<path d="M${X0} ${y-6} L${X0} ${y+pitch*(rows.length+1)-8}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+        for(const [key,name,col,op] of rows){
+          const v=c[key];
+          out+=`<text x="14" y="${y+14}" fill="${MUTC}" font-size="16">${esc(name)}</text><text x="160" y="${y+14}" text-anchor="end" fill="${FGC}" font-size="16">${v}</text>`;
+          out+=delta(v,base?base[key]:0,y)+`<rect data-v="${v}" x="${X0}" y="${y}" width="${(v*k).toFixed(1)}" height="${bh}" fill="${col}" opacity="${op}"/>`+ghost(key,y);
+          y+=pitch;
+        }
+        out+=`<text x="14" y="${y+14}" fill="${FGC}" font-size="16">${totalName}</text><text x="160" y="${y+14}" text-anchor="end" fill="${FGC}" font-size="16">${total}</text>`;
+        out+=delta(total,base?fy25sum(base):0,y);
+        let x=X0; for(const [key,,col,op] of rows){const w=c[key]*k; out+=`<rect x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${bh}" fill="${col}" opacity="${op}" stroke="#202020" stroke-width="1"/>`; x+=w;}
+        out+=`<rect data-v="${total}" x="${X0}" y="${y}" width="${(total*k).toFixed(1)}" height="${bh}" fill="none" stroke="${FGC}" stroke-width="1.5"/>`;
+        if(st.cmp) out+=`<path d="M${sx(fy25sum(FY25)).toFixed(1)} ${y-4} L${sx(fy25sum(FY25)).toFixed(1)} ${y+bh+4}" stroke="${FGC}" stroke-width="2" stroke-dasharray="3 3" fill="none"/>`;
+        return out;
+      }
+      s+=group('ASSETS',ROWS_A,226,A,'Total assets',sumA);
+      s+=group('EQUITY & LIABILITIES',ROWS_E,226+pitch*7+50,E,'Total E + L',sumE);
+      const bottom=226+pitch*7+50+pitch*6+8;
+      [0,m/2,m].forEach((t,i)=>{s+=`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+22}" text-anchor="${['start','middle','end'][i]}" fill="${MUTC}" font-size="16">${esc(labConfig.format(t))}</text>`;});
+      s+=`<text x="14" y="${bottom+50}" fill="${MUTC}" font-size="16">₹ crore · axis grows with the totals</text>`;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${bottom+64}`);
+      $('labChart').innerHTML=s;
+      // ledger
+      const rows=[['Last event',st.log],['Assets changed',st.prev&&!st.cmp?describe(st.prev,c).A:(st.prev?describe(st.prev,c).A:'—')],['Equity and liabilities changed',st.prev?describe(st.prev,c).E:'—'],
+        ['Total assets','₹'+A],['Equity + liabilities','₹'+E],['Gap (assets − equity − liabilities)','₹'+gap],
+        ['Equity = assets − liabilities',A+' − '+liab(c)+' = '+(A-liab(c))],['Shares in issue',(c.sc/FACE)+' crore (share capital ₹'+c.sc+' cr ÷ face value ₹'+FACE+')']];
+      if(st.cmp){rows.push(['FY25 → now: total assets',sumA(FY25)+' → '+A],['FY25 → now: equity',(FY25.sc+FY25.res)+' → '+(c.sc+c.res)],['Equity roll, FY25 to FY26','218 + 50 − 18 = '+(218+50-18)]);}
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${esc(a)}</span><span>${esc(b)}</span>`).join('');
+      $('msg').textContent=st.msg;
+      window.labResults={valid:Number.isFinite(A)&&Number.isFinite(E),state:{...c},prev:st.prev?{...st.prev}:null,cmp:st.cmp,assets:A,eqliab:E,gap,axis:m,log:st.log};
+    }
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML=''; $('ledger').textContent='';
+      const v=vals();
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      $('b-mcash').textContent='Buy ₹'+v[0]+' cr machine · cash';
+      $('b-mloan').textContent='Buy ₹'+v[0]+' cr machine · loan';
+      $('b-sale').textContent='Sell ₹'+v[1]+' cr on credit';
+      $('b-div').textContent='Pay ₹'+v[2].toFixed(2)+' a share dividend';
+      $('b-shares').textContent='Issue '+v[3].toFixed(1)+' cr new shares';
+      draw();
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.events button').forEach(b=>b.addEventListener('click',()=>{const r=fire(b.dataset.ev); st.msg=r.msg; update();}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{
+      const p=b.dataset.state;
+      st.cur={...(p==='fy25'?FY25:FY26)}; st.prev=null; st.cmp=(p==='cmp');
+      st.log=p==='fy25'?'FY25 year-end (31 March 2025)':p==='cmp'?'FY26 with FY25 dashed for comparison':'Start: Ramu Chai, 31 March 2026';
+      st.msg=p==='cmp'?'Dashed lines mark FY25. Assets +47, equity +32: 218 + 50 − 18 = 250.':p==='fy25'?'The photograph one year earlier.':'Reset to the canonical FY26 numbers.';
+      update();}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
