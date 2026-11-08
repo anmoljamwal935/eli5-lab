@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "the-profit-and-loss-eli5",
+    "title": "The P&L, line by line",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 3: from sales to profit, and the lines that hide surprises",
+    "bullets": [
+      "Revenue to profit after tax, one line at a time",
+      "Other income and exceptional items hide surprises",
+      "Drive Ramu Chai's P&L, then find it in TCPL's report"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SALES",
+      "COSTS",
+      "PROFIT"
+    ],
+    "file": "explainers/the-profit-and-loss-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A staircase of bars from 500 of sales down through costs, interest and tax to 50 of profit\"><path d=\"M24 35V135\" stroke=\"#57534f\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 3</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#a5a29c\">SALES TO PROFIT</text></g><rect x=\"24.0\" y=\"38.0\" width=\"272.0\" height=\"7\" fill=\"#76d5c1\"/><rect x=\"160.0\" y=\"48.5\" width=\"136.0\" height=\"7\" fill=\"#ff8059\"/><rect x=\"127.4\" y=\"59.0\" width=\"32.6\" height=\"7\" fill=\"#ff8059\"/><rect x=\"70.2\" y=\"69.5\" width=\"57.1\" height=\"7\" fill=\"#ff8059\"/><rect x=\"24.0\" y=\"80.0\" width=\"46.2\" height=\"7\" fill=\"#f5c76a\"/><rect x=\"63.7\" y=\"90.5\" width=\"6.5\" height=\"7\" fill=\"#ff8059\"/><rect x=\"60.4\" y=\"101.0\" width=\"5.4\" height=\"7\" fill=\"#ec6a94\"/><rect x=\"51.2\" y=\"111.5\" width=\"9.2\" height=\"7\" fill=\"#ff8059\"/><rect x=\"24.0\" y=\"122.0\" width=\"27.2\" height=\"7\" fill=\"#f5c76a\"/></svg>",
+    "part": 3
+  },
+  {
     "id": "where-the-numbers-live-eli5",
     "title": "Where the numbers live",
     "category": "Monetary Architecture",
