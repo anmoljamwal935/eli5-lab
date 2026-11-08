@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "the-balance-sheet-eli5",
+    "title": "The balance sheet",
+    "category": "Monetary Architecture",
+    "minutes": 12,
+    "summary": "Part 4: what a company owns, owes and keeps, on one date",
+    "bullets": [
+      "Assets always equal liabilities plus equity",
+      "Every event moves two things",
+      "Goodwill and cash show up in TCPL's real accounts"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "OWN",
+      "OWE",
+      "KEEP"
+    ],
+    "file": "explainers/the-balance-sheet-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A level balance scale: assets (grey with teal cash) on one pan balance equity (gold) plus amounts owed (rose) on the other\"><path d=\"M160 40 L148 112 M160 40 L172 112 M128 112 H192\" stroke=\"#a5a29c\" stroke-width=\"3\" fill=\"none\"/><path d=\"M52 40 H268\" stroke=\"#f1eee8\" stroke-width=\"4\" fill=\"none\"/><path d=\"M52 40 L30 66 M52 40 L74 66 M268 40 L246 66 M268 40 L290 66\" stroke=\"#73706a\" stroke-width=\"1.5\" fill=\"none\"/><rect x=\"30\" y=\"66\" width=\"44\" height=\"34\" fill=\"#8a8680\"/><rect x=\"30\" y=\"88\" width=\"44\" height=\"12\" fill=\"#76d5c1\"/><rect x=\"246\" y=\"66\" width=\"44\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"246\" y=\"86\" width=\"44\" height=\"14\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 4</text><text x=\"160\" y=\"139\" text-anchor=\"middle\" fill=\"#a5a29c\">ALWAYS BALANCES</text></g></svg>",
+    "part": 4
+  },
+  {
     "id": "the-profit-and-loss-eli5",
     "title": "The P&L, line by line",
     "category": "Monetary Architecture",
