@@ -21,7 +21,7 @@
     { id: 'pe-ratio-eli5', track: 'value', title: 'P/E: what it says and when it lies', blurb: 'EPS and P/E you can drive yourself, and the traps that fool them', file: 'pe-ratio-eli5.html' },
     { id: 'margins-and-operating-leverage-eli5', track: 'numbers', title: 'Margins and operating leverage', blurb: 'Why a 10% rise in sales can mean a 30% rise in profit', file: 'margins-and-operating-leverage-eli5.html' },
     { id: 'growth-worth-paying-for-eli5', track: 'numbers', title: "Growth that's worth paying for", blurb: 'CAGR, compounding, base effects, and growth that eats cash', file: 'growth-worth-paying-for-eli5.html' },
-    { id: 'roe-roce-dupont-eli5', track: 'numbers', title: 'ROE, ROCE and DuPont', blurb: 'How well a company uses its money, and three ways to get the same return' },
+    { id: 'roe-roce-dupont-eli5', track: 'numbers', title: 'ROE, ROCE and DuPont', blurb: 'How well a company uses its money, and three ways to get the same return', file: 'roe-roce-dupont-eli5.html' },
     { id: 'how-much-debt-eli5', track: 'numbers', title: 'Debt: how much is too much', blurb: 'Leverage, interest cover, and what a rate hike does to a borrower' },
     { id: 'working-capital-cycle-eli5', track: 'numbers', title: 'Working capital and the cash cycle', blurb: 'Inventory, customers and suppliers: how long a rupee stays stuck' },
     { id: 'free-cash-flow-eli5', track: 'numbers', title: 'Free cash flow and earnings quality', blurb: 'The cash test every reported profit has to pass' },
