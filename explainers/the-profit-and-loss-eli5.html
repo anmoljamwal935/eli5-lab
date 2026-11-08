@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The P&amp;L, line by line — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* SERIES COLOUR KEY (Fundamental analysis, from scratch). Same colour = same meaning in every part:
+       teal #76d5c1 = money coming in (sales, other income) · coral #ff8059 = money going out (costs, tax)
+       gold #f5c76a = what belongs to shareholders (profit) · rose #ec6a94 = what is owed (debt, interest)
+       lavender #c3b8ff = the market's view (price, multiples; not used in this part) */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:640px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+    /* This page: the interest-rate stepper (the lab allows four sliders, so the fifth input is a stepper) */
+    .lab .stepper{display:flex;gap:8px;margin-top:8px}
+    .lab .stepper button{min-width:48px}
+    .real-fig+.real-fig{margin-top:18px}
+  </style>
+</head>
+<body data-series-id="the-profit-and-loss-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 15 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>The P&amp;L, line by line</h1>
+      <p class="lede">A profit and loss statement is a year told as subtraction: start with what customers paid, take away each cost in a fixed order, and see what is left for the owners. Learn the order once and you can read any Indian company’s P&amp;L.</p>
+      <p class="source-note">Built from Ramu Chai Ltd’s example accounts and Tata Consumer Products’ audited FY2026 consolidated statements, facts checked against them · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Part 1 set a share’s price against the value of the business. <a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">Part 2</a> showed where a company’s statements live. This part reads the first of them. Ramu Chai Ltd is a made-up tea company, and its numbers carry <span class="tag">example</span>. Tata Consumer Products (TCPL) is real, and its audited figures carry <span class="tag">public</span>; they are frozen at FY2026, the year to 31 March 2026. Educational, not a recommendation. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#f5c76a"></i>profit: the shareholders’</span>
+        <span><i style="background:#ec6a94"></i>interest on debt</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The big picture</p>
+      <h2>From ₹500 crore of sales to ₹50 crore</h2>
+      <p>Ramu Chai sold ₹500 crore of tea in FY26 <span class="tag">example</span>. Each line of the P&amp;L takes a bite, in a fixed order, until ₹50 crore is left. Teal brings money in, coral takes it out, rose is interest, gold is profit. The rest of this page walks down these steps.</p>
+      <figure>
+        <svg id="f1" viewBox="0 0 800 410" role="img" aria-label="A staircase of bars from revenue of 500 rupees crore down through costs, interest and tax to profit after tax of 50 rupees crore"></svg>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The top line</p>
+      <h2>Revenue is cups times price</h2>
+      <p><b>Revenue from operations</b> is what customers paid for the company’s main business. Ramu sold 100 crore cups at ₹5 each: ₹500 crore <span class="tag">example</span>. Interest earned on spare cash is not sales, so it sits on a separate line further down. Part 16 covers volume and price in depth.</p>
+      <figure>
+        <svg id="f2" viewBox="0 0 800 280" role="img" aria-label="A rectangle 100 cups wide and 5 rupees tall whose area is 500 rupees crore of revenue, beside a tiny square for 4 rupees crore of other income"></svg>
+      </figure>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The running costs</p>
+      <h2>Three costs before wear and finance</h2>
+      <p>Indian statements list costs by what they are, not by department. Ramu’s: materials ₹250 crore (tea, milk, sugar, packaging), employee benefits ₹60 crore, other expenses ₹105 crore (rent, ads, power, freight) <span class="tag">example</span>. ₹85 crore is left. Part 8 turns these into margins.</p>
+      <figure>
+        <svg id="f3" viewBox="0 0 800 270" role="img" aria-label="The 500 crore revenue bar above a second bar of the same length cut into materials 250, staff 60, other 105 and what is left, 85"></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: “materials” in a real statement</summary>
+        <p>A company that buys tea in bulk and also resells finished goods shows three lines: cost of materials consumed, purchases of stock-in-trade, and changes in inventories. TCPL’s FY2026 figures, in ₹ crore: 7,788.16 + 4,108.23 − 40.75 = 11,855.64 <span class="tag">public</span>. Sales minus materials is “gross profit”, which is not a reported line either; analysts compute it.</p>
+      </details>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">A line nobody reports</p>
+      <h2>EBITDA: profit before wear and finance</h2>
+      <p><b>EBITDA</b> is earnings before interest, tax, depreciation and amortisation. Ind AS has no such line, so you will not find it in an audited statement; everyone computes it. Two roads reach Ramu’s ₹85 crore: subtract the costs from the top, or add back from the bottom <span class="tag">example</span>.</p>
+      <figure>
+        <svg id="f4" viewBox="0 0 800 290" role="img" aria-label="Two bars ending at the same point, 85 crore: one from revenue minus three costs, one built from pre-tax profit 67 plus interest 10 plus depreciation 12 minus other income 4"></svg>
+      </figure>
+      <p class="note">Because EBITDA is each company’s own sum, compare like with like. TCPL’s own figure and the one its statement gives differ; see the real report below.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Wear and tear</p>
+      <h2>Depreciation spreads a big purchase</h2>
+      <p>Picture one ₹120 crore plant that lasts ten years. The P&amp;L does not charge ₹120 crore in the year it is bought; it charges ₹12 crore a year <span class="tag">example</span>. That is <b>depreciation</b>. For brands and software bought in a deal, the same spreading is called <b>amortisation</b>. EBITDA ₹85 crore minus ₹12 crore is EBIT, ₹73 crore. Part 6 covers the choices behind it.</p>
+      <figure>
+        <svg id="f5" viewBox="0 0 800 220" role="img" aria-label="A 120 crore plant drawn as ten equal slices of 12 crore, with only the first slice charged to this year"></svg>
+      </figure>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">Lines that hide surprises</p>
+      <h2>Other income and finance costs</h2>
+      <p>Below EBIT, two lines come from the balance sheet, not from tea. Ramu earns ₹4 crore of interest on ₹40 crore of cash (<b>other income</b>) and pays ₹10 crore on ₹100 crore of borrowings (<b>finance costs</b>), both at about 10% <span class="tag">example</span>. Other income is the one to question: a company can look profitable on money that has nothing to do with its business.</p>
+      <figure>
+        <svg id="f6" viewBox="0 0 800 280" role="img" aria-label="Two blocks of equal height: a 40 crore cash block earning 4 crore, and a 100 crore borrowings block costing 10 crore, with areas in the same 4 to 10 proportion"></svg>
+      </figure>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">Lines that hide surprises</p>
+      <h2>Exceptional items: the one-offs</h2>
+      <p>Gains and charges a company calls unusual, such as selling land or writing down an asset, get their own line just above profit before tax. Ramu’s real FY26 has none. But suppose it sold an old plot for a ₹12 crore gain <span class="tag">example</span>: pre-tax profit reads ₹79 crore, then “falls” 15% next year, though the tea business never changed.</p>
+      <figure>
+        <svg id="f7" viewBox="0 0 800 270" role="img" aria-label="A what-if year with 67 crore of tea profit plus a 12 crore one-off gain, 79 in all, beside the next year at 67, which looks like a fall of 15 percent"></svg>
+      </figure>
+      <p class="note">Ind AS has no “extraordinary” line, and “exceptional” is loosely defined, so each company decides what goes there. Some “one-offs” return year after year: read the note behind the line.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The bottom line</p>
+      <h2>Tax, profit after tax, and EPS</h2>
+      <p>Tax takes about a quarter of Ramu’s ₹67 crore: ₹17 crore, leaving <b>profit after tax</b> (PAT) of ₹50 crore <span class="tag">example</span>. Split among 10 crore shares, each share’s slice is ₹5, its <b>EPS</b>; Part 7 teaches EPS and P/E in full. In a group, PAT is also split between the parent’s owners and “non-controlling interests”, outsiders who own part of a subsidiary.</p>
+      <figure>
+        <svg id="f8" viewBox="0 0 800 250" role="img" aria-label="Pre-tax profit of 67 crore split into 50 of profit and 17 of tax, and the 50 cut into ten tiles of 5 rupees, one per share"></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: current and deferred tax</summary>
+        <p>The tax line adds tax due now (current tax) to tax that accounting timing moves between years (deferred tax). TCPL’s FY2026 tax of ₹535.28 crore is 545.27 current plus −9.99 deferred <span class="tag">public</span>. Ramu’s ₹17 crore is simply 17 ÷ 67 of pre-tax profit, about 25%.</p>
+      </details>
+    </section>
+
+    <!-- 9 LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Drive Ramu’s P&amp;L yourself</h2>
+      <p>Start from the real FY26 and move the dials. Assumptions: materials scale with cups sold; staff ₹60 crore, depreciation ₹12 crore and other income ₹4 crore stay put; other expenses are the figure you set (in life, freight and ads partly move with volume, which Part 8 explores); debt is ₹100 crore; tax is 17 ÷ 67 of any positive pre-tax profit, and none on a loss. <span class="tag">example</span></p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="s-cups">Cups sold <output id="s-cups-o"></output></label><input id="s-cups" type="range" min="60" max="140" step="1" value="100"></div>
+          <div class="control"><label for="s-price">Price per cup <output id="s-price-o"></output></label><input id="s-price" type="range" min="3" max="7" step="0.05" value="5"></div>
+          <div class="control"><label for="s-mat">Material cost per cup <output id="s-mat-o"></output></label><input id="s-mat" type="range" min="1.5" max="4" step="0.05" value="2.5"></div>
+          <div class="control"><label for="s-oth">Other expenses <output id="s-oth-o"></output></label><input id="s-oth" type="range" min="60" max="160" step="1" value="105"></div>
+          <div class="control"><label id="rate-l">Interest rate on ₹100 crore debt <output id="rate-o"></output></label>
+            <div class="stepper" role="group" aria-labelledby="rate-l"><button type="button" class="secondary" id="rate-dn" aria-label="Lower the interest rate by half a point">−</button><button type="button" class="secondary" id="rate-up" aria-label="Raise the interest rate by half a point">+</button></div></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="100,5,2.5,105,10">Base case</button>
+            <button type="button" class="secondary" data-p="100,5,3,105,10">Tea up 20%</button>
+            <button type="button" class="secondary" data-p="100,5,2.5,105,16">Rate hike</button>
+            <button type="button" class="secondary" data-p="115,4.5,2.5,105,10">Price cut, more cups</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 640 300" role="img" aria-label="A staircase from revenue to profit after tax for Ramu Chai, redrawn live from the controls, with the base case as dashed outlines"></svg></div>
+      </div></div>
+    </section>
+
+    <!-- 10 REAL -->
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Tata Consumer’s FY2026 P&amp;L</h2>
+      <p>Tata Consumer Products’ consolidated statement of profit and loss (Integrated Annual Report 2025-26, page 415, audited by Deloitte) is the same staircase, in ₹ crore <span class="tag">public</span>. The group has more lines than Ramu, so the picture is split in two: the top half on one scale, the bottom half magnified about ten times. Figures are rounded to the nearest crore, so a sum can be off by one.</p>
+      <figure class="real-fig">
+        <svg id="r1" viewBox="0 0 800 300" role="img" aria-label="TCPL FY2026 staircase from revenue 20,290 crore through materials, staff, other expenses, EBITDA and depreciation to EBIT of 2,165 crore"></svg>
+      </figure>
+      <figure class="real-fig">
+        <svg id="r2" viewBox="0 0 800 400" role="img" aria-label="TCPL FY2026 from EBIT 2,165 crore through other income, finance costs, one-offs, tax and associates to group profit of 1,547 crore, on a magnified scale"></svg>
+      </figure>
+      <ul class="checks">
+        <li><b>Revenue ₹20,290.43 crore.</b> Some press reports say ₹20,280 crore; the audited statement and its Note 21 say 20,290.43, and so does TCPL’s own results filing.</li>
+        <li><b>EBITDA is not on the statement.</b> Revenue less materials, staff and other expenses gives ₹2,791.80 crore. TCPL’s management report quotes ₹2,815 crore. The ₹23 crore gap is a definition: the statement does not reconcile the two.</li>
+        <li><b>Other income ₹164.75 crore</b> is about 7.5% of profit before exceptional items, and more than finance costs of ₹137.03 crore. It is mostly interest (₹101.38 crore), plus ₹28.55 crore of gains on investments, ₹11.83 crore of dividends and ₹22.99 crore of other non-operating income. TCPL reports net cash of ₹2,978 crore (management report, page 224), so the interest has a source.</li>
+        <li><b>Finance costs halved</b>, from ₹290.20 crore to ₹137.03 crore. ₹40.96 crore of the new figure is interest on leases. The note shows the split, not the reason for the fall.</li>
+        <li><b>Exceptional items net to −₹20.06 crore</b>, which hides ₹90.93 crore of gains against ₹110.99 crore of charges (next drawing).</li>
+        <li><b>Associates and joint ventures: −₹90.70 crore</b>, a line Ramu does not have. Profit for the year is ₹1,546.80 crore, of which ₹1,542.30 crore is the owners’ and ₹4.50 crore non-controlling interests’. Basic EPS is ₹15.59.</li>
+      </ul>
+      <figure class="real-fig">
+        <svg id="r3" viewBox="0 0 800 330" role="img" aria-label="The five exceptional items add and subtract from zero: a 55.57 crore fair value gain and a 35.36 crore asset sale gain, then charges of 69.06, 25.91 and 16.02 crore, netting to a loss of 20.06 crore"></svg>
+      </figure>
+      <p>Those five items: a fair-value gain on contingent consideration (₹55.57 crore, the price still owed for an earlier acquisition, remeasured), profit on selling non-core assets (₹35.36 crore), an asset write-down (₹69.06 crore), the one-time effect of India’s new Labour Codes (₹25.91 crore) and a goodwill impairment (₹16.02 crore) <span class="tag">public</span>. The previous year’s line also held a ₹120 crore fair-value gain against ₹125.11 crore of charges. Read the note, not just the total.</p>
+      <div class="field-grid">
+        <div><b>The statement</b><span>Consolidated Statement of Profit and Loss, year ended 31 March 2026</span><em>IAR 2025-26, page 415</em></div>
+        <div><b>Revenue, other income, materials</b><span>Notes 21, 22 and 23</span><em>page 453</em></div>
+        <div><b>Finance costs, depreciation, other expenses</b><span>Notes 26, 27 and 28</span><em>page 455</em></div>
+        <div><b>Exceptional items and EPS</b><span>Notes 29 and 30</span><em>page 456</em></div>
+        <div><b>Management’s EBITDA</b><span>Management Discussion and Analysis, performance snapshot</span><em>pages 223 and 224</em></div>
+      </div>
+    </section>
+
+    <!-- 11 SO WHAT -->
+    <section class="panel fg">
+      <p class="kicker">So what</p>
+      <h2>Three questions for any P&amp;L</h2>
+      <ol class="checks">
+        <li><b>How much of the profit is not from the business?</b> Compare other income with profit before tax.</li>
+        <li><b>What is inside exceptional items, and does it come back?</b> Open the note and add up gains and charges separately.</li>
+        <li><b>Which cost grew faster than sales?</b> Set each line’s growth beside revenue’s.</li>
+      </ol>
+      <p>A P&amp;L covers a year of flow. It does not say what the company owns and owes on the last day, or where the cash went. <b>Part 4, “The balance sheet”,</b> answers the first: what a company owns, what it owes, and what is left for its shareholders. Part 5 follows the cash.</p>
+      <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A P&amp;L is a staircase from sales down to profit, and the steps worth doubting are the ones that don’t come from selling anything: other income and exceptional items.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ---------- shared drawing helpers ----------
+    const $=id=>document.getElementById(id);
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const TEAL='#76d5c1',CORAL='#ff8059',GOLD='#f5c76a',ROSE='#ec6a94',INK='#202020',FG='#f1eee8',MUTED='#a5a29c',LINE='#57534f';
+    const T=(x,y,t,o={})=>`<text x="${x}" y="${y}" fill="${o.fill||FG}" font-size="${o.size||16}" text-anchor="${o.anchor||'start'}"${o.weight?` font-weight="${o.weight}"`:''}>${esc(t)}</text>`;
+    const R=(x,y,w,h,fill,extra='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" ${extra}/>`;
+    const grp=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    function num(v,dec){let s=Math.abs(v).toFixed(dec);if(dec===1)s=s.replace(/\.0$/,'');const p=s.split('.');p[0]=grp(p[0]);return p.join('.');}
+    const money=(v,dec=0)=>(Number(Math.abs(v).toFixed(dec))===0?'':v<0?'−':'')+'₹'+num(v,dec);
+    const delta=(v,dec)=>Number(Math.abs(v).toFixed(dec))===0?'₹0':(v>0?'+':'−')+'₹'+num(v,dec);
+    function niceStep(range,target){const raw=range/target,p=Math.pow(10,Math.floor(Math.log10(raw)));for(const m of [1,2,5,10]) if(m*p>=raw-1e-12) return m*p;return 10*p;}
+    // Lays out a waterfall: kind 'start' = a bar from zero; 'delta' = a signed step from the running total; 'total' = the running total, from zero.
+    function layout(rows){let run=0;return rows.map(r=>{
+      if(r.kind==='start'){run=r.v;return {r,lo:Math.min(0,run),hi:Math.max(0,run),val:run,total:true,run};}
+      if(r.kind==='delta'){const a=run;run=run+r.v;return {r,lo:Math.min(a,run),hi:Math.max(a,run),val:r.v,total:false,run};}
+      return {r,lo:Math.min(0,run),hi:Math.max(0,run),val:run,total:true,run};});}
+    // One scale function places every tick, gridline and bar.
+    function waterfall(svg,rows,o){
+      const bars=layout(rows),ghost=o.ghost?layout(o.ghost):null,all=bars.concat(ghost||[]);
+      const lo=Math.min(0,...all.map(b=>b.lo)),hi=Math.max(0,...all.map(b=>b.hi));
+      const step=niceStep(hi-lo||1,o.maxTicks||6),axLo=Math.floor(lo/step+1e-9)*step,axHi=Math.max(Math.ceil(hi/step-1e-9)*step,axLo+step);
+      const x0=o.labelW,x1=o.W-o.valueW,sx=v=>x0+(v-axLo)*(x1-x0)/(axHi-axLo);
+      const top=o.top||14,rh=o.rowH,bh=Math.round(rh*.62),n=bars.length,bottom=top+n*rh,dec=o.dec||0;
+      const nt=Math.round((axHi-axLo)/step),ticks=[];for(let i=0;i<=nt;i++)ticks.push(Math.round((axLo+i*step)*1e6)/1e6);
+      let s='';
+      ticks.forEach(t=>{s+=`<line x1="${sx(t)}" y1="${top}" x2="${sx(t)}" y2="${bottom}" stroke="${t===0?LINE:'#2e2c2a'}"/>`;});
+      bars.forEach((b,i)=>{
+        const cy=top+i*rh+rh/2,y=cy-bh/2,xa=sx(b.lo),xb=sx(b.hi),w=Math.abs(xb-xa),r=b.r;
+        const fillW=b.val===0?0:Math.max(w,2);
+        if(i<bars.length-1)s+=`<line x1="${sx(b.run)}" y1="${y+bh}" x2="${sx(b.run)}" y2="${y+rh}" stroke="${LINE}"/>`;
+        if(ghost){const g=ghost[i];s+=`<rect x="${sx(g.lo)}" y="${y-2}" width="${Math.max(sx(g.hi)-sx(g.lo),1)}" height="${bh+4}" fill="none" stroke="${MUTED}" stroke-dasharray="4 3"/>`;}
+        if(fillW>0) s+=b.total?`<rect data-v="${b.val}" x="${b.val<0?xa:sx(0)}" y="${y}" width="${fillW}" height="${bh}" fill="${r.color}"/>`:`<rect data-lo="${b.lo}" data-hi="${b.hi}" x="${xa}" y="${y}" width="${fillW}" height="${bh}" fill="${r.color}"/>`;
+        s+=T(10,cy+5,r.label,{fill:r.hot?GOLD:(b.total?FG:MUTED),weight:b.total?600:null});
+        s+=T(o.W-10,cy+5,b.total?money(b.val,dec):delta(b.val,dec),{anchor:'end',fill:r.hot?GOLD:FG,weight:b.total?600:null});
+      });
+      const tf=o.tickFmt||(v=>money(v,0));
+      ticks.forEach(t=>{s+=`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+24}" text-anchor="middle" fill="${MUTED}" font-size="16">${esc(tf(t))}</text>`;});
+      s+=(o.head||'');
+      svg.setAttribute('viewBox',`0 0 ${o.W} ${bottom+(o.foot||40)}`);
+      svg.innerHTML=s+(o.extra||'');
+      return {bars,sx,axLo,axHi,ticks};
+    }
+    const ramuRows=c=>[
+      {label:'Revenue',kind:'start',v:c.rev,color:TEAL},
+      {label:'Materials',kind:'delta',v:-c.mat,color:CORAL},
+      {label:'Employees',kind:'delta',v:-c.emp,color:CORAL},
+      {label:'Other expenses',kind:'delta',v:-c.oth,color:CORAL},
+      {label:'EBITDA',kind:'total',color:GOLD},
+      {label:'Depreciation',kind:'delta',v:-c.da,color:CORAL},
+      {label:'EBIT',kind:'total',color:GOLD},
+      {label:'Other income',kind:'delta',v:c.oi,color:TEAL},
+      {label:'Finance costs',kind:'delta',v:-c.fin,color:ROSE},
+      {label:'Profit before tax',kind:'total',color:GOLD},
+      {label:'Tax',kind:'delta',v:-c.tax,color:CORAL},
+      {label:'Profit after tax',kind:'total',color:GOLD,hot:true}];
+    // Ramu Chai FY26 model. Defaults are the canonical accounts; tax is 17/67 of positive pre-tax profit.
+    const BASE={cups:100,price:5,mat:2.5,oth:105,rate:10};
+    function ramu(i){
+      const rev=i.cups*i.price,mat=i.cups*i.mat,emp=60,da=12,oi=4,fin=100*i.rate/100;
+      const ebitda=rev-mat-emp-i.oth,ebit=ebitda-da,pbt=ebit+oi-fin,tax=Math.max(0,pbt)*17/67,pat=pbt-tax;
+      return {rev,mat,emp,oth:i.oth,ebitda,da,ebit,oi,fin,pbt,tax,pat,eps:pat/10};
+    }
+    const BASEC=ramu(BASE);
+  </script>
+
+  <script>
+    // ---------- static drawings ----------
+    // f1: the staircase, Ramu base case
+    waterfall($('f1'),ramuRows(BASEC),{W:800,labelW:190,valueW:100,rowH:30,top:8,dec:0,maxTicks:5,foot:40});
+    // f2: area = money. 4px per cup, 24px per rupee, so 96 px² = ₹1 crore
+    $('f2').innerHTML=
+      R(90,60,400,120,TEAL)+T(290,128,'₹500 crore',{fill:INK,anchor:'middle',size:22,weight:600})+
+      T(80,125,'₹5',{anchor:'end'})+T(290,208,'100 crore cups',{anchor:'middle'})+
+      R(600,160.8,20,19.2,TEAL)+T(600,146,'Other income ₹4 crore')+T(600,208,'not sales',{fill:MUTED})+
+      T(90,262,'Area is money: 96 px² = ₹1 crore',{fill:MUTED});
+    // f3: revenue bar and the same bar cut up. 1.4px per ₹ crore
+    (function(){const k=1.4,x=40;let cx=x,s=R(x,36,500*k,48,TEAL)+T(x+14,66,'Revenue ₹500 crore',{fill:INK,weight:600});
+      [['Materials','₹250',250,CORAL],['Staff','₹60',60,CORAL],['Other','₹105',105,CORAL],['EBITDA','₹85',85,GOLD]].forEach(([n,a,v,c])=>{
+        const w=v*k;s+=R(cx+1,120,w-2,64,c)+T(cx+w/2,148,n,{fill:INK,anchor:'middle',weight:600})+T(cx+w/2,170,a,{fill:INK,anchor:'middle'});cx+=w;});
+      const e=x+415*k;s+=`<path d="M${x} 206 V216 H${e} V206" fill="none" stroke="${LINE}" stroke-width="2"/>`+T((x+e)/2,244,'₹415 crore of costs',{anchor:'middle',fill:CORAL});
+      $('f3').innerHTML=s;})();
+    // f4: two roads to ₹85 crore. 6.8px per ₹ crore
+    (function(){const k=6.8,x=170,end=x+85*k;let s=T(14,70,'From the top')+R(x,48,85*k,36,GOLD)+T(x+14,72,'EBITDA ₹85',{fill:INK,weight:600});
+      s+=T(14,160,'From the bottom');let cx=x;
+      [[67,GOLD,'₹67',0],[10,ROSE,'₹10',0],[12,CORAL,'₹12',4]].forEach(([v,c,l,cut])=>{s+=R(cx+1,138,v*k-2,36,c)+T(cx+(v-cut)*k/2,162,l,{fill:INK,anchor:'middle',weight:600});cx+=v*k;});
+      s+=R(end,138,4*k,36,'none',`stroke="${TEAL}" stroke-width="3" stroke-dasharray="5 3"`);
+      s+=`<line x1="${end}" y1="92" x2="${end}" y2="130" stroke="${FG}" stroke-dasharray="5 5"/>`;
+      s+=R(40,214,12,12,GOLD)+T(58,226,'pre-tax profit')+R(196,214,12,12,ROSE)+T(214,226,'interest')+R(318,214,12,12,CORAL)+T(336,226,'depreciation')+R(470,214,12,12,'none',`stroke="${TEAL}" stroke-width="2" stroke-dasharray="3 2"`)+T(488,226,'other income, taken off ₹4');
+      $('f4').innerHTML=s;})();
+    // f5: ten slices of ₹12 crore. 6px per ₹ crore
+    (function(){const k=6,x=40,w=12*k;let s=T(x,44,'FY26 ₹12')+T(x+w+14,44,'next nine years ₹108',{fill:MUTED});
+      for(let i=0;i<10;i++)s+=i===0?R(x,60,w-2,60,CORAL):R(x+i*w,60,w-2,60,'none',`stroke="${CORAL}" stroke-opacity=".6" stroke-dasharray="4 3"`);
+      s+=`<path d="M${x} 142 V152 H${x+10*w-2} V142" fill="none" stroke="${LINE}" stroke-width="2"/>`+T(400,182,'₹120 crore plant, paid once',{anchor:'middle'});
+      $('f5').innerHTML=s;})();
+    // f6: area = interest. 5px per ₹ crore of balance, height = a 10% rate
+    $('f6').innerHTML=
+      T(60,58,'Other income')+R(60,70,200,40,TEAL)+T(72,96,'Cash ₹40 crore',{fill:INK,weight:600})+T(280,96,'earns ₹4 crore',{fill:TEAL})+
+      T(60,158,'Finance costs')+R(60,170,500,40,ROSE)+T(72,196,'Borrowings ₹100 crore',{fill:INK,weight:600})+T(580,196,'costs ₹10 crore',{fill:ROSE})+
+      T(60,258,'Net: ₹6 crore goes out',{fill:FG});
+    // f7: a what-if one-off. 6px per ₹ crore
+    (function(){const k=6,x=150;let s=T(14,76,'FY26 what-if')+R(x,56,67*k,34,GOLD)+R(x+67*k,56,12*k,34,'none',`stroke="${GOLD}" stroke-dasharray="4 3"`)+T(x+67*k+6+12*k/2,79,'₹12',{anchor:'middle',fill:GOLD})+T(x+79*k+16,79,'₹79');
+      s+=T(14,156,'FY27')+R(x,136,67*k,34,GOLD)+T(x+67*k+14,159,'₹67')+T(x+67*k+80,159,'looks like −15%',{fill:MUTED});
+      s+=R(40,214,12,12,GOLD)+T(58,226,'from tea')+R(190,214,12,12,'none',`stroke="${GOLD}" stroke-dasharray="3 2"`)+T(208,226,'one-off gain');
+      $('f7').innerHTML=s;})();
+    // f8: 67 split, then ten ₹5 tiles. 8px per ₹ crore
+    (function(){const k=8,x=130;let s=T(14,74,'Pre-tax')+R(x,52,50*k-2,34,GOLD)+T(x+14,76,'Profit ₹50',{fill:INK,weight:600})+R(x+50*k,52,17*k,34,CORAL)+T(x+50*k+10,76,'Tax ₹17',{fill:INK,weight:600});
+      s+=T(14,150,'Per share');for(let i=0;i<10;i++)s+=R(x+i*40,128,38,34,GOLD)+T(x+i*40+19,152,'₹5',{fill:INK,anchor:'middle',weight:600});
+      s+=T(x+200,206,'Each share’s slice: EPS ₹5',{anchor:'middle'});$('f8').innerHTML=s;})();
+  </script>
+
+  <script>
+    // ---------- the lab ----------
+    // Configure ids, labConfig and the Ramu model above. Defaults are the canonical FY26 accounts.
+    const ids=['s-cups','s-price','s-mat','s-oth'];
+    const labConfig={format:v=>money(v,0)};
+    const state={rate:BASE.rate};
+    const fmtIn={'s-cups':v=>v+' crore',"s-price":v=>'₹'+v.toFixed(2),'s-mat':v=>'₹'+v.toFixed(2),'s-oth':v=>'₹'+v+' crore'};
+    function update(){
+      window.labResults={valid:false};
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=fmtIn[id](v[i]));
+      $('rate-o').textContent=state.rate.toFixed(1)+'%';
+      const c=ramu({cups:v[0],price:v[1],mat:v[2],oth:v[3],rate:state.rate});
+      const vals=Object.values(c);
+      if(vals.some(x=>!Number.isFinite(x))) throw new Error('Lab returned a non-finite value');
+      const head=T(10,22,'Profit after tax '+money(c.pat,1)+' crore',{fill:GOLD,weight:600})+T(630,22,'base ₹50',{anchor:'end',fill:MUTED});
+      waterfall($('labChart'),ramuRows(c),{W:640,labelW:172,valueW:88,rowH:34,top:36,dec:1,maxTicks:6,tickFmt:labConfig.format,ghost:ramuRows(BASEC),head,foot:70,
+        extra:T(10,36+12*34+56,'dashed outline = base case',{fill:MUTED})});
+      const L=[
+        ['Revenue = cups × price',`${v[0]} × ₹${v[1].toFixed(2)} = ${money(c.rev,1)}`],
+        ['Materials = cups × cost',`${v[0]} × ₹${v[2].toFixed(2)} = ${money(c.mat,1)}`],
+        ['EBITDA',`${money(c.rev,1)} − ${money(c.mat,1)} − 60 − ${v[3]} = ${money(c.ebitda,1)}`],
+        ['EBIT = EBITDA − 12',money(c.ebit,1)],
+        ['Finance costs',`₹100 × ${state.rate.toFixed(1)}% = ${money(c.fin,1)}`],
+        ['Pre-tax = EBIT + 4 − finance',money(c.pbt,1)],
+        ['Tax = 17/67 if positive',money(c.tax,1)],
+        ['Profit after tax',money(c.pat,1)],
+        ['EPS teaser = PAT ÷ 10 crore shares',money(c.eps,2)]];
+      $('ledger').innerHTML=L.map(([k,x])=>`<span>${esc(k)}</span><span>${esc(x)}</span>`).join('');
+      window.labResults={valid:true,truth:c.pat,rows:[c.rev,c.mat,c.emp,c.oth,c.ebitda,c.da,c.ebit,c.oi,c.fin,c.pbt,c.tax,c.pat],model:c,rate:state.rate};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    const setRate=r=>{state.rate=Math.min(20,Math.max(0,Math.round(r*2)/2));update();};
+    $('rate-dn').addEventListener('click',()=>setRate(state.rate-.5));
+    $('rate-up').addEventListener('click',()=>setRate(state.rate+.5));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.p.split(',').map(Number);ids.forEach((id,i)=>$(id).value=p[i]);state.rate=p[4];update();}));
+    update();
+  </script>
+
+  <script>
+    // ---------- real report: TCPL FY2026 consolidated, ₹ crore (audited, IAR 2025-26 p.415 and notes) ----------
+    // Source lines in ₹ crore. Materials = consumed 7788.16 + purchases 4108.23 + change in inventories (−40.75).
+    const TC={rev:20290.43,matl:7788.16+4108.23-40.75,emp:1661.00,oth:3981.99,da:626.68,oi:164.75,fin:137.03,exc:-20.06,tax:535.28,assoc:-90.70};
+    waterfall($('r1'),[
+      {label:'Revenue',kind:'start',v:TC.rev,color:TEAL},
+      {label:'Materials',kind:'delta',v:-TC.matl,color:CORAL},
+      {label:'Employees',kind:'delta',v:-TC.emp,color:CORAL},
+      {label:'Other expenses',kind:'delta',v:-TC.oth,color:CORAL},
+      {label:'EBITDA (our sum)',kind:'total',color:GOLD},
+      {label:'Depreciation',kind:'delta',v:-TC.da,color:CORAL},
+      {label:'EBIT',kind:'total',color:GOLD}],
+      {W:800,labelW:200,valueW:110,rowH:36,top:10,dec:0,maxTicks:6,foot:64,extra:T(10,10+7*36+54,'₹ crore, one scale',{fill:MUTED})});
+    waterfall($('r2'),[
+      {label:'EBIT',kind:'start',v:TC.rev-TC.matl-TC.emp-TC.oth-TC.da,color:GOLD},
+      {label:'Other income',kind:'delta',v:TC.oi,color:TEAL},
+      {label:'Finance costs',kind:'delta',v:-TC.fin,color:ROSE},
+      {label:'Before one-offs',kind:'total',color:GOLD},
+      {label:'Exceptional items',kind:'delta',v:TC.exc,color:CORAL},
+      {label:'Profit before tax',kind:'total',color:GOLD},
+      {label:'Tax',kind:'delta',v:-TC.tax,color:CORAL},
+      {label:'Profit after tax',kind:'total',color:GOLD},
+      {label:'Associates, JVs',kind:'delta',v:TC.assoc,color:CORAL},
+      {label:'Profit for the year',kind:'total',color:GOLD,hot:true}],
+      {W:800,labelW:200,valueW:110,rowH:36,top:10,dec:0,maxTicks:5,foot:64,extra:T(10,10+10*36+54,'₹ crore, about 10× magnified',{fill:MUTED})});
+    waterfall($('r3'),[
+      {label:'Fair value gain',kind:'delta',v:55.57,color:TEAL},
+      {label:'Sale of assets',kind:'delta',v:35.36,color:TEAL},
+      {label:'Asset write-down',kind:'delta',v:-69.06,color:CORAL},
+      {label:'New Labour Codes',kind:'delta',v:-25.91,color:CORAL},
+      {label:'Goodwill impairment',kind:'delta',v:-16.02,color:CORAL},
+      {label:'Net exceptional',kind:'total',color:GOLD,hot:true}],
+      {W:800,labelW:200,valueW:110,rowH:40,top:10,dec:2,maxTicks:6,foot:64,tickFmt:v=>money(v,0),extra:T(10,10+6*40+54,'₹ crore',{fill:MUTED})});
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
