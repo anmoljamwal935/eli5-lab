@@ -1,0 +1,2661 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "Tata Consumer Products Integrated Annual Report 2025-26 (printed page = PDF page − 86); consolidated statements PDF; AGM presentation 10 June 2026 (29 slides)",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP (report dated 8 May 2026)",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "AR 26,482 text lines; consolidated PDF; AGM 29 slides",
+    "language": "English",
+    "caption_type": "n/a (text PDFs)",
+    "capture_mode": "curl + pdftotext -layout; read P&L p.415, equity statement p.416, cash flow pp.417-418, note 30 p.456, Board report p.178, MD&A p.223, p.56 footnote, p.181; AGM slides 7, 8, 15, 25",
+    "beginning_middle_end_evidence": "Statements read in full for the pages cited; whole documents not read line by line",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "plans/fundamental-analysis-series.md (Ramu canonical numbers)"
+    ],
+    "limitations": "Acquisition dates for Capital Foods and Organic India are not in the FY26 documents read, so not stated. No organic growth figure published, none computed. No multi-year TCPL CAGR: earlier years not sourced from their own annual reports. AR p.223 EPS prior-year typo (13.60) noted."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "YoY growth = this/last − 1; Ramu FY26 500/450 = 11.1%",
+      "kind": "definition",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "five-years"
+    },
+    {
+      "id": 2,
+      "item": "CAGR = (end/start)^(1/years) − 1; count years not bars; Ramu 330→500 = 10.95%",
+      "kind": "definition",
+      "locator": "plan table",
+      "check_needed": true,
+      "destination": "cagr"
+    },
+    {
+      "id": 3,
+      "item": "Calculator: pick years, CAGR vs simple average of yearly rates",
+      "kind": "mechanism",
+      "locator": "lab",
+      "check_needed": false,
+      "destination": "labA"
+    },
+    {
+      "id": 4,
+      "item": "Averaging yearly rates overstates growth (+50%/−50% → avg 0, actual −25%)",
+      "kind": "misconception",
+      "locator": "",
+      "check_needed": false,
+      "destination": "averaging"
+    },
+    {
+      "id": 5,
+      "item": "Compounding; rule of 72 (72/g), accurate ~6–12%",
+      "kind": "mechanism",
+      "locator": "",
+      "check_needed": true,
+      "destination": "compounding"
+    },
+    {
+      "id": 6,
+      "item": "Compounding curve lab with rule-of-72 marker",
+      "kind": "mechanism",
+      "locator": "lab",
+      "check_needed": false,
+      "destination": "labB"
+    },
+    {
+      "id": 7,
+      "item": "Base effects: low base flatters growth; recovery needed d/(1−d)",
+      "kind": "mechanism",
+      "locator": "",
+      "check_needed": false,
+      "destination": "base"
+    },
+    {
+      "id": 8,
+      "item": "Base-effect demo buttons",
+      "kind": "mechanism",
+      "locator": "lab",
+      "check_needed": false,
+      "destination": "labC"
+    },
+    {
+      "id": 9,
+      "item": "Organic vs acquired growth",
+      "kind": "definition",
+      "locator": "",
+      "check_needed": false,
+      "destination": "organic"
+    },
+    {
+      "id": 10,
+      "item": "Profit growth vs EPS growth; new shares dilute EPS",
+      "kind": "mechanism",
+      "locator": "",
+      "check_needed": false,
+      "destination": "share-count"
+    },
+    {
+      "id": 11,
+      "item": "Dilution lab",
+      "kind": "mechanism",
+      "locator": "lab",
+      "check_needed": false,
+      "destination": "labD"
+    },
+    {
+      "id": 12,
+      "item": "Growth eats cash: working capital and capex; Ramu FY26 PAT 50, CFO 58, capex 45, FCF 13",
+      "kind": "mechanism",
+      "locator": "plan cash flow",
+      "check_needed": false,
+      "destination": "cash"
+    },
+    {
+      "id": 13,
+      "item": "Capital intensity ₹62 per ₹100 sales (derived 310/500); kept profit 30 (50 less 40% payout)",
+      "kind": "number",
+      "locator": "derived from plan",
+      "check_needed": true,
+      "destination": "cash"
+    },
+    {
+      "id": 14,
+      "item": "Growth worth paying for: return on new capital vs cost; ROCE set-up (Part 10), PEG deferred (Part 15)",
+      "kind": "mechanism",
+      "locator": "",
+      "check_needed": false,
+      "destination": "worth"
+    },
+    {
+      "id": 15,
+      "item": "TCPL revenue +15.2%, profit +20.2%",
+      "kind": "number",
+      "locator": "AR p.415",
+      "check_needed": true,
+      "destination": "real"
+    },
+    {
+      "id": 16,
+      "item": "TCPL EPS +19.4% vs owners profit +20.6%; weighted shares +1.1%",
+      "kind": "number",
+      "locator": "AR note 30 p.456",
+      "check_needed": true,
+      "destination": "real"
+    },
+    {
+      "id": 17,
+      "item": "TCPL FY25 rights issue: 3,66,23,802 shares @ ₹818, 1:26, proceeds 2,980.57",
+      "kind": "number",
+      "locator": "AR pp.178, 418",
+      "check_needed": true,
+      "destination": "real"
+    },
+    {
+      "id": 18,
+      "item": "TCPL acquisitions in FY25: 1,809.00 cr; CFPL 75%, OIPL 100%",
+      "kind": "number",
+      "locator": "AR p.417",
+      "check_needed": true,
+      "destination": "real"
+    },
+    {
+      "id": 19,
+      "item": "TCPL growth businesses +24%, 28%→31%; CF+OI combined 839+478, grew 12%",
+      "kind": "claim",
+      "locator": "AR pp.56, 223; AGM slides 15, 25",
+      "check_needed": true,
+      "destination": "real"
+    },
+    {
+      "id": 20,
+      "item": "TCPL FY26 cash: CFO 2,421.85, capex 448.57, WC +145.19; goodwill+intangibles 55% of assets",
+      "kind": "number",
+      "locator": "AR pp.414, 417",
+      "check_needed": true,
+      "destination": "real"
+    },
+    {
+      "id": 21,
+      "item": "Recap of Parts 2–5 and deferrals (Part 6, 12, 13, 15 cover later)",
+      "kind": "context",
+      "locator": "",
+      "check_needed": false,
+      "destination": "hero/so-what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 15,
+      "claim": "Revenue from operations 20,290.43 vs 17,618.30 = +15.17%",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "printed p.415 (PDF p.329); AGM slide 8 says +15%",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "Profit for the year 1,546.80 vs 1,287.10 = +20.18%",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.415; AGM slide 8 says +20%",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Owners profit 1,542.30 vs 1,278.47; basic EPS 15.59 vs 13.06; weighted shares 989,535,734 vs 978,715,461",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "note 30, printed p.456 (PDF p.370). AGM slide 8: basic EPS growth +19%. NOTE: AR p.223 prints prior-year EPS as 13.60, contradicting note 30 (13.06); page uses audited note 30 and says so",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "Rights issue 1 for 26 at ₹818, 3,66,23,802 shares allotted in FY25, record date 27 July 2024",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "Board report p.178 (PDF p.92)",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "Rights proceeds net 2,980.57 in FY25 financing; CP net repayment 1,164.49 \"for acquisition funding\"",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "consolidated cash flow p.418 (PDF p.332). Page states only what the lines say; no causal claim",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "Share capital ₹95.28 cr at 1 Apr 2024; 98,94,98,558 shares at 31 Mar 2025; 98,95,61,780 at 31 Mar 2026",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "equity statement p.416; Board report p.178",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 18,
+      "claim": "Acquisition of Subsidiaries (1,809.00) in FY25 column; Capital Foods 75%, Organic India 100%",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "cash flow p.417; subsidiaries list. Exact acquisition dates NOT found in the FY26 report or consolidated PDF, so none are stated on the page",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "Growth businesses (Sampann, RTD, Soulfull, RTE, vending, Capital Foods, Organic India) +24%; 28%→31% of India branded business",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.56 footnote 3; p.223; AGM slide 15 (₹4,000 cr+)",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "Capital Foods revenue 839, Organic India 478, combined grew 12%",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "locator": "AGM slide 25 (PDF p.25). AR p.181: Organic India group revenue 478, +28%. No organic (like-for-like) growth figure is published; none computed",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 20,
+      "claim": "CFO 2,421.85; capex 448.57; working capital net +145.19 (inventories +200.03)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "cash flow p.417",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 20,
+      "claim": "Goodwill 11,883.90 + other intangibles 7,111.76 = 18,995.66 = 55.1% of total assets 34,452.96",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "balance sheet p.414 (figures from brief and prior-part audit; arithmetic checked)",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 2,
+      "claim": "Ramu 4-year CAGR: revenue 10.947%, PAT 13.622%",
+      "verdict": "Mostly supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "locator": "Plan says revenue 11.0%; exact value 10.9466% (rounds to 10.9%). Page shows 10.95%, consistent with ~11%",
+      "page_use": "see panels"
+    },
+    {
+      "inventory_id": 5,
+      "claim": "Rule of 72: 72/g vs ln2/ln(1+g)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "arithmetic",
+      "locator": "computed in labtest.py; 6%:11.90 vs 12.0; 12%:6.12 vs 6.0; 24%:3.22 vs 3.0",
+      "page_use": "see panels"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p01",
+      "heading": "Growth is a ratio of two years",
+      "inventory_ids": [
+        1
+      ],
+      "visual": "5 columns, 0.4 px/cr"
+    },
+    {
+      "id": "p02",
+      "heading": "CAGR: the steady rate between two years",
+      "inventory_ids": [
+        2
+      ],
+      "visual": "columns + dashed CAGR dots"
+    },
+    {
+      "id": "p03",
+      "heading": "Pick two years, read the growth",
+      "inventory_ids": [
+        3
+      ],
+      "visual": "lab A, columns scale to max"
+    },
+    {
+      "id": "p04",
+      "heading": "Why averaging growth overstates it",
+      "inventory_ids": [
+        4
+      ],
+      "visual": "3 columns, 0.3 px/cr"
+    },
+    {
+      "id": "p05",
+      "heading": "Growth on growth, and the rule of 72",
+      "inventory_ids": [
+        5
+      ],
+      "visual": "4 bars, 28 px/year"
+    },
+    {
+      "id": "p06",
+      "heading": "Drag the rate, drag the years",
+      "inventory_ids": [
+        6
+      ],
+      "visual": "lab B curve"
+    },
+    {
+      "id": "p07",
+      "heading": "A low base flatters growth",
+      "inventory_ids": [
+        7
+      ],
+      "visual": "3 columns, 0.3 px/cr"
+    },
+    {
+      "id": "p08",
+      "heading": "A big number on a small base",
+      "inventory_ids": [
+        8
+      ],
+      "visual": "lab C"
+    },
+    {
+      "id": "p09",
+      "heading": "Where the growth came from",
+      "inventory_ids": [
+        9
+      ],
+      "visual": "stacked bar, 1.2 px/cr"
+    },
+    {
+      "id": "p10",
+      "heading": "Profit can grow while EPS lags",
+      "inventory_ids": [
+        10
+      ],
+      "visual": "profit bars cut into share slices, 8 px/cr"
+    },
+    {
+      "id": "p11",
+      "heading": "Issue shares, watch EPS",
+      "inventory_ids": [
+        11
+      ],
+      "visual": "lab D"
+    },
+    {
+      "id": "p12",
+      "heading": "Fast growth needs money first",
+      "inventory_ids": [
+        12,
+        13
+      ],
+      "visual": "bars 8 px/cr; capital bars 4 px/cr"
+    },
+    {
+      "id": "p13",
+      "heading": "Growth is good only if it pays",
+      "inventory_ids": [
+        14
+      ],
+      "visual": "bars 6 px/cr"
+    },
+    {
+      "id": "p14",
+      "heading": "TCPL: acquired growth, diluted EPS",
+      "inventory_ids": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "visual": "growth bars 20 px/pp"
+    },
+    {
+      "id": "p15",
+      "heading": "Four questions for any growth number",
+      "inventory_ids": [
+        21
+      ],
+      "visual": "text"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Ramu canonical history FY22-FY26 (revenue 330/365/405/450/500, PAT 30/34/39/44/50, EPS 3.00-5.00, 10 cr shares)",
+      "Lab A jumpy what-if: revenue 330,440,330,400,500 (one-off, revenue only)",
+      "Lab B: constant growth rate from ₹500 cr FY26 revenue; simple line adds same rupees each year",
+      "Lab C: one-off paths from 500: steady 550/605; 375/500; 375/450; 250/500",
+      "Lab D: profit 50, 10 cr shares, issue price ₹100 (canonical), profit growth is the reader's assumption and ignores returns on new money",
+      "Defaults canonical: A FY22→FY26 revenue; B 11%/7y; C bad year+rebound; D +15% (FY27E PAT 57.5) and 0 new shares. Lab D default has no gap by design (canonical); presets show it"
+    ],
+    "units": {
+      "money": "₹ crore",
+      "growth": "%",
+      "shares": "crore"
+    },
+    "independent_calculation_method": "labtest.py (scratchpad): Python oracle computing CAGR, averages, compounding, doubling, base-effect and EPS from first principles, compared with window.cagrResults/labResults/baseResults/dilResults in Chromium via Playwright",
+    "cases": [
+      {
+        "name": "A actual/rev 0->1 cagr",
+        "expected": 10.606060606060597,
+        "observed": 10.606060606060597,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->1 avg",
+        "expected": 10.606060606060597,
+        "observed": 10.606060606060597,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->1 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->1 roundtrip",
+        "expected": 365,
+        "observed": 364.99999999999994,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->2 cagr",
+        "expected": 10.78234188139946,
+        "observed": 10.78234188139946,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->2 avg",
+        "expected": 10.782482357824819,
+        "observed": 10.782482357824819,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->2 roundtrip",
+        "expected": 405,
+        "observed": 405,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->3 cagr",
+        "expected": 10.891823393038823,
+        "observed": 10.891823393038823,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->3 avg",
+        "expected": 10.892025275586919,
+        "observed": 10.892025275586919,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->3 roundtrip",
+        "expected": 450,
+        "observed": 450.0000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->4 cagr",
+        "expected": 10.946604715661646,
+        "observed": 10.946604715661646,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->4 avg",
+        "expected": 10.946796734467966,
+        "observed": 10.946796734467966,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 0->4 roundtrip",
+        "expected": 500,
+        "observed": 500.0000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->2 cagr",
+        "expected": 10.95890410958904,
+        "observed": 10.95890410958904,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->2 avg",
+        "expected": 10.95890410958904,
+        "observed": 10.95890410958904,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->2 roundtrip",
+        "expected": 405,
+        "observed": 405,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->3 cagr",
+        "expected": 11.034981529640797,
+        "observed": 11.034981529640797,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->3 avg",
+        "expected": 11.035007610350078,
+        "observed": 11.035007610350078,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->3 roundtrip",
+        "expected": 450,
+        "observed": 450.0000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->4 cagr",
+        "expected": 11.060352259318783,
+        "observed": 11.060352259318783,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->4 avg",
+        "expected": 11.060375443937092,
+        "observed": 11.060375443937092,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 1->4 roundtrip",
+        "expected": 500,
+        "observed": 500.00000000000006,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->3 cagr",
+        "expected": 11.111111111111116,
+        "observed": 11.111111111111116,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->3 avg",
+        "expected": 11.111111111111116,
+        "observed": 11.111111111111116,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->3 roundtrip",
+        "expected": 450,
+        "observed": 450,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->4 cagr",
+        "expected": 11.111111111111116,
+        "observed": 11.111111111111116,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->4 avg",
+        "expected": 11.111111111111116,
+        "observed": 11.111111111111116,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 2->4 roundtrip",
+        "expected": 500,
+        "observed": 500.00000000000006,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 3->4 cagr",
+        "expected": 11.111111111111116,
+        "observed": 11.111111111111116,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 3->4 avg",
+        "expected": 11.111111111111116,
+        "observed": 11.111111111111116,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 3->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/rev 3->4 roundtrip",
+        "expected": 500,
+        "observed": 500,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->1 cagr",
+        "expected": 13.33333333333333,
+        "observed": 13.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->1 avg",
+        "expected": 13.33333333333333,
+        "observed": 13.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->1 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->1 roundtrip",
+        "expected": 34,
+        "observed": 34,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->2 cagr",
+        "expected": 14.017542509913806,
+        "observed": 14.017542509913806,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->2 avg",
+        "expected": 14.01960784313725,
+        "observed": 14.01960784313725,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->2 roundtrip",
+        "expected": 39,
+        "observed": 39.00000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->3 cagr",
+        "expected": 13.617128057248994,
+        "observed": 13.617128057248994,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->3 avg",
+        "expected": 13.61990950226244,
+        "observed": 13.61990950226244,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->3 roundtrip",
+        "expected": 44,
+        "observed": 44,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->4 cagr",
+        "expected": 13.621936646749933,
+        "observed": 13.621936646749933,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->4 avg",
+        "expected": 13.624023035787742,
+        "observed": 13.624023035787742,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 0->4 roundtrip",
+        "expected": 50,
+        "observed": 49.99999999999999,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->2 cagr",
+        "expected": 14.705882352941169,
+        "observed": 14.705882352941169,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->2 avg",
+        "expected": 14.705882352941169,
+        "observed": 14.705882352941169,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->2 roundtrip",
+        "expected": 39,
+        "observed": 39,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->3 cagr",
+        "expected": 13.759291798904204,
+        "observed": 13.759291798904204,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->3 avg",
+        "expected": 13.763197586726994,
+        "observed": 13.763197586726994,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->3 roundtrip",
+        "expected": 44,
+        "observed": 43.99999999999999,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->4 cagr",
+        "expected": 13.71830097629767,
+        "observed": 13.71830097629767,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->4 avg",
+        "expected": 13.720919603272543,
+        "observed": 13.720919603272543,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 1->4 roundtrip",
+        "expected": 50,
+        "observed": 50.000000000000014,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->3 cagr",
+        "expected": 12.82051282051282,
+        "observed": 12.82051282051282,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->3 avg",
+        "expected": 12.82051282051282,
+        "observed": 12.82051282051282,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->3 roundtrip",
+        "expected": 44,
+        "observed": 44,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->4 cagr",
+        "expected": 13.22770341445958,
+        "observed": 13.22770341445958,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->4 avg",
+        "expected": 13.228438228438232,
+        "observed": 13.228438228438232,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 2->4 roundtrip",
+        "expected": 50,
+        "observed": 50.00000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 3->4 cagr",
+        "expected": 13.636363636363647,
+        "observed": 13.636363636363647,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 3->4 avg",
+        "expected": 13.636363636363647,
+        "observed": 13.636363636363647,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 3->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/pat 3->4 roundtrip",
+        "expected": 50,
+        "observed": 50.00000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->1 cagr",
+        "expected": 13.33333333333333,
+        "observed": 13.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->1 avg",
+        "expected": 13.33333333333333,
+        "observed": 13.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->1 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->1 roundtrip",
+        "expected": 3.4,
+        "observed": 3.4,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->2 cagr",
+        "expected": 14.017542509913806,
+        "observed": 14.017542509913806,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->2 avg",
+        "expected": 14.01960784313725,
+        "observed": 14.01960784313725,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->2 roundtrip",
+        "expected": 3.9,
+        "observed": 3.900000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->3 cagr",
+        "expected": 13.617128057248994,
+        "observed": 13.617128057248994,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->3 avg",
+        "expected": 13.619909502262448,
+        "observed": 13.619909502262448,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->3 roundtrip",
+        "expected": 4.4,
+        "observed": 4.3999999999999995,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->4 cagr",
+        "expected": 13.621936646749933,
+        "observed": 13.621936646749933,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->4 avg",
+        "expected": 13.624023035787742,
+        "observed": 13.624023035787742,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 0->4 roundtrip",
+        "expected": 5.0,
+        "observed": 5,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->2 cagr",
+        "expected": 14.705882352941169,
+        "observed": 14.705882352941169,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->2 avg",
+        "expected": 14.705882352941169,
+        "observed": 14.705882352941169,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->2 roundtrip",
+        "expected": 3.9,
+        "observed": 3.8999999999999995,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->3 cagr",
+        "expected": 13.759291798904204,
+        "observed": 13.759291798904204,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->3 avg",
+        "expected": 13.763197586727005,
+        "observed": 13.763197586727005,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->3 roundtrip",
+        "expected": 4.4,
+        "observed": 4.3999999999999995,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->4 cagr",
+        "expected": 13.71830097629767,
+        "observed": 13.71830097629767,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->4 avg",
+        "expected": 13.720919603272543,
+        "observed": 13.720919603272543,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 1->4 roundtrip",
+        "expected": 5.0,
+        "observed": 5.000000000000001,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->3 cagr",
+        "expected": 12.820512820512842,
+        "observed": 12.820512820512842,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->3 avg",
+        "expected": 12.820512820512842,
+        "observed": 12.820512820512842,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->3 roundtrip",
+        "expected": 4.4,
+        "observed": 4.4,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->4 cagr",
+        "expected": 13.22770341445958,
+        "observed": 13.22770341445958,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->4 avg",
+        "expected": 13.228438228438232,
+        "observed": 13.228438228438232,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 2->4 roundtrip",
+        "expected": 5.0,
+        "observed": 5,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 3->4 cagr",
+        "expected": 13.636363636363624,
+        "observed": 13.636363636363624,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 3->4 avg",
+        "expected": 13.636363636363624,
+        "observed": 13.636363636363624,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 3->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A actual/eps 3->4 roundtrip",
+        "expected": 5.0,
+        "observed": 5,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->1 cagr",
+        "expected": 33.33333333333333,
+        "observed": 33.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->1 avg",
+        "expected": 33.33333333333333,
+        "observed": 33.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->1 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->1 roundtrip",
+        "expected": 440,
+        "observed": 440,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->2 cagr",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->2 avg",
+        "expected": 4.1666666666666625,
+        "observed": 4.1666666666666625,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->2 roundtrip",
+        "expected": 330,
+        "observed": 330,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->3 cagr",
+        "expected": 6.622456426143497,
+        "observed": 6.622456426143497,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->3 avg",
+        "expected": 9.848484848484846,
+        "observed": 9.848484848484846,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->3 roundtrip",
+        "expected": 400,
+        "observed": 399.99999999999994,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->4 cagr",
+        "expected": 10.946604715661646,
+        "observed": 10.946604715661646,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->4 avg",
+        "expected": 13.636363636363635,
+        "observed": 13.636363636363635,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 0->4 roundtrip",
+        "expected": 500,
+        "observed": 500.0000000000001,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->2 cagr",
+        "expected": -25.0,
+        "observed": -25,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->2 avg",
+        "expected": -25.0,
+        "observed": -25,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->2 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->2 roundtrip",
+        "expected": 330,
+        "observed": 330,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->3 cagr",
+        "expected": -4.653741075440765,
+        "observed": -4.653741075440765,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->3 avg",
+        "expected": -1.8939393939393923,
+        "observed": -1.8939393939393923,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->3 roundtrip",
+        "expected": 400,
+        "observed": 400.00000000000006,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->4 cagr",
+        "expected": 4.353201121161598,
+        "observed": 4.353201121161598,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->4 avg",
+        "expected": 7.070707070707072,
+        "observed": 7.070707070707072,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 1->4 roundtrip",
+        "expected": 500,
+        "observed": 500.0000000000001,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->3 cagr",
+        "expected": 21.212121212121215,
+        "observed": 21.212121212121215,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->3 avg",
+        "expected": 21.212121212121215,
+        "observed": 21.212121212121215,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->3 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->3 roundtrip",
+        "expected": 400,
+        "observed": 400,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->4 cagr",
+        "expected": 23.09149097933274,
+        "observed": 23.09149097933274,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->4 avg",
+        "expected": 23.10606060606061,
+        "observed": 23.10606060606061,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 2->4 roundtrip",
+        "expected": 500,
+        "observed": 500.00000000000006,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 3->4 cagr",
+        "expected": 25.0,
+        "observed": 25,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 3->4 avg",
+        "expected": 25.0,
+        "observed": 25,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 3->4 gap>=0",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "A jumpy/rev 3->4 roundtrip",
+        "expected": 500,
+        "observed": 500,
+        "pass": true
+      },
+      {
+        "name": "B default final",
+        "expected": 1038.0800764493556,
+        "observed": 1038.0800764493556,
+        "pass": true
+      },
+      {
+        "name": "B 1/1 final",
+        "expected": 505.0,
+        "observed": 505,
+        "pass": true
+      },
+      {
+        "name": "B 1/1 simple",
+        "expected": 505.0,
+        "observed": 505,
+        "pass": true
+      },
+      {
+        "name": "B 1/1 exact",
+        "expected": 69.66071689357483,
+        "observed": 69.66071689357483,
+        "pass": true
+      },
+      {
+        "name": "B 1/1 r72",
+        "expected": 72.0,
+        "observed": 72,
+        "pass": true
+      },
+      {
+        "name": "B 1/1 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 1/7 final",
+        "expected": 536.067676053505,
+        "observed": 536.067676053505,
+        "pass": true
+      },
+      {
+        "name": "B 1/7 simple",
+        "expected": 535.0,
+        "observed": 535,
+        "pass": true
+      },
+      {
+        "name": "B 1/7 exact",
+        "expected": 69.66071689357483,
+        "observed": 69.66071689357483,
+        "pass": true
+      },
+      {
+        "name": "B 1/7 r72",
+        "expected": 72.0,
+        "observed": 72,
+        "pass": true
+      },
+      {
+        "name": "B 1/7 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 1/14 final",
+        "expected": 574.7371066188113,
+        "observed": 574.7371066188113,
+        "pass": true
+      },
+      {
+        "name": "B 1/14 simple",
+        "expected": 570.0000000000001,
+        "observed": 570.0000000000001,
+        "pass": true
+      },
+      {
+        "name": "B 1/14 exact",
+        "expected": 69.66071689357483,
+        "observed": 69.66071689357483,
+        "pass": true
+      },
+      {
+        "name": "B 1/14 r72",
+        "expected": 72.0,
+        "observed": 72,
+        "pass": true
+      },
+      {
+        "name": "B 1/14 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 1/20 final",
+        "expected": 610.0950199739835,
+        "observed": 610.0950199739835,
+        "pass": true
+      },
+      {
+        "name": "B 1/20 simple",
+        "expected": 600.0,
+        "observed": 600,
+        "pass": true
+      },
+      {
+        "name": "B 1/20 exact",
+        "expected": 69.66071689357483,
+        "observed": 69.66071689357483,
+        "pass": true
+      },
+      {
+        "name": "B 1/20 r72",
+        "expected": 72.0,
+        "observed": 72,
+        "pass": true
+      },
+      {
+        "name": "B 1/20 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 5/1 final",
+        "expected": 525.0,
+        "observed": 525,
+        "pass": true
+      },
+      {
+        "name": "B 5/1 simple",
+        "expected": 525.0,
+        "observed": 525,
+        "pass": true
+      },
+      {
+        "name": "B 5/1 exact",
+        "expected": 14.206699082890461,
+        "observed": 14.206699082890461,
+        "pass": true
+      },
+      {
+        "name": "B 5/1 r72",
+        "expected": 14.4,
+        "observed": 14.4,
+        "pass": true
+      },
+      {
+        "name": "B 5/1 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 5/7 final",
+        "expected": 703.5502113281252,
+        "observed": 703.5502113281252,
+        "pass": true
+      },
+      {
+        "name": "B 5/7 simple",
+        "expected": 675.0,
+        "observed": 675,
+        "pass": true
+      },
+      {
+        "name": "B 5/7 exact",
+        "expected": 14.206699082890461,
+        "observed": 14.206699082890461,
+        "pass": true
+      },
+      {
+        "name": "B 5/7 r72",
+        "expected": 14.4,
+        "observed": 14.4,
+        "pass": true
+      },
+      {
+        "name": "B 5/7 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 5/14 final",
+        "expected": 989.9657997196994,
+        "observed": 989.9657997196994,
+        "pass": true
+      },
+      {
+        "name": "B 5/14 simple",
+        "expected": 850.0000000000001,
+        "observed": 850.0000000000001,
+        "pass": true
+      },
+      {
+        "name": "B 5/14 exact",
+        "expected": 14.206699082890461,
+        "observed": 14.206699082890461,
+        "pass": true
+      },
+      {
+        "name": "B 5/14 r72",
+        "expected": 14.4,
+        "observed": 14.4,
+        "pass": true
+      },
+      {
+        "name": "B 5/14 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 5/20 final",
+        "expected": 1326.6488525722111,
+        "observed": 1326.6488525722111,
+        "pass": true
+      },
+      {
+        "name": "B 5/20 simple",
+        "expected": 1000.0,
+        "observed": 1000,
+        "pass": true
+      },
+      {
+        "name": "B 5/20 exact",
+        "expected": 14.206699082890461,
+        "observed": 14.206699082890461,
+        "pass": true
+      },
+      {
+        "name": "B 5/20 r72",
+        "expected": 14.4,
+        "observed": 14.4,
+        "pass": true
+      },
+      {
+        "name": "B 5/20 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 11/1 final",
+        "expected": 555.0,
+        "observed": 555,
+        "pass": true
+      },
+      {
+        "name": "B 11/1 simple",
+        "expected": 555.0,
+        "observed": 555,
+        "pass": true
+      },
+      {
+        "name": "B 11/1 exact",
+        "expected": 6.641884618417903,
+        "observed": 6.641884618417903,
+        "pass": true
+      },
+      {
+        "name": "B 11/1 r72",
+        "expected": 6.545454545454546,
+        "observed": 6.545454545454546,
+        "pass": true
+      },
+      {
+        "name": "B 11/1 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 11/7 final",
+        "expected": 1038.0800764493556,
+        "observed": 1038.0800764493556,
+        "pass": true
+      },
+      {
+        "name": "B 11/7 simple",
+        "expected": 885.0,
+        "observed": 885,
+        "pass": true
+      },
+      {
+        "name": "B 11/7 exact",
+        "expected": 6.641884618417903,
+        "observed": 6.641884618417903,
+        "pass": true
+      },
+      {
+        "name": "B 11/7 r72",
+        "expected": 6.545454545454546,
+        "observed": 6.545454545454546,
+        "pass": true
+      },
+      {
+        "name": "B 11/7 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 11/14 final",
+        "expected": 2155.2204902422,
+        "observed": 2155.2204902422,
+        "pass": true
+      },
+      {
+        "name": "B 11/14 simple",
+        "expected": 1270.0,
+        "observed": 1270,
+        "pass": true
+      },
+      {
+        "name": "B 11/14 exact",
+        "expected": 6.641884618417903,
+        "observed": 6.641884618417903,
+        "pass": true
+      },
+      {
+        "name": "B 11/14 r72",
+        "expected": 6.545454545454546,
+        "observed": 6.545454545454546,
+        "pass": true
+      },
+      {
+        "name": "B 11/14 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 11/20 final",
+        "expected": 4031.1557680645774,
+        "observed": 4031.1557680645774,
+        "pass": true
+      },
+      {
+        "name": "B 11/20 simple",
+        "expected": 1600.0,
+        "observed": 1600,
+        "pass": true
+      },
+      {
+        "name": "B 11/20 exact",
+        "expected": 6.641884618417903,
+        "observed": 6.641884618417903,
+        "pass": true
+      },
+      {
+        "name": "B 11/20 r72",
+        "expected": 6.545454545454546,
+        "observed": 6.545454545454546,
+        "pass": true
+      },
+      {
+        "name": "B 11/20 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 24/1 final",
+        "expected": 620.0,
+        "observed": 620,
+        "pass": true
+      },
+      {
+        "name": "B 24/1 simple",
+        "expected": 620.0,
+        "observed": 620,
+        "pass": true
+      },
+      {
+        "name": "B 24/1 exact",
+        "expected": 3.222271094138538,
+        "observed": 3.222271094138538,
+        "pass": true
+      },
+      {
+        "name": "B 24/1 r72",
+        "expected": 3.0,
+        "observed": 3,
+        "pass": true
+      },
+      {
+        "name": "B 24/1 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 24/7 final",
+        "expected": 2253.83334797312,
+        "observed": 2253.83334797312,
+        "pass": true
+      },
+      {
+        "name": "B 24/7 simple",
+        "expected": 1339.9999999999998,
+        "observed": 1339.9999999999998,
+        "pass": true
+      },
+      {
+        "name": "B 24/7 exact",
+        "expected": 3.222271094138538,
+        "observed": 3.222271094138538,
+        "pass": true
+      },
+      {
+        "name": "B 24/7 r72",
+        "expected": 3.0,
+        "observed": 3,
+        "pass": true
+      },
+      {
+        "name": "B 24/7 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 24/14 final",
+        "expected": 10159.529520871445,
+        "observed": 10159.529520871445,
+        "pass": true
+      },
+      {
+        "name": "B 24/14 simple",
+        "expected": 2179.9999999999995,
+        "observed": 2179.9999999999995,
+        "pass": true
+      },
+      {
+        "name": "B 24/14 exact",
+        "expected": 3.222271094138538,
+        "observed": 3.222271094138538,
+        "pass": true
+      },
+      {
+        "name": "B 24/14 r72",
+        "expected": 3.0,
+        "observed": 3,
+        "pass": true
+      },
+      {
+        "name": "B 24/14 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 24/20 final",
+        "expected": 36932.074893318444,
+        "observed": 36932.074893318444,
+        "pass": true
+      },
+      {
+        "name": "B 24/20 simple",
+        "expected": 2900.0,
+        "observed": 2900,
+        "pass": true
+      },
+      {
+        "name": "B 24/20 exact",
+        "expected": 3.222271094138538,
+        "observed": 3.222271094138538,
+        "pass": true
+      },
+      {
+        "name": "B 24/20 r72",
+        "expected": 3.0,
+        "observed": 3,
+        "pass": true
+      },
+      {
+        "name": "B 24/20 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 30/1 final",
+        "expected": 650.0,
+        "observed": 650,
+        "pass": true
+      },
+      {
+        "name": "B 30/1 simple",
+        "expected": 650.0,
+        "observed": 650,
+        "pass": true
+      },
+      {
+        "name": "B 30/1 exact",
+        "expected": 2.6419267958111403,
+        "observed": 2.6419267958111403,
+        "pass": true
+      },
+      {
+        "name": "B 30/1 r72",
+        "expected": 2.4,
+        "observed": 2.4,
+        "pass": true
+      },
+      {
+        "name": "B 30/1 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 30/7 final",
+        "expected": 3137.425850000001,
+        "observed": 3137.425850000001,
+        "pass": true
+      },
+      {
+        "name": "B 30/7 simple",
+        "expected": 1550.0,
+        "observed": 1550,
+        "pass": true
+      },
+      {
+        "name": "B 30/7 exact",
+        "expected": 2.6419267958111403,
+        "observed": 2.6419267958111403,
+        "pass": true
+      },
+      {
+        "name": "B 30/7 r72",
+        "expected": 2.4,
+        "observed": 2.4,
+        "pass": true
+      },
+      {
+        "name": "B 30/7 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 30/14 final",
+        "expected": 19686.881928496456,
+        "observed": 19686.881928496456,
+        "pass": true
+      },
+      {
+        "name": "B 30/14 simple",
+        "expected": 2600.0,
+        "observed": 2600,
+        "pass": true
+      },
+      {
+        "name": "B 30/14 exact",
+        "expected": 2.6419267958111403,
+        "observed": 2.6419267958111403,
+        "pass": true
+      },
+      {
+        "name": "B 30/14 r72",
+        "expected": 2.4,
+        "observed": 2.4,
+        "pass": true
+      },
+      {
+        "name": "B 30/14 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B 30/20 final",
+        "expected": 95024.81887440407,
+        "observed": 95024.81887440407,
+        "pass": true
+      },
+      {
+        "name": "B 30/20 simple",
+        "expected": 3500.0,
+        "observed": 3500,
+        "pass": true
+      },
+      {
+        "name": "B 30/20 exact",
+        "expected": 2.6419267958111403,
+        "observed": 2.6419267958111403,
+        "pass": true
+      },
+      {
+        "name": "B 30/20 r72",
+        "expected": 2.4,
+        "observed": 2.4,
+        "pass": true
+      },
+      {
+        "name": "B 30/20 compound>=simple",
+        "expected": 1.0,
+        "observed": 1.0,
+        "pass": true
+      },
+      {
+        "name": "B preset0",
+        "expected": 1038.0800764493556,
+        "observed": 1038.0800764493556,
+        "pass": true
+      },
+      {
+        "name": "B preset1",
+        "expected": 989.9657997196994,
+        "observed": 989.9657997196994,
+        "pass": true
+      },
+      {
+        "name": "B preset2",
+        "expected": 1817.607538688,
+        "observed": 1817.607538688,
+        "pass": true
+      },
+      {
+        "name": "B preset3",
+        "expected": 1856.4650000000001,
+        "observed": 1856.4650000000001,
+        "pass": true
+      },
+      {
+        "name": "C steady y1",
+        "expected": 10.000000000000009,
+        "observed": 10.000000000000009,
+        "pass": true
+      },
+      {
+        "name": "C steady y2",
+        "expected": 10.000000000000009,
+        "observed": 10.000000000000009,
+        "pass": true
+      },
+      {
+        "name": "C steady total",
+        "expected": 20.999999999999996,
+        "observed": 20.999999999999996,
+        "pass": true
+      },
+      {
+        "name": "C steady cagr2",
+        "expected": 10.000000000000009,
+        "observed": 10.000000000000009,
+        "pass": true
+      },
+      {
+        "name": "C steady avg",
+        "expected": 10.000000000000009,
+        "observed": 10.000000000000009,
+        "pass": true
+      },
+      {
+        "name": "C rebound y1",
+        "expected": -25.0,
+        "observed": -25,
+        "pass": true
+      },
+      {
+        "name": "C rebound y2",
+        "expected": 33.33333333333333,
+        "observed": 33.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "C rebound total",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "C rebound cagr2",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "C rebound avg",
+        "expected": 4.1666666666666625,
+        "observed": 4.1666666666666625,
+        "pass": true
+      },
+      {
+        "name": "C rebound recovery",
+        "expected": 33.33333333333333,
+        "observed": 33.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "C partial y1",
+        "expected": -25.0,
+        "observed": -25,
+        "pass": true
+      },
+      {
+        "name": "C partial y2",
+        "expected": 19.999999999999996,
+        "observed": 19.999999999999996,
+        "pass": true
+      },
+      {
+        "name": "C partial total",
+        "expected": -9.999999999999998,
+        "observed": -9.999999999999998,
+        "pass": true
+      },
+      {
+        "name": "C partial cagr2",
+        "expected": -5.131670194948623,
+        "observed": -5.131670194948623,
+        "pass": true
+      },
+      {
+        "name": "C partial avg",
+        "expected": -2.500000000000002,
+        "observed": -2.500000000000002,
+        "pass": true
+      },
+      {
+        "name": "C partial recovery",
+        "expected": 33.33333333333333,
+        "observed": 33.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "C deep y1",
+        "expected": -50.0,
+        "observed": -50,
+        "pass": true
+      },
+      {
+        "name": "C deep y2",
+        "expected": 100.0,
+        "observed": 100,
+        "pass": true
+      },
+      {
+        "name": "C deep total",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "C deep cagr2",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "C deep avg",
+        "expected": 25.0,
+        "observed": 25,
+        "pass": true
+      },
+      {
+        "name": "C deep recovery",
+        "expected": 100.0,
+        "observed": 100,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns0 eps",
+        "expected": 5.0,
+        "observed": 5,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns0 eg",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns0 eg==pg",
+        "expected": 0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns0 need",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns0.5 eps",
+        "expected": 4.761904761904762,
+        "observed": 4.761904761904762,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns0.5 eg",
+        "expected": -4.761904761904767,
+        "observed": -4.761904761904767,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns0.5 need",
+        "expected": 2.5,
+        "observed": 2.5,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns1 eps",
+        "expected": 4.545454545454546,
+        "observed": 4.545454545454546,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns1 eg",
+        "expected": -9.090909090909083,
+        "observed": -9.090909090909083,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns1 need",
+        "expected": 5.0,
+        "observed": 5,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns2 eps",
+        "expected": 4.166666666666667,
+        "observed": 4.166666666666667,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns2 eg",
+        "expected": -16.666666666666664,
+        "observed": -16.666666666666664,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns2 need",
+        "expected": 10.0,
+        "observed": 10,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns3 eps",
+        "expected": 3.8461538461538463,
+        "observed": 3.8461538461538463,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns3 eg",
+        "expected": -23.076923076923073,
+        "observed": -23.076923076923073,
+        "pass": true
+      },
+      {
+        "name": "D g0 ns3 need",
+        "expected": 15.0,
+        "observed": 15,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns0 eps",
+        "expected": 5.500000000000001,
+        "observed": 5.500000000000001,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns0 eg",
+        "expected": 10.000000000000009,
+        "observed": 10.000000000000009,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns0 eg==pg",
+        "expected": 10,
+        "observed": 10.000000000000009,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns0 need",
+        "expected": 7.105427357601002e-15,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns0.5 eps",
+        "expected": 5.238095238095239,
+        "observed": 5.238095238095239,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns0.5 eg",
+        "expected": 4.761904761904789,
+        "observed": 4.761904761904789,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns0.5 need",
+        "expected": 2.750000000000007,
+        "observed": 2.7500000000000004,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns1 eps",
+        "expected": 5.000000000000001,
+        "observed": 5.000000000000001,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns1 eg",
+        "expected": 2.220446049250313e-14,
+        "observed": 2.220446049250313e-14,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns1 need",
+        "expected": 5.500000000000007,
+        "observed": 5.500000000000001,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns2 eps",
+        "expected": 4.583333333333334,
+        "observed": 4.583333333333334,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns2 eg",
+        "expected": -8.333333333333325,
+        "observed": -8.333333333333325,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns2 need",
+        "expected": 11.000000000000007,
+        "observed": 11.000000000000002,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns3 eps",
+        "expected": 4.230769230769232,
+        "observed": 4.230769230769232,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns3 eg",
+        "expected": -15.384615384615364,
+        "observed": -15.384615384615364,
+        "pass": true
+      },
+      {
+        "name": "D g10 ns3 need",
+        "expected": 16.500000000000007,
+        "observed": 16.500000000000004,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns0 eps",
+        "expected": 5.749999999999999,
+        "observed": 5.749999999999999,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns0 eg",
+        "expected": 14.999999999999991,
+        "observed": 14.999999999999991,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns0 eg==pg",
+        "expected": 15,
+        "observed": 14.999999999999991,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns0 need",
+        "expected": -7.105427357601002e-15,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns0.5 eps",
+        "expected": 5.476190476190475,
+        "observed": 5.476190476190475,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns0.5 eg",
+        "expected": 9.523809523809511,
+        "observed": 9.523809523809511,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns0.5 need",
+        "expected": 2.874999999999993,
+        "observed": 2.8749999999999996,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns1 eps",
+        "expected": 5.227272727272727,
+        "observed": 5.227272727272727,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns1 eg",
+        "expected": 4.545454545454541,
+        "observed": 4.545454545454541,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns1 need",
+        "expected": 5.749999999999993,
+        "observed": 5.749999999999999,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns2 eps",
+        "expected": 4.791666666666666,
+        "observed": 4.791666666666666,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns2 eg",
+        "expected": -4.166666666666674,
+        "observed": -4.166666666666674,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns2 need",
+        "expected": 11.499999999999993,
+        "observed": 11.499999999999998,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns3 eps",
+        "expected": 4.4230769230769225,
+        "observed": 4.4230769230769225,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns3 eg",
+        "expected": -11.538461538461553,
+        "observed": -11.538461538461553,
+        "pass": true
+      },
+      {
+        "name": "D g15 ns3 need",
+        "expected": 17.249999999999993,
+        "observed": 17.249999999999996,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns0 eps",
+        "expected": 6.0,
+        "observed": 6,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns0 eg",
+        "expected": 19.999999999999996,
+        "observed": 19.999999999999996,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns0 eg==pg",
+        "expected": 20,
+        "observed": 19.999999999999996,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns0 need",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns0.5 eps",
+        "expected": 5.714285714285714,
+        "observed": 5.714285714285714,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns0.5 eg",
+        "expected": 14.28571428571428,
+        "observed": 14.28571428571428,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns0.5 need",
+        "expected": 3.0,
+        "observed": 3,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns1 eps",
+        "expected": 5.454545454545454,
+        "observed": 5.454545454545454,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns1 eg",
+        "expected": 9.090909090909083,
+        "observed": 9.090909090909083,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns1 need",
+        "expected": 6.0,
+        "observed": 6,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns2 eps",
+        "expected": 5.0,
+        "observed": 5,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns2 eg",
+        "expected": 0.0,
+        "observed": 0,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns2 need",
+        "expected": 12.0,
+        "observed": 12,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns3 eps",
+        "expected": 4.615384615384615,
+        "observed": 4.615384615384615,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns3 eg",
+        "expected": -7.692307692307699,
+        "observed": -7.692307692307699,
+        "pass": true
+      },
+      {
+        "name": "D g20 ns3 need",
+        "expected": 18.0,
+        "observed": 18,
+        "pass": true
+      },
+      {
+        "name": "D default eps",
+        "expected": 5.75,
+        "observed": 5.749999999999999,
+        "pass": true
+      },
+      {
+        "name": "D default eg",
+        "expected": 15.0,
+        "observed": 14.999999999999991,
+        "pass": true
+      },
+      {
+        "name": "D 1cr eps",
+        "expected": 5.2272727272727275,
+        "observed": 5.227272727272727,
+        "pass": true
+      },
+      {
+        "name": "A default cagr",
+        "expected": 10.946604715661646,
+        "observed": 10.946604715661646,
+        "pass": true
+      },
+      {
+        "name": "B default (fresh) final",
+        "expected": 1038.0800764493556,
+        "observed": 1038.0800764493556,
+        "pass": true
+      },
+      {
+        "name": "C default y2",
+        "expected": 33.333333333333336,
+        "observed": 33.33333333333333,
+        "pass": true
+      },
+      {
+        "name": "D default (fresh) eg",
+        "expected": 15,
+        "observed": 14.999999999999991,
+        "pass": true
+      },
+      {
+        "name": "range sliders on page",
+        "expected": 3.0,
+        "observed": 3.0,
+        "pass": true
+      }
+    ],
+    "tolerance": "1e-9 absolute for growth rates; 1e-6 relative for compounded rupee values",
+    "invariants": [
+      "average of yearly rates >= CAGR (360-case run includes gap>=0 for every start/end/metric)",
+      "start×(1+CAGR)^n = end",
+      "compounded >= simple",
+      "EPS growth = profit growth when no new shares",
+      "recovery needed = d/(1−d)"
+    ],
+    "axis_and_clipping": "Lab B y-axis rescales to max(final, simple, 1000) with the top value printed; x ticks 0, n/2, n. Lab D axis +-m with m>=20. No clipping.",
+    "deviation": "Lab A: with Ramu's steady actuals the gap between average and CAGR is ~0.00 points; the jumpy what-if and lab C show the gap. Plan states 4-year revenue CAGR 11.0%; exact 10.9466%, shown as 10.95%."
+  },
+  "verification": {
+    "lint_output": "check_explainer.py: 0 errors, 0 warnings (15 diagrams, 15 panels, 0 notes)",
+    "supplementary_checks": [
+      "check_render.py: 0 errors (defaults, 4 presets, slider extremes, 390px overflow)",
+      "labtest.py: 360 cases, 0 failures, 0 JS errors",
+      "check_card.py: 0 errors, 0 warnings",
+      "publisher --dry-run run once and fully reverted (published.js, sitemap, feed, assets/og, preview block)"
+    ],
+    "browser_errors": [],
+    "screenshots": "scratchpad/shots desktop-00..15, phone-00..15; viewed hero, panels 01-14 desktop and phone-03; fixed stray line in organic drawing found on review",
+    "coverage_review": "Every inventory row located on the page (see panels)",
+    "semantic_review": "Rights-issue/acquisition funding sentence reworded to state only printed lines; heading \"cash-rich\" removed",
+    "artifact_sha256": "7270609089de03bd242c7b02167285744311300a1f66a3ba66835eb40a999c30",
+    "card": "plans/handoff/growth-worth-paying-for-eli5.card.svg; static lint 0 errors; rendered and inspected",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 15,
+        "panels": 15,
+        "notes": 0
+      },
+      "artifact_sha256": "7270609089de03bd242c7b02167285744311300a1f66a3ba66835eb40a999c30",
+      "artifact_path": "/home/user/eli5-lab/explainers/growth-worth-paying-for-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published (per brief); owner main session publishes",
+    "commit": "",
+    "live_url": "",
+    "readback": "n/a"
+  }
+}
