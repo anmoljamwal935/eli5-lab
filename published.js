@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "roe-roce-dupont-eli5",
+    "title": "ROE, ROCE and DuPont",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 10: return on owners' money, on all capital, and three ways to 20%",
+    "bullets": [
+      "ROE and ROCE divide profit by the money that earned it",
+      "DuPont: margin x turnover x leverage, same ROE three ways",
+      "TCPL's ROCE with and without goodwill and intangibles"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "MARGIN",
+      "TURNOVER",
+      "LEVERAGE"
+    ],
+    "file": "explainers/roe-roce-dupont-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A box whose three edges are coloured gold, teal and rose for margin, turnover and leverage; its volume is the return on equity\"><path d=\"M110 112 H210 V52 H110 Z\" fill=\"#a5a29c\" fill-opacity=\"0.18\" stroke=\"#57534f\" stroke-width=\"1.5\"/><path d=\"M110 52 H210 L250 30 H150 Z\" fill=\"#a5a29c\" fill-opacity=\"0.3\" stroke=\"#57534f\" stroke-width=\"1.5\"/><path d=\"M210 112 L250 90 V30 L210 52 Z\" fill=\"#a5a29c\" fill-opacity=\"0.1\" stroke=\"#57534f\" stroke-width=\"1.5\"/><path d=\"M110 112 H210\" stroke=\"#f5c76a\" stroke-width=\"5\" fill=\"none\"/><path d=\"M110 112 V52\" stroke=\"#76d5c1\" stroke-width=\"5\" fill=\"none\"/><path d=\"M210 112 L250 90\" stroke=\"#ec6a94\" stroke-width=\"5\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 10</text><text x=\"160\" y=\"139\" text-anchor=\"middle\" fill=\"#a5a29c\">VOLUME = ROE</text></g></svg>",
+    "part": 10
+  },
+  {
     "id": "growth-worth-paying-for-eli5",
     "title": "Growth that’s worth paying for",
     "category": "Monetary Architecture",
