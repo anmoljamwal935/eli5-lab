@@ -161,6 +161,46 @@ At ₹100: trailing P/E 20, forward P/E 17.4, earnings yield 5%.
 **DuPont (Part 10), on closing FY26 figures:** net margin 10% × asset turnover 1.25 (500/400) × equity multiplier 1.6 (400/250) = ROE 20%.
 ROCE 20.9% (EBIT 73 / capital employed 350). Use closing balances unless a page explains averages, and say which.
 
+### Ramu Chai Ltd: extra canonical numbers (added for Parts 11–15; use exactly these)
+
+**Debt (Part 11).** Borrowings 100 (long-term 70, short-term 30) at ~10%; cash 40; net debt 60.
+D/E 0.40 · net debt/equity 0.24 · net debt/EBITDA 0.71× · interest cover 7.3× (EBIT 73 ÷ finance costs 10).
+Rate shock: 10% → 12% on all borrowings → finance costs 12, interest cover 6.1×, PBT 65.
+
+**Working capital (Part 12).** Current assets 155 (inventory 55, receivables 45, other 15, cash 40).
+Current liabilities 80 (payables 35, short-term borrowings 30, other liabilities and provisions 15).
+Current ratio 1.94 · quick ratio 1.25 ((155 − 55) ÷ 80).
+Days (year-end balances, 365 days): inventory 80 (on cost of materials 250) · receivables 33 (on sales 500) · payables 51 (on cost of materials 250) · cash cycle 62.
+FY25 for comparison (FY25 cost of materials 225, i.e. 50% of sales 450): inventory 76 (47) · receivables 31 (38) · payables 49 (30) · cycle 58. The cycle lengthened by 4 days, which is part of why working capital absorbed 10 in FY26.
+
+**Free cash flow (Part 13).** FY26: CFO 58 · capex 45 · FCF 13 · CFO/PAT 1.16 · FCF yield 1.3% (13 ÷ market cap 1,000).
+Maintenance capex ≈ depreciation 12; growth capex 33. CFO − maintenance capex = 46.
+
+| | FY22 | FY23 | FY24 | FY25 | FY26 |
+|---|---|---|---|---|---|
+| PAT | 30 | 34 | 39 | 44 | 50 |
+| CFO | 35 | 40 | 46 | 52 | 58 |
+| Capex | 20 | 30 | 38 | 42 | 45 |
+| FCF | 15 | 10 | 8 | 10 | 13 |
+
+**Price tags (Part 14).** Book value per share ₹25 (250 ÷ 10) · P/B 4.0 · DPS ₹2.00 (FY26 proposed) · payout 40% · dividend yield 2.0% ·
+retention 60% → sustainable growth = ROE 20% × 60% = 12% · EV 1,060 (market cap 1,000 + debt 100 − cash 40) · EV/EBITDA 12.5 · EV/Sales 2.1.
+
+**Peers for comparison (Part 15), fictional, tagged example.** Shares 10 crore each.
+
+| | Ramu Chai | Pahadi Leaf Ltd | Masala Brew Ltd |
+|---|---|---|---|
+| Sales | 500 | 800 | 300 |
+| PAT | 50 | 56 | 39 |
+| Net margin | 10% | 7% | 13% |
+| ROE | 20% | 14% | 26% |
+| D/E | 0.4 | 0.9 | 0.0 |
+| 4-yr EPS CAGR | 13.6% | 8% | 22% |
+| Price (₹) | 100 | 84 | 136.5 |
+| P/E | 20 | 15 | 35 |
+| PEG | 1.5 | 1.9 | 1.6 |
+| CFO/PAT | 1.16 | 0.70 | 1.05 |
+
 ## Parts (38 + bonus)
 
 `R:` = what the "real report" box shows.
