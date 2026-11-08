@@ -19,7 +19,7 @@
     { id: 'cash-flow-and-the-three-statements-eli5', track: 'numbers', title: 'Cash flow, and how the three connect', blurb: 'Why profit is not cash, and one event moving through all three statements', file: 'cash-flow-and-the-three-statements-eli5.html' },
     { id: 'accounting-choices-eli5', track: 'numbers', title: 'Accounting choices that change profit', blurb: 'Capitalising, depreciation, provisions and one-offs under Ind AS', file: 'accounting-choices-eli5.html' },
     { id: 'pe-ratio-eli5', track: 'value', title: 'P/E: what it says and when it lies', blurb: 'EPS and P/E you can drive yourself, and the traps that fool them', file: 'pe-ratio-eli5.html' },
-    { id: 'margins-and-operating-leverage-eli5', track: 'numbers', title: 'Margins and operating leverage', blurb: 'Why a 10% rise in sales can mean a 30% rise in profit' },
+    { id: 'margins-and-operating-leverage-eli5', track: 'numbers', title: 'Margins and operating leverage', blurb: 'Why a 10% rise in sales can mean a 30% rise in profit', file: 'margins-and-operating-leverage-eli5.html' },
     { id: 'growth-worth-paying-for-eli5', track: 'numbers', title: "Growth that's worth paying for", blurb: 'CAGR, compounding, base effects, and growth that eats cash' },
     { id: 'roe-roce-dupont-eli5', track: 'numbers', title: 'ROE, ROCE and DuPont', blurb: 'How well a company uses its money, and three ways to get the same return' },
     { id: 'how-much-debt-eli5', track: 'numbers', title: 'Debt: how much is too much', blurb: 'Leverage, interest cover, and what a rate hike does to a borrower' },
