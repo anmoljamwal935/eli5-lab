@@ -2657,5 +2657,8 @@
     "commit": "",
     "live_url": "",
     "readback": "n/a"
-  }
+  },
+  "post_publication_review": [
+    "Post-publication review (main session, 2026-11-08): corrected acquisition timing. Form AOC-1 (IAR 2025-26, p. 487) gives Capital Foods 01.02.2024 (FY24, 75%) and Organic India 16.04.2024 (FY25, 100%); the page had said both were acquired in FY25. Added that they barely flatter FY26 vs FY25 growth. In-text links added to live parts."
+  ]
 }

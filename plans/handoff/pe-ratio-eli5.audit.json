@@ -375,5 +375,8 @@
     "commit": null,
     "live_url": null,
     "readback_results": []
-  }
+  },
+  "post_publication_review": [
+    "Post-publication review (main session, 2026-11-08): added a dated NSE close, 6 Nov 2026 TATACONSUM EQ close ₹1,086.30, from NSE's official bhavcopy https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_06112026.csv ; P/E 69.7 basic (1086.30/15.59), 62.8 adjusted, earnings yield 1.4%, market cap ₹107,496 cr (× 98.9561780 cr year-end shares). Price box prefilled with it. In-text links added to live parts."
+  ]
 }

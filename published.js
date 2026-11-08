@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "the-balance-sheet-eli5",
+    "title": "The balance sheet",
+    "category": "Monetary Architecture",
+    "minutes": 12,
+    "summary": "Part 4: what a company owns, owes and keeps, on one date",
+    "bullets": [
+      "Assets always equal liabilities plus equity",
+      "Every event moves two things",
+      "Goodwill and cash show up in TCPL's real accounts"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "OWN",
+      "OWE",
+      "KEEP"
+    ],
+    "file": "explainers/the-balance-sheet-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A level balance scale: assets (grey with teal cash) on one pan balance equity (gold) plus amounts owed (rose) on the other\"><path d=\"M160 40 L148 112 M160 40 L172 112 M128 112 H192\" stroke=\"#a5a29c\" stroke-width=\"3\" fill=\"none\"/><path d=\"M52 40 H268\" stroke=\"#f1eee8\" stroke-width=\"4\" fill=\"none\"/><path d=\"M52 40 L30 66 M52 40 L74 66 M268 40 L246 66 M268 40 L290 66\" stroke=\"#73706a\" stroke-width=\"1.5\" fill=\"none\"/><rect x=\"30\" y=\"66\" width=\"44\" height=\"34\" fill=\"#73706a\"/><rect x=\"30\" y=\"88\" width=\"44\" height=\"12\" fill=\"#76d5c1\"/><rect x=\"246\" y=\"66\" width=\"44\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"246\" y=\"86\" width=\"44\" height=\"14\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 4</text><text x=\"160\" y=\"139\" text-anchor=\"middle\" fill=\"#a5a29c\">ALWAYS BALANCES</text></g></svg>",
+    "part": 4
+  },
+  {
     "id": "roe-roce-dupont-eli5",
     "title": "ROE, ROCE and DuPont",
     "category": "Monetary Architecture",
@@ -142,30 +166,6 @@ window.PUBLISHED = [
     "subcategory": "Fundamental analysis, from scratch",
     "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A waterfall from profit of 50 down to a cash change of minus 1: depreciation adds, working capital and capex subtract, a loan adds, a dividend subtracts.\"><rect x=\"62.6\" y=\"40\" width=\"130.0\" height=\"9\" fill=\"#f5c76a\"/><rect x=\"192.6\" y=\"52\" width=\"31.2\" height=\"9\" fill=\"#a5a29c\"/><rect x=\"197.8\" y=\"64\" width=\"26.0\" height=\"9\" fill=\"#ff8059\"/><rect x=\"80.8\" y=\"76\" width=\"117.0\" height=\"9\" fill=\"#ff8059\"/><rect x=\"80.8\" y=\"88\" width=\"26.0\" height=\"9\" fill=\"#76d5c1\"/><rect x=\"60.0\" y=\"100\" width=\"46.8\" height=\"9\" fill=\"#ff8059\"/><rect x=\"60.0\" y=\"112\" width=\"2.6\" height=\"9\" fill=\"#ff8059\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 5</text><text x=\"24\" y=\"140\" fill=\"#a5a29c\">PROFIT TO CASH</text></g></svg>",
     "part": 5
-  },
-  {
-    "id": "the-balance-sheet-eli5",
-    "title": "The balance sheet",
-    "category": "Monetary Architecture",
-    "minutes": 12,
-    "summary": "Part 4: what a company owns, owes and keeps, on one date",
-    "bullets": [
-      "Assets always equal liabilities plus equity",
-      "Every event moves two things",
-      "Goodwill and cash show up in TCPL's real accounts"
-    ],
-    "kind": "flow",
-    "color": "#ff8059",
-    "nodes": [
-      "OWN",
-      "OWE",
-      "KEEP"
-    ],
-    "file": "explainers/the-balance-sheet-eli5.html",
-    "date": "2026-11-08",
-    "subcategory": "Fundamental analysis, from scratch",
-    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A level balance scale: assets (grey with teal cash) on one pan balance equity (gold) plus amounts owed (rose) on the other\"><path d=\"M160 40 L148 112 M160 40 L172 112 M128 112 H192\" stroke=\"#a5a29c\" stroke-width=\"3\" fill=\"none\"/><path d=\"M52 40 H268\" stroke=\"#f1eee8\" stroke-width=\"4\" fill=\"none\"/><path d=\"M52 40 L30 66 M52 40 L74 66 M268 40 L246 66 M268 40 L290 66\" stroke=\"#73706a\" stroke-width=\"1.5\" fill=\"none\"/><rect x=\"30\" y=\"66\" width=\"44\" height=\"34\" fill=\"#8a8680\"/><rect x=\"30\" y=\"88\" width=\"44\" height=\"12\" fill=\"#76d5c1\"/><rect x=\"246\" y=\"66\" width=\"44\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"246\" y=\"86\" width=\"44\" height=\"14\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 4</text><text x=\"160\" y=\"139\" text-anchor=\"middle\" fill=\"#a5a29c\">ALWAYS BALANCES</text></g></svg>",
-    "part": 4
   },
   {
     "id": "the-profit-and-loss-eli5",
