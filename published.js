@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "fundamental-analysis-from-scratch",
+    "title": "Fundamental analysis, from scratch: the series map",
+    "category": "Monetary Architecture",
+    "minutes": 3,
+    "summary": "A series on reading company accounts, judging the business and valuing it, in an Indian context",
+    "bullets": [
+      "38 parts on three tracks: the numbers, the business, and price and value",
+      "One made-up company for the labs, one real annual report to check against"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "NUMBERS",
+      "BUSINESS",
+      "VALUE"
+    ],
+    "file": "explainers/fundamental-analysis-from-scratch.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Three lanes, numbers, business and value, with the reading order moving between them from left to right towards a bonus diamond\"><g font-family=\"monospace\" font-size=\"9\"><text x=\"16\" y=\"44\" fill=\"#76d5c1\">NUMBERS</text><text x=\"16\" y=\"84\" fill=\"#c3b8ff\">BUSINESS</text><text x=\"16\" y=\"124\" fill=\"#f5c76a\">VALUE</text></g><path d=\"M80 120L100 40L180 40L200 120L220 80L260 80L280 120\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><g fill=\"#76d5c1\"><circle cx=\"100\" cy=\"40\" r=\"5\"/><circle cx=\"120\" cy=\"40\" r=\"5\"/><circle cx=\"140\" cy=\"40\" r=\"5\"/><circle cx=\"160\" cy=\"40\" r=\"5\"/><circle cx=\"180\" cy=\"40\" r=\"5\"/></g><g fill=\"#c3b8ff\"><circle cx=\"220\" cy=\"80\" r=\"5\"/><circle cx=\"240\" cy=\"80\" r=\"5\"/><circle cx=\"260\" cy=\"80\" r=\"5\"/></g><g fill=\"#f5c76a\"><circle cx=\"80\" cy=\"120\" r=\"5\"/><circle cx=\"200\" cy=\"120\" r=\"5\"/><circle cx=\"280\" cy=\"120\" r=\"5\"/><path d=\"M300 74L306 80L300 86L294 80Z\"/></g></svg>",
+    "part": 0
+  },
+  {
     "id": "entropy-eli5",
     "title": "Entropy: why energy spreads out",
     "category": "Energy & Physics",
