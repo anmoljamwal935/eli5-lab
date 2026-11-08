@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fundamental analysis in one page — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Colour key for the whole series "Fundamental analysis, from scratch" (same colour = same meaning in every part):
+       teal #76d5c1 = money coming in · coral #ff8059 = money going out · gold #f5c76a = what belongs to shareholders
+       rose #ec6a94 = what is owed · lavender #c3b8ff = the market's view (price, market cap, multiples). */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .lab-chart svg+svg{margin-top:18px}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    .tcpl-calc{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:20px;padding:14px 16px;border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .tcpl-calc label{font:13px/1.4 var(--font-mono);color:var(--muted)}
+    .tcpl-grid{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+    .tcpl-calc input[type=number]{width:12em;padding:8px 10px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font:16px var(--font-mono)}
+    .tcpl-calc output{color:#c3b8ff;font:600 16px var(--font-mono)}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body data-series-id="fundamental-analysis-in-one-page-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 8 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Fundamental analysis in one page</h1>
+      <p class="lede">A share is a slice of a business. Its price wiggles every day; what the slice is worth follows what the business earns over years. Fundamental analysis is the habit of asking what a company earns and what that is worth, before asking what the screen says.</p>
+      <p class="source-note">Built from Tata Consumer Products’ audited FY2026 annual report, facts checked against it · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>You already know what a share, NSE/BSE, a demat account and market cap are, so this part is a quick recap and a map. Facts carry a tag: <span class="tag">public</span> means a figure from a company’s filed accounts or plain arithmetic, and <span class="tag">example</span> means a made-up number from <b>Ramu Chai Ltd</b>, the fictional tea company this series teaches with. Every real figure comes from <b>Tata Consumer Products (TCPL)</b>, frozen at its FY2026 accounts (year to 31 March 2026). <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#f5c76a"></i>what belongs to shareholders</span>
+        <span><i style="background:#ec6a94"></i>what is owed</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>A share is a slice of a business</h2>
+      <p>Ramu Chai Ltd has 10 crore shares <span class="tag">example</span>. Own 1 crore of them and you own 10% of the company, including 10% of its profit. The year’s profit is ₹50 crore <span class="tag">example</span>, so each crore of shares stands behind ₹5 crore of it.</p>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="A bar of ten equal gold slices for Ramu Chai's ten crore shares, with the first slice outlined as one crore shares, ten percent of the company.">
+          <g fill="#f5c76a"><rect x="40" y="70" width="64" height="80"/><rect x="112" y="70" width="64" height="80"/><rect x="184" y="70" width="64" height="80"/><rect x="256" y="70" width="64" height="80"/><rect x="328" y="70" width="64" height="80"/><rect x="400" y="70" width="64" height="80"/><rect x="472" y="70" width="64" height="80"/><rect x="544" y="70" width="64" height="80"/><rect x="616" y="70" width="64" height="80"/><rect x="688" y="70" width="64" height="80"/></g>
+          <rect x="38" y="68" width="68" height="84" fill="none" stroke="#f1eee8" stroke-width="3"/>
+          <g font-size="16" fill="#f1eee8"><text x="40" y="48">Ramu Chai: 10 crore shares</text><text x="40" y="184">1 crore = 10%</text></g>
+          <text x="752" y="184" text-anchor="end" font-size="16" fill="#a5a29c">each slice: ₹5 cr of profit</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The market’s number</p>
+      <h2>Market cap is price times shares</h2>
+      <p>Multiply the price of one slice by the number of slices and you get <b>market cap</b>: what the market currently charges for the whole company. ₹100 × 10 crore = ₹1,000 crore <span class="tag">example</span>. Double the shares and halve the price, and nothing about the business changed: same area, same market cap. Part 21 covers splits and dilution.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Two lavender rectangles of equal area: ₹100 a share across 10 crore shares, and ₹50 a share across 20 crore shares. Both are ₹1,000 crore.">
+          <rect x="40" y="90" width="220" height="140" fill="#c3b8ff"/>
+          <rect x="320" y="160" width="440" height="70" fill="#c3b8ff"/>
+          <g font-size="16" fill="#f1eee8"><text x="40" y="76">₹100 × 10 cr</text><text x="320" y="146">₹50 × 20 cr</text></g>
+          <g font-size="16" fill="#202020" font-weight="600"><text x="56" y="166">₹1,000 cr</text><text x="336" y="200">₹1,000 cr</text></g>
+          <text x="40" y="266" font-size="16" fill="#a5a29c">width: 22 px = 1 crore shares · height: 1.4 px = ₹1</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>The price moves; the business doesn’t</h2>
+      <p>One week at Ramu Chai <span class="tag">example</span>: the price closes at ₹96, ₹103, ₹99, ₹107 and ₹100, so market cap swings between ₹960 crore and ₹1,070 crore. The tea sold, the costs paid and the profit earned that week were the same. The price moved because people’s moods, news and flows of money moved.</p>
+      <figure>
+        <svg viewBox="0 0 800 320" role="img" aria-label="Five lavender bars of Ramu Chai's market cap from Monday to Friday, between 960 and 1,070 crore, with a dashed gold line at 1,000 crore for the unchanged business.">
+          <g fill="#c3b8ff"><rect x="90" y="78" width="80" height="192"/><rect x="220" y="64" width="80" height="206"/><rect x="350" y="72" width="80" height="198"/><rect x="480" y="56" width="80" height="214"/><rect x="610" y="70" width="80" height="200"/></g>
+          <line x1="60" y1="70" x2="740" y2="70" stroke="#f5c76a" stroke-width="3" stroke-dasharray="8 6"/>
+          <g font-size="16" fill="#202020" font-weight="600" text-anchor="middle"><text x="130" y="130">₹96</text><text x="260" y="116">₹103</text><text x="390" y="124">₹99</text><text x="520" y="108">₹107</text><text x="650" y="122">₹100</text></g>
+          <g font-size="16" fill="#a5a29c" text-anchor="middle"><text x="130" y="296">Mon</text><text x="260" y="296">Tue</text><text x="390" y="296">Wed</text><text x="520" y="296">Thu</text><text x="650" y="296">Fri</text></g>
+          <text x="60" y="34" font-size="16" fill="#f5c76a">business value ₹1,000 cr, unchanged</text>
+          <text x="740" y="34" text-anchor="end" font-size="16" fill="#a5a29c">bars: 1 px = ₹5 cr</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The other number</p>
+      <h2>Value starts with what is left over</h2>
+      <p>Ramu Chai sold ₹500 crore of tea <span class="tag">example</span>. After costs and tax (₹440 crore, net of ₹4 crore of interest earned) and ₹10 crore of interest on its borrowings, ₹50 crore was left for the owners <span class="tag">example</span>. That profit is what a share’s value ultimately rests on. Part 3 walks down this ladder line by line.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="A teal bar for ₹500 crore of sales above a second bar of the same length split into coral costs and tax of 440, a thin rose slice for 10 of interest, and a gold slice of 50 left for owners.">
+          <rect x="50" y="50" width="700" height="50" fill="#76d5c1"/>
+          <rect x="50" y="130" width="616" height="50" fill="#ff8059"/>
+          <rect x="666" y="130" width="14" height="50" fill="#ec6a94"/>
+          <rect x="680" y="130" width="70" height="50" fill="#f5c76a"/>
+          <g font-size="16" fill="#202020" font-weight="600"><text x="66" y="82">sales ₹500 cr</text><text x="66" y="162">costs and tax ₹440 cr</text></g>
+          <line x1="673" y1="180" x2="673" y2="204" stroke="#ec6a94" stroke-width="2"/>
+          <line x1="715" y1="180" x2="715" y2="234" stroke="#f5c76a" stroke-width="2"/>
+          <text x="673" y="224" text-anchor="end" font-size="16" fill="#ec6a94">interest ₹10 cr</text>
+          <text x="750" y="254" text-anchor="end" font-size="16" fill="#f5c76a">left for owners ₹50 cr</text>
+          <text x="50" y="288" font-size="16" fill="#a5a29c">scale: 7 px = ₹5 cr</text>
+        </svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: where the ₹440 crore comes from</summary>
+        <p>Cost of materials 250, employee benefits 60, other expenses 105, depreciation 12 and tax 17 add up to 444. Other income of 4 (interest on cash) is netted off, giving 440 <span class="tag">example</span>. Sales 500 − 440 − interest 10 = profit 50.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Zoom from one day to ten years</h2>
+      <p>A simulated Ramu Chai <span class="tag">example</span>. The lavender line is the price, the gold line is value per share. Assumptions: the business is worth ₹1,000 crore today (₹100 a share at 10 crore shares), value grows as fast as profit, and the price wanders around value with random daily swings. Slide the zoom from a day to ten years, then change the price and the shares.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="zoom">Zoom <output id="zoom-o"></output></label><input id="zoom" type="range" min="0" max="5" step="1" value="3"></div>
+          <div class="control"><label for="growth">Profit growth <output id="growth-o"></output></label><input id="growth" type="range" min="0" max="25" step="1" value="12"></div>
+          <div class="control"><label for="price">Price today <output id="price-o"></output></label><input id="price" type="range" min="20" max="250" step="5" value="100"></div>
+          <div class="control"><label for="shares">Shares <output id="shares-o"></output></label><input id="shares" type="range" min="5" max="20" step="1" value="10"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="3,12,100,10">Ramu Chai today</button>
+            <button type="button" class="secondary" data-p="0,12,100,10">One trading day</button>
+            <button type="button" class="secondary" data-p="5,12,100,10">Ten years</button>
+            <button type="button" class="secondary" data-p="3,12,150,10">Market gets excited</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="A lavender price line wiggling around a gold value line that rises slowly, over the zoom window you choose."></svg>
+          <svg id="capChart" viewBox="0 0 520 256" role="img" aria-label="A lavender rectangle for market cap, shares wide and price tall, drawn against a dashed gold rectangle for business value."></svg>
+        </div>
+      </div></div>
+      <details class="trace"><summary>Go deeper: exactly what the lab computes</summary>
+        <p>The price path is a fixed random series, not real market data <span class="tag">example</span>: each five-minute step nudges the price’s distance from value by a small random amount (about 1.2% a day), and a pull back towards value that halves a gap in about a year. Value per share is ₹1,000 crore ÷ shares, growing at the profit-growth rate. Today’s price is exactly your slider. Market cap = price × shares. Real prices have jumps, trends and crashes that this toy does not model.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Two ways to look</p>
+      <h2>Reading the price, or the business</h2>
+      <p><b>Technical analysis</b> studies the price and volume history itself, its patterns and trends, mostly to time trades. <b>Fundamental analysis</b> studies the company behind the price: its accounts, its business and what it is worth, mostly to decide what to pay. Both are used in practice; this series teaches the second. The lab shows why it is a sensible place to start: over a day the price is mostly noise, over years it follows the business.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Left, a lavender price line that zigzags upward, labelled technical. Right, the same sales and profit bars as before, labelled fundamental.">
+          <polyline points="40,190 70,150 100,170 130,120 160,150 190,110 220,140 250,95 280,125 310,85 340,105 370,70" fill="none" stroke="#c3b8ff" stroke-width="3"/>
+          <line x1="40" y1="180" x2="370" y2="76" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="6 6"/>
+          <rect x="420" y="60" width="340" height="34" fill="#76d5c1"/>
+          <rect x="420" y="110" width="299" height="34" fill="#ff8059"/>
+          <rect x="719" y="110" width="7" height="34" fill="#ec6a94"/>
+          <rect x="726" y="110" width="34" height="34" fill="#f5c76a"/>
+          <text x="40" y="236" font-size="16" fill="#c3b8ff">TECHNICAL: the price</text>
+          <text x="420" y="236" font-size="16" fill="#f5c76a">FUNDAMENTAL: the business</text>
+          <text x="40" y="270" font-size="16" fill="#a5a29c">asks: where is it going?</text>
+          <text x="420" y="270" font-size="16" fill="#a5a29c">asks: what is it worth?</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The map</p>
+      <h2>38 parts, three tracks, seven stages</h2>
+      <p>Each dot is one part of this series, in reading order. Teal dots read the numbers, lavender dots judge the business, gold dots work out price and value. The dashed lines split the seven stages. You are at the first dot.</p>
+      <figure>
+        <svg viewBox="0 0 800 310" role="img" aria-label="Thirty-eight dots in three coloured lanes, numbers, business and value, split into seven stages, with Part 1 ringed at the start of the value lane.">
+          <line x1="30" y1="100" x2="770" y2="100" stroke="#3b3936"/>
+          <line x1="30" y1="150" x2="770" y2="150" stroke="#3b3936"/>
+          <line x1="30" y1="200" x2="770" y2="200" stroke="#3b3936"/>
+          <line x1="49.7" y1="62" x2="49.7" y2="222" stroke="#57534f" stroke-dasharray="3 5"/>
+          <line x1="147.0" y1="62" x2="147.0" y2="222" stroke="#57534f" stroke-dasharray="3 5"/>
+          <line x1="322.2" y1="62" x2="322.2" y2="222" stroke="#57534f" stroke-dasharray="3 5"/>
+          <line x1="458.4" y1="62" x2="458.4" y2="222" stroke="#57534f" stroke-dasharray="3 5"/>
+          <line x1="575.1" y1="62" x2="575.1" y2="222" stroke="#57534f" stroke-dasharray="3 5"/>
+          <line x1="711.4" y1="62" x2="711.4" y2="222" stroke="#57534f" stroke-dasharray="3 5"/>
+          <g font-size="16" fill="#a5a29c" text-anchor="middle">
+          <text x="40.0" y="46">1</text>
+          <text x="98.4" y="46">2</text>
+          <text x="234.6" y="46">3</text>
+          <text x="390.3" y="46">4</text>
+          <text x="516.8" y="46">5</text>
+          <text x="643.2" y="46">6</text>
+          <text x="740.5" y="46">7</text>
+          </g>
+          <circle cx="40.0" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="59.5" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="78.9" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="98.4" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="117.8" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="137.3" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="156.8" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="176.2" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="195.7" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="215.1" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="234.6" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="254.1" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="273.5" cy="100" r="6" fill="#76d5c1"/>
+          <circle cx="293.0" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="312.4" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="331.9" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="351.4" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="370.8" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="390.3" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="409.7" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="429.2" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="448.6" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="468.1" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="487.6" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="507.0" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="526.5" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="545.9" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="565.4" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="584.9" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="604.3" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="623.8" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="643.2" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="662.7" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="682.2" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="701.6" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="721.1" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="740.5" cy="150" r="6" fill="#c3b8ff"/>
+          <circle cx="760.0" cy="200" r="6" fill="#f5c76a"/>
+          <circle cx="40.0" cy="200" r="12" fill="none" stroke="#f1eee8" stroke-width="2"/>
+          <text x="30" y="246" font-size="16" fill="#f1eee8">YOU ARE HERE</text>
+          <g font-size="16" fill="#a5a29c">
+          <circle cx="46" cy="283" r="6" fill="#76d5c1"/><text x="60" y="289">Numbers</text>
+          <circle cx="256" cy="283" r="6" fill="#c3b8ff"/><text x="270" y="289">Business</text>
+          <circle cx="476" cy="283" r="6" fill="#f5c76a"/><text x="490" y="289">Value</text>
+          </g>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The seven stages</h2>
+      <p>You can read them in order, or jump to the stage you need.</p>
+      <div class="field-grid">
+        <div><b>1 · Start here</b><span>This page: slice, market cap, price versus value.</span><em>PART 1</em></div>
+        <div><b>2 · The accounts</b><span>Where the numbers live; the P&amp;L, balance sheet and cash flow; accounting choices.</span><em>PARTS 2–6</em></div>
+        <div><b>3 · Ratios</b><span>P/E, margins, growth, ROE, debt, working capital, cash flow, P/B, and reading them together.</span><em>PARTS 7–15</em></div>
+        <div><b>4 · The business behind the numbers</b><span>Business model, moats, management, governance, red flags, corporate actions, the economy.</span><em>PARTS 16–22</em></div>
+        <div><b>5 · Valuation</b><span>Discount rate, DCF, reverse DCF, relative valuation, sum of the parts, margin of safety.</span><em>PARTS 23–28</em></div>
+        <div><b>6 · Sectors</b><span>Banks, NBFCs and insurers, IT and pharma, consumer, cyclicals, utilities, loss-makers and IPOs.</span><em>PARTS 29–35</em></div>
+        <div><b>7 · Putting it together</b><span>Screening, one company start to finish, portfolio, taxes and costs.</span><em>PARTS 36–38</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Real report</p>
+      <h2>Now find it in a real report</h2>
+      <p>Everything on this page has a real counterpart in Tata Consumer Products’ FY2026 integrated annual report <span class="tag">public</span>. The share count is in the equity share capital note, and profit, revenue and earnings per share are in the consolidated statements. These page numbers are the report’s printed ones.</p>
+      <figure>
+        <svg viewBox="0 0 800 260" role="img" aria-label="A long bar for the annual report with three markers: consolidated profit and loss at page 415, the share capital note at page 445, and the earnings per share note at page 456.">
+          <rect x="40" y="120" width="720" height="26" fill="#57534f"/>
+          <rect x="625" y="112" width="4" height="42" fill="#f5c76a"/>
+          <rect x="667" y="112" width="4" height="42" fill="#c3b8ff"/>
+          <rect x="683" y="112" width="4" height="42" fill="#f5c76a"/>
+          <line x1="627" y1="112" x2="627" y2="94" stroke="#f5c76a" stroke-width="2"/>
+          <line x1="685" y1="112" x2="685" y2="94" stroke="#f5c76a" stroke-width="2"/>
+          <line x1="669" y1="154" x2="669" y2="172" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="627" y="78" text-anchor="end" font-size="16" fill="#f5c76a">Profit and loss p.415</text>
+          <text x="685" y="78" font-size="16" fill="#f5c76a">EPS p.456</text>
+          <text x="669" y="196" text-anchor="middle" font-size="16" fill="#c3b8ff">Share count p.445</text>
+          <text x="40" y="170" font-size="16" fill="#a5a29c">start</text>
+          <text x="760" y="170" text-anchor="end" font-size="16" fill="#a5a29c">end</text>
+        </svg>
+      </figure>
+      <div class="field-grid tcpl-grid">
+        <div><b>98,95,61,780 shares</b><span>Fully paid equity shares of Re 1 each at 31 March 2026, which is 98.96 crore. Paid-up capital ₹98.96 crore. Ramu Chai’s is 10 crore at ₹10 each.</span><em>PUBLIC · NOTE 14 (SHARE CAPITAL), P.445</em></div>
+        <div><b>₹20,290.43 cr revenue</b><span>Consolidated revenue from operations, FY2026: the “sales” rung of the ladder.</span><em>PUBLIC · CONSOLIDATED P&amp;L, P.415</em></div>
+        <div><b>₹1,546.80 cr profit</b><span>Consolidated profit for the year, of which ₹1,542.30 crore belongs to the company’s owners and ₹4.50 crore to minority holders.</span><em>PUBLIC · CONSOLIDATED P&amp;L, P.415</em></div>
+        <div><b>₹15.59 per share</b><span>Basic earnings per share: ₹1,542.30 crore ÷ 98.95 crore average shares. Part 7 covers EPS and P/E.</span><em>PUBLIC · NOTE 30, P.456</em></div>
+      </div>
+      <div class="tcpl-calc">
+        <label for="tcplPrice">Type TCPL’s share price today (₹)</label>
+        <input id="tcplPrice" type="number" min="0" step="any" inputmode="decimal" placeholder="price in ₹">
+        <span>× 98.956178 crore shares =</span>
+        <output id="tcplCap" for="tcplPrice">enter a price</output>
+      </div>
+      <p class="note">Market cap changes every trading day, so this page gives no TCPL price or market cap. Look up today’s price on NSE or BSE and the box does the multiplication. The data is frozen at FY2026; educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Next: where the numbers live</h2>
+      <p>From now on, a price is the start of a question, not the answer. Three to ask of any listed company:</p>
+      <ol class="checks">
+        <li>What does the business earn, and is that growing?</li>
+        <li>What are the shares, together, being valued at (market cap), and how does that compare with the earnings?</li>
+        <li>Did the price move because the business changed, or because the mood did?</li>
+      </ol>
+      <p>To answer them you need the company’s accounts. Part 2, <a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">Where the numbers live</a>, shows where they sit: the annual report, the exchange filings, standalone versus consolidated, and the quarterly results.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>The price is what the market pays today, the value is what the business earns over years, and fundamental analysis is learning to tell them apart.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Lab: a simulated price line around a growing value line, plus a market-cap rectangle. All numbers `example`.
+    const ids=['zoom','growth','price','shares'],$=id=>document.getElementById(id);
+    const WINDOWS=[1,5,21,250,1250,2500];            // zoom windows in trading days
+    const BPD=75, DPY=250, TOTAL=2500*BPD;            // five-minute bars per day, trading days per year, bars in 10 years
+    const ZOOM_NAMES=['1 day','1 week','1 month','1 year','5 years','10 years'];
+    const inr=n=>n.toLocaleString('en-IN',{maximumFractionDigits:0});
+    const plural=(n,u)=>n+' '+u+(n===1?'':'s');
+    // x-axis labels: time before today, v in trading days (negative)
+    function timeLabel(v){
+      const d=-v; if(d===0) return 'today';
+      if(d<1) return +(d*6.25).toFixed(1)+' hrs ago';
+      if(d<21) return plural(+d.toFixed(1),'day')+' ago';
+      if(d<250) return +(d/21).toFixed(1)+' mo ago';
+      return plural(+(d/250).toFixed(1),'yr')+' ago';
+    }
+    const labConfig={format:timeLabel, sliderFormats:[v=>ZOOM_NAMES[v],v=>v+'% a year',v=>'₹'+v,v=>v+' crore']};
+    function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+    const rnd=mulberry32(20260331);
+    const gauss=()=>{let u=0;while(u===0)u=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*rnd())};
+    const SIG_D=0.012, THETA_D=0.0028, thB=THETA_D/BPD, sgB=SIG_D/Math.sqrt(BPD);
+    const Z=new Float32Array(TOTAL+1);                // log gap between price and value, index 0 = ten years ago, TOTAL = today
+    {let x=gauss()*SIG_D/Math.sqrt(2*THETA_D);for(let k=0;k<=TOTAL;k++){Z[k]=x;x=x*(1-thB)+sgB*gauss();}}
+    function compute(v){
+      const [zi,g,price,shares]=v, T=WINDOWS[zi], nBars=T*BPD, V0=1000/shares;
+      const step=Math.max(1,Math.floor(nBars/150)), xEnd=Math.log(price/V0), zEnd=Z[TOTAL];
+      const idx=[]; for(let k=TOTAL-nBars;k<TOTAL;k+=step) idx.push(k); idx.push(TOTAL);
+      const pts=idx.map(k=>{
+        const d=(TOTAL-k)/BPD, val=V0*Math.pow(1+g/100,-d/DPY);
+        const gap=Z[k]+(xEnd-zEnd)*Math.exp(-thB*(TOTAL-k));
+        return {t:-d, val, price:val*Math.exp(gap)};
+      });
+      return {T,V0,pts,price,shares,g};
+    }
+    const rs=n=>'₹'+n.toLocaleString('en-IN',{minimumFractionDigits:n<20?2:0,maximumFractionDigits:n<20?2:(n<200?1:0)});
+    const sgn=p=>(p>=0?'+':'−')+Math.abs(p).toFixed(1)+'%';
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML=''; $('capChart').innerHTML=''; $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const r=compute(v), {T,V0,pts,price,shares,g}=r;
+      const all=pts.flatMap(p=>[p.val,p.price]);
+      if(!all.every(Number.isFinite)) throw new Error('Lab returned a non-finite value');
+      let lo=Math.min(...all), hi=Math.max(...all); const pad=Math.max((hi-lo)*0.08,hi*0.002); lo=Math.max(0,lo-pad); hi+=pad;
+      const x0=90,x1=494,yt=44,yb=232, sx=t=>x0+(t+T)/T*(x1-x0), sy=p=>yb-(p-lo)/(hi-lo)*(yb-yt);
+      const path=k=>pts.map((p,i)=>(i?'L':'M')+sx(p.t).toFixed(1)+' '+sy(p[k]).toFixed(1)).join('');
+      const dec=(hi-lo)<2?2:((hi-lo)<20?1:0), yl=n=>'₹'+n.toFixed(dec);
+      let s=`<line x1="${x0}" y1="${yb}" x2="${x1}" y2="${yb}" stroke="#57534f"/>`;
+      s+=`<path d="${path('val')}" fill="none" stroke="#f5c76a" stroke-width="3"/><path d="${path('price')}" fill="none" stroke="#c3b8ff" stroke-width="2"/>`;
+      s+=`<line x1="${x0}" y1="16" x2="${x0+26}" y2="16" stroke="#c3b8ff" stroke-width="3"/><text x="${x0+34}" y="22" fill="#c3b8ff" font-size="16">price</text>`;
+      s+=`<line x1="${x0+110}" y1="16" x2="${x0+136}" y2="16" stroke="#f5c76a" stroke-width="3"/><text x="${x0+144}" y="22" fill="#f5c76a" font-size="16">value per share</text>`;
+      s+=`<text x="${x0-8}" y="${yt+5}" text-anchor="end" fill="#a5a29c" font-size="16">${esc(yl(hi))}</text><text x="${x0-8}" y="${yb}" text-anchor="end" fill="#a5a29c" font-size="16">${esc(yl(lo))}</text>`;
+      [-T,-T/2,0].forEach((t,i)=>{s+=`<text class="tick" data-v="${t}" x="${sx(t)}" y="${yb+30}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(timeLabel(t))}</text>`;});
+      s+=`<text x="${x0}" y="${yb+62}" fill="#a5a29c" font-size="16">${esc('zoom: '+ZOOM_NAMES[v[0]])}</text>`;
+      $('labChart').setAttribute('viewBox','0 0 520 310'); $('labChart').innerHTML=s;
+      // market-cap rectangle: 18 px = 1 crore shares, 0.6 px = ₹1, same scale for both rectangles
+      const cap=price*shares, W=shares*18, base=222;
+      let c=`<text x="60" y="22" fill="#c3b8ff" font-size="16">market cap ₹${inr(cap)} cr</text><text x="60" y="44" fill="#f5c76a" font-size="16">business value ₹1,000 cr</text>`;
+      c+=`<line x1="60" y1="${base}" x2="430" y2="${base}" stroke="#57534f"/>`;
+      c+=`<rect x="60" y="${base-price*0.6}" width="${W}" height="${price*0.6}" fill="#c3b8ff" fill-opacity="0.9"/>`;
+      c+=`<rect x="60" y="${base-V0*0.6}" width="${W}" height="${V0*0.6}" fill="none" stroke="#f5c76a" stroke-width="3" stroke-dasharray="7 5"/>`;
+      c+=`<text x="60" y="${base+30}" fill="#a5a29c" font-size="16">width = shares · height = price</text>`;
+      $('capChart').innerHTML=c;
+      const first=pts[0], last=pts[pts.length-1], pLo=Math.min(...pts.map(p=>p.price)), pHi=Math.max(...pts.map(p=>p.price));
+      const L=[['Market cap = price × shares',`₹${price} × ${shares} cr = ₹${inr(cap)} cr`],
+        ['Business value today (assumed)',`₹1,000 cr = ₹${V0.toFixed(2)} a share`],
+        ['Price versus value today',sgn((price/V0-1)*100)],
+        ['Price, lowest to highest',`${rs(pLo)} to ${rs(pHi)}`],
+        ['Price over the window',sgn((last.price/first.price-1)*100)],
+        ['Value over the window',sgn((last.val/first.val-1)*100)]];
+      $('ledger').innerHTML=L.map(([k,x])=>`<span>${esc(k)}</span><span>${esc(x)}</span>`).join('');
+      window.labResults={valid:true,T,marketCap:cap,V0,priceEnd:last.price,priceStart:first.price,valueStart:first.val,valueEnd:last.val,priceLo:pLo,priceHi:pHi,gapPct:(price/V0-1)*100};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+    // TCPL box: market cap = price × 98.956178 crore shares (989,561,780 shares, FY2026 annual report note 14)
+    $('tcplPrice').addEventListener('input',()=>{
+      const p=parseFloat($('tcplPrice').value);
+      $('tcplCap').textContent=(Number.isFinite(p)&&p>0)?'₹'+inr(p*98.956178)+' crore':'enter a price';
+    });
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

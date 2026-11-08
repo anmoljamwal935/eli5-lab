@@ -1,0 +1,308 @@
+{
+ "schema_version": 1,
+ "source": {
+  "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+  "title": "Tata Consumer Products Limited, Integrated Annual Report 2025-26",
+  "author": "Tata Consumer Products Ltd (auditor: Deloitte Haskins & Sells LLP, report dated 8 May 2026)",
+  "verified_date": "2026-11-08",
+  "sections": "428 PDF pages; printed page = PDF page + 86",
+  "language": "English",
+  "capture_mode": "full PDF downloaded, pdftotext -layout, figures read at page level",
+  "ending_evidence": "PDF page 428 (back cover, registered office); numbered pages run to about 514",
+  "limitations": "Topic-and-series page, not built from one source. Ramu Chai numbers are fictional (plan canonical accounts). Lab price path is simulated.",
+  "plan": "plans/fundamental-analysis-series.md"
+ },
+ "inventory": [
+  {
+   "id": 1,
+   "item": "A share is a slice of a business; 1 cr of 10 cr shares = 10%",
+   "kind": "definition",
+   "check": false,
+   "panel": "The building block"
+  },
+  {
+   "id": 2,
+   "item": "Ramu Chai: 10 cr shares, profit 50, 5 cr profit behind each crore of shares",
+   "kind": "example",
+   "check": false,
+   "panel": "The building block"
+  },
+  {
+   "id": 3,
+   "item": "Market cap = price x shares; 100x10cr=1000cr; 50x20cr same",
+   "kind": "definition",
+   "check": false,
+   "panel": "The market's number"
+  },
+  {
+   "id": 4,
+   "item": "Price moves day to day without the business changing",
+   "kind": "mechanism",
+   "check": false,
+   "panel": "The catch + lab"
+  },
+  {
+   "id": 5,
+   "item": "Sales 500 -> costs and tax 440 (net of other income 4), interest 10, PAT 50",
+   "kind": "example",
+   "check": true,
+   "panel": "The other number"
+  },
+  {
+   "id": 6,
+   "item": "Value follows profit over years; price noisy over a day (zoom 1 day to 10 years)",
+   "kind": "mechanism",
+   "check": false,
+   "panel": "Try it"
+  },
+  {
+   "id": 7,
+   "item": "Market cap sliders: price, shares; defaults 100, 10 cr, 1000 cr",
+   "kind": "mechanism",
+   "check": false,
+   "panel": "Try it"
+  },
+  {
+   "id": 8,
+   "item": "Technical vs fundamental analysis",
+   "kind": "definition",
+   "check": false,
+   "panel": "Two ways to look"
+  },
+  {
+   "id": 9,
+   "item": "Series map: 3 tracks, 7 stages, 38 parts",
+   "kind": "context",
+   "check": true,
+   "panel": "The map + Field guide"
+  },
+  {
+   "id": 10,
+   "item": "TCPL share count 989,561,780 at Re 1; paid-up 98.96 cr",
+   "kind": "number",
+   "check": true,
+   "panel": "Real report"
+  },
+  {
+   "id": 11,
+   "item": "TCPL consolidated revenue 20,290.43; profit for year 1,546.80; owners 1,542.30; NCI 4.50",
+   "kind": "number",
+   "check": true,
+   "panel": "Real report"
+  },
+  {
+   "id": 12,
+   "item": "TCPL basic EPS 15.59",
+   "kind": "number",
+   "check": true,
+   "panel": "Real report"
+  },
+  {
+   "id": 13,
+   "item": "Hand-off to Part 2; later parts named (3, 7, 21)",
+   "kind": "context",
+   "check": false,
+   "panel": "So what"
+  }
+ ],
+ "claims": [
+  {
+   "inventory": 10,
+   "claim": "989561780 equity shares of Re 1, fully paid; paid-up Rs 98.96 cr",
+   "verdict": "Supported",
+   "as_of": "2026-03-31",
+   "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+   "locator": "Consolidated note 14(a) Equity Share Capital, printed p.445 (PDF p.359); standalone note 13(a) printed p.371 (PDF p.285) shows the same count",
+   "passage": "989561780 (989498558) Equity Shares of Re.1 each, fully paid-up 98.96 98.95",
+   "page_use": "Real report panel, tagged public"
+  },
+  {
+   "inventory": 11,
+   "claim": "Consolidated revenue from operations 20,290.43 cr",
+   "verdict": "Supported",
+   "as_of": "FY2026",
+   "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+   "locator": "Consolidated Statement of Profit and Loss, printed p.415 (PDF p.329)",
+   "passage": "Revenue from Operations 21 20290.43 17618.30",
+   "reconciliation": "AGM presentation and report text (p.223) say Rs 20,290 cr = 20,290.43 rounded. The plan's note of press reports quoting 20,280 was searched for in the annual report (no match for 20,280 / 20,28x); not verified, not used."
+  },
+  {
+   "inventory": 11,
+   "claim": "Profit for the year 1,546.80; owners 1,542.30; non-controlling 4.50",
+   "verdict": "Supported",
+   "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+   "locator": "Consolidated P&L, printed p.415",
+   "passage": "Profit for the year 1546.80; Owners of Parent 1542.30; Non Controlling Interest 4.50"
+  },
+  {
+   "inventory": 12,
+   "claim": "Basic EPS Rs 15.59; weighted average shares 989,535,734",
+   "verdict": "Supported",
+   "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+   "locator": "Consolidated P&L p.415; note 30 Earnings per Share printed p.456 (PDF p.370)",
+   "arithmetic": "1542.30 cr / 98.9535734 cr = 15.586 -> 15.59"
+  },
+  {
+   "inventory": 9,
+   "claim": "38 parts, tracks and stage ranges",
+   "verdict": "Supported",
+   "evidence_url": "series-fundamental-analysis.js and plans/fundamental-analysis-series.md (repo)",
+   "note": "Map dots generated from the data file by script (11 numbers, 14 business, 13 value)."
+  },
+  {
+   "inventory": 5,
+   "claim": "Ramu Chai arithmetic",
+   "verdict": "Supported",
+   "note": "250+60+105+12+17=444; 444-4=440; 500-440-10=50. Matches the plan's canonical accounts."
+  }
+ ],
+ "panels": [
+  {
+   "id": "slice",
+   "heading": "A share is a slice of a business",
+   "inventory": [
+    1,
+    2
+   ],
+   "visual": "10 equal slices",
+   "scale": "equal slices, 64 px each"
+  },
+  {
+   "id": "marketcap",
+   "heading": "Market cap is price times shares",
+   "inventory": [
+    3
+   ],
+   "visual": "two areas",
+   "scale": "22 px = 1 cr shares, 1.4 px = Rs 1"
+  },
+  {
+   "id": "catch",
+   "heading": "The price moves; the business doesn't",
+   "inventory": [
+    4
+   ],
+   "visual": "5 bars from zero",
+   "scale": "1 px = Rs 5 cr"
+  },
+  {
+   "id": "ladder",
+   "heading": "Value starts with what is left over",
+   "inventory": [
+    5
+   ],
+   "visual": "two bars, one scale",
+   "scale": "7 px = Rs 5 cr"
+  },
+  {
+   "id": "lab",
+   "heading": "Zoom from one day to ten years",
+   "inventory": [
+    6,
+    7
+   ],
+   "visual": "line chart + area rectangles",
+   "scale": "y auto-fit from 0; rectangles 18 px = 1 cr shares, 0.6 px = Rs 1"
+  },
+  {
+   "id": "twoways",
+   "heading": "Reading the price, or the business",
+   "inventory": [
+    8
+   ]
+  },
+  {
+   "id": "map",
+   "heading": "38 parts, three tracks, seven stages",
+   "inventory": [
+    9
+   ]
+  },
+  {
+   "id": "stages",
+   "heading": "The seven stages",
+   "inventory": [
+    9
+   ],
+   "visual": "field guide (no drawing)"
+  },
+  {
+   "id": "real",
+   "heading": "Now find it in a real report",
+   "inventory": [
+    10,
+    11,
+    12
+   ],
+   "visual": "report bar with page markers",
+   "scale": "markers by printed page over ~510 pages"
+  },
+  {
+   "id": "sowhat",
+   "heading": "Next: where the numbers live",
+   "inventory": [
+    13
+   ],
+   "visual": "none (So what)"
+  }
+ ],
+ "lab": {
+  "type": "mechanism-exploration",
+  "assumptions": [
+   "business worth Rs 1,000 cr today",
+   "value per share grows at the profit-growth rate (constant multiple)",
+   "price = value x exp(gap); gap is a seeded mean-reverting random walk, ~1.2%/day, half-life ~1 yr, forced to today's slider price",
+   "simulated, not market data"
+  ],
+  "units": {
+   "zoom": "trading days 1,5,21,250,1250,2500",
+   "growth": "% a year",
+   "price": "Rs",
+   "shares": "crore"
+  },
+  "independent_calculation_method": "Python 3.12 re-implementation of the seeded RNG, the price path and the ledger numbers, compared with window.labResults read from the page in headless Chromium (labtest.py, scratchpad)",
+  "cases": [
+   {
+    "set": "defaults + 3 other presets",
+    "n": 4
+   },
+   {
+    "set": "all 16 slider min/max corners",
+    "n": 16
+   },
+   {
+    "set": "20 seeded-random slider combinations",
+    "n": 20
+   }
+  ],
+  "observed": "40 cases, 0 mismatches, max relative error 0 on market cap, value per share, value at window start/end, price at window start/end, price low/high, price-vs-value gap; price today == slider in all cases; ledger market-cap line matches; 0 JS errors",
+  "hand_check": "default 1-year window: value start = 100/1.12 = 89.2857; market cap 100x10 = 1000",
+  "tolerance": "relative 1e-4",
+  "invariants": [
+   "priceEnd == slider price",
+   "valueEnd == 1000/shares",
+   "marketCap == price*shares",
+   "priceLo <= min(priceStart, priceEnd)"
+  ],
+  "axis_and_clipping": "x ticks at -T, -T/2, 0 via one scale function, tick text = labConfig.format; y auto-fit with 8% padding, floored at 0; nothing clipped"
+ },
+ "verification": {
+  "lint": "check_explainer.py: 0 errors, 0 warnings (9 diagrams, 10 panels, 1 caveat note)",
+  "render": "check_render.py: 0 errors (defaults, 4 presets, 16 slider corners, 390px)",
+  "screenshots": "every desktop and phone panel image opened; fixed: label touching gold line (catch panel), 'end of report' label crossed by leader, negative y-axis label, truncated placeholder, orphan card in TCPL grid",
+  "limitations": [
+   "sticky masthead overlaps element screenshots (capture artefact, not on page)",
+   "live site and published readback not done: publishing is out of scope for this task"
+  ],
+  "coverage_review": "all 13 inventory rows located on the page",
+  "semantic_review": "read through once against plan; technical-analysis definition is general knowledge, no performance claim made",
+  "artifact_sha256": "3cc474dcdeeff0e5a343ac9e26e968b29fbd7c451241711c7946dfa7e25c0279 (before the publisher adds its link-preview block)",
+  "card": "plans/handoff/fundamental-analysis-in-one-page-eli5.card.svg; check_card.py 0 errors; rendered first on the home page at 1440 and 390px via publisher --dry-run (dry run reverted)"
+ },
+ "publication": {
+  "status": "not published by design (owner's main session publishes)",
+  "commit": null,
+  "live_url": null,
+  "readback_results": []
+ }
+}
