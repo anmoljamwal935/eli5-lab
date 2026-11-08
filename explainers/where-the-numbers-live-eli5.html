@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Where the numbers live — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (same colour, same meaning in every part):
+       teal #76d5c1 = money coming in (sales, cash inflows) · coral #ff8059 = money going out (costs, capex, outflows)
+       gold #f5c76a = what belongs to shareholders (profit, EPS, equity, dividends) · rose #ec6a94 = what is owed (debt, interest, liabilities)
+       lavender #c3b8ff = the market's view (price, market cap, multiples).
+       This part uses teal for revenue and gold for profit, with a darker shade of each for the subsidiaries or the group; grey is neutral. */
+    .panel figure{margin:26px 0 22px;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+
+    /* This part */
+    .seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .seg button{padding:8px 12px;border:1px solid var(--border);cursor:pointer}
+    .seg button[aria-pressed=true]{border-color:#76d5c1 !important;color:var(--fg);box-shadow:inset 0 -2px 0 #76d5c1}
+    .seg+.control{margin-top:18px}
+    .seglabel{display:block;margin-top:14px;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--faint);text-transform:uppercase}
+    .verdict{margin:14px 0 0;padding:10px 12px;border-left:2px solid #76d5c1;font-size:15px;line-height:1.5;color:var(--fg)}
+    .mapcard{margin:0 0 6px;padding:16px 18px;border:1px solid var(--border);background:var(--surface)}
+    .mapcard p{margin:0 0 8px}.mapcard p:last-child{margin-bottom:0}
+    .mapcard .mc-q{font-size:19px;font-weight:500;color:var(--fg)}
+    .band{cursor:pointer}
+    .pages{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:6px 0 0;font-size:15px;line-height:1.5}
+    .pages dt{font:12px/1.8 var(--font-mono);color:#76d5c1;white-space:nowrap}
+    .pages dd{margin:0;color:var(--muted)}
+    .pages dd b{color:var(--fg);font-weight:500}
+    @media (max-width:700px){.pages{grid-template-columns:1fr;gap:0}.pages dd{margin-bottom:10px}}
+  </style>
+</head>
+<body data-series-id="where-the-numbers-live-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 26 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Where the numbers live</h1>
+      <p class="lede">A company’s numbers are spread over an annual report, exchange filings and management’s own slides, and they are not all checked equally. Learn where each one sits, how the parent’s books differ from the group’s, and how to read a quarter without being fooled by the season.</p>
+      <p class="source-note">Built from Tata Consumer Products’ FY2026 integrated annual report and its Q4 FY26 results filing, the SEBI LODR Regulations and SEBI’s FAQs; facts checked against them · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Part 1 gave you the map: a share is a slice of a business, and price is not the same as value. This part is about where the evidence for value sits. Facts carry a tag: <span class="tag">public</span> means a filed or published figure, or plain arithmetic on one; <span class="tag">example</span> means a made-up number from Ramu Chai Ltd, our fictional tea company, used to show how something works. <b>Go deeper</b> boxes are optional. Real figures are frozen at TCPL’s FY2026, the year to 31 March 2026.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales</span>
+        <span><i style="background:#f5c76a"></i>what belongs to shareholders: profit</span>
+        <span><i style="background:#4aa896"></i>teal or gold, darker: a subsidiary or the group</span>
+        <span><i style="background:#a5a29c"></i>neutral: what the company owns</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Not every number is checked equally</h2>
+      <p>A company speaks in four voices. Only the annual statements get a full audit. Quarterly results get a lighter limited review. The investor presentation and the concall (the call where analysts question management) are management’s own words, with no audit at all.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Four steps of falling height: annual report audited, quarterly results limited review, investor presentation unaudited, concall spoken"><line x1="30" y1="250" x2="780" y2="250" stroke="#57534f" stroke-width="2"/><rect x="40" y="50" width="150" height="200" fill="#76d5c1" opacity="1"/><text x="115" y="40" text-anchor="middle" fill="#f1eee8" font-size="16">Audited</text><text x="115" y="278" text-anchor="middle" fill="#a5a29c" font-size="16">Annual report</text><rect x="230" y="100" width="150" height="150" fill="#76d5c1" opacity="0.7"/><text x="305" y="90" text-anchor="middle" fill="#f1eee8" font-size="16">Limited review</text><text x="305" y="278" text-anchor="middle" fill="#a5a29c" font-size="16">Quarterly results</text><rect x="420" y="150" width="150" height="100" fill="#76d5c1" opacity="0.45"/><text x="495" y="140" text-anchor="middle" fill="#f1eee8" font-size="16">Unaudited</text><text x="495" y="278" text-anchor="middle" fill="#a5a29c" font-size="16">Presentation</text><rect x="610" y="200" width="150" height="50" fill="#76d5c1" opacity="0.25"/><text x="685" y="190" text-anchor="middle" fill="#f1eee8" font-size="16">Spoken</text><text x="685" y="278" text-anchor="middle" fill="#a5a29c" font-size="16">Concall</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it · the report map</p>
+      <h2>Tap a section of the annual report</h2>
+      <p>An annual report runs to hundreds of pages, and nobody reads it front to back. Each section answers a different question. Tap a band to see which. Only the bottom two sit inside the auditor’s opinion.</p>
+      <figure><svg id="reportMap" viewBox="0 0 800 440" role="img" aria-label="An annual report drawn as seven stacked bands in reading order; only the bottom two bands, the statements and the notes, sit inside the auditor's opinion"><path class="after" d="M530 20 L542 20 L542 246 L530 246" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="556" y="138" fill="#a5a29c" font-size="16">Outside the opinion</text><text x="556" y="284" fill="#a5a29c" font-size="16">the opinion itself</text><path d="M530 310 L542 310 L542 420 L530 420" stroke="#76d5c1" stroke-width="2" fill="none"/><text x="556" y="370" fill="#76d5c1" font-size="16">Inside the opinion</text></svg></figure>
+      <div class="seg" id="mapTabs" role="group" aria-label="Annual report sections"></div>
+      <div class="mapcard" id="mapCard" aria-live="polite" style="margin-top:14px">
+        <p class="mc-q" id="mcQ"></p>
+        <p id="mcWhat"></p>
+        <p><b>Look for:</b> <span id="mcLook"></span></p>
+        <p><span class="tag">public</span><span id="mcTcpl"></span></p>
+      </div>
+      <details class="trace"><summary>Go deeper: a sensible reading order</summary>
+        <p>Start at the auditor’s report: is the opinion clean, and what did the auditor lose sleep over (the “key audit matters”)? Then the statements (Parts 3 to 5 teach each one), then the notes for what is inside the big numbers. Read the MD&amp;A and Board’s report after that, as management’s account of the same year. The auditor reads them too, but their opinion does not cover them.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Exchange filings</p>
+      <h2>What gets filed, and when</h2>
+      <p>Listed companies file with BSE and NSE under SEBI’s LODR Regulations, and the exchanges publish every filing free. The shareholding pattern is due within 21 days of each quarter end. Quarterly results are due within 45 days. The year’s audited results are due within 60 days, together with the last quarter <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="A 60-day line from the period end, with marks at day 21 for the shareholding pattern, day 45 for quarterly results and day 60 for annual results, and TCPL's FY26 results at day 38"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#f5c76a"/></marker></defs><line x1="60" y1="150" x2="740" y2="150" stroke="#57534f" stroke-width="3"/><line x1="298" y1="122" x2="298" y2="150" stroke="#76d5c1" stroke-width="2"/><text x="298" y="86" text-anchor="middle" fill="#f1eee8" font-size="16">Shareholding pattern</text><text x="298" y="108" text-anchor="middle" fill="#a5a29c" font-size="16">Reg 31</text><text x="298" y="178" text-anchor="middle" fill="#a5a29c" font-size="16">day 21</text><line x1="570" y1="122" x2="570" y2="150" stroke="#76d5c1" stroke-width="2"/><text x="570" y="86" text-anchor="middle" fill="#f1eee8" font-size="16">Quarterly results</text><text x="570" y="108" text-anchor="middle" fill="#a5a29c" font-size="16">Reg 33</text><text x="570" y="178" text-anchor="middle" fill="#a5a29c" font-size="16">day 45</text><line x1="740" y1="122" x2="740" y2="150" stroke="#76d5c1" stroke-width="2"/><text x="762" y="86" text-anchor="end" fill="#f1eee8" font-size="16">Annual results</text><text x="762" y="108" text-anchor="end" fill="#a5a29c" font-size="16">Reg 33</text><text x="762" y="178" text-anchor="end" fill="#a5a29c" font-size="16">day 60</text><circle cx="60" cy="150" r="6" fill="#76d5c1"/><text x="46" y="178" fill="#a5a29c" font-size="16">period ends</text><path d="M490.7 200 L490.7 160" stroke="#f5c76a" stroke-width="2" fill="none" marker-end="url(#ah)"/><text x="490.7" y="226" text-anchor="middle" fill="#f5c76a" font-size="16">TCPL: day 38</text></svg></figure>
+      <p>TCPL’s board approved its FY26 results on 8 May 2026, 38 days after the year ended, inside the 60-day window <span class="tag">public</span>. Anything that could move the price, such as an acquisition, a rating change or a new auditor, must also be filed as it happens (Regulation 30).</p>
+      <p class="note">The deadlines above are from the regulations as SEBI notified them in 2015; SEBI’s April 2025 FAQ confirms the 60-day annual rule and that the last quarter must be audited or limited-reviewed. SEBI amends the LODR often, so check the current text before relying on a deadline.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Six documents, six jobs</h2>
+      <div class="field-grid">
+        <div><b>Quarterly results</b><span>Profit and loss for the quarter and the year so far, standalone and consolidated. Limited review, not a full audit.</span><em>EVERY QUARTER · 45 DAYS</em></div>
+        <div><b>Shareholding pattern</b><span>Who owns how much: promoters, funds, the public. Part 19 reads it.</span><em>EVERY QUARTER · 21 DAYS</em></div>
+        <div><b>Annual report</b><span>The full story with audited statements and notes. The map above.</span><em>ONCE A YEAR · BEFORE THE AGM</em></div>
+        <div><b>Investor presentation</b><span>Management’s charts: segments, margins, outlook. Unaudited, and chosen to flatter. Check it against the filing.</span><em>WITH EACH RESULT</em></div>
+        <div><b>Concall transcript</b><span>Analysts question management after results. The best place for tone and guidance, unaudited. SEBI expects a transcript within about five working days.</span><em>AFTER EACH RESULT</em></div>
+        <div><b>Event disclosures</b><span>Acquisitions, ratings, auditor or board changes, fund-raising, filed as they happen.</span><em>REGULATION 30 · AS IT HAPPENS</em></div>
+      </div>
+      <p>Where to find them: the company’s <i>Corporate announcements</i> on bseindia.com, <i>Corporate filings</i> on nseindia.com, or the investor page of the company’s own site, which usually carries the same files. Prefer these to a data website: a filing is the company’s own signed statement.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Two sets of books: parent and group</h2>
+      <p><b>Standalone</b> accounts cover only the listed company itself. <b>Consolidated</b> accounts cover the company plus every subsidiary it controls, added together as if one business, with trade and dividends between them cancelled. Ramu Chai has no subsidiaries, so this toy uses a made-up parent and subsidiary <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 330" role="img" aria-label="Toy parent and subsidiary: standalone revenue 100 against consolidated 160, and standalone profit 20 including a 4 dividend against consolidated profit 22 with the dividend counted once, all on one scale"><text x="40" y="34" fill="#a5a29c" font-size="16">Standalone revenue</text><rect x="40" y="44" width="400" height="28" fill="#76d5c1" opacity="1"/><text x="240" y="64" text-anchor="middle" fill="#202020" font-size="16">parent 100</text><text x="450" y="64" fill="#f1eee8" font-size="16">₹100</text><text x="40" y="104" fill="#a5a29c" font-size="16">Consolidated revenue</text><rect x="40" y="114" width="400" height="28" fill="#76d5c1" opacity="1"/><text x="240" y="134" text-anchor="middle" fill="#202020" font-size="16">parent 100</text><rect x="440" y="114" width="240" height="28" fill="#4aa896" opacity="1"/><text x="560" y="134" text-anchor="middle" fill="#202020" font-size="16">subsidiary 60</text><text x="690" y="134" fill="#f1eee8" font-size="16">₹160</text><text x="40" y="194" fill="#a5a29c" font-size="16">Standalone profit</text><rect x="40" y="204" width="64" height="28" fill="#f5c76a" opacity="1"/><rect x="104" y="204" width="16" height="28" fill="#ffe3a0" opacity="1"/><text x="132" y="224" fill="#f1eee8" font-size="16">₹20 incl. ₹4 dividend</text><text x="40" y="264" fill="#a5a29c" font-size="16">Consolidated profit</text><rect x="40" y="274" width="64" height="28" fill="#f5c76a" opacity="1"/><rect x="104" y="274" width="24" height="28" fill="#c49a3c" opacity="1"/><rect x="128" y="274" width="16" height="28" fill="none" stroke="#f1eee8" stroke-dasharray="4 4"/><text x="156" y="294" fill="#f1eee8" font-size="16">₹22, dividend counted once</text><text x="780" y="34" text-anchor="end" fill="#a5a29c" font-size="16">4 px = ₹1</text></svg></figure>
+      <p>The subsidiary’s ₹60 of sales joins the group, so consolidated revenue is higher. The ₹4 dividend it paid up is income in the parent’s own books, but inside the group it is only money moving between pockets, so it is counted once. The gap can go either way: in this toy consolidated profit is higher, and in TCPL’s real accounts below it is lower. Investors value the whole group, so they usually start from consolidated.</p>
+      <details class="trace"><summary>Go deeper: subsidiaries, associates and joint ventures</summary>
+        <p>A <b>subsidiary</b> is controlled (usually over half the votes), so all of its sales and costs are added in. An <b>associate</b> or <b>joint venture</b> is one where the company has influence but not control. Its sales are not added; the company shows only its share of the profit or loss, on a single line. Where the company owns less than 100% of a subsidiary, the profit that belongs to the other owners is split out as <b>non-controlling interest</b>. Part 4 covers it.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Quarterly results</p>
+      <h2>A quarter is a slice of the year</h2>
+      <p>Indian companies run April to March. Q1 is April to June, Q2 July to September, Q3 October to December, Q4 January to March. Ramu Chai’s FY26 revenue of ₹500 cr is four slices <span class="tag">example</span>. The fourth is special: the audited year minus the nine months already published.</p>
+      <figure><svg viewBox="0 0 800 320" role="img" aria-label="Ramu Chai FY26 revenue of 500 as four quarter bars, the audited full year, and the nine-month figure of 375 leaving a dashed gap of 125 that is the fourth quarter, all on one scale"><text x="50" y="40" fill="#a5a29c" font-size="16">Reported quarters</text><rect x="50" y="52" width="161" height="40" fill="#76d5c1" opacity="0.6"/><text x="130.5" y="78" text-anchor="middle" fill="#202020" font-size="16">Q1 115</text><rect x="211" y="52" width="168" height="40" fill="#76d5c1" opacity="0.6"/><text x="295" y="78" text-anchor="middle" fill="#202020" font-size="16">Q2 120</text><rect x="379" y="52" width="196" height="40" fill="#76d5c1" opacity="1"/><text x="477" y="78" text-anchor="middle" fill="#202020" font-size="16">Q3 140</text><rect x="575" y="52" width="175" height="40" fill="#76d5c1" opacity="0.6"/><text x="662.5" y="78" text-anchor="middle" fill="#202020" font-size="16">Q4 125</text><text x="50" y="140" fill="#a5a29c" font-size="16">Audited full year</text><rect x="50" y="152" width="700" height="40" fill="#76d5c1"/><text x="400" y="178" text-anchor="middle" fill="#202020" font-size="16">FY26 500</text><text x="50" y="240" fill="#a5a29c" font-size="16">Published nine months</text><rect x="50" y="252" width="525" height="40" fill="#76d5c1" opacity=".6"/><text x="312.5" y="278" text-anchor="middle" fill="#202020" font-size="16">9 months 375</text><rect x="575" y="252" width="175" height="40" fill="none" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><text x="662.5" y="278" text-anchor="middle" fill="#f1eee8" font-size="16">Q4 = 125</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">YoY and QoQ</p>
+      <h2>Compare with last year, or last quarter</h2>
+      <p><b>YoY</b> (year on year) compares a quarter with the same quarter a year earlier. <b>QoQ</b> (quarter on quarter) compares it with the quarter just before. Ramu’s Q4 FY26 sales of ₹125 cr are 11.6% above Q4 FY25 and 10.7% below Q3 FY26, one quarter and two opposite verdicts <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 400" role="img" aria-label="Ramu Chai revenue bars for Q4 FY25 at 112, Q3 FY26 at 140 and Q4 FY26 at 125 on one scale, with dashed lines showing Q4 FY26 is 11.6 percent above a year ago and 10.7 percent below last quarter"><line x1="230" y1="106" x2="650" y2="106" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><line x1="440" y1="50" x2="650" y2="50" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><rect x="120" y="106" width="110" height="224" fill="#76d5c1" opacity="0.6"/><text x="175" y="96" text-anchor="middle" fill="#f1eee8" font-size="16">112</text><text x="175" y="356" text-anchor="middle" fill="#f1eee8" font-size="16">Q4 FY25</text><text x="175" y="378" text-anchor="middle" fill="#a5a29c" font-size="16">year ago</text><rect x="330" y="50" width="110" height="280" fill="#76d5c1" opacity="0.6"/><text x="385" y="40" text-anchor="middle" fill="#f1eee8" font-size="16">140</text><text x="385" y="356" text-anchor="middle" fill="#f1eee8" font-size="16">Q3 FY26</text><text x="385" y="378" text-anchor="middle" fill="#a5a29c" font-size="16">last quarter</text><rect x="540" y="80" width="110" height="250" fill="#76d5c1" opacity="1"/><text x="595" y="70" text-anchor="middle" fill="#f1eee8" font-size="16">125</text><text x="595" y="356" text-anchor="middle" fill="#f1eee8" font-size="16">Q4 FY26</text><text x="595" y="378" text-anchor="middle" fill="#a5a29c" font-size="16">this quarter</text><text x="664" y="111" fill="#76d5c1" font-size="16">YoY +11.6%</text><text x="664" y="55" fill="#f1eee8" font-size="16">QoQ −10.7%</text><text x="780" y="378" text-anchor="end" fill="#a5a29c" font-size="16">2 px = ₹1</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Seasonality</p>
+      <h2>Why QoQ misleads a seasonal business</h2>
+      <p>Tea sells most in the winter and festive months, so Q3 (October to December) is Ramu’s peak every year <span class="tag">example</span>. Q4 then falls back from it. QoQ swings from +16.7% to −10.7% while FY26’s quarters each grew 9.5% to 12.0% on a year ago. YoY compares like with like, so the season cancels.</p>
+      <figure><svg viewBox="0 0 800 630" role="img" aria-label="Ramu Chai eight quarters of revenue with the Q3 bars tallest, below them the quarter-on-quarter change swinging between plus 16.7 and minus 10.7 percent, and below that the year-on-year change steady between 9.5 and 12 percent"><text x="16" y="146" fill="#a5a29c" font-size="16">₹ cr</text><line x1="120" y1="210" x2="780" y2="210" stroke="#57534f"/><rect x="144" y="84" width="52" height="126" fill="#76d5c1" opacity="0.55"/><text x="170" y="76" text-anchor="middle" fill="#f1eee8" font-size="16">105</text><text x="170" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q1 FY25</text><rect x="224" y="80.4" width="52" height="129.6" fill="#76d5c1" opacity="0.55"/><text x="250" y="72.4" text-anchor="middle" fill="#f1eee8" font-size="16">108</text><text x="250" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q2 FY25</text><rect x="304" y="60" width="52" height="150" fill="#76d5c1" opacity="1"/><text x="330" y="52" text-anchor="middle" fill="#f1eee8" font-size="16">125</text><text x="330" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q3 FY25</text><rect x="384" y="75.6" width="52" height="134.4" fill="#76d5c1" opacity="0.55"/><text x="410" y="67.6" text-anchor="middle" fill="#f1eee8" font-size="16">112</text><text x="410" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q4 FY25</text><rect x="464" y="72" width="52" height="138" fill="#76d5c1" opacity="0.55"/><text x="490" y="64" text-anchor="middle" fill="#f1eee8" font-size="16">115</text><text x="490" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q1 FY26</text><rect x="544" y="66" width="52" height="144" fill="#76d5c1" opacity="0.55"/><text x="570" y="58" text-anchor="middle" fill="#f1eee8" font-size="16">120</text><text x="570" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q2 FY26</text><rect x="624" y="42" width="52" height="168" fill="#76d5c1" opacity="1"/><text x="650" y="34" text-anchor="middle" fill="#f1eee8" font-size="16">140</text><text x="650" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q3 FY26</text><rect x="704" y="60" width="52" height="150" fill="#76d5c1" opacity="0.55"/><text x="730" y="52" text-anchor="middle" fill="#f1eee8" font-size="16">125</text><text x="730" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">Q4 FY26</text><text x="16" y="371" fill="#a5a29c" font-size="16">QoQ</text><line x1="120" y1="365" x2="780" y2="365" stroke="#57534f"/><rect x="224" y="350.7" width="52" height="14.3" fill="#76d5c1" opacity="0.55"/><text x="250" y="342.7" text-anchor="middle" fill="#f1eee8" font-size="16">+2.9%</text><rect x="304" y="286.3" width="52" height="78.7" fill="#76d5c1" opacity="1"/><text x="330" y="278.3" text-anchor="middle" fill="#f1eee8" font-size="16">+15.7%</text><rect x="384" y="365" width="52" height="52" fill="#76d5c1" opacity="0.55"/><text x="410" y="437" text-anchor="middle" fill="#f1eee8" font-size="16">−10.4%</text><rect x="464" y="351.6" width="52" height="13.4" fill="#76d5c1" opacity="0.55"/><text x="490" y="343.6" text-anchor="middle" fill="#f1eee8" font-size="16">+2.7%</text><rect x="544" y="343.3" width="52" height="21.7" fill="#76d5c1" opacity="0.55"/><text x="570" y="335.3" text-anchor="middle" fill="#f1eee8" font-size="16">+4.3%</text><rect x="624" y="281.7" width="52" height="83.3" fill="#76d5c1" opacity="1"/><text x="650" y="273.7" text-anchor="middle" fill="#f1eee8" font-size="16">+16.7%</text><rect x="704" y="365" width="52" height="53.6" fill="#76d5c1" opacity="0.55"/><text x="730" y="438.6" text-anchor="middle" fill="#f1eee8" font-size="16">−10.7%</text><text x="16" y="574" fill="#a5a29c" font-size="16">YoY</text><line x1="120" y1="568" x2="780" y2="568" stroke="#57534f"/><rect x="464" y="520.4" width="52" height="47.6" fill="#76d5c1" opacity="0.55"/><text x="490" y="512.4" text-anchor="middle" fill="#f1eee8" font-size="16">+9.5%</text><rect x="544" y="512.4" width="52" height="55.6" fill="#76d5c1" opacity="0.55"/><text x="570" y="504.4" text-anchor="middle" fill="#f1eee8" font-size="16">+11.1%</text><rect x="624" y="508" width="52" height="60" fill="#76d5c1" opacity="1"/><text x="650" y="500" text-anchor="middle" fill="#f1eee8" font-size="16">+12.0%</text><rect x="704" y="510" width="52" height="58" fill="#76d5c1" opacity="0.55"/><text x="730" y="502" text-anchor="middle" fill="#f1eee8" font-size="16">+11.6%</text><text x="780" y="612" text-anchor="end" fill="#a5a29c" font-size="16">top: 1.2 px = ₹1 · rows: 5 px = 1%</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Trailing twelve months</p>
+      <h2>TTM: the latest four quarters, added</h2>
+      <p>TTM (trailing twelve months) adds the latest four quarters, so it always holds one of each season. It rolls forward every quarter. At a fiscal year end it equals the annual figure: Ramu’s TTM at March 2026 is ₹500 cr, the same as FY26 <span class="tag">example</span>. It moves smoothly but is slow to show a turn.</p>
+      <figure><svg viewBox="0 0 800 505" role="img" aria-label="Ramu Chai eight quarters of revenue, a gold bracket around the last four adding to 500, and below them five rolling twelve-month totals rising smoothly from 450 to 500"><text x="16" y="120" fill="#a5a29c" font-size="16">Quarter</text><line x1="120" y1="190" x2="780" y2="190" stroke="#57534f"/><rect x="144" y="85" width="52" height="105" fill="#76d5c1" opacity="0.4"/><text x="170" y="77" text-anchor="middle" fill="#f1eee8" font-size="16">105</text><rect x="224" y="82" width="52" height="108" fill="#76d5c1" opacity="0.4"/><text x="250" y="74" text-anchor="middle" fill="#f1eee8" font-size="16">108</text><rect x="304" y="65" width="52" height="125" fill="#76d5c1" opacity="0.4"/><text x="330" y="57" text-anchor="middle" fill="#f1eee8" font-size="16">125</text><rect x="384" y="78" width="52" height="112" fill="#76d5c1" opacity="0.4"/><text x="410" y="70" text-anchor="middle" fill="#f1eee8" font-size="16">112</text><rect x="464" y="75" width="52" height="115" fill="#76d5c1" opacity="1"/><text x="490" y="67" text-anchor="middle" fill="#f1eee8" font-size="16">115</text><rect x="544" y="70" width="52" height="120" fill="#76d5c1" opacity="1"/><text x="570" y="62" text-anchor="middle" fill="#f1eee8" font-size="16">120</text><rect x="624" y="50" width="52" height="140" fill="#76d5c1" opacity="1"/><text x="650" y="42" text-anchor="middle" fill="#f1eee8" font-size="16">140</text><rect x="704" y="65" width="52" height="125" fill="#76d5c1" opacity="1"/><text x="730" y="57" text-anchor="middle" fill="#f1eee8" font-size="16">125</text><path d="M464 206 L464 206 L756 206 L756 206" stroke="#f5c76a" stroke-width="2" fill="none"/><path d="M464 198 L464 214" stroke="#f5c76a" stroke-width="2" fill="none"/><path d="M756 198 L756 214" stroke="#f5c76a" stroke-width="2" fill="none"/><text x="610" y="236" text-anchor="middle" fill="#f5c76a" font-size="16">last four quarters add to 500</text><text x="16" y="360" fill="#a5a29c" font-size="16">TTM</text><line x1="120" y1="430" x2="780" y2="430" stroke="#57534f"/><rect x="384" y="317.5" width="52" height="112.5" fill="#76d5c1" opacity="0.6"/><text x="410" y="309.5" text-anchor="middle" fill="#f1eee8" font-size="16">450</text><text x="410" y="452" text-anchor="middle" fill="#a5a29c" font-size="16">Q4 FY25</text><rect x="464" y="315" width="52" height="115" fill="#76d5c1" opacity="0.6"/><text x="490" y="307" text-anchor="middle" fill="#f1eee8" font-size="16">460</text><text x="490" y="452" text-anchor="middle" fill="#a5a29c" font-size="16">Q1 FY26</text><rect x="544" y="312" width="52" height="118" fill="#76d5c1" opacity="0.6"/><text x="570" y="304" text-anchor="middle" fill="#f1eee8" font-size="16">472</text><text x="570" y="452" text-anchor="middle" fill="#a5a29c" font-size="16">Q2 FY26</text><rect x="624" y="308.2" width="52" height="121.8" fill="#76d5c1" opacity="0.6"/><text x="650" y="300.2" text-anchor="middle" fill="#f1eee8" font-size="16">487</text><text x="650" y="452" text-anchor="middle" fill="#a5a29c" font-size="16">Q3 FY26</text><rect x="704" y="305" width="52" height="125" fill="#76d5c1" opacity="1"/><text x="730" y="297" text-anchor="middle" fill="#f1eee8" font-size="16">500</text><text x="730" y="452" text-anchor="middle" fill="#a5a29c" font-size="16">Q4 FY26</text><text x="780" y="490" text-anchor="end" fill="#a5a29c" font-size="16">top: 1 px = ₹1 · bottom: 1 px = ₹4</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it · Ramu’s quarters</p>
+      <h2>Same quarter, three different stories</h2>
+      <p>Eight quarters of Ramu Chai’s revenue or profit, with FY26’s Q3 and Q4 yours to change <span class="tag">example</span>. Switch between the raw quarters, YoY, QoQ and TTM. Try “Growth stalls”: nothing grows year on year, yet QoQ still shows a healthy festive jump.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <span class="seglabel">Measure</span>
+          <div class="seg" id="metricSeg" role="group" aria-label="Measure">
+            <button type="button" class="secondary" data-metric="rev" aria-pressed="true">Revenue</button>
+            <button type="button" class="secondary" data-metric="pat" aria-pressed="false">Profit after tax</button>
+          </div>
+          <span class="seglabel">View</span>
+          <div class="seg" id="modeSeg" role="group" aria-label="View">
+            <button type="button" class="secondary" data-mode="q" aria-pressed="true">Quarters</button>
+            <button type="button" class="secondary" data-mode="yoy" aria-pressed="false">YoY</button>
+            <button type="button" class="secondary" data-mode="qoq" aria-pressed="false">QoQ</button>
+            <button type="button" class="secondary" data-mode="ttm" aria-pressed="false">TTM</button>
+          </div>
+          <div class="control"><label for="s3">FY26 Q3 (festive peak) <output id="s3-o"></output></label><input id="s3" type="range" min="100" max="180" step="1" value="140"></div>
+          <div class="control"><label for="s4">FY26 Q4 <output id="s4-o"></output></label><input id="s4" type="range" min="90" max="180" step="1" value="125"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-rev="140,125" data-pat="15,12">Ramu’s real year</button>
+            <button type="button" class="secondary" data-rev="160,140" data-pat="18,14">Festive spike, Q4 holds</button>
+            <button type="button" class="secondary" data-rev="140,112" data-pat="15,10.5">Q4 slump</button>
+            <button type="button" class="secondary" data-rev="125,112" data-pat="13,10.5">Growth stalls</button>
+          </div>
+          <p class="verdict" id="verdict" aria-live="polite"></p>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 560 400" role="img" aria-label="Horizontal bars for Ramu Chai's quarters, year-on-year change, quarter-on-quarter change or trailing twelve months, depending on the view chosen"></svg></div>
+      </div></div>
+      <p>The sliders replace FY26’s Q3 and Q4 figures; the other six quarters stay as in the accounts. Switching measure resets the sliders. Brighter bars are the Q3 quarters. YoY needs the same quarter a year earlier, so it starts at Q1 FY26; QoQ starts at Q2 FY25; TTM needs four quarters, so it starts at Q4 FY25. Axes always cover every value, nothing is clipped.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s FY26 report, page by page</h2>
+      <p>Tata Consumer Products’ integrated annual report for the year to 31 March 2026 runs to about 514 printed pages <span class="tag">public</span>. The PDF has only 428 sheets because the first half is printed in two-page spreads, so use the printed page numbers, which are the ones below.</p>
+      <figure><svg viewBox="0 0 800 240" role="img" aria-label="A bar for the printed pages of TCPL's FY26 integrated annual report: story and strategy to page 175, statutory reports 176 to 331, standalone accounts 332 to 402, consolidated accounts 403 to 485, then subsidiaries and the AGM notice"><rect x="40" y="80" width="245" height="60" fill="#3b3936"/><text x="162.5" y="116" text-anchor="middle" fill="#f1eee8" font-size="16">Story and strategy</text><rect x="285" y="80" width="218.4" height="60" fill="#57534f"/><text x="394.2" y="116" text-anchor="middle" fill="#f1eee8" font-size="16">Statutory reports</text><rect x="503.4" y="80" width="99.4" height="60" fill="#76d5c1"/><text x="553.1" y="116" text-anchor="middle" fill="#202020" font-size="16">Standalone</text><rect x="602.8" y="80" width="116.2" height="60" fill="#4aa896"/><text x="660.9" y="116" text-anchor="middle" fill="#202020" font-size="16">Consolidated</text><rect x="719" y="80" width="4.2" height="60" fill="#f5c76a"/><rect x="723.2" y="80" width="36.4" height="60" fill="#3b3936"/><line x1="40" y1="140" x2="40" y2="152" stroke="#a5a29c"/><text x="40" y="174" text-anchor="start" fill="#a5a29c" font-size="16">p.1</text><line x1="285" y1="140" x2="285" y2="152" stroke="#a5a29c"/><text x="285" y="174" text-anchor="start" fill="#a5a29c" font-size="16">p.176</text><line x1="503.4" y1="140" x2="503.4" y2="152" stroke="#a5a29c"/><text x="503.4" y="174" text-anchor="start" fill="#a5a29c" font-size="16">p.332</text><line x1="602.8" y1="140" x2="602.8" y2="152" stroke="#a5a29c"/><text x="602.8" y="174" text-anchor="start" fill="#a5a29c" font-size="16">p.403</text><path d="M720.5 78 L690.5 52" stroke="#f5c76a" fill="none"/><text x="696.5" y="40" text-anchor="end" fill="#f5c76a" font-size="16">Subsidiaries</text><path d="M741.2 142 L741.2 196" stroke="#a5a29c" fill="none"/><text x="749.2" y="218" text-anchor="end" fill="#a5a29c" font-size="16">AGM notice</text><text x="40" y="218" fill="#a5a29c" font-size="16">1 px = 1/1.4 page</text></svg></figure>
+      <dl class="pages">
+        <dt>p.38 · p.42</dt><dd><b>Chairman’s message</b> and <b>MD &amp; CEO’s message</b>. Financial and operational highlights follow on p.54.</dd>
+        <dt>p.175</dt><dd><b>Ten-year financial highlights</b>, standalone and consolidated in one table: the quickest look at a decade.</dd>
+        <dt>p.176</dt><dd><b>Board’s report</b> (what the Companies Act calls the directors’ report).</dd>
+        <dt>p.210</dt><dd><b>Management discussion and analysis</b>.</dd>
+        <dt>p.230 · p.264</dt><dd><b>Corporate governance report</b>, then the <b>business responsibility and sustainability report</b>.</dd>
+        <dt>p.333</dt><dd><b>Independent auditor’s report</b> on the standalone statements, by Deloitte Haskins &amp; Sells LLP.</dd>
+        <dt>p.344 – 348</dt><dd><b>Standalone statements</b>: balance sheet p.344, profit and loss p.345, changes in equity p.346, cash flows p.347.</dd>
+        <dt>p.349 – 402</dt><dd><b>Notes to the standalone statements</b>. Note 21 (other income) is on p.379; Note 6 (investments, including each subsidiary) on p.365.</dd>
+        <dt>p.404</dt><dd><b>Auditor’s report</b> on the consolidated statements.</dd>
+        <dt>p.414 – 418</dt><dd><b>Consolidated statements</b>: balance sheet p.414, profit and loss p.415, changes in equity p.416, cash flows p.417.</dd>
+        <dt>p.419 – 485</dt><dd><b>Notes to the consolidated statements</b>. Segment information is Note 38, p.477.</dd>
+        <dt>p.486 · p.489</dt><dd><b>Subsidiaries’ financial highlights</b>, then the <b>AGM notice</b>.</dd>
+      </dl>
+      <p class="note">Data frozen at TCPL’s FY2026 (year to 31 March 2026). Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: the parent against the whole group</h2>
+      <p>TCPL owns large overseas and acquired businesses, so its standalone and consolidated accounts differ a lot. Both come from the audited FY26 statements, in ₹ crore <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 430" role="img" aria-label="TCPL FY26 standalone against consolidated on one scale: revenue 14,700 against 20,290, profit 1,635 against 1,547, goodwill 3,860 against 11,884, total assets 22,630 against 34,453, in rupees crore"><text x="40" y="30" fill="#a5a29c" font-size="16">Revenue from operations</text><rect x="40" y="40" width="192" height="26" fill="#76d5c1"/><text x="242" y="59" fill="#f1eee8" font-size="16">standalone ₹14,700 cr</text><rect x="40" y="72" width="265" height="26" fill="#4aa896"/><text x="315" y="91" fill="#f1eee8" font-size="16">consolidated ₹20,290 cr</text><text x="40" y="130" fill="#a5a29c" font-size="16">Profit for the year</text><rect x="40" y="140" width="21.4" height="26" fill="#f5c76a"/><text x="71.4" y="159" fill="#f1eee8" font-size="16">standalone ₹1,635 cr</text><rect x="40" y="172" width="20.2" height="26" fill="#c49a3c"/><text x="70.2" y="191" fill="#f1eee8" font-size="16">consolidated ₹1,547 cr</text><text x="40" y="230" fill="#a5a29c" font-size="16">Goodwill</text><rect x="40" y="240" width="50.4" height="26" fill="#a5a29c"/><text x="100.4" y="259" fill="#f1eee8" font-size="16">standalone ₹3,860 cr</text><rect x="40" y="272" width="155.2" height="26" fill="#7a766f"/><text x="205.2" y="291" fill="#f1eee8" font-size="16">consolidated ₹11,884 cr</text><text x="40" y="330" fill="#a5a29c" font-size="16">Total assets</text><rect x="40" y="340" width="295.6" height="26" fill="#a5a29c"/><text x="345.6" y="359" fill="#f1eee8" font-size="16">standalone ₹22,630 cr</text><rect x="40" y="372" width="450" height="26" fill="#7a766f"/><text x="500" y="391" fill="#f1eee8" font-size="16">consolidated ₹34,453 cr</text><text x="780" y="30" text-anchor="end" fill="#a5a29c" font-size="16">one scale, ₹ crore</text></svg></figure>
+      <ul class="checks">
+        <li><b>Revenue.</b> Standalone ₹14,700.05 cr (p.345) is 72% of consolidated ₹20,290.43 cr (p.415). The ₹20,290 cr in TCPL’s AGM presentation is the consolidated figure.</li>
+        <li><b>Profit.</b> Standalone ₹1,635.15 cr is 5.7% <i>higher</i> than consolidated ₹1,546.80 cr. Standalone other income includes ₹463.73 cr of dividends from subsidiaries and associates (Note 21, p.379), which cancel on consolidation. The group also carries ₹626.68 cr of depreciation and amortisation against ₹229.14 cr standalone, and a ₹90.70 cr share of losses in associates and joint ventures.</li>
+        <li><b>Per share.</b> Basic EPS is ₹16.52 standalone and ₹15.59 consolidated. The AGM presentation’s ₹15.59 is the consolidated one.</li>
+        <li><b>Balance sheet.</b> The standalone sheet holds the subsidiaries as a single line, ₹9,710.29 cr of non-current investments at cost (p.344; Note 6 lists each, such as ₹3,881.25 cr for Capital Foods). The consolidated sheet replaces that with the subsidiaries’ own assets, so goodwill is ₹11,883.90 cr instead of ₹3,859.95 cr and total assets ₹34,452.96 cr instead of ₹22,629.90 cr (p.414).</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s quarters, from the results filing</h2>
+      <p>The Q4 FY26 results filing (signed 8 May 2026) gives consolidated revenue from operations of ₹5,433.62 cr for Q4 FY26, ₹5,112.00 cr for Q3 FY26 and ₹4,608.22 cr for Q4 FY25 <span class="tag">public</span>. Group profit after tax was ₹424.02 cr, ₹384.52 cr and ₹348.72 cr: up 21.6% YoY and 10.3% QoQ.</p>
+      <figure><svg viewBox="0 0 800 400" role="img" aria-label="TCPL consolidated revenue from operations for Q4 FY25 at 4,608.22, Q3 FY26 at 5,112.00 and Q4 FY26 at 5,433.62 crore on one scale, with Q4 FY26 up 17.9 percent on a year ago and up 6.3 percent on last quarter"><line x1="230" y1="99.6" x2="650" y2="99.6" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><line x1="440" y1="74.4" x2="650" y2="74.4" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><rect x="120" y="99.6" width="110" height="230.4" fill="#76d5c1" opacity="0.6"/><text x="175" y="89.6" text-anchor="middle" fill="#f1eee8" font-size="16">4,608.22</text><text x="175" y="356" text-anchor="middle" fill="#f1eee8" font-size="16">Q4 FY25</text><text x="175" y="378" text-anchor="middle" fill="#a5a29c" font-size="16">year ago</text><rect x="330" y="74.4" width="110" height="255.6" fill="#76d5c1" opacity="0.6"/><text x="385" y="64.4" text-anchor="middle" fill="#f1eee8" font-size="16">5,112.00</text><text x="385" y="356" text-anchor="middle" fill="#f1eee8" font-size="16">Q3 FY26</text><text x="385" y="378" text-anchor="middle" fill="#a5a29c" font-size="16">last quarter</text><rect x="540" y="58.3" width="110" height="271.7" fill="#76d5c1" opacity="1"/><text x="595" y="48.3" text-anchor="middle" fill="#f1eee8" font-size="16">5,433.62</text><text x="595" y="356" text-anchor="middle" fill="#f1eee8" font-size="16">Q4 FY26</text><text x="595" y="378" text-anchor="middle" fill="#a5a29c" font-size="16">this quarter</text><text x="664" y="104.6" fill="#76d5c1" font-size="16">YoY +17.9%</text><text x="664" y="79.4" fill="#f1eee8" font-size="16">QoQ +6.3%</text><text x="780" y="378" text-anchor="end" fill="#a5a29c" font-size="16">₹ crore</text></svg></figure>
+      <ul class="checks">
+        <li><b>Audited or not.</b> The filing’s year columns are headed “Audited” and the December quarter “Unaudited”. The auditor’s report says the March quarter is “the balancing figure between audited figures in respect of the full financial year and the published year to date figures up to the third quarter”, which were only limited-reviewed.</li>
+        <li><b>TTM.</b> At 31 March 2026 the trailing twelve months equal the year: ₹20,290.43 cr, up 15.2% on FY25’s ₹17,618.30 cr (p.415).</li>
+        <li><b>Season.</b> TCPL’s Q4 beat its Q3 here, the opposite of Ramu. A broad portfolio of tea, salt, foods and overseas sales can wash a season out, and two quarters prove nothing. Look at eight quarters of the company you study.</li>
+      </ul>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">So what</p>
+      <h2>Three questions before you trust a number</h2>
+      <ol class="checks">
+        <li><b>Where is it from, and who checked it?</b> An audited statement, a limited-reviewed quarter, a slide, or something said on a call.</li>
+        <li><b>Parent or group?</b> Value the business on consolidated, and use standalone only to see what the listed company itself earns and can pay out.</li>
+        <li><b>Compared with what?</b> For a seasonal business, the same quarter last year or the trailing twelve months, never last quarter.</li>
+      </ol>
+      <p>You can now find the statement of profit and loss. <b>Part 3, “The P&amp;L, line by line”</b>, reads it from sales down to profit after tax, one line at a time.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Before you read a number, ask which document it came from, whether anyone audited it, and whether it covers the company alone or the whole group, then compare a quarter with the same quarter last year, not the one before.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ---------- Annual report map ----------
+    const SECTIONS=[
+      {n:"Chairman’s letter",q:"What story does management want to tell?",what:"A short narrative from the chairman and the CEO: the year in their words, the priorities, the mood. It is persuasion by design, so it sets the tone and proves nothing.",look:"What they stress, what they skip, and whether last year’s promises come back.",tcpl:" Chairman’s message p.38, MD & CEO’s message p.42."},
+      {n:"Board’s (directors’) report",q:"What happened this year, formally?",what:"The board’s required account of the year under the Companies Act: dividend recommended, board changes, subsidiaries, related-party dealings, risks and the annexures. The Companies Act calls it the directors’ report.",look:"Dividend, new subsidiaries, changes in directors or auditors, and the list of related-party deals.",tcpl:" Board’s report starts p.176."},
+      {n:"Management discussion (MD&A)",q:"How does management see the industry and the risks?",what:"Management’s own read of the economy, the industry, each business, the risks and the outlook. SEBI’s LODR requires it, either inside the directors’ report or beside it.",look:"Why the numbers moved, segment by segment, and what is said about risks and outlook.",tcpl:" Management discussion and analysis starts p.210."},
+      {n:"Governance and BRSR",q:"Who runs it, and how does it behave?",what:"How the board is made up and paid, its committees, what the auditors are paid, and, for the biggest listed companies, the business responsibility and sustainability report on environmental, social and governance practice.",look:"Independent directors, committee attendance, auditor fees and any sign the board does not challenge the promoter.",tcpl:" Corporate governance report p.230, BRSR p.264."},
+      {n:"Auditor’s report",q:"Did an independent expert call the numbers fair?",what:"The auditor’s signed opinion on whether the statements give a true and fair view, plus the “key audit matters”: the judgement calls that needed the most work. A clean opinion is the norm, so anything else is news.",look:"Whether the opinion is unqualified, the key audit matters, and any emphasis or going-concern paragraph.",tcpl:" Standalone p.333 and consolidated p.404, both by Deloitte Haskins & Sells LLP."},
+      {n:"Financial statements",q:"What did it earn, own, owe and spend?",what:"The four core statements: the balance sheet, the statement of profit and loss, cash flows and changes in equity. Part 3 reads the profit and loss, Part 4 the balance sheet and Part 5 the cash flow.",look:"Just find them for now: every later part works from these pages.",tcpl:" Standalone p.344 to 348, consolidated p.414 to 418."},
+      {n:"Notes to accounts",q:"What is inside each number, and which rules made it?",what:"The breakdown behind every line, the accounting policies, related-party deals, contingent liabilities, segment results and the list of subsidiaries. Many surprises are hidden here, not in the statements.",look:"Other income, borrowings, related parties, contingent liabilities and segment information.",tcpl:" Standalone notes p.349 to 402, consolidated notes p.419 to 485."}
+    ];
+    let mapSel=0;
+    function showMap(i){
+      mapSel=i;
+      const s=SECTIONS[i];
+      document.getElementById('mcQ').textContent=s.q;
+      document.getElementById('mcWhat').textContent=s.what;
+      document.getElementById('mcLook').textContent=s.look;
+      document.getElementById('mcTcpl').textContent=' In TCPL’s FY26 report:'+s.tcpl;
+      document.querySelectorAll('#reportMap .band').forEach((g,k)=>{
+        const r=g.querySelector('rect');
+        r.setAttribute('stroke',k===i?'#76d5c1':'#57534f');
+        r.setAttribute('stroke-width',k===i?'3':'1');
+        r.setAttribute('fill',k===i?'#2c3532':'#202020');
+      });
+      document.querySelectorAll('#mapTabs button').forEach((b,k)=>b.setAttribute('aria-pressed',k===i?'true':'false'));
+    }
+    (function(){
+      const g=document.getElementById('reportMap'),tabs=document.getElementById('mapTabs');
+      SECTIONS.forEach((s,i)=>{
+        const y=20+i*58;
+        const el=document.createElementNS('http://www.w3.org/2000/svg','g');
+        el.setAttribute('class','band');
+        el.innerHTML='<rect x="40" y="'+y+'" width="470" height="52" fill="#202020" stroke="#57534f"/><text x="60" y="'+(y+32)+'" fill="#f1eee8" font-size="18">'+s.n.replace(/&/g,'&amp;')+'</text>';
+        el.addEventListener('click',()=>showMap(i));
+        g.insertBefore(el,g.querySelector('.after'));
+        const b=document.createElement('button');
+        b.type='button';b.className='secondary';b.textContent=(i+1)+' '+s.n;
+        b.addEventListener('click',()=>showMap(i));
+        tabs.appendChild(b);
+      });
+      showMap(0);
+    })();
+
+    // ---------- Quarterly lab ----------
+    // Canonical Ramu Chai quarters, ₹ crore (Q1 FY25 .. Q4 FY26). Sliders replace FY26 Q3 and Q4 only.
+    const BASE={rev:[105,108,125,112,115,120,140,125],pat:[10,10.5,13,10.5,11,12,15,12]};
+    const QL=['Q1 FY25','Q2 FY25','Q3 FY25','Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'];
+    const SL={rev:{s3:[100,180,1,140],s4:[90,180,1,125]},pat:{s3:[8,24,.5,15],s4:[6,24,.5,12]}};
+    const COL={rev:'#76d5c1',pat:'#f5c76a'};
+    const ids=['s3','s4'],$=id=>document.getElementById(id);
+    let metric='rev',mode='q';
+    const num=v=>String(+Math.abs(v).toFixed(1));
+    const signed=v=>(v>0?'+':v<0?'−':'')+num(v);
+    const isPct=()=>mode==='yoy'||mode==='qoq';
+    const rupee=v=>'₹'+num(v)+' cr';
+    const labConfig={format:v=>isPct()?signed(v)+'%':(v<0?'−':'')+rupee(v)};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function series(v){const a=BASE[metric].slice();a[6]=v[0];a[7]=v[1];return a;}
+    function views(a){
+      const sum=(i)=>a[i-3]+a[i-2]+a[i-1]+a[i];
+      return {
+        q:a.map((x,i)=>[QL[i],x,i]),
+        yoy:[4,5,6,7].map(i=>[QL[i],(a[i]/a[i-4]-1)*100,i]),
+        qoq:[1,2,3,4,5,6,7].map(i=>[QL[i],(a[i]/a[i-1]-1)*100,i]),
+        ttm:[3,4,5,6,7].map(i=>[QL[i],sum(i),i])
+      };
+    }
+    function setSliders(metricKey,vals){
+      ids.forEach((id,k)=>{const [lo,hi,st,def]=SL[metricKey][id],el=$(id);el.min=lo;el.max=hi;el.step=st;el.value=vals?vals[k]:def;});
+    }
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmtV=metric==='rev'?(x=>'₹'+num(x)+' cr'):(x=>'₹'+(+x).toFixed(1)+' cr');
+      ids.forEach(id=>$(id+'-o').textContent=fmtV(+$(id).value));
+      const a=series(v),all=views(a),rows=all[mode];
+      if(rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned a non-finite value');
+      const neg=rows.some(r=>r[1]<0),maxAbs=Math.max(...rows.map(r=>Math.abs(r[1])));
+      const step=isPct()?5:(metric==='rev'?(mode==='ttm'?100:50):(mode==='ttm'?10:5));
+      const m=Math.max(step,Math.ceil(maxAbs/step)*step);
+      const x0=neg?295:120,span=neg?175:350;
+      const sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m,ticks=neg?[-m,0,m]:[0,m/2,m];
+      const top=20,bottom=top+rows.length*40,height=bottom+50,fmt=labConfig.format;
+      $('labChart').setAttribute('viewBox','0 0 560 '+height);
+      let s='<line x1="'+x0+'" y1="'+(top-6)+'" x2="'+x0+'" y2="'+bottom+'" stroke="#57534f"/>';
+      rows.forEach(([name,val,i],k)=>{
+        const y=top+k*40,x=sx(val),peak=(i%4===2);
+        s+='<text x="12" y="'+(y+19)+'" fill="'+(peak?'#f1eee8':'#a5a29c')+'" font-size="16">'+esc(name)+'</text>';
+        s+='<rect data-v="'+val+'" x="'+Math.min(x,x0)+'" y="'+y+'" width="'+Math.abs(x-x0)+'" height="26" fill="'+COL[metric]+'" opacity="'+(peak?1:.55)+'"/>';
+        const tx=val<0?x0+10:x+8;
+        s+='<text x="'+tx+'" y="'+(y+19)+'" fill="#f1eee8" font-size="16">'+esc(fmt(val))+'</text>';
+      });
+      s+=ticks.map((t,k)=>'<text class="tick" data-v="'+t+'" x="'+sx(t)+'" y="'+(bottom+28)+'" text-anchor="'+['start','middle','end'][neg?k:k]+'" fill="#a5a29c" font-size="16">'+esc(fmt(t))+'</text>').join('');
+      $('labChart').innerHTML=s;
+      // Latest quarter in all three views, whichever view is on screen
+      const yoy=all.yoy[3][1],qoq=all.qoq[6][1],ttmNow=all.ttm[4][1],ttmPrev=all.ttm[0][1],ttmG=(ttmNow/ttmPrev-1)*100;
+      const unit=metric==='rev'?'sales':'profit';
+      $('verdict').textContent='Q4 FY26 '+unit+': QoQ says '+signed(qoq)+'%, YoY says '+signed(yoy)+'%, and TTM is '+signed(ttmG)+'% on a year ago.';
+      const rowsL=[
+        ['FY26 Q3 (your input)',fmtV(a[6])],['FY26 Q4 (your input)',fmtV(a[7])],
+        ['YoY, Q4 FY26',num(a[7])+' ÷ '+num(a[3])+' − 1 = '+signed(yoy)+'%'],
+        ['QoQ, Q4 FY26',num(a[7])+' ÷ '+num(a[6])+' − 1 = '+signed(qoq)+'%'],
+        ['TTM at Q4 FY26',num(a[4])+' + '+num(a[5])+' + '+num(a[6])+' + '+num(a[7])+' = '+num(ttmNow)],
+        ['TTM at Q4 FY25 (= FY25)',num(a[0])+' + '+num(a[1])+' + '+num(a[2])+' + '+num(a[3])+' = '+num(ttmPrev)],
+        ['TTM growth',signed(ttmG)+'%']
+      ];
+      $('ledger').innerHTML=rowsL.map(([k,x])=>'<span>'+esc(k)+'</span><span>'+esc(x)+'</span>').join('');
+      window.labResults={valid:true,metric,mode,labels:rows.map(r=>r[0]),values:rows.map(r=>r[1]),axis:m,latest:{yoy,qoq,ttmGrowth:ttmG,ttmNow,ttmPrev},inputs:v};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{
+      setSliders(metric,b.dataset[metric].split(',').map(Number));update();
+    }));
+    document.querySelectorAll('#modeSeg button').forEach(b=>b.addEventListener('click',()=>{
+      mode=b.dataset.mode;document.querySelectorAll('#modeSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));update();
+    }));
+    document.querySelectorAll('#metricSeg button').forEach(b=>b.addEventListener('click',()=>{
+      metric=b.dataset.metric;document.querySelectorAll('#metricSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));setSliders(metric,null);update();
+    }));
+    setSliders('rev',null);update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
