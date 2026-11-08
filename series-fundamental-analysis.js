@@ -16,7 +16,7 @@
     { id: 'where-the-numbers-live-eli5', track: 'numbers', title: 'Where the numbers live', blurb: 'Annual reports, exchange filings, consolidated vs standalone, quarterly results', file: 'where-the-numbers-live-eli5.html' },
     { id: 'the-profit-and-loss-eli5', track: 'numbers', title: 'The P&L, line by line', blurb: 'From sales to profit after tax, and the lines that hide surprises', file: 'the-profit-and-loss-eli5.html' },
     { id: 'the-balance-sheet-eli5', track: 'numbers', title: 'The balance sheet', blurb: 'What a company owns, what it owes, and what belongs to shareholders', file: 'the-balance-sheet-eli5.html' },
-    { id: 'cash-flow-and-the-three-statements-eli5', track: 'numbers', title: 'Cash flow, and how the three connect', blurb: 'Why profit is not cash, and one event moving through all three statements' },
+    { id: 'cash-flow-and-the-three-statements-eli5', track: 'numbers', title: 'Cash flow, and how the three connect', blurb: 'Why profit is not cash, and one event moving through all three statements', file: 'cash-flow-and-the-three-statements-eli5.html' },
     { id: 'accounting-choices-eli5', track: 'numbers', title: 'Accounting choices that change profit', blurb: 'Capitalising, depreciation, provisions and one-offs under Ind AS' },
     { id: 'pe-ratio-eli5', track: 'value', title: 'P/E: what it says and when it lies', blurb: 'EPS and P/E you can drive yourself, and the traps that fool them' },
     { id: 'margins-and-operating-leverage-eli5', track: 'numbers', title: 'Margins and operating leverage', blurb: 'Why a 10% rise in sales can mean a 30% rise in profit' },
