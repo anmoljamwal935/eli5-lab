@@ -1,0 +1,492 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": [
+      "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "https://www.tatasteel.com/media/25904/tatasteel-iar-2025-26.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf"
+    ],
+    "title": "TCPL Consolidated Financial Statements (IAR 2025-26) and Tata Steel Integrated Report & Annual Accounts 2025-26",
+    "author": "Tata Consumer Products Ltd (auditor Deloitte Haskins & Sells LLP); Tata Steel Ltd (auditor Price Waterhouse & Co Chartered Accountants LLP)",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "TCPL printed pp.414,415,417-418,448-449,455,465,468-469; Tata Steel printed pp.29,317,320-321, F33, F142-F144, F149, F253-F255",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl (TCPL consolidated.pdf; tatasteel.com/media/25904/tatasteel-iar-2025-26.pdf, 34.6 MB, 582 PDF pages, found via the investors page for IAR 2025-26) + pdftotext -layout; printed page found by per-PDF-page footer",
+    "beginning_middle_end_evidence": "TCPL: balance sheet, P&L, cash flow, notes read; Tata Steel: contents/ratios, MD&A, consolidated BS, P&L, CF, note 42 read. Tata Steel site returned 403 to the default curl agent and worked with a browser user agent; no aggregator used.",
+    "limitations": "Tata Steel pages cited as printed (numeric for MD&A, F-prefixed for financial statements). Series EBITDA for Tata Steel is my construction from P&L lines and differs from the company figure, shown side by side. No price-based ratio used, so no market-data fetch needed."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Why borrow: lenders accept less than owners; interest tax-deductible (10 -> 7.5 after 25% tax); no dilution",
+      "kind": "mechanism",
+      "locator": "plan scope; arithmetic",
+      "check_needed": false,
+      "destination": "why-borrow"
+    },
+    {
+      "id": 2,
+      "item": "Debt magnifies ROE: 20.0% with debt vs 16.4% all-equity (one-off, Ramu unchanged)",
+      "kind": "mechanism+number",
+      "locator": "Part 10 link; derived",
+      "check_needed": false,
+      "destination": "magnify"
+    },
+    {
+      "id": 3,
+      "item": "Interest due in bad years too; EBIT vs fixed interest across 4 scenarios; default",
+      "kind": "mechanism",
+      "locator": "derived from canonical",
+      "check_needed": false,
+      "destination": "bad-years"
+    },
+    {
+      "id": 4,
+      "item": "D/E 0.40, net debt 60, net debt/equity 0.24",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "de"
+    },
+    {
+      "id": 5,
+      "item": "Net debt/EBITDA 0.71x; 3x rule of thumb labelled not law",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "ndebitda"
+    },
+    {
+      "id": 6,
+      "item": "Interest cover 7.3x = EBIT/finance costs; why EBIT not EBITDA; finance costs as printed",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "cover"
+    },
+    {
+      "id": 7,
+      "item": "Short vs long-term borrowing 30/70; cash 40 covers 1.3x; refinancing risk (+0.6 at 12%)",
+      "kind": "mechanism",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "maturity"
+    },
+    {
+      "id": 8,
+      "item": "Fixed vs floating; RBI hike 10->12: finance costs 10/11/12, cover 7.3/6.6/6.1",
+      "kind": "mechanism",
+      "locator": "plan canonical rate shock",
+      "check_needed": false,
+      "destination": "floating"
+    },
+    {
+      "id": 9,
+      "item": "Lease liabilities debt-like (Ind AS 116); one-off PV 30.7; D/E 0.52; Tata Steel counts leases",
+      "kind": "mechanism",
+      "locator": "derived",
+      "check_needed": false,
+      "destination": "leases"
+    },
+    {
+      "id": 10,
+      "item": "Credit ratings in one line (CRISIL, ICRA, CARE, India Ratings)",
+      "kind": "definition",
+      "locator": "field guide",
+      "check_needed": false,
+      "destination": "fieldguide"
+    },
+    {
+      "id": 11,
+      "item": "Banks/NBFCs differ (Parts 29-30); working capital Part 12; cyclicals Part 33; cost of capital Part 23",
+      "kind": "scope",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "hero/fieldguide/so-what"
+    },
+    {
+      "id": 12,
+      "item": "TCPL borrowings 2,120.31, cash 3,046.57, net cash 926.26, D/E 0.09, ND/EBITDA -0.33; own net cash 2,977.49",
+      "kind": "number",
+      "locator": "TCPL BS p.414, p.469",
+      "check_needed": true,
+      "destination": "tcpl-netcash"
+    },
+    {
+      "id": 13,
+      "item": "TCPL cash-pool overdraft 1,633.78 inflates borrowings and cash",
+      "kind": "number",
+      "locator": "TCPL Note 15 p.448; CF p.418",
+      "check_needed": true,
+      "destination": "tcpl-netcash"
+    },
+    {
+      "id": 14,
+      "item": "TCPL leases 699.20 excluded; net cash 227 with them",
+      "kind": "number",
+      "locator": "TCPL BS p.414",
+      "check_needed": true,
+      "destination": "tcpl-netcash"
+    },
+    {
+      "id": 15,
+      "item": "TCPL interest cover 15.8x (2,165.12/137.03); FY25 6.5x derived; CP repayment 1,164.49; rights issue 2,980.57; +25bp = 1.03",
+      "kind": "number",
+      "locator": "TCPL P&L p.415, CF p.418, Note 26 p.455, p.468",
+      "check_needed": true,
+      "destination": "tcpl-cover"
+    },
+    {
+      "id": 16,
+      "item": "Tata Steel borrowings 84,956.39; cash 8,884.95; series net debt 76,071; own 80,144; EBITDA 34,352 (own 34,848); cover 3.13x (own ISCR 4.72x); ND/EBITDA 2.21x (own 2.3x vs 3.2x)",
+      "kind": "number",
+      "locator": "TS F142-F144, F33, pp.29, 317, 320",
+      "check_needed": true,
+      "destination": "tatasteel"
+    },
+    {
+      "id": 17,
+      "item": "Tata Steel +100bp = 389.14; liquidity 45,237.33; repayments/interest paid; ratings",
+      "kind": "number",
+      "locator": "TS F253, F254, F149, pp.320-321",
+      "check_needed": true,
+      "destination": "tatasteel"
+    },
+    {
+      "id": 18,
+      "item": "Why a steelmaker carries debt: PP&E 149,878 + CWIP 27,510 vs assets 301,254; EBITDA margin 15.01 vs 11.81; PBEIT 17,001 vs 9,268",
+      "kind": "number+claim",
+      "locator": "TS F142, F33, F144",
+      "check_needed": true,
+      "destination": "steelmaker"
+    },
+    {
+      "id": 19,
+      "item": "Four questions for any debt; hand-off to Part 12",
+      "kind": "context",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "so-what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 12,
+      "claim": "2,120.31-3,046.57=-926.26; 2,120.31/23,188.86=0.0914; -926.26/2,791.80=-0.332",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "BS p.414 (printed)",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 12,
+      "claim": "Adjusted net (cash)/debt (2,977.49): borrowings 2,120.31 less cash+deposits 3,396.51, current investments 868.20, ICDs 833.09",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "Capital management note, p.469",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Bank overdraft 1,633.78 in cash-pooling with offsetting cash; cash 1,412.79 + overdraft 1,633.78 = 3,046.57",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "Note 15 p.448; CF reconciliation p.418",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Lease liabilities 608.64 + 90.56 = 699.20; 926.26-699.20 = 227.06",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "BS p.414",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "EBIT 2,165.12 / finance costs 137.03 = 15.80; FY25 EBIT 1,878.61 / 290.20 = 6.47 (derived from the same P&L lines)",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "CP repayment (1,164.49) and rights issue 2,980.57 in FY25 financing; nil FY26; finance cost paid 260.62 -> 111.50; Note 26: amortised-cost interest 239.47 -> 83.41; lease interest 40.96; DB plans 12.66",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "CF p.418; Note 26 p.455",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "+25bp lowers PBT by 1.03 (unhedged); liquidity table borrowings within 1 year 1,818.17",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "p.468; p.465",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Purchase commitments for NCI shares 1,330.90 in other financial liabilities",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "Note 16 p.449",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Borrowings 63,753.67 + 21,202.72 = 84,956.39; cash 8,884.95; leases 6,232.99 + 1,192.30 = 7,425.29; sum with borrowings 92,381.68 = reported 92,382 gross debt",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tatasteel.com/media/25904/tatasteel-iar-2025-26.pdf",
+      "supporting_passage_and_locator": "Consolidated BS F142-F143; MD&A p.317",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Series EBITDA = revenue 232,139.94 - (74,468.93+18,159.14+989.62+25,998.98+79,139.21-968.38) = 34,352.44; EBIT 22,397.93; cover 3.13; ND/EBITDA 2.21",
+      "verdict": "Supported (recomputed); company EBITDA 34,848 and ISCR 4.72 shown separately with definitions",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tatasteel.com/media/25904/tatasteel-iar-2025-26.pdf",
+      "supporting_passage_and_locator": "P&L F144; ratios and definitions F33; p.29",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Net debt 80,144; ND/EBITDA 2.3x vs 3.2x prior year",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tatasteel.com/media/25904/tatasteel-iar-2025-26.pdf",
+      "supporting_passage_and_locator": "p.317; p.320",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "+100bp adds 389.14 to finance costs; liquidity 45,237.33 (11,573.15 + 33,664.18); LT repaid 23,896.78, raised 12,092.34, interest paid 8,065.55; India Ratings AAA/Stable, CARE AA+/Stable, S&P BBB, Moody Baa3",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tatasteel.com/media/25904/tatasteel-iar-2025-26.pdf",
+      "supporting_passage_and_locator": "F253; F254; F149; pp.320-321",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 18,
+      "claim": "PP&E 149,878.21; CWIP 27,510.29; total assets 301,254.11; EBITDA/turnover 15.01% vs 11.81%; PBEIT 17,001.15 vs 9,267.51",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tatasteel.com/media/25904/tatasteel-iar-2025-26.pdf",
+      "supporting_passage_and_locator": "F142; F33; F144",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 9,
+      "claim": "PV of 5 cr x 10 years at 10% = 30.72; Ind AS 116 recognises right-of-use asset and lease liability",
+      "verdict": "Supported (arithmetic); standard description of Ind AS 116",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": null,
+      "supporting_passage_and_locator": "recomputed",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 8,
+      "claim": "Floating loans priced off a benchmark that tends to follow RBI policy repo rate; pass-through depends on loan terms",
+      "verdict": "Time-sensitive / general; worded generically, no current rate quoted",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": null,
+      "supporting_passage_and_locator": "general",
+      "page_treatment": "tagged public/example; working shown on page"
+    },
+    {
+      "inventory_id": 10,
+      "claim": "Rating agencies named; AAA top of long-term scale; weaker grade means higher cost or less lending",
+      "verdict": "General knowledge; kept generic",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": null,
+      "supporting_passage_and_locator": "general",
+      "page_treatment": "tagged public/example; working shown on page"
+    }
+  ],
+  "panels": [
+    {
+      "id": "why-borrow",
+      "heading": "Debt is cheap money, and tax helps",
+      "visual": "interest vs dividend bars, 20px=Rs1cr"
+    },
+    {
+      "id": "magnify",
+      "heading": "Debt magnifies the owners return",
+      "visual": "capital and profit bars, 1.6px=Rs1cr"
+    },
+    {
+      "id": "bad-years",
+      "heading": "Interest is due in bad years too",
+      "visual": "EBIT split interest/left, 4px=Rs1cr"
+    },
+    {
+      "id": "de",
+      "heading": "Debt to equity, and net debt",
+      "visual": "equity, borrowings, cash/net debt, 2px=Rs1cr"
+    },
+    {
+      "id": "ndebitda",
+      "heading": "Net debt to EBITDA: years to repay",
+      "visual": "three EBITDA years vs net debt, 2.6px=Rs1cr"
+    },
+    {
+      "id": "cover",
+      "heading": "Interest cover: can profit pay the bill",
+      "visual": "EBIT in Rs10cr blocks vs one interest block, 8px=Rs1cr"
+    },
+    {
+      "id": "maturity",
+      "heading": "Short-term debt and refinancing risk",
+      "visual": "borrowings by due date vs cash, 6px=Rs1cr"
+    },
+    {
+      "id": "floating",
+      "heading": "Fixed versus floating, and an RBI hike",
+      "visual": "three interest bars, 40px=Rs1cr"
+    },
+    {
+      "id": "leases",
+      "heading": "Leases are debt-like (Ind AS 116)",
+      "visual": "rent blocks, PV, borrowings+lease, 4px=Rs1cr"
+    },
+    {
+      "id": "lab",
+      "heading": "Borrow more, raise rates, watch cover break",
+      "visual": "gauge 0-9x with zones + EBIT split bar, axis 0-120"
+    },
+    {
+      "id": "fieldguide",
+      "heading": "Three more things to know",
+      "visual": "cards (text-only allowed)"
+    },
+    {
+      "id": "tcpl-netcash",
+      "heading": "TCPL: effectively debt-free",
+      "visual": "borrowings/cash/wider pool, 1px=Rs10cr"
+    },
+    {
+      "id": "tcpl-cover",
+      "heading": "TCPL: interest cover of 15.8x",
+      "visual": "EBIT vs finance costs FY25/FY26, 0.2px=Rs1cr"
+    },
+    {
+      "id": "tatasteel",
+      "heading": "Tata Steel: the opposite balance sheet",
+      "visual": "borrowings/cash/EBITDA/EBIT/finance costs, 1px=Rs125cr"
+    },
+    {
+      "id": "steelmaker",
+      "heading": "Why a steelmaker carries debt",
+      "visual": "ratios on two marked dimensionless scales"
+    },
+    {
+      "id": "so-what",
+      "heading": "Four questions for any company debt",
+      "visual": "text-only allowed"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Extra borrowing buys back shares: equity falls by the amount, EBIT and cash unchanged",
+      "New debt and the floating share of existing 100 pay the slider rate; fixed rest stays 10%",
+      "D&A 12 and other income 4 fixed; tax = 17/67 of positive PBT, none on loss",
+      "Zones <1.5x danger, 1.5-3x thin, >3x comfortable and ND/EBITDA >3x are rules of thumb"
+    ],
+    "units": {
+      "extra": "Rs cr",
+      "rate": "%",
+      "ebitda": "% change",
+      "float": "% of existing 100"
+    },
+    "independent_calculation_method": "labtest.py: separate Python oracle using exact Fractions with a differently arranged formula, driven through Playwright against window.labResults",
+    "cases": [
+      {
+        "case": "default 0/10/0/100",
+        "expected": "interest 10, cover 7.3, PBT 67, ROE 20.0, D/E 0.40, ND/EBITDA 0.706",
+        "observed": "identical",
+        "pass": true
+      },
+      {
+        "case": "rate hike 10->12",
+        "expected": "interest 12, cover 6.083 (6.1x), PBT 65, ROE 19.40",
+        "observed": "identical",
+        "pass": true
+      },
+      {
+        "case": "bad year EBITDA -30%",
+        "expected": "cover 4.75, PBT 41.5, ROE 12.39, ND/EBITDA 1.008",
+        "observed": "identical",
+        "pass": true
+      },
+      {
+        "case": "borrow +100",
+        "expected": "interest 20, cover 3.65, PBT 57, ROE 28.36, D/E 1.333",
+        "observed": "identical",
+        "pass": true
+      },
+      {
+        "case": "break it +150/14/-30",
+        "expected": "interest 35, cover 1.357, PBT 16.5, ROE 12.31, ND/EBITDA 3.529",
+        "observed": "identical",
+        "pass": true
+      },
+      {
+        "case": "16 slider corners + 40 random combos",
+        "expected": "oracle values for all 12 outputs",
+        "observed": "all within 1e-9 relative; 0 failures of 61 cases",
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "default reproduces canonical accounts",
+      "hike reproduces cover 6.1x and PBT 65 from the brief",
+      "no NaN/Infinity/undefined in chart or ledger; no page errors"
+    ],
+    "tolerance": "1e-9 relative on numbers; gauge/ticks via check_render (1px)",
+    "axis_and_clipping": "Gauge axis fixed 0-9x; cover above 9 clamps the bar, shows full value and an off-the-scale marker; negative cover draws zero-length bar with signed value in label. Flow bar axis fixed 0-120 (max EBIT+other income 111); shortfall drawn dashed."
+  },
+  "verification": {
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 15,
+        "panels": 16,
+        "notes": 0
+      },
+      "artifact_sha256": "770ca26cb50efb59a778dab06141f9b8ea93833009aaa518d44ce7275ce1d05c",
+      "artifact_path": "/home/user/eli5-lab/explainers/how-much-debt-eli5.html"
+    },
+    "browser_check_render": "0 errors (defaults, 4 presets, slider extremes, 390px) after fixing two line-through-label findings",
+    "supplementary_checks": [
+      "labtest.py 61 cases pass",
+      "TCPL and Tata Steel figures re-added from PDFs; page cites checked against PDF page footers"
+    ],
+    "screenshots": "desktop-00..16 and phone-00..16 saved in the scratchpad; viewed 00-15 desktop and phone-10, phone-14: arrows/labels clear, gauge and bars on axis, cards/grids styled; sticky header overlap in some shots is a capture artifact. Phone lab and wide drawings scroll sideways by design (swipe hint).",
+    "card": "plans/handoff/how-much-debt-eli5.card.svg; check_card 0 errors 0 warnings; rendered and looked at; not dry-run on the home page (shared files not touched)",
+    "coverage_review": "every inventory row located on the page",
+    "semantic_review": "self-review only; Tata Steel EBITDA/cover differences from company definitions stated on page; no judgement on either company",
+    "artifact_sha256": "770ca26cb50efb59a778dab06141f9b8ea93833009aaa518d44ce7275ce1d05c"
+  },
+  "publication": {
+    "status": "not published; handed off (branch claude/fa-part-11-debt)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
