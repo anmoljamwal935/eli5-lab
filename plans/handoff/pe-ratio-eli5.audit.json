@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "Tata Consumer Products Integrated Annual Report 2025-26",
+    "author": "Tata Consumer Products Ltd",
+    "verified_date": "2026-11-08",
+    "sections": "consolidated P&L p415, Note 14 p445, Note 30 p456, MD&A p223, Board's report p178, listing p251",
+    "language": "English",
+    "capture_mode": "downloaded PDFs, pdftotext -layout; IAR sha256 e5e1f09838183e22dbf3fc11056894b197401f462cc7966ff295419e4e660b8d; consolidated.pdf sha256 e8108862e8384a011fa8832c99fd1226e706edb9e2633a64a6c616fb35207351",
+    "other_sources": [
+      {
+        "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+        "use": "adjusted EPS 17.30, page 8"
+      }
+    ],
+    "beginning_middle_ending_evidence": "Topic build from primary documents and the series plan; no video/article source.",
+    "limitations": [
+      "No dated exchange close verified (NSE 403; BSE access not pursued after a sandbox block).",
+      "Adjusted EPS bridge not published by TCPL.",
+      "Ramu numbers are canonical examples from the plan."
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "EPS = profit for owners ÷ shares; Ramu 50/10 = 5",
+      "kind": "definition",
+      "locator": "plan canonical",
+      "check": false,
+      "destination": "p02"
+    },
+    {
+      "id": "I2",
+      "item": "Owners' profit vs non-controlling interests; basic vs diluted",
+      "kind": "definition",
+      "locator": "Ind AS 33 usage; TCPL Note 30 p456",
+      "check": true,
+      "destination": "p02"
+    },
+    {
+      "id": "I3",
+      "item": "P/E = price ÷ EPS = market cap ÷ profit; years of profit",
+      "kind": "definition",
+      "locator": "plan",
+      "check": false,
+      "destination": "p03"
+    },
+    {
+      "id": "I4",
+      "item": "Earnings yield = 1 ÷ P/E",
+      "kind": "definition",
+      "locator": "plan",
+      "check": false,
+      "destination": "p04"
+    },
+    {
+      "id": "I5",
+      "item": "Trailing vs forward; FY27E EPS 5.75 → 17.4",
+      "kind": "mechanism",
+      "locator": "plan canonical",
+      "check": true,
+      "destination": "p05"
+    },
+    {
+      "id": "I6",
+      "item": "Four-slider lab with live profit, EPS, mcap, P/E, yield, years",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check": false,
+      "destination": "p06"
+    },
+    {
+      "id": "I7",
+      "item": "One-off gain inflates EPS",
+      "kind": "misconception",
+      "locator": "plan",
+      "check": false,
+      "destination": "p07"
+    },
+    {
+      "id": "I8",
+      "item": "Cyclical peak: low P/E, falling profit",
+      "kind": "misconception",
+      "locator": "plan",
+      "check": false,
+      "destination": "p08"
+    },
+    {
+      "id": "I9",
+      "item": "Losses: P/E not meaningful; tiny profit gives absurd P/E",
+      "kind": "misconception",
+      "locator": "plan",
+      "check": false,
+      "destination": "p09"
+    },
+    {
+      "id": "I10",
+      "item": "High P/E on growth vs low-P/E value trap",
+      "kind": "misconception",
+      "locator": "plan",
+      "check": false,
+      "destination": "p10"
+    },
+    {
+      "id": "I11",
+      "item": "P/E ignores debt; EV/EBITDA deferred to Part 14",
+      "kind": "misconception",
+      "locator": "plan",
+      "check": false,
+      "destination": "p11"
+    },
+    {
+      "id": "I12",
+      "item": "TCPL basic EPS 15.59, diluted 15.58, adjusted 17.30, weighted shares",
+      "kind": "number",
+      "locator": "TCPL IAR p415/p456, AGM p8",
+      "check": true,
+      "destination": "p12"
+    },
+    {
+      "id": "I13",
+      "item": "Deferrals: PEG/peers Part 15, bands Part 26, growth Part 9, adjustments Part 6",
+      "kind": "context",
+      "locator": "brief",
+      "check": false,
+      "destination": "p10,p03,p07,p12"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I12",
+      "claim": "Consolidated profit attributable to owners ₹1,542.30 cr; weighted shares 989,535,734; basic EPS 15.59; diluted 15.58 (990,153,214 shares)",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "Note 30 'Earnings per Share', printed p456 (PDF p370); 1542.30/98.9535734 = 15.586 → 15.59",
+      "page_treatment": "Stated on page"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Year-end shares 98,95,61,780 after 63,222 allotted on option exercise",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "same IAR",
+      "supporting_passage": "Note 14 p445 (PDF 359); Board's report p178 (PDF 92)",
+      "page_treatment": "Stated"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Adjusted EPS 17.30 = adjusted for amortisation of Capital Foods and Organic India; EPS before exceptional items 15.64/17.35",
+      "verdict": "Supported (company figure, unaudited, no bridge published)",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage": "AGM presentation page 8, 'Summary of Financial Performance – FY26' table",
+      "page_treatment": "Attributed to the AGM presentation; add-back ~₹169 cr labelled as our arithmetic"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "MD&A prose says previous-year EPS ₹13.60; statement and Note 30 say ₹13.06",
+      "verdict": "Contradicted (prose vs audited statement)",
+      "as_of": "2026-11-08",
+      "evidence_url": "same IAR",
+      "supporting_passage": "MD&A p223 (PDF 137) vs Note 30 p456 and consolidated P&L p415 (cons.pdf p13)",
+      "page_treatment": "Stated on page: trust the statements"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "BSE scrip 500800, NSE symbol TATACONSUM",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "same IAR",
+      "supporting_passage": "Listing details, printed p251 (PDF 165)",
+      "page_treatment": "Stated"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "No dated NSE/BSE closing price quoted",
+      "verdict": "Unverifiable",
+      "as_of": "2026-11-08",
+      "evidence_url": "exchange sites",
+      "supporting_passage": "NSE API returned 403; a further BSE fetch was blocked by the sandbox and not worked around",
+      "page_treatment": "Page gives a reader price input only and says why"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "FY27E: revenue 560, PAT 57.5, EPS 5.75; P/E 20 → 17.4",
+      "verdict": "Supported (canonical example)",
+      "as_of": "2026-11-08",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "supporting_passage": "Plan section 'Next-year estimate'",
+      "page_treatment": "Tagged example"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p01",
+      "heading": "Same price, different profit",
+      "scale": "f1 bars at 6px=₹1",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p02",
+      "heading": "EPS is profit cut into shares",
+      "scale": "14px=₹1 cr",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p03",
+      "heading": "P/E is the price in years of profit",
+      "scale": "6.6px=₹1/share; 0.66px=₹1 cr",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p04",
+      "heading": "Earnings yield",
+      "scale": "100-cell grids",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p05",
+      "heading": "Trailing looks back, forward guesses",
+      "scale": "6px=₹1",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p06",
+      "heading": "Lab",
+      "scale": "live scale",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p07",
+      "heading": "One-off gain",
+      "scale": "60px=₹1 EPS",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p08",
+      "heading": "Cyclical peak",
+      "scale": "1.5px=₹1 cr",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p09",
+      "heading": "Losses and tiny profits",
+      "scale": "6px=₹1 cr",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p10",
+      "heading": "High P/E vs value trap",
+      "scale": "12px=₹1 EPS",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p11",
+      "heading": "Debt",
+      "scale": "0.4px=₹1 cr",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p12",
+      "heading": "Real report: TCPL EPS",
+      "scale": "30px=₹1 EPS",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    },
+    {
+      "id": "p13",
+      "heading": "So what",
+      "scale": "none",
+      "units": "rupees / rupees crore",
+      "assumptions": "Ramu figures tagged example"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "profit = sales × margin (+ one-off); EPS = profit ÷ shares; forward profit = underlying + change, one-offs do not recur",
+      "P/E n/m when EPS ≤ 0",
+      "trap scenarios are one-off examples, not Ramu's accounts"
+    ],
+    "units": {
+      "sales": "₹ crore",
+      "margin": "%",
+      "shares": "crore",
+      "price": "₹"
+    },
+    "independent_calculation_method": "Python oracle re-implementing the formulas, compared to window.labResults in headless Chromium (scratchpad labtest.py); not the page's own function",
+    "cases": [
+      {
+        "case": "default Ramu: profit 50, EPS 5, P/E 20, yield 5%, mcap 1000",
+        "status": "pass"
+      },
+      {
+        "case": "forward: EPS 5.75, P/E 17.4",
+        "status": "pass"
+      },
+      {
+        "case": "one-off gain trap (500,10,10,100,+30,0): EPS 8, P/E 12.5, underlying 20",
+        "status": "pass"
+      },
+      {
+        "case": "cyclical peak (500,20,10,100,0,-50): P/E 10, forward 20",
+        "status": "pass"
+      },
+      {
+        "case": "loss-making (500,-4,10,100,0,10): EPS -2, P/E n/m",
+        "status": "pass"
+      },
+      {
+        "case": "value trap (500,6,10,24,0,-10): P/E 8, forward 12",
+        "status": "pass"
+      },
+      {
+        "case": "all 16 slider min/max corners vs Python oracle",
+        "status": "pass"
+      },
+      {
+        "case": "delta stepper bound -100",
+        "status": "pass"
+      },
+      {
+        "case": "TCPL box at ₹1,000: 64.1× basic, 57.8× adjusted",
+        "status": "pass"
+      }
+    ],
+    "invariants": [
+      "P/E = price/EPS = market cap/profit",
+      "earnings yield = 1/P/E when EPS>0",
+      "one-off trap: forward P/E equals underlying P/E"
+    ],
+    "tolerance": "1e-9 relative; 154 comparisons, 0 failures",
+    "axis_and_clipping": "Axis 0..price rounded to a nice step; price bar data-v; tiles drawn to the price; tiles thinner than 4px become a solid bar with a disclosure label; EPS above price shows a partial tile"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render 0 errors incl. all presets and 16 slider corners",
+      "390px: no page sideways scroll; figures scroll with swipe hint",
+      "Lab console errors: none"
+    ],
+    "screenshots": [
+      "desktop/phone per panel inspected: lab (desktop-06, phone-06), 03, 04, 07, 08, 09, 10, 11, 12: no clipping or overlaps seen; gridlines in lab chart restricted to bar bands after a first run flagged crossings"
+    ],
+    "coverage_review": "done: every inventory row found on page",
+    "semantic_review": "done by author; P/E-vs-cap/profit difference reworded to 'about 0.02%' after checking arithmetic",
+    "artifact_sha256": "9275475f4485cbfe755fc1a95277d2a5bc9888faa97d8b74ca721895daff6c35",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 13,
+        "notes": 2
+      },
+      "artifact_sha256": "9275475f4485cbfe755fc1a95277d2a5bc9888faa97d8b74ca721895daff6c35",
+      "artifact_path": "/home/user/eli5-lab/explainers/pe-ratio-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (hand-off only; owner's main session publishes)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
