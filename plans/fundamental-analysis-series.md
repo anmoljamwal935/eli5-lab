@@ -76,7 +76,7 @@ All ₹ crore, year to 31 March 2026 (FY26), with FY25 for comparison. Face valu
 | **EBITDA** | **85** | 17% margin |
 | Depreciation and amortisation | 12 | |
 | **EBIT** | **73** | |
-| Other income (interest on cash, scrap sales) | 4 | |
+| Other income (interest on cash) | 4 | |
 | Finance costs | 10 | ~10% on ₹100 cr borrowings |
 | **Profit before tax** | **67** | |
 | Tax | 17 | ~25% |
