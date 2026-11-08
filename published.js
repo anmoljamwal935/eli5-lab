@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "cash-flow-and-the-three-statements-eli5",
+    "title": "Cash flow, and how the three connect",
+    "category": "Monetary Architecture",
+    "minutes": 28,
+    "summary": "Part 5: why profit is not cash, and how the three statements connect",
+    "bullets": [
+      "Cash flow has three buckets: operations, investing, financing",
+      "Profit is not cash: depreciation, working capital, capex, loans, dividends",
+      "Every balance-sheet change is explained by the P&L or the cash flow"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PROFIT",
+      "CASH",
+      "BALANCE SHEET"
+    ],
+    "file": "explainers/cash-flow-and-the-three-statements-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A waterfall from profit of 50 down to a cash change of minus 1: depreciation adds, working capital and capex subtract, a loan adds, a dividend subtracts.\"><rect x=\"62.6\" y=\"40\" width=\"130.0\" height=\"9\" fill=\"#f5c76a\"/><rect x=\"192.6\" y=\"52\" width=\"31.2\" height=\"9\" fill=\"#a5a29c\"/><rect x=\"197.8\" y=\"64\" width=\"26.0\" height=\"9\" fill=\"#ff8059\"/><rect x=\"80.8\" y=\"76\" width=\"117.0\" height=\"9\" fill=\"#ff8059\"/><rect x=\"80.8\" y=\"88\" width=\"26.0\" height=\"9\" fill=\"#76d5c1\"/><rect x=\"60.0\" y=\"100\" width=\"46.8\" height=\"9\" fill=\"#ff8059\"/><rect x=\"60.0\" y=\"112\" width=\"2.6\" height=\"9\" fill=\"#ff8059\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 5</text><text x=\"24\" y=\"140\" fill=\"#a5a29c\">PROFIT TO CASH</text></g></svg>",
+    "part": 5
+  },
+  {
     "id": "the-balance-sheet-eli5",
     "title": "The balance sheet",
     "category": "Monetary Architecture",
