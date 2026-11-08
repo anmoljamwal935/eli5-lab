@@ -34,6 +34,7 @@ Series data: `series-fundamental-analysis.js` (not yet loaded by `index.html`; w
 1. **Teaching company: Ramu Chai Ltd** (fictional, every number tagged `example`). Clean numbers drive every lab.
    Base case: sales ₹500 cr · PAT ₹50 cr (10% net margin) · 10 cr shares · EPS ₹5 · price ₹100 · P/E 20 ·
    market cap ₹1,000 cr · equity ₹250 cr (ROE 20%) · borrowings ₹100 cr.
+   Full canonical accounts are in the section "Ramu Chai Ltd: the canonical accounts" below.
 2. **Real anchor: Tata Consumer Products, FY2026 annual report** (year to 31 March 2026). Every part in
    Stages 2–5 ends with a **"Now find it in a real report"** box: where the line sits in TCPL's report and its actual figure.
    Where useful, a lab starts from the real figures ("what if sales fall 10%?").
@@ -59,6 +60,73 @@ Note: press reports quote revenue from operations as ₹20,280 cr. Reconcile aga
 Why it works as the anchor: a tea company (matches Ramu Chai), acquisitions with goodwill and amortisation
 (Part 6: reported vs adjusted EPS), big standalone vs consolidated gap (Part 2), segments (Part 16), overseas
 business and rupee exposure (Part 22), dividends (Part 14).
+
+### Ramu Chai Ltd: the canonical accounts (every part uses exactly these; tag them `example`)
+
+All ₹ crore, year to 31 March 2026 (FY26), with FY25 for comparison. Face value ₹10, 10 crore shares, price ₹100.
+
+**Profit and loss (FY26)**
+
+| Line | FY26 | Note |
+|---|---|---|
+| Revenue from operations | 500 | FY25: 450 (+11%) |
+| Cost of materials (tea, milk, sugar, packaging) | 250 | Gross profit 250 (50%) |
+| Employee benefits | 60 | |
+| Other expenses (rent, ads, power, freight) | 105 | |
+| **EBITDA** | **85** | 17% margin |
+| Depreciation and amortisation | 12 | |
+| **EBIT** | **73** | |
+| Other income (interest on cash, scrap sales) | 4 | |
+| Finance costs | 10 | ~10% on ₹100 cr borrowings |
+| **Profit before tax** | **67** | |
+| Tax | 17 | ~25% |
+| **Profit after tax** | **50** | FY25: 44. EPS ₹5.00 (FY25 ₹4.40) |
+| Dividend proposed for FY26 | 20 | ₹2.00/share, 40% payout, paid in FY27 |
+
+Quarters, revenue / PAT: FY26 Q1 115/11, Q2 120/12, Q3 140/15, Q4 125/12. FY25 Q1 105/10, Q2 108/10.5, Q3 125/13, Q4 112/10.5. (Q3 is the winter and festive peak.)
+
+**Balance sheet (31 March)**
+
+| Line | FY26 | FY25 |
+|---|---|---|
+| Net fixed assets (PP&E) | 220 | 190 |
+| Capital work in progress | 25 | 22 |
+| Inventory | 55 | 47 |
+| Trade receivables | 45 | 38 |
+| Other current assets | 15 | 15 |
+| Cash and equivalents | 40 | 41 |
+| **Total assets** | **400** | **353** |
+| Share capital (10 cr × ₹10) | 100 | 100 |
+| Reserves and surplus | 150 | 118 |
+| **Equity** | **250** | **218** |
+| Borrowings (long-term 70, short-term 30) | 100 | 90 |
+| Trade payables | 35 | 30 |
+| Other liabilities and provisions | 15 | 15 |
+| **Total equity and liabilities** | **400** | **353** |
+
+Equity roll: 218 + PAT 50 − FY25 dividend paid 18 = 250.
+
+**Cash flow (FY26)**
+
+| Line | FY26 |
+|---|---|
+| PBT 67 + depreciation 12 + finance costs 10 − interest income 4 | 85 (= EBITDA) |
+| Change in working capital: inventory −8, receivables −7, payables +5 | −10 |
+| Tax paid | −17 |
+| **Cash from operations (CFO)** | **58** |
+| Capex (PP&E + CWIP) | −45 |
+| Interest received | +4 |
+| **Cash from investing (CFI)** | **−41** |
+| Net new borrowing | +10 |
+| Interest paid | −10 |
+| Dividend paid (FY25's, ₹1.80/share) | −18 |
+| **Cash from financing (CFF)** | **−18** |
+| **Net change in cash** | **−1** (41 → 40) |
+
+**Derived (use these, don't recompute differently)**: net margin 10% · EBITDA margin 17% · ROE 20% (PAT / closing equity) ·
+capital employed 350 · ROCE 20.9% (EBIT / (equity + debt)) · net debt 60 · D/E 0.4 · interest cover 7.3× (EBIT / finance costs) ·
+FCF 13 (CFO − capex) · CFO/PAT 1.16 · inventory days 80 (on cost of materials) · receivable days 33 · payable days 51 · cash cycle 62 days ·
+market cap 1,000 · P/E 20 · P/B 4 · EV 1,060 · EV/EBITDA 12.5 · dividend yield 2%.
 
 ## Parts (38 + bonus)
 
