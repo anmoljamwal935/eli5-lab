@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>P/E: what it says and when it lies — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* SERIES COLOUR KEY (Fundamental analysis, from scratch). Same colour = same meaning in every part:
+       teal #76d5c1 = money coming in (sales, other income) · coral #ff8059 = money going out (costs, tax)
+       gold #f5c76a = what belongs to shareholders (profit) · rose #ec6a94 = what is owed (debt, interest)
+       lavender #c3b8ff = the market's view (price, multiples; not used in this part) */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:640px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+    /* This page: the interest-rate stepper (the lab allows four sliders, so the fifth input is a stepper) */
+    .lab .stepper{display:flex;gap:8px;margin-top:8px}
+    .lab .stepper button{min-width:48px}
+    .real-fig+.real-fig{margin-top:18px}
+    /* This page: readouts, basis toggle, trap note, TCPL price box */
+    .lab-out{min-width:0}
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px}
+    .ro{padding:10px 12px;border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .ro span{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .ro b{display:block;font-size:24px;font-weight:600;line-height:1.3}
+    .ro small{display:block;font-size:12px;color:var(--faint)}
+    .seg{display:flex;gap:8px;margin-top:8px}
+    .seg button[aria-pressed=true]{background:var(--accent);color:#202020;border-color:var(--accent)}
+    .trapnote{margin-top:14px;padding:12px 14px;border-left:2px solid #c3b8ff;font-size:15px;line-height:1.6}
+    .compare{font:13px/1.6 var(--font-mono);color:var(--muted);margin:0 0 10px}
+    .calc{margin-top:22px;padding:16px 18px;border:1px solid var(--border)}
+    .calc .readouts{margin:14px 0 0}
+    .calc input{display:block;margin:6px 0 10px}
+  </style>
+</head>
+<body data-series-id="pe-ratio-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 24 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>P/E: what it says and when it lies</h1>
+      <p class="lede">The P/E ratio divides a share’s price by the profit behind it, so it tells you how many years of today’s profit the price equals. It is the most quoted number in Indian markets, and the easiest to misread. Drive it yourself, then meet the five ways it fools people.</p>
+      <p class="source-note">Built from Ramu Chai Ltd’s example accounts and Tata Consumer Products’ audited FY2026 annual report, facts checked against it · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p><a href="fundamental-analysis-in-one-page-eli5.html" data-series-link="fundamental-analysis-in-one-page-eli5">Part 1</a> set a share’s price against the value of the business. <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a> walked sales down to profit after tax and previewed EPS. This part turns that profit into the ratio everyone quotes. Ramu Chai Ltd is a made-up tea company, and its numbers carry <span class="tag">example</span>. Tata Consumer Products (TCPL) is real; its audited figures carry <span class="tag">public</span> and are frozen at FY2026, the year to 31 March 2026. Educational, not a recommendation. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>profit and EPS: the shareholders’</span>
+        <span><i style="background:#c3b8ff"></i>price, market cap, multiples</span>
+        <span><i style="background:#ec6a94"></i>debt</span>
+        <span><i style="background:#ff8059"></i>a loss</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Same price, different profit</h2>
+      <p>Two tea companies each trade at ₹100 a share <span class="tag">example</span>. Share A earns ₹5 a year for each share; share B earns ₹2.50. A price on its own cannot say which is dearer. You need to set it against what the share earns, and that is all a P/E does.</p>
+      <figure>
+        <svg id="f1" viewBox="0 0 800 240" role="img" aria-label="Two equal 100 rupee price bars; under share A a gold block of 5 rupees, under share B a block half as wide, 2.50 rupees"></svg>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">Step one: EPS</p>
+      <h2>EPS is profit cut into shares</h2>
+      <p><b>Earnings per share</b> (EPS) is profit that belongs to the owners, divided by the number of shares. Ramu earned ₹50 crore after tax and has 10 crore shares, so each share’s slice is ₹5 <span class="tag">example</span>. “Owners” matters: in a group, profit is also shared with outsiders who own part of a subsidiary, and only the parent’s owners’ share counts.</p>
+      <figure>
+        <svg id="f2" viewBox="0 0 800 230" role="img" aria-label="A gold bar of 50 crore rupees of profit cut into ten equal tiles of 5 rupees, one per crore shares"></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: basic and diluted EPS</summary>
+        <p><b>Basic</b> EPS divides by the average number of shares in issue during the year. <b>Diluted</b> EPS also counts shares that could be created, such as employee share options, so it is never higher. For most companies the two are close; TCPL’s are 15.59 and 15.58, shown at the end of this page <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">Step two: P/E</p>
+      <h2>P/E is the price in years of profit</h2>
+      <p><b>P/E</b> is price ÷ EPS: ₹100 ÷ ₹5 = 20. Stack Ramu’s ₹5 slices end to end and 20 of them fill the price. Read it as “20 years of today’s profit”. Divide the whole company’s market cap by its whole profit and you get the same 20: ₹1,000 crore ÷ ₹50 crore <span class="tag">example</span>.</p>
+      <figure>
+        <svg id="f3" viewBox="0 0 800 290" role="img" aria-label="A 100 rupee price bar over twenty gold tiles of 5 rupees, and the same picture for the whole company: a 1,000 crore market cap over twenty tiles of 50 crore"></svg>
+      </figure>
+      <p class="note">“Years to earn it back” is a way to read the number, not a promise: it assumes profit stays flat and all of it reaches you. A company keeps part of its profit and pays out the rest as dividends (Part 14), and profit moves.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">Step three: the flip side</p>
+      <h2>Earnings yield is P/E upside down</h2>
+      <p><b>Earnings yield</b> is EPS ÷ price, or 1 ÷ P/E. At a P/E of 20, each ₹100 of price comes with ₹5 of yearly profit: a 5% yield. A lower P/E is a higher yield. Part 23 sets this against what a safe deposit pays, which is how a P/E becomes a judgement <span class="tag">example</span>.</p>
+      <figure>
+        <svg id="f4" viewBox="0 0 800 330" role="img" aria-label="Three grids of 100 cells, each one rupee of a 100 rupee price: ten gold cells at P/E 10, five at P/E 20, two and a half at P/E 40"></svg>
+      </figure>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">Which year’s profit</p>
+      <h2>Trailing looks back, forward guesses</h2>
+      <p><b>Trailing</b> P/E uses the profit already reported: Ramu’s FY26 EPS of ₹5, so 20. <b>Forward</b> P/E uses an estimate for the year ahead. Suppose FY27 is expected to bring ₹57.5 crore, an EPS of ₹5.75: the same ₹100 now buys 17.4 years, not 20 <span class="tag">example</span>. A forward number is only as good as the guess; for real companies it comes from management’s outlook or analysts’ forecasts, never from the accounts.</p>
+      <figure>
+        <svg id="f5" viewBox="0 0 800 230" role="img" aria-label="A 100 rupee price bar over twenty tiles of 5 rupees for trailing and seventeen and a bit tiles of 5.75 rupees for forward"></svg>
+      </figure>
+    </section>
+
+    <!-- 6 LAB -->
+    <section class="panel" id="lab">
+      <p class="kicker">Try it</p>
+      <h2>Build a company, read its P/E</h2>
+      <p>Start from Ramu and move the four dials. Profit is sales × margin, EPS is profit ÷ shares, P/E is price ÷ EPS. Pick trailing or forward with the toggle, and use the step buttons for next year’s change in profit. The four buttons below the dials load a trap, a made-up one-off example that does not change Ramu’s accounts; each explains why its P/E misleads. <span class="tag">example</span></p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="s-sales">Sales <output id="s-sales-o"></output></label><input id="s-sales" type="range" min="100" max="1000" step="10" value="500"></div>
+          <div class="control"><label for="s-margin">Net margin <output id="s-margin-o"></output></label><input id="s-margin" type="range" min="-10" max="30" step="0.5" value="10"></div>
+          <div class="control"><label for="s-shares">Number of shares <output id="s-shares-o"></output></label><input id="s-shares" type="range" min="4" max="20" step="0.5" value="10"></div>
+          <div class="control"><label for="s-price">Share price <output id="s-price-o"></output></label><input id="s-price" type="range" min="10" max="300" step="1" value="100"></div>
+          <div class="control"><label id="d-l">Profit change next year <output id="d-o"></output></label>
+            <div class="stepper" role="group" aria-labelledby="d-l"><button type="button" class="secondary" id="d-dn" aria-label="Lower next year’s profit by 2.5 crore">−</button><button type="button" class="secondary" id="d-up" aria-label="Raise next year’s profit by 2.5 crore">+</button></div></div>
+          <div class="control"><label id="m-l">Which profit?</label>
+            <div class="seg" role="group" aria-labelledby="m-l"><button type="button" class="secondary" id="m-trail" aria-pressed="true">Trailing FY26</button><button type="button" class="secondary" id="m-fwd" aria-pressed="false">Forward FY27E</button></div></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="500,10,10,100,30,0,oneoff">One-off gain</button>
+            <button type="button" class="secondary" data-p="500,20,10,100,0,-50,cyc">Cyclical peak</button>
+            <button type="button" class="secondary" data-p="500,-4,10,100,0,10,loss">Loss-making</button>
+            <button type="button" class="secondary" data-p="500,6,10,24,0,-10,trap">Value trap</button>
+          </div>
+          <div class="actions"><button type="button" class="secondary" id="reset">Back to Ramu</button></div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-out">
+          <div class="readouts" id="readouts"></div>
+          <p class="compare" id="compare"></p>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 640 300" role="img" aria-label="The price as a lavender bar, then gold tiles each one year of EPS for trailing and forward profit, redrawn live from the controls"></svg></div>
+          <p class="trapnote" id="trapNote" aria-live="polite"></p>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">Trap one</p>
+      <h2>A one-off gain makes P/E look cheap</h2>
+      <p>Say Ramu sold an old plot and booked a ₹30 crore gain after tax on top of ₹50 crore of tea profit <span class="tag">example</span>. EPS jumps to ₹8 and P/E drops to 12.5, though the tea business is the same. Strip the gain out and it is 20. The reverse also works: a one-off charge makes P/E look dear. <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a> showed the exceptional-items line; Part 6 covers why companies adjust. Press <b>One-off gain</b> in the lab.</p>
+      <figure>
+        <svg id="f7" viewBox="0 0 800 250" role="img" aria-label="Reported EPS of 8 rupees, 5 from the business plus 3 from a one-off gain, giving P/E 12.5, above underlying EPS of 5 rupees giving P/E 20"></svg>
+      </figure>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Trap two</p>
+      <h2>Cyclical companies look cheapest at the peak</h2>
+      <p>Steel, cement and similar businesses swing: profit surges when prices are high and slumps after. Hold the price at ₹100 and divide by each year’s EPS (an example cycle, 10 crore shares): the lowest P/E, 10, comes in the best year, just before profit falls <span class="tag">example</span>. A low P/E at peak profit is a warning, not a bargain. Part 33 covers cyclicals; the lab’s <b>Cyclical peak</b> shows the forward P/E doubling.</p>
+      <figure>
+        <svg id="f8" viewBox="0 0 800 280" role="img" aria-label="Five years of profit as gold bars, 40, 60, 100, 45 and 30 crore rupees, with P/E 25, 16.7, 10, 22.2 and 33.3 beneath, lowest at the peak year"></svg>
+      </figure>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">Trap three</p>
+      <h2>Losses and tiny profits break P/E</h2>
+      <p>With 10 crore shares at ₹100, the market cap is ₹1,000 crore whatever the profit <span class="tag">example</span>. At ₹50 crore profit P/E is 20. At ₹2 crore it is 500, which tells you nothing. At a ₹20 crore loss EPS is negative and P/E is “not meaningful” (n/m): you cannot earn back a price from a loss. Use sales, cash and the path to profit instead; Part 35 covers loss-makers. Try <b>Loss-making</b>.</p>
+      <figure>
+        <svg id="f9" viewBox="0 0 800 280" role="img" aria-label="Three profits on a line through zero: 50 crore gives P/E 20, 2 crore a sliver giving P/E 500, and a 20 crore loss to the left of zero giving no P/E"></svg>
+      </figure>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">Trap four</p>
+      <h2>High P/E can be cheap, low P/E dear</h2>
+      <p>A fast grower at ₹200 with EPS ₹5 has a P/E of 40, and a shrinking firm at ₹24 with EPS ₹3 has a P/E of 8 <span class="tag">example</span>. If profit grows 25% a year for one and falls 20% a year for the other, three years on the P/E on that year’s EPS is 20.5 and 15.6. The “cheap” one is catching up fast. That is a <b>value trap</b>: cheap because the business is shrinking.</p>
+      <figure>
+        <svg id="f10" viewBox="0 0 800 300" role="img" aria-label="Two sets of four EPS bars: a fast grower rising from 5 to 9.77 rupees and a shrinking firm falling from 3 to 1.54 rupees over three years"></svg>
+      </figure>
+      <p class="note">These growth rates are assumptions chosen to show the effect, not forecasts. Part 9 covers growth maths and Part 15 the PEG ratio, which sets P/E against growth.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">Trap five</p>
+      <h2>P/E ignores how much debt there is</h2>
+      <p>Two companies each earn ₹50 crore for their owners and are valued at ₹1,000 crore: both P/E 20 <span class="tag">example</span>. One has no debt; the other owes lenders ₹400 crore, who are paid interest first. Buying the whole business would cost ₹1,400 crore, and the borrower’s profit is more exposed to a bad year or a rate rise. P/E sees only the owners’ slice. Part 11 covers debt; Part 14 brings EV/EBITDA, which prices the debt in.</p>
+      <figure>
+        <svg id="f11" viewBox="0 0 800 250" role="img" aria-label="Two market-cap bars of 1,000 crore, both P/E 20; the second has a 400 crore rose debt block added, making the whole business 1,400 crore"></svg>
+      </figure>
+    </section>
+
+    <!-- 12 REAL -->
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Tata Consumer’s EPS: 15.59 and 17.30</h2>
+      <p>TCPL’s consolidated profit for the owners was ₹1,542.30 crore. Divided by 98.95 crore shares (the year’s weighted average) that is a <b>basic EPS of ₹15.59</b>; the diluted figure is ₹15.58 <span class="tag">public</span>. TCPL also quotes an <b>adjusted EPS of ₹17.30</b>, which adds back the yearly amortisation of intangibles from buying Capital Foods and Organic India. Part 6 covers why companies adjust. The gap, ₹1.71, is invisible in the first two bars: they differ by one paisa.</p>
+      <figure class="real-fig">
+        <svg id="r1" viewBox="0 0 800 220" role="img" aria-label="Three gold bars: basic EPS 15.59 rupees, diluted 15.58, and adjusted 17.30 with the 1.71 rupee add-back as a dashed outline"></svg>
+      </figure>
+      <ul class="checks">
+        <li><b>Where the 98.95 crore comes from.</b> Note 30: weighted average shares 98,95,35,734; with performance share units 99,01,53,214 for diluted. The year-end count is 98,95,61,780 (Note 14), a touch higher because 63,222 shares were issued on option exercise. Price ÷ EPS and market cap ÷ profit therefore differ slightly (about 0.02%), as EPS is also rounded to the paisa.</li>
+        <li><b>Basic is audited, adjusted is not.</b> ₹17.30 is from the 10 June 2026 AGM presentation, adjusted for amortisation of Capital Foods and Organic India; the report prints no bridge. By our arithmetic the add-back is about ₹169 crore (₹1.71 × 98.95 crore shares). The presentation also gives EPS before exceptional items, ₹15.64 and ₹17.35.</li>
+        <li><b>A misprint to know about.</b> The management discussion says the previous year’s EPS was ₹13.60. The audited statement and Note 30 say ₹13.06. When prose and statements differ, trust the statements.</li>
+        <li><b>This is trailing FY26 EPS.</b> Today’s trailing P/E uses the latest four quarters (Part 2’s TTM), which are newer than FY26. The page does not quote a price, since prices change daily and a dated exchange close could not be verified while building it. Type one below.</li>
+      </ul>
+      <div class="calc">
+        <div class="control"><label for="tc-price">Type TCPL’s share price today (₹)</label><input id="tc-price" type="number" min="0" step="any" inputmode="decimal" placeholder="price in ₹"></div>
+        <p class="compare">Look up the price on NSE (TATACONSUM) or BSE (500800).</p>
+        <div class="readouts" id="tc-out" aria-live="polite"></div>
+      </div>
+      <div class="field-grid">
+        <div><b>Profit and basic EPS</b><span>Consolidated Statement of Profit and Loss, year ended 31 March 2026</span><em>IAR 2025-26, page 415</em></div>
+        <div><b>Weighted shares, diluted EPS</b><span>Note 30, Earnings per Share</span><em>page 456</em></div>
+        <div><b>Shares at year end</b><span>Note 14, share capital; also the Board’s report</span><em>pages 445 and 178</em></div>
+        <div><b>Adjusted EPS</b><span>AGM presentation, Summary of Financial Performance, 10 June 2026</span><em>page 8</em></div>
+        <div><b>The ₹13.60 misprint</b><span>Management Discussion and Analysis, financial review</span><em>page 223</em></div>
+      </div>
+    </section>
+
+    <!-- 13 SO WHAT -->
+    <section class="panel fg">
+      <p class="kicker">So what</p>
+      <h2>Three questions before trusting a P/E</h2>
+      <ol class="checks">
+        <li><b>Which profit is it?</b> Reported, adjusted, trailing or forward, and does it contain a one-off?</li>
+        <li><b>Is this profit normal?</b> A peak, a trough, a loss or a rounding error breaks the ratio.</li>
+        <li><b>What is the P/E not counting?</b> Debt, growth and how long the profit will last.</li>
+      </ol>
+      <p>P/E says what the owners’ slice of profit costs. It does not say how much of each rupee of sales turns into that profit, or why it changes. <b>Part 8, “Margins and operating leverage”,</b> answers that: why a 10% rise in sales can lift profit by far more.</p>
+      <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>P/E is the price counted in years of one year’s profit per share, and it is only as honest as that profit: one-offs, peaks, losses, growth and debt all change what the number means.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+  <script>
+    // ---------- shared drawing helpers ----------
+    const $=id=>document.getElementById(id);
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const TEAL='#76d5c1',CORAL='#ff8059',GOLD='#f5c76a',ROSE='#ec6a94',LAV='#c3b8ff',INK='#202020',FG='#f1eee8',MUTED='#a5a29c',LINE='#57534f';
+    const T=(x,y,t,o={})=>`<text x="${x}" y="${y}" fill="${o.fill||FG}" font-size="${o.size||16}" text-anchor="${o.anchor||'start'}"${o.weight?` font-weight="${o.weight}"`:''}>${esc(t)}</text>`;
+    const R=(x,y,w,h,fill,extra='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" ${extra}/>`;
+    const grp=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    function num(v,dec){let s=Math.abs(v).toFixed(dec);const p=s.split('.');p[0]=grp(p[0]);return p.join('.');}
+    const money=(v,dec=0)=>(Number(Math.abs(v).toFixed(dec))===0?'':v<0?'−':'')+'₹'+num(v,dec);
+    const fx=v=>v.toFixed(1)+'×';
+    const pct=v=>(Number(Math.abs(v*100).toFixed(1))===0?'':v<0?'−':'')+Math.abs(v*100).toFixed(1)+'%';
+    function niceStep(range,target){const raw=range/target,p=Math.pow(10,Math.floor(Math.log10(raw)));for(const m of [1,2,5,10]) if(m*p>=raw-1e-12) return m*p;return 10*p;}
+    // A row of gold tiles, one per year of EPS. Width of a tile = EPS on the row's scale k. Draws up to the price (total = years x EPS).
+    function tiles(x0,y,h,k,eps,years,fill){
+      if(!(eps>0)) return '';
+      const w=eps*k,n=Math.floor(years+1e-9),frac=years-n;let s='';
+      if(w<4){return R(x0,y,Math.max(years*w,1),h,fill);}
+      const gap=w>=8?1.5:0.5;
+      for(let i=0;i<n;i++) s+=R(x0+i*w,y,w-gap,h,fill);
+      if(frac>1e-6) s+=R(x0+n*w,y,Math.max(frac*w-gap,0.5),h,fill);
+      return s;
+    }
+  </script>
+
+  <script>
+    // ---------- static drawings ----------
+    // f1: two equal prices, different earnings. 6px = ₹1
+    $('f1').innerHTML=
+      T(14,64,'Share A')+R(110,44,600,30,LAV)+T(124,66,'Price ₹100',{fill:INK,weight:600})+
+      R(110,84,30,30,GOLD)+T(152,106,'earns ₹5 a year',{fill:GOLD})+
+      T(14,164,'Share B')+R(110,144,600,30,LAV)+T(124,166,'Price ₹100',{fill:INK,weight:600})+
+      R(110,184,15,30,GOLD)+T(137,206,'earns ₹2.50 a year',{fill:GOLD})+
+      T(790,232,'6 px = ₹1',{anchor:'end',fill:MUTED});
+    // f2: ₹50 crore cut in ten tiles. 14px = ₹1 crore
+    (function(){let s=R(50,40,700,40,GOLD)+T(64,66,'Profit ₹50 crore',{fill:INK,weight:600});
+      for(let i=0;i<10;i++) s+=R(50+i*70,100,68,40,GOLD)+T(50+i*70+34,126,'₹5',{fill:INK,anchor:'middle',weight:600});
+      s+=`<path d="M50 156 V166 H748 V156" fill="none" stroke="${LINE}" stroke-width="2"/>`+T(400,196,'₹50 crore ÷ 10 crore shares = ₹5 each',{anchor:'middle',size:18});
+      $('f2').innerHTML=s;})();
+    // f3: price in years of EPS. 6.6px = ₹1 per share; 0.66px = ₹1 crore
+    (function(){const x=40;let s=T(x,28,'Per share')+R(x,38,660,30,LAV)+T(x+14,60,'Price ₹100',{fill:INK,weight:600})+tiles(x,78,30,6.6,5,20,GOLD)+
+      T(x,134,'1 year: ₹5')+T(x+660,134,'20 years',{anchor:'end'});
+      s+=T(x,176,'Whole company')+R(x,186,660,30,LAV)+T(x+14,208,'Market cap ₹1,000 crore',{fill:INK,weight:600})+tiles(x,226,30,0.66,50,20,GOLD)+
+      T(x,282,'1 year: ₹50 crore')+T(x+660,282,'20 years',{anchor:'end'});
+      $('f3').innerHTML=s;})();
+    // f4: 100 cells = ₹100 of price; gold = a year's profit
+    (function(){let s='';[[10,40,'P/E 10','10% yield'],[20,300,'P/E 20','5% yield'],[40,560,'P/E 40','2.5% yield']].forEach(([pe,x,t,y])=>{
+      const gold=100/pe;s+=T(x,34,t,{fill:LAV,weight:600});
+      for(let i=0;i<100;i++){const cx=x+(i%10)*20,cy=48+Math.floor(i/10)*20;
+        if(i<Math.floor(gold)) s+=R(cx,cy,18,18,GOLD);
+        else if(i===Math.floor(gold)&&gold%1) s+=R(cx,cy,18,18,'none',`stroke="${LINE}"`)+R(cx,cy,9,18,GOLD);
+        else s+=R(cx,cy,18,18,'none',`stroke="${LINE}"`);}
+      s+=T(x,288,y,{fill:GOLD})+T(x,312,'₹'+(100/pe*1).toFixed(pe===40?1:0)+' of ₹100',{fill:MUTED});});
+      $('f4').innerHTML=s;})();
+    // f5: trailing 20 tiles of ₹5, forward 17.4 tiles of ₹5.75. 6px = ₹1
+    (function(){const x=40,k=6;let s=R(x,28,600,28,LAV)+T(x+14,49,'Price ₹100',{fill:INK,weight:600})+
+      T(x,92,'FY26 actual: EPS ₹5.00')+tiles(x,100,30,k,5,20,GOLD)+T(x+620,122,'P/E 20.0',{fill:LAV,weight:600})+
+      T(x,168,'FY27 estimate: EPS ₹5.75')+tiles(x,176,30,k,5.75,100/5.75,GOLD)+T(x+620,198,'P/E 17.4',{fill:LAV,weight:600});
+      $('f5').innerHTML=s;})();
+    // f7: reported vs underlying EPS. 60px = ₹1
+    (function(){const k=60,x=150;let s=T(14,64,'Reported')+R(x,44,5*k,34,GOLD)+R(x+5*k,44,3*k,34,'none',`stroke="${GOLD}" stroke-width="2" stroke-dasharray="5 3"`)+T(x+8*k+14,68,'P/E 12.5',{fill:LAV,weight:600})+T(x+5*k/2,68,'₹5',{anchor:'middle',fill:INK,weight:600})+T(x+5*k+3*k/2,68,'₹3',{anchor:'middle',fill:GOLD});
+      s+=T(14,144,'Underlying')+R(x,124,5*k,34,GOLD)+T(x+5*k/2,148,'₹5',{anchor:'middle',fill:INK,weight:600})+T(x+8*k+14,148,'P/E 20',{fill:LAV,weight:600});
+      s+=R(40,206,12,12,GOLD)+T(58,218,'from tea')+R(190,206,12,12,'none',`stroke="${GOLD}" stroke-dasharray="3 2"`)+T(208,218,'one-off gain')+T(790,236,'60 px = ₹1 of EPS',{anchor:'end',fill:MUTED});
+      $('f7').innerHTML=s;})();
+    // f8: five years of profit at 1.5px per ₹ crore; P/E at a fixed ₹100 price, 10 crore shares
+    (function(){const P=[40,60,100,45,30],base=210;let s=T(14,26,'Profit each year, price fixed at ₹100',{fill:MUTED});
+      P.forEach((p,i)=>{const cx=120+i*140,h=p*1.5,peak=p===100;
+        s+=R(cx-40,base-h,80,h,GOLD,peak?'':'fill-opacity=".55"')+T(cx,base-h-8,'₹'+p+' cr',{anchor:'middle',fill:peak?GOLD:MUTED})+
+        T(cx,base+24,'Year '+(i+1),{anchor:'middle',fill:MUTED})+T(cx,base+50,'P/E '+(100/(p/10)).toFixed(1).replace(/\.0$/,''),{anchor:'middle',fill:LAV,weight:peak?700:400});});
+      $('f8').innerHTML=s;})();
+    // f9: profit on a line through zero. 6px = ₹1 crore
+    (function(){const z=330,k=6;let s=`<line x1="${z}" y1="20" x2="${z}" y2="240" stroke="${LINE}" stroke-dasharray="5 4"/>`+
+      T(14,34,'Profit ₹50 crore')+R(z,42,50*k,28,GOLD)+T(z+50*k+10,64,'P/E 20',{fill:LAV,weight:600})+
+      T(14,110,'Profit ₹2 crore')+R(z,118,2*k,28,GOLD)+T(z+2*k+10,140,'P/E 500',{fill:LAV,weight:600})+
+      T(14,186,'Loss ₹20 crore')+R(z-20*k,194,20*k,28,CORAL)+T(z+10,216,'no meaningful P/E',{fill:LAV,weight:600})+
+      T(z,262,'zero profit',{anchor:'middle',fill:MUTED});
+      $('f9').innerHTML=s;})();
+    // f10: EPS bars over three years. 12px = ₹1
+    (function(){const k=12,base=220;let s=T(60,28,'Fast grower: P/E 40',{fill:LAV,weight:600})+T(460,28,'Value trap: P/E 8',{fill:LAV,weight:600});
+      [[60,5,1.25,'₹200'],[460,3,0.8,'₹24']].forEach(([x0,e0,g])=>{for(let i=0;i<4;i++){const e=e0*Math.pow(g,i),x=x0+i*80;
+        s+=R(x,base-e*k,60,e*k,GOLD)+T(x+30,base-e*k-8,'₹'+(e%1===0?e:e.toFixed(2).replace(/0$/,'')),{anchor:'middle',fill:GOLD})+T(x+30,base+24,i?'+'+i+' yr':'Now',{anchor:'middle',fill:MUTED});}});
+      s+=T(60,276,'P/E on year-3 EPS: 20.5',{fill:LAV})+T(460,276,'P/E on year-3 EPS: 15.6',{fill:LAV});
+      $('f10').innerHTML=s;})();
+    // f11: same P/E, different debt. 0.4px = ₹1 crore
+    (function(){const k=0.4,x=200;let s=T(14,64,'Debt-free: P/E 20')+R(x,40,1000*k,36,LAV)+T(x+14,64,'Market cap ₹1,000 crore',{fill:INK,weight:600})+
+      T(14,134,'With debt: P/E 20')+R(x,110,1000*k,36,LAV)+R(x+1000*k,110,400*k,36,ROSE)+T(x+14,134,'Market cap ₹1,000 crore',{fill:INK,weight:600})+T(x+1000*k+80,134,'Debt ₹400',{anchor:'middle',fill:INK,weight:600});
+      s+=`<path d="M${x} 160 V170 H${x+1400*k} V160" fill="none" stroke="${LINE}" stroke-width="2"/>`+T(x+700*k,196,'Whole business: ₹1,400 crore',{anchor:'middle'});
+      s+=R(x,222,12,12,LAV)+T(x+18,234,'owners')+R(x+130,222,12,12,ROSE)+T(x+148,234,'lenders');
+      $('f11').innerHTML=s;})();
+  </script>
+
+  <script>
+    // ---------- the lab ----------
+    // Model. Defaults are Ramu Chai's canonical figures: sales 500, margin 10%, 10 crore shares, ₹100, next-year profit +₹7.5 crore.
+    // Reported profit = sales × margin + any one-off gain. Forward profit = underlying profit + the expected change (one-offs do not recur).
+    const SL=['s-sales','s-margin','s-shares','s-price'];
+    const BASE={sales:500,margin:10,shares:10,price:100,oneoff:0,delta:7.5};
+    const TRAPS={
+      oneoff:{p:[500,10,10,100,30,0]},cyc:{p:[500,20,10,100,0,-50]},loss:{p:[500,-4,10,100,0,10]},trap:{p:[500,6,10,24,0,-10]}};
+    const state={oneoff:0,delta:7.5,mode:'trail',trap:null};
+    function model(i){
+      const under=i.sales*i.margin/100,rep=under+i.oneoff,mcap=i.price*i.shares;
+      const eps=rep/i.shares,epsU=under/i.shares,fwd=under+i.delta,epsF=fwd/i.shares;
+      const pe=eps>0?i.price/eps:null,peU=epsU>0?i.price/epsU:null,peF=epsF>0?i.price/epsF:null;
+      return {under,rep,mcap,eps,epsU,fwd,epsF,pe,peU,peF,ey:eps/i.price,eyF:epsF/i.price,peCap:rep>0?mcap/rep:null,peCapF:fwd>0?mcap/fwd:null};
+    }
+    const labConfig={format:v=>money(v,0)};
+    const readInputs=()=>{const v=SL.map(id=>+$(id).value);return {sales:v[0],margin:v[1],shares:v[2],price:v[3],oneoff:state.oneoff,delta:state.delta};};
+    const matches=k=>{const p=TRAPS[k].p,v=SL.map(id=>+$(id).value);return v.every((x,j)=>x===p[j])&&state.oneoff===p[4]&&state.delta===p[5];};
+    const mm=v=>(v<0?'−':'')+'₹'+Math.abs(v).toFixed(Math.abs(v)%1?1:0);
+    function noteFor(i,c){
+      const f=v=>v===null?'not meaningful':fx(v);
+      if(state.trap&&matches(state.trap)){
+        if(state.trap==='oneoff') return `One-off gain. Reported profit is ${money(c.rep,0)} crore, but ₹30 crore of it was a one-time gain such as selling land. Trailing P/E looks like ${f(c.pe)}; on the profit the tea business earns every year it is ${f(c.peU)}. The forward P/E leaves the gain out, so it agrees with the second.`;
+        if(state.trap==='cyc') return `Cyclical peak. A 20% margin is the best of the cycle, so profit is ${money(c.rep,0)} crore and trailing P/E looks cheap at ${f(c.pe)}. If the margin falls back to 10%, profit halves and the forward P/E is ${f(c.peF)}. The cheapest P/E comes just before profit falls.`;
+        if(state.trap==='loss') return `Loss-making. A margin of −4% on ₹500 crore of sales is a ₹20 crore loss, so EPS is ${money(c.eps,2)}. A price divided by a negative number means nothing, so P/E is not meaningful, while the market still values the company at ${money(c.mcap,0)} crore. Look at sales, cash and the path to profit instead.`;
+        if(state.trap==='trap') return `Value trap. At ₹24 the P/E is ${f(c.pe)}, which looks cheap beside Ramu’s 20. But profit is expected to fall by ₹10 crore, so the forward P/E is ${f(c.peF)} and rising. A low P/E is cheap only if the profit holds up.`;
+      }
+      const base=SL.every((id,j)=>+$(id).value===[BASE.sales,BASE.margin,BASE.shares,BASE.price][j])&&state.oneoff===0&&state.delta===BASE.delta;
+      if(base) return `Ramu Chai’s base case: ₹50 crore ÷ 10 crore shares = EPS ₹5, so ₹100 ÷ ₹5 = P/E 20. On next year’s expected ₹57.5 crore the forward P/E is 17.4. Press a trap, or move the dials.`;
+      return `Your own numbers${state.oneoff?` (including a ${money(state.oneoff,0)} crore one-off gain in reported profit; press Back to Ramu to clear it)`:''}. Press a trap to load a scenario that fools the P/E.`;
+    }
+    function drawLab(i,c){
+      const W=640,x0=24,x1=616,top=10,rh=76;
+      const step=niceStep(i.price,6),axMax=Math.ceil(i.price/step-1e-9)*step,k=(x1-x0)/axMax,sx=v=>x0+v*k;
+      const bottom=top+3*rh,nt=Math.round(axMax/step);let s='';
+      const ticks=[];for(let j=0;j<=nt;j++)ticks.push(Math.round(j*step*1e6)/1e6);
+      // gridlines run only through the three bar bands, so they never cross a title
+      ticks.forEach(t=>{[0,1,2].forEach(r=>{const yb=top+r*rh+28;s+=`<line x1="${sx(t)}" y1="${yb}" x2="${sx(t)}" y2="${yb+30}" stroke="${t===0?LINE:'#2e2c2a'}"/>`;});});
+      s+=`<rect data-v="${i.price}" x="${sx(0)}" y="${top+28}" width="${i.price*k}" height="30" fill="${LAV}"/>`;
+      s+=T(x0,top+20,`Price ${money(i.price,0)} (market cap ${money(c.mcap,0)} crore)`,{fill:LAV,weight:600});
+      const rows=[['Trailing',c.eps,c.pe,'trail'],['Forward',c.epsF,c.peF,'fwd']];
+      rows.forEach(([nm,eps,pe,key],r)=>{
+        const y=top+(r+1)*rh,on=state.mode===key;let g='';
+        if(pe===null){g+=T(x0,y+20,`${nm}: loss of ${money(Math.abs(eps),2)} a share, no P/E`,{fill:CORAL,weight:600});}
+        else{g+=T(x0,y+20,`${nm}: ${pe.toFixed(1)} years of ${money(eps,2)}`,{weight:on?600:400});
+          g+=tiles(sx(0),y+28,30,k,eps,pe,GOLD);
+          if(eps*k<4) g+=T(x1,y+76-4,'tiles too thin to separate',{anchor:'end',fill:MUTED,size:14});}
+        s+=`<g opacity="${on?1:.5}">${g}</g>`;
+      });
+      ticks.forEach(t=>{s+=`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+24}" text-anchor="middle" fill="${MUTED}" font-size="16">${esc(labConfig.format(t))}</text>`;});
+      s+=T(x0,bottom+52,'each gold tile = one year of EPS',{fill:MUTED});
+      $('labChart').innerHTML=s;
+    }
+    function update(){
+      window.labResults={valid:false};
+      const i=readInputs(),c=model(i);
+      if(Object.values(c).some(x=>x!==null&&!Number.isFinite(x))) throw new Error('Lab returned a non-finite value');
+      $('s-sales-o').textContent='₹'+i.sales+' crore';
+      $('s-margin-o').textContent=(i.margin<0?'−':'')+Math.abs(i.margin)+'%';
+      $('s-shares-o').textContent=i.shares+' crore';
+      $('s-price-o').textContent='₹'+i.price;
+      $('d-o').textContent=(i.delta<0?'−':'+')+'₹'+Math.abs(i.delta)+' crore'+(c.under>0?` (${i.delta<0?'−':'+'}${Math.abs(i.delta/c.under*100).toFixed(0)}%)`:'');
+      $('m-trail').setAttribute('aria-pressed',state.mode==='trail');$('m-fwd').setAttribute('aria-pressed',state.mode==='fwd');
+      const tr=state.mode==='trail',eps=tr?c.eps:c.epsF,pe=tr?c.pe:c.peF,profit=tr?c.rep:c.fwd,ey=eps/i.price;
+      const card=(l,v,sub,col)=>`<div class="ro"><span>${esc(l)}</span><b style="color:${col}">${esc(v)}</b><small>${esc(sub)}</small></div>`;
+      $('readouts').innerHTML=
+        card('PROFIT',money(profit,1)+' cr',tr?'trailing FY26':'forward FY27E',GOLD)+
+        card('EPS',money(eps,2),'profit ÷ shares',GOLD)+
+        card('MARKET CAP',money(c.mcap,0)+' cr','price × shares',LAV)+
+        card('P/E',pe===null?'n/m':fx(pe),pe===null?'no profit per share':'price ÷ EPS',LAV)+
+        card('EARNINGS YIELD',pct(ey),'EPS ÷ price',LAV)+
+        card('YEARS TO EARN BACK',pe===null?'never':pe.toFixed(1)+' yrs',pe===null?'at this profit':'if profit stays flat',LAV);
+      $('compare').textContent=`Trailing P/E ${c.pe===null?'n/m':fx(c.pe)} · Forward P/E ${c.peF===null?'n/m':fx(c.peF)}`+(state.oneoff?` · Without the one-off ${c.peU===null?'n/m':fx(c.peU)}`:'');
+      drawLab(i,c);
+      const L=[
+        ['Profit = sales × margin',`${money(i.sales,0)} × ${i.margin}% = ${money(c.under,1)} cr`],
+        ['+ one-off gain',money(i.oneoff,1)+' cr'],
+        ['EPS = profit ÷ shares',`${money(c.rep,1)} ÷ ${i.shares} = ${money(c.eps,2)}`],
+        ['Market cap = price × shares',`${money(i.price,0)} × ${i.shares} = ${money(c.mcap,0)} cr`],
+        ['P/E = price ÷ EPS',c.pe===null?'EPS is zero or negative: n/m':`${money(i.price,0)} ÷ ${money(c.eps,2)} = ${fx(c.pe)}`],
+        ['Check: market cap ÷ profit',c.peCap===null?'n/m':`${money(c.mcap,0)} ÷ ${money(c.rep,1)} = ${fx(c.peCap)}`],
+        ['Earnings yield = EPS ÷ price',pct(c.ey)],
+        ['Forward profit = underlying + change',`${money(c.under,1)} ${i.delta<0?'−':'+'} ${Math.abs(i.delta)} = ${money(c.fwd,1)} cr`],
+        ['Forward EPS and P/E',`${money(c.epsF,2)}; ${c.peF===null?'n/m':fx(c.peF)}`]];
+      $('ledger').innerHTML=L.map(([k2,x])=>`<span>${esc(k2)}</span><span>${esc(x)}</span>`).join('');
+      $('trapNote').textContent=noteFor(i,c);
+      window.labResults={valid:true,inputs:i,model:c,mode:state.mode,truth:c.pe,rows:[i.price,c.eps,c.epsF]};
+    }
+    SL.forEach(id=>$(id).addEventListener('input',update));
+    const setDelta=d=>{state.delta=Math.min(100,Math.max(-100,Math.round(d*10)/10));update();};
+    $('d-dn').addEventListener('click',()=>setDelta(state.delta-2.5));
+    $('d-up').addEventListener('click',()=>setDelta(state.delta+2.5));
+    $('m-trail').addEventListener('click',()=>{state.mode='trail';update();});
+    $('m-fwd').addEventListener('click',()=>{state.mode='fwd';update();});
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.p.split(',');SL.forEach((id,j)=>$(id).value=+p[j]);state.oneoff=+p[4];state.delta=+p[5];state.trap=p[6];update();}));
+    $('reset').addEventListener('click',()=>{SL.forEach((id,j)=>$(id).value=[BASE.sales,BASE.margin,BASE.shares,BASE.price][j]);state.oneoff=0;state.delta=BASE.delta;state.trap=null;state.mode='trail';update();});
+    update();
+  </script>
+
+  <script>
+    // ---------- real report: TCPL FY2026 consolidated (audited, IAR 2025-26) ----------
+    // Profit for owners ₹1,542.30 cr (p.415); weighted shares 989,535,734 (Note 30, p.456); basic EPS 15.59; diluted 15.58; adjusted 17.30 (AGM presentation p.8)
+    const TC={owners:1542.30,wShares:98.9535734,dShares:99.0153214,yShares:98.956178,basic:15.59,diluted:15.58,adj:17.30};
+    (function(){const k=30,x=110;
+      let s=T(14,56,'Basic')+R(x,36,TC.basic*k,32,GOLD)+T(x+TC.basic*k+12,60,'₹15.59',{weight:600})+
+      T(14,116,'Diluted')+R(x,96,TC.diluted*k,32,GOLD)+T(x+TC.diluted*k+12,120,'₹15.58',{weight:600})+
+      T(14,176,'Adjusted')+R(x,156,TC.basic*k,32,GOLD)+R(x+TC.basic*k,156,(TC.adj-TC.basic)*k,32,'none',`stroke="${GOLD}" stroke-width="2" stroke-dasharray="5 3"`)+T(x+TC.adj*k+12,180,'₹17.30',{weight:600});
+      $('r1').innerHTML=s+T(790,212,'30 px = ₹1 of EPS',{anchor:'end',fill:MUTED});})();
+    // reader price box: P/E = price ÷ EPS; also market cap ÷ owners' profit with year-end shares
+    function tcUpdate(){
+      const p=parseFloat($('tc-price').value),ok=Number.isFinite(p)&&p>0;
+      const card=(l,v,sub,col)=>`<div class="ro"><span>${esc(l)}</span><b style="color:${col}">${esc(v)}</b><small>${esc(sub)}</small></div>`;
+      if(!ok){$('tc-out').innerHTML=card('P/E (BASIC)','—','type a price above',LAV)+card('P/E (ADJUSTED)','—','type a price above',LAV);return;}
+      const cap=p*TC.yShares;
+      $('tc-out').innerHTML=
+        card('P/E (BASIC)',fx(p/TC.basic),'price ÷ ₹15.59',LAV)+
+        card('P/E (ADJUSTED)',fx(p/TC.adj),'price ÷ ₹17.30',LAV)+
+        card('EARNINGS YIELD',pct(TC.basic/p),'₹15.59 ÷ price',LAV)+
+        card('MARKET CAP',money(cap,0)+' cr','price × 98.956 cr shares',LAV)+
+        card('CAP ÷ OWNERS’ PROFIT',fx(cap/TC.owners),'÷ ₹1,542.30 cr',LAV);
+    }
+    $('tc-price').addEventListener('input',tcUpdate);tcUpdate();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
