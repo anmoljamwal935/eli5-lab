@@ -1,0 +1,523 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "Tata Consumer Products Ltd, Integrated Annual Report 2025-26: consolidated statements, MD&A, AGM presentation",
+    "author": "Tata Consumer Products Limited; auditors Deloitte Haskins & Sells LLP (report dated 8 May 2026)",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "statement p.415; Notes 22 p.453, 38 p.477; MD&A pp.212, 222-224; AGM slides 5 and 8",
+    "language": "English",
+    "caption_type": "n/a",
+    "capture_mode": "direct PDF download from tataconsumer.com, pdftotext -layout",
+    "beginning_middle_ending_evidence": "Read the full consolidated statement of profit and loss to the signature block, Note 22 in full, Note 38 B(a)-(b), and MD&A 4.1 and 4.2",
+    "sampled_visual_timestamps": [],
+    "source_paths_outside_repo": "/tmp/claude-0/-home-user-eli5-lab/a3887780-e5e4-511b-95b2-f03ba990eb48/scratchpad/src/",
+    "other_sources": [
+      "https://www.tataconsumer.com/iar-2025-26/docs/mda.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "plans/fundamental-analysis-series.md"
+    ],
+    "limitations": "Topic-built part. Data frozen at FY2026. No data aggregator used. TCPL prints no EBITDA definition in the pages read, so the gap explanation is our arithmetic. No consolidated gross-margin bridge in the report, so the page states none."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "A margin = paise kept from each rupee of sales",
+      "kind": "definition",
+      "locator": "plan scope",
+      "check_needed": false,
+      "destination": "panel 1"
+    },
+    {
+      "id": 2,
+      "item": "Gross margin = (sales - materials) / sales; Ramu 50%",
+      "kind": "definition",
+      "locator": "plan scope + canonical accounts",
+      "check_needed": false,
+      "destination": "panel 2"
+    },
+    {
+      "id": 3,
+      "item": "EBITDA margin; Ramu 17%",
+      "kind": "definition",
+      "locator": "canonical accounts",
+      "check_needed": false,
+      "destination": "panel 2"
+    },
+    {
+      "id": 4,
+      "item": "EBIT (operating) margin; Ramu 14.6% (73/500)",
+      "kind": "definition",
+      "locator": "canonical accounts",
+      "check_needed": false,
+      "destination": "panel 2"
+    },
+    {
+      "id": 5,
+      "item": "Net margin; Ramu 10%",
+      "kind": "definition",
+      "locator": "canonical accounts",
+      "check_needed": false,
+      "destination": "panel 2"
+    },
+    {
+      "id": 6,
+      "item": "What each margin tells you (product pricing vs input cost, operating business, after wear, after everything)",
+      "kind": "mechanism",
+      "locator": "plan scope",
+      "check_needed": false,
+      "destination": "panel 2"
+    },
+    {
+      "id": 7,
+      "item": "Variable costs: materials 2.50 + freight 0.25 = 2.75/cup, 275 cr",
+      "kind": "definition",
+      "locator": "plan cost-behaviour table",
+      "check_needed": false,
+      "destination": "panel 3"
+    },
+    {
+      "id": 8,
+      "item": "Fixed costs: staff 60, rent/ads/power 80, depreciation 12 = 152 (cash 140)",
+      "kind": "definition",
+      "locator": "plan cost-behaviour table",
+      "check_needed": false,
+      "destination": "panel 3"
+    },
+    {
+      "id": 9,
+      "item": "Statements list costs by nature, so fixed/variable split is an estimate; real fixed costs creep",
+      "kind": "claim",
+      "locator": "Part 3 + TCPL statement p.415 (lists costs by nature)",
+      "check_needed": true,
+      "destination": "panel 3 note"
+    },
+    {
+      "id": 10,
+      "item": "Contribution = price - variable cost = 2.25/cup, 45%",
+      "kind": "definition",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "panel 4"
+    },
+    {
+      "id": 11,
+      "item": "Break-even = fixed cash 140 / 2.25 = 62.2 cr cups; EBIT break-even 67.6",
+      "kind": "mechanism",
+      "locator": "derived from plan",
+      "check_needed": false,
+      "destination": "panel 4"
+    },
+    {
+      "id": 12,
+      "item": "Operating leverage: sales +10% -> EBITDA +26%, EBIT +31% (110 cr cups: 247.5-140=107.5; 95.5)",
+      "kind": "example",
+      "locator": "plan worked case",
+      "check_needed": false,
+      "destination": "panel 5"
+    },
+    {
+      "id": 13,
+      "item": "Same leverage works in reverse: -10% -> EBIT -31%; zero at -32% sales",
+      "kind": "mechanism",
+      "locator": "derived from plan",
+      "check_needed": false,
+      "destination": "panel 6"
+    },
+    {
+      "id": 14,
+      "item": "DOL = contribution / EBIT = 225/73 = 3.1; larger near break-even (6.4 at 80, 2.3 at 120)",
+      "kind": "definition",
+      "locator": "derived from plan",
+      "check_needed": false,
+      "destination": "panel 7"
+    },
+    {
+      "id": 15,
+      "item": "DOL holds for volume changes; a 10% price rise gives EBIT +68%",
+      "kind": "mechanism",
+      "locator": "derived from plan",
+      "check_needed": false,
+      "destination": "panel 7 go-deeper"
+    },
+    {
+      "id": 16,
+      "item": "High-fixed vs low-fixed cost businesses: Ramu +/-31% vs one-off low-fixed example +/-17%",
+      "kind": "example",
+      "locator": "derived (one-off example, fixed 40 + dep 12, variable 3.75)",
+      "check_needed": false,
+      "destination": "panel 8"
+    },
+    {
+      "id": 17,
+      "item": "Financial leverage (debt) is Part 11",
+      "kind": "context",
+      "locator": "plan scope",
+      "check_needed": false,
+      "destination": "panel 12"
+    },
+    {
+      "id": 18,
+      "item": "Compare margins over years: Ramu net margin 9.1% to 10.0% FY22-FY26; PAT CAGR 13.6% vs sales 11.0%",
+      "kind": "example",
+      "locator": "plan five-year history",
+      "check_needed": false,
+      "destination": "panel 10"
+    },
+    {
+      "id": 19,
+      "item": "Peer comparison traps (business model, definition, one-offs); full treatment Part 15",
+      "kind": "context",
+      "locator": "plan scope",
+      "check_needed": false,
+      "destination": "panel 10"
+    },
+    {
+      "id": 20,
+      "item": "Lab: four sliders, margins, % change vs base, stacked split, +/-10% presets",
+      "kind": "mechanism",
+      "locator": "task brief",
+      "check_needed": false,
+      "destination": "panel 9 (lab)"
+    },
+    {
+      "id": 21,
+      "item": "TCPL gross margin FY26 41.6%, FY25 42.8%",
+      "kind": "number",
+      "locator": "TCPL statement p.415",
+      "check_needed": true,
+      "destination": "panel 11 (real report)"
+    },
+    {
+      "id": 22,
+      "item": "TCPL EBITDA computed 13.8% (2,791.80) vs presented 13.9% (2,815); FY25 14.1% vs 14.2% (2,502)",
+      "kind": "number",
+      "locator": "statement p.415; MD&A p.223; AGM slide 8",
+      "check_needed": true,
+      "destination": "panel 11 (real report)"
+    },
+    {
+      "id": 23,
+      "item": "Reason for the gap: other income counted in segment results (164.75-141.76=22.99; FY25 23.08)",
+      "kind": "claim",
+      "locator": "Note 38 p.477; Note 22 p.453",
+      "check_needed": true,
+      "destination": "panel 11 (real report)"
+    },
+    {
+      "id": 24,
+      "item": "TCPL net margin 7.6% (FY25 7.3%)",
+      "kind": "number",
+      "locator": "statement p.415; MD&A p.223",
+      "check_needed": true,
+      "destination": "panel 11 (real report)"
+    },
+    {
+      "id": 25,
+      "item": "FY25->FY26 drivers: cost shares, D&A +4.3% vs sales +15.2%, finance costs 290.20->137.03, tax rate 22.3->24.6%",
+      "kind": "number",
+      "locator": "statement p.415",
+      "check_needed": true,
+      "destination": "panel 11 (real report)"
+    },
+    {
+      "id": 26,
+      "item": "Report-stated reasons: tea/coffee volatility (p.212), H2 FY25 price rises (p.223), coffee price movements (p.222), standalone tapering tea cost inflation (p.224), interest on acquisition borrowings (p.224), FY25 one-time tax credit (p.223), India vs international/non-branded margin (p.223)",
+      "kind": "claim",
+      "locator": "MD&A",
+      "check_needed": true,
+      "destination": "panel 11 (real report)"
+    },
+    {
+      "id": 27,
+      "item": "Segment result margins India 9.1->11.8, International 14.7->11.9, Non-branded 21.3->11.7",
+      "kind": "number",
+      "locator": "Note 38 p.477",
+      "check_needed": true,
+      "destination": "panel 11 (real report)"
+    },
+    {
+      "id": 28,
+      "item": "Hand-off to Part 9 (growth)",
+      "kind": "context",
+      "locator": "task brief",
+      "check_needed": false,
+      "destination": "panel 12"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 21,
+      "claim": "Gross margin FY26 = (20,290.43-7,788.16-4,108.23+40.75)/20,290.43 = 41.57%; FY25 = (17,618.30-6,997.40-3,434.37+362.49)/17,618.30 = 42.85%",
+      "verdict": "Supported (computed from audited lines)",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Consolidated Statement of Profit and Loss, printed p.415, 2026 and 2025 columns",
+      "correction_on_page": "Page states 41.6% and 42.8%; FY25 is 42.8476%, so 42.8%"
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Computed EBITDA 2,791.80 (13.76%) FY26, 2,479.35 (14.07%) FY25; management 2,815 / 13.9% and 2,502 / 14.2%",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/mda.pdf",
+      "locator": "MD&A 4.1 performance snapshot, printed p.223; AGM presentation slide 8 (summary of financial performance) and slide 5 (EBITDA margin 13.9%)",
+      "correction_on_page": "Page explains the gap; both numbers shown"
+    },
+    {
+      "inventory_id": 23,
+      "claim": "Management EBITDA = statement-derived EBITDA + other income considered in segment results (FY26 22.99, FY25 23.08); ties to 2,814.79 and 2,502.43",
+      "verdict": "Mostly supported (arithmetic ties in both years; TCPL prints no EBITDA definition or bridge in the pages read)",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 38 Segment Information, printed p.477, footnote \"Excludes other income considered as part of segment results\"; Note 22 p.453 other non operating income 22.99 / 23.07",
+      "correction_on_page": "Page says \"appears to\" and that TCPL does not say 22.99 is the same item as Note 22 other non operating income"
+    },
+    {
+      "inventory_id": 24,
+      "claim": "Net margin FY26 1,546.80/20,290.43 = 7.62%; FY25 1,287.10/17,618.30 = 7.31%",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/mda.pdf",
+      "locator": "Statement p.415; MD&A printed p.223 (7.6% vs 7.3%)",
+      "correction_on_page": ""
+    },
+    {
+      "inventory_id": 25,
+      "claim": "Cost shares, growth rates (materials+purchases+inventory 11,855.64 vs 10,069.28; staff +16.1%; other expenses +9.4%; D&A +4.3%; finance 137.03 vs 290.20; tax rate 24.6% vs 22.3%)",
+      "verdict": "Supported (computed with exact arithmetic)",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Statement p.415",
+      "correction_on_page": ""
+    },
+    {
+      "inventory_id": 26,
+      "claim": "MD&A statements: tea/coffee volatility can impact gross margins (p.212); price increases in H2 FY25 to offset higher input costs (p.223); non-branded reflected coffee price movements (p.222); standalone EBITDA margin +140 bps on tapering of tea cost inflation in India (p.224); interest cover higher due to previous-year interest on acquisition borrowings (p.224); FY25 tax included one-time credit from merger of wholly owned subsidiaries (p.223)",
+      "verdict": "Supported (paraphrased or quoted from text read)",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/mda.pdf",
+      "locator": "MD&A pages 212, 222, 223, 224 as listed",
+      "correction_on_page": "The consolidated gross-margin move is not explained in the report; page says so and does not assert a cause"
+    },
+    {
+      "inventory_id": 27,
+      "claim": "Segment results / segment revenue: India 1,503.74/12,778.88 = 11.8% (FY25 9.1%); International 626.13/5,250.67 = 11.9% (14.7%); Non-branded 280.47/2,387.00 = 11.7% (21.3%)",
+      "verdict": "Supported (computed)",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 38 B(a),(b), printed p.477",
+      "correction_on_page": "Labelled a segment profit measure, not EBITDA"
+    },
+    {
+      "inventory_id": 9,
+      "claim": "Indian statements list costs by nature, not behaviour",
+      "verdict": "Supported",
+      "as_of": "2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Statement p.415 lines: materials, purchases, employee benefits, other expenses",
+      "correction_on_page": "Page notes the fixed/variable split is an estimate"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "A margin is what you keep from Re 1",
+      "inventory_ids": [
+        1
+      ],
+      "visual": "100-paise bar, 7 px/paisa, opening into the 17p"
+    },
+    {
+      "id": "p2",
+      "heading": "Four margins, four questions",
+      "inventory_ids": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "visual": "bars on 5.6 px/paisa + 4 cards"
+    },
+    {
+      "id": "p3",
+      "heading": "Variable and fixed costs",
+      "inventory_ids": [
+        7,
+        8,
+        9
+      ],
+      "visual": "two stacks on one scale, 1.3 px/crore"
+    },
+    {
+      "id": "p4",
+      "heading": "Each cup contributes Rs 2.25",
+      "inventory_ids": [
+        10,
+        11
+      ],
+      "visual": "one cup 128 px/rupee; year of cups 6 px/crore cups"
+    },
+    {
+      "id": "p5",
+      "heading": "Sales up 10%, operating profit up 31%",
+      "inventory_ids": [
+        12
+      ],
+      "visual": "before bars all 300 px (=100%), 3 px/%"
+    },
+    {
+      "id": "p6",
+      "heading": "It works just as hard in reverse",
+      "inventory_ids": [
+        13
+      ],
+      "visual": "EBIT line vs cups"
+    },
+    {
+      "id": "p7",
+      "heading": "Degree of operating leverage",
+      "inventory_ids": [
+        14,
+        15
+      ],
+      "visual": "DOL curve vs cups"
+    },
+    {
+      "id": "p8",
+      "heading": "High fixed costs, low fixed costs",
+      "inventory_ids": [
+        16
+      ],
+      "visual": "two stacks 1.3 px/crore + diverging bars 6.5 px/%"
+    },
+    {
+      "id": "p9",
+      "heading": "Pull Ramu's operating lever",
+      "inventory_ids": [
+        20
+      ],
+      "visual": "lab: fixed 0-1000 crore axis stacked bars + % change bars"
+    },
+    {
+      "id": "p10",
+      "heading": "Compare margins like with like",
+      "inventory_ids": [
+        18,
+        19
+      ],
+      "visual": "five bars 18 px/%"
+    },
+    {
+      "id": "p11",
+      "heading": "Tata Consumer's margins, FY2026 vs FY2025",
+      "inventory_ids": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "visual": "paired bars 9 px/%, paise stacks 6.5 px/p, EBITDA bridge from zero"
+    },
+    {
+      "id": "p12",
+      "heading": "Three questions for any margin",
+      "inventory_ids": [
+        17,
+        28
+      ],
+      "visual": "text"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "variable cost per cup = materials + freight 0.25; sliders move materials, freight fixed at 0.25",
+      "fixed cash costs include staff 60 and rent/ads/power 80 at default",
+      "depreciation 12, other income 4, finance costs 10 constant",
+      "tax = 17/67 of positive pre-tax profit, none on a loss",
+      "gross profit = sales - materials only (freight sits in other expenses)",
+      "% changes are against the canonical base (EBITDA 85, EBIT 73, sales 500)"
+    ],
+    "units": {
+      "cups": "crore cups",
+      "price": "Rs per cup",
+      "fixed": "Rs crore",
+      "variable cost": "Rs per cup"
+    },
+    "independent_calculation_method": "scratchpad/tests/lab_test.py: exact Fraction arithmetic written separately from the page, driven through Playwright",
+    "cases": [
+      {
+        "case": "default 100/5.00/140/2.75",
+        "expected": "EBITDA 85, EBIT 73, PAT 50; margins 50/17/14.6/10",
+        "observed": "matches oracle",
+        "pass": true
+      },
+      {
+        "case": "Sales +10% (110 cups)",
+        "expected": "EBITDA 107.5 (+26.47%), EBIT 95.5 (+30.82%), PBT 89.5",
+        "observed": "matches oracle",
+        "pass": true
+      },
+      {
+        "case": "Sales -10% (90 cups)",
+        "expected": "EBITDA 62.5 (-26.47%), EBIT 50.5 (-30.82%)",
+        "observed": "matches oracle",
+        "pass": true
+      },
+      {
+        "case": "Low fixed costs 100/5/40/3.75",
+        "expected": "EBITDA 85, EBIT 73; +10% sales -> EBIT +17.12%",
+        "observed": "matches oracle",
+        "pass": true
+      },
+      {
+        "case": "Price +10% 100/5.50/140/2.75",
+        "expected": "EBIT 123 (+68.5%)",
+        "observed": "matches oracle",
+        "pass": true
+      },
+      {
+        "case": "16 all-min/all-max slider corners",
+        "expected": "compared with exact Fraction oracle",
+        "observed": "matches oracle",
+        "pass": true
+      }
+    ],
+    "tolerance": "1e-9 relative on model values; readouts exact to 1 dp; axis ticks within 0.5 px, bars within 1.5 px",
+    "invariants": [
+      "contribution = sales - variable costs",
+      "EBITDA = contribution - fixed",
+      "sales +10% from base gives EBIT +30.82% (DOL 3.08)",
+      "swing-chart bars end at their tick values; ticks evenly spaced"
+    ],
+    "axis_and_clipping_policy": "#labChart axis fixed at 0-1000 crore (max possible sales 980) so bars move rather than rescale; #labSwing axis auto-scales with nice ticks and zero baseline; nothing clipped"
+  },
+  "verification": {
+    "lint": "check_explainer.py: 0 errors, 0 warnings (15 diagrams, 12 panels, 1 note)",
+    "supplementary_checks": [
+      "check_render.py: 0 errors (defaults, 4 presets, 16 slider extremes, 390px overflow)",
+      "lab_test.py: 567 checks, 0 failures, 0 JS errors; also runs check_render geometry on #labSwing at every case",
+      "card: check_card.py 0 errors, 0 warnings; rendered on the home page at 1280px and 390px, no console errors",
+      "TCPL arithmetic recomputed with Python from statement text"
+    ],
+    "browser_errors": "none",
+    "screenshots": {
+      "dir": "/tmp/claude-0/-home-user-eli5-lab/a3887780-e5e4-511b-95b2-f03ba990eb48/scratchpad/shots",
+      "inspected": "desktop-01..11 and phone-01, phone-09 viewed. Fixed before final: DOL axis title overlapping the 12x tick, lab gridlines crossing row titles, 1,000 tick clipped. Sticky header in some shots is a screenshot artefact."
+    },
+    "coverage_review": "All 28 inventory rows located on the page",
+    "semantic_review": "EBITDA gap stated as our reconciliation, not TCPL-stated; gross-margin cause not asserted; segment result margins labelled as not EBITDA; low-fixed trader labelled a one-off example",
+    "artifact_sha256": "268181421673e184160d3761ba49cbde544440428a8e4165ba3ae569039e008c"
+  },
+  "publication": {
+    "status": "not published (instructed not to publish); dry run done and reverted",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

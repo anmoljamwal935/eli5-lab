@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Margins and operating leverage — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* SERIES COLOUR KEY (Fundamental analysis, from scratch). Same colour = same meaning in every part:
+       teal #76d5c1 = money coming in (sales, other income) · coral #ff8059 = money going out (costs, tax)
+       gold #f5c76a = what belongs to shareholders (profit) · rose #ec6a94 = what is owed (debt, interest)
+       lavender #c3b8ff = the market's view (price, multiples; not used in this part)
+       Also here: dark coral with a coral edge = a fixed cost (it stays put); solid coral = a variable cost (it moves with sales) */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:640px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+    /* This page: lab readouts */
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;margin-bottom:14px;background:var(--border);border:1px solid var(--border)}
+    .readouts div{background:var(--surface);padding:10px 12px}
+    .readouts b{display:block;color:var(--fg);font:600 22px/1.2 var(--font-sans)}
+    .readouts span{display:block;color:var(--muted);font:11px/1.5 var(--font-mono);letter-spacing:.04em}
+    .readouts em{display:block;font-style:normal;color:var(--gold);font:11px/1.5 var(--font-mono)}
+    .lab-chart svg+svg{margin-top:10px}
+    .real-fig+.real-fig{margin-top:18px}
+  </style>
+</head>
+<body data-series-id="margins-and-operating-leverage-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 16 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Margins and operating leverage</h1>
+      <p class="lede">A margin is the paise a company keeps from each rupee of sales. Costs that don’t move with sales make profit swing much harder than sales: a 10% rise in sales can mean a 31% rise in operating profit, and a 10% fall can take just as much away.</p>
+      <p class="source-note">Built from Ramu Chai Ltd’s example accounts and Tata Consumer Products’ audited FY2026 consolidated statements and management report, facts checked against them · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p><a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a> walked down the P&amp;L from sales to profit after tax, and <a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">Part 5</a> showed that profit is not cash. This part turns the P&amp;L into percentages and asks why they move. Ramu Chai Ltd is a made-up tea company, and its numbers carry <span class="tag">example</span>. Tata Consumer Products (TCPL) is real, and its audited figures carry <span class="tag">public</span>; they are frozen at FY2026, the year to 31 March 2026. Educational, not a recommendation. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in, or kept from a sale</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#f5c76a"></i>profit: the shareholders’</span>
+        <span><i style="background:#ec6a94"></i>interest on debt</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">Paise from each rupee</p>
+      <h2>A margin is what you keep from ₹1</h2>
+      <p>A rupee is 100 paise. Ramu Chai sold ₹500 crore of tea in FY26, so every ₹1 of sales is split like this <span class="tag">example</span>. 50 paise buy materials, 12 pay staff, 21 go on rent, ads, power and freight. 17 are left. That 17 then pays for wear and tear, interest and tax, and the last 10 paise is profit. Each <b>margin</b> is one of these leftovers, divided by sales.</p>
+      <figure>
+        <svg id="f1" viewBox="0 0 800 270" role="img" aria-label="One rupee of sales drawn as a bar of 100 paise: materials 50, staff 12, other expenses 21 and 17 left, which then splits into wear and tear 2.4, net interest 1.2, tax 3.4 and profit 10"></svg>
+      </figure>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">Four margins</p>
+      <h2>Four margins, four questions</h2>
+      <p>Each margin stops at a different line of the P&amp;L, so each answers a different question. Ramu’s are 50%, 17%, 14.6% and 10% <span class="tag">example</span>. Gross profit is not a reported line (Part 3): analysts compute it as sales minus materials.</p>
+      <figure>
+        <svg id="f2" viewBox="0 0 800 330" role="img" aria-label="A full bar for one rupee of sales above four shorter bars: gross margin 50 paise, EBITDA margin 17, EBIT margin 14.6 and net margin 10"></svg>
+      </figure>
+      <div class="field-grid">
+        <div><b>Gross margin · 50%</b><span>(Sales − materials) ÷ sales. Is the product itself priced well above what its ingredients cost?</span><em>teal: kept after the direct cost</em></div>
+        <div><b>EBITDA margin · 17%</b><span>EBITDA ÷ sales. How much does running the business leave, before wear, interest and tax?</span><em>the operating business</em></div>
+        <div><b>EBIT margin · 14.6%</b><span>EBIT ÷ sales, also called operating margin. The same, after charging the wear on plant and brands.</span><em>after depreciation</em></div>
+        <div><b>Net margin · 10%</b><span>Profit after tax ÷ sales. What the owners keep once interest, other income and tax are in.</span><em>after everything</em></div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">Costs that move, costs that stay</p>
+      <h2>Variable and fixed costs</h2>
+      <p>Some costs rise with every cup sold: tea, milk, sugar and packaging, plus freight and distributor commissions. These are <b>variable costs</b>. Ramu’s are ₹2.75 a cup, ₹275 crore on 100 crore cups. Others stay put whatever the sales: staff ₹60 crore, rent, ads and base power ₹80 crore, depreciation ₹12 crore, ₹152 crore in all <span class="tag">example</span>. These are <b>fixed costs</b>. Sell 10% more cups and the fixed block does not grow. Only profit does.</p>
+      <figure>
+        <svg id="f3" viewBox="0 0 800 260" role="img" aria-label="Two bars on one scale: 100 crore cups with sales 500 split into variable 275, fixed 152 and profit 73, and 110 crore cups with sales 550 split into variable 302.5, the same fixed 152, and profit 95.5"></svg>
+      </figure>
+      <p class="note">Statements list costs by what they are (Part 3), not by how they behave, so nobody prints a “fixed” total. You estimate the split, and real fixed costs creep: wages get raised and a new plant needs new rent.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">Contribution</p>
+      <h2>Each cup contributes ₹2.25</h2>
+      <p>A cup sells for ₹5 and costs ₹2.75 to make and deliver, so it leaves ₹2.25: its <b>contribution</b>, 45% of the price <span class="tag">example</span>. Contribution first pays the fixed costs, then it is profit. Fixed cash costs of ₹140 crore need 140 ÷ 2.25 = 62.2 crore cups to cover. That is the <b>break-even</b>. The last 37.8 crore cups of the year keep ₹2.25 each, which is Ramu’s ₹85 crore of EBITDA.</p>
+      <figure>
+        <svg id="f4" viewBox="0 0 800 290" role="img" aria-label="One 5 rupee cup split into materials 2.50, freight 0.25 and contribution 2.25, above a line of 100 crore cups where the first 62.2 crore pay the fixed costs and the last 37.8 crore are profit"></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: break-even after depreciation</summary>
+        <p>EBITDA break-even ignores depreciation. To cover the ₹12 crore of depreciation too, Ramu needs (140 + 12) ÷ 2.25 = 67.6 crore cups, the point where EBIT is zero. That is 32% below this year’s sales.</p>
+      </details>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">The lever</p>
+      <h2>Sales up 10%, operating profit up 31%</h2>
+      <p>Sell 110 crore cups instead of 100. Sales rise ₹50 crore. Costs that move rise by ₹27.5 crore. The fixed ₹152 crore doesn’t, so the other ₹22.5 crore falls straight to profit. EBITDA goes from ₹85 crore to ₹107.5 crore (+26%) and EBIT from ₹73 crore to ₹95.5 crore (+31%) <span class="tag">example</span>. Each pair below is drawn with its “before” bar at the same length, so the extra length is the percentage growth. This leverage in operating costs is <b>operating leverage</b>.</p>
+      <figure>
+        <svg id="f5" viewBox="0 0 800 300" role="img" aria-label="Three pairs of bars each starting at the same length: sales grow 10 percent, EBITDA 26 percent and EBIT 31 percent"></svg>
+      </figure>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The other direction</p>
+      <h2>It works just as hard in reverse</h2>
+      <p>The lever does not care which way sales move. At 90 crore cups, sales fall ₹50 crore, costs that move fall ₹27.5 crore, and the whole ₹22.5 crore gap comes out of profit: EBIT drops from ₹73 crore to ₹50.5 crore, −31% <span class="tag">example</span>. EBIT is a straight line in cups: ₹2.25 crore for every crore cups. It hits zero at 67.6 crore cups, so a 32% fall in sales wipes out operating profit entirely. Below that, the company loses money while its fixed costs keep running.</p>
+      <figure>
+        <svg id="f6" viewBox="0 0 800 320" role="img" aria-label="A straight line of EBIT against crore cups sold, from a loss of 17 crore at 60 cups through zero at 67.6 cups to 163 crore at 140 cups, with 50.5, 73 and 95.5 marked at 90, 100 and 110 cups"></svg>
+      </figure>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">One number for the lever</p>
+      <h2>Degree of operating leverage</h2>
+      <p>The <b>degree of operating leverage</b> (DOL) is how many percent EBIT moves for each 1% move in sales. For a change in cups sold it is contribution ÷ EBIT: ₹225 crore ÷ ₹73 crore = 3.1 <span class="tag">example</span>, so +10% sales gives about +31% EBIT. The lever is not constant. The nearer a company is to break-even, the longer it is: at 80 crore cups DOL is 6.4, at 120 it is 2.3.</p>
+      <span class="eq">DOL = contribution ÷ EBIT = (sales − variable costs) ÷ EBIT</span>
+      <figure>
+        <svg id="f7" viewBox="0 0 800 320" role="img" aria-label="A curve of degree of operating leverage against crore cups sold, falling from off the chart near 67.6 cups to 6.4 at 80, 3.1 at 100, 2.3 at 120 and 1.9 at 140"></svg>
+      </figure>
+      <details class="trace"><summary>Go deeper: a price rise is not the same as a volume rise</summary>
+        <p>DOL describes a change in cups sold at an unchanged price. If sales rise 10% because the price goes from ₹5.00 to ₹5.50, nothing extra is spent on materials, so all ₹50 crore falls to profit: EBIT goes from ₹73 crore to ₹123 crore, +68% <span class="tag">example</span>. The lab below lets you try it.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">Two cost structures</p>
+      <h2>High fixed costs, low fixed costs</h2>
+      <p>A business with heavy fixed costs, such as a plant, a fleet or a big brand budget, has a long lever. One built mostly on variable costs, such as a trader who buys and resells, has a short one. Here is a made-up “low-fixed” tea trader beside Ramu: same ₹500 crore of sales, same ₹73 crore of EBIT, but fixed costs of only ₹52 crore. It is a one-off example and does not change Ramu’s accounts <span class="tag">example</span>.</p>
+      <figure>
+        <svg id="f8a" viewBox="0 0 800 260" role="img" aria-label="Two bars on one scale, both 500 crore of sales and 73 crore of profit: Ramu with variable 275 and fixed 152, and a low-fixed example with variable 375 and fixed 52"></svg>
+      </figure>
+      <p>Now move sales 10% either way. Ramu’s EBIT swings ±31%. The low-fixed trader’s swings ±17%. The trader is safer in a bad year and gains less in a good one. Neither is better: the lever cuts both ways, so a high-fixed business is a bet that sales will rise.</p>
+      <figure>
+        <svg id="f8b" viewBox="0 0 800 270" role="img" aria-label="EBIT change for a 10 percent move in sales: Ramu plus 31 and minus 31 percent, the low-fixed example plus 17 and minus 17 percent"></svg>
+      </figure>
+    </section>
+
+    <!-- 9 LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Pull Ramu’s operating lever</h2>
+      <p>Start from the real FY26 and move four dials. Assumptions: variable cost per cup is materials plus ₹0.25 of freight; the sliders move materials and keep freight at ₹0.25. “Fixed costs” means fixed cash costs (staff, rent, ads, base power). Depreciation ₹12 crore, other income ₹4 crore and finance costs ₹10 crore stay put. Tax is 17 ÷ 67 of any positive pre-tax profit, and none on a loss. Gross profit is sales minus materials only, because freight sits in other expenses. Percent changes compare with the base case. <span class="tag">example</span></p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="s-cups">Cups sold <output id="s-cups-o"></output></label><input id="s-cups" type="range" min="60" max="140" step="1" value="100"></div>
+          <div class="control"><label for="s-price">Price per cup <output id="s-price-o"></output></label><input id="s-price" type="range" min="3" max="7" step="0.05" value="5"></div>
+          <div class="control"><label for="s-fix">Fixed cash costs <output id="s-fix-o"></output></label><input id="s-fix" type="range" min="20" max="220" step="5" value="140"></div>
+          <div class="control"><label for="s-var">Variable cost per cup <output id="s-var-o"></output></label><input id="s-var" type="range" min="2" max="4" step="0.05" value="2.75"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="100,5,140,2.75">Base case</button>
+            <button type="button" class="secondary" data-p="110,5,140,2.75">Sales +10%</button>
+            <button type="button" class="secondary" data-p="90,5,140,2.75">Sales −10%</button>
+            <button type="button" class="secondary" data-p="100,5,40,3.75">Low fixed costs</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart">
+          <div class="readouts" id="readouts"></div>
+          <svg id="labChart" viewBox="0 0 640 250" role="img" aria-label="Two bars of sales split into variable costs, fixed costs and profit: the base case and your case, on one fixed scale from 0 to 1000 crore"></svg>
+          <svg id="labSwing" viewBox="0 0 640 230" role="img" aria-label="Percent change from the base case in sales, EBITDA and EBIT, so the profit bars swing further than the sales bar"></svg>
+        </div>
+      </div></div>
+      <p>Try the presets in order: “Sales +10%” then “Sales −10%”, then “Low fixed costs” and drag cups to 110 and 90. Then set price to ₹5.50 with cups at 100.</p>
+    </section>
+
+    <!-- 10 YEARS AND PEERS -->
+    <section class="panel">
+      <p class="kicker">Across years and peers</p>
+      <h2>Compare margins like with like</h2>
+      <p>A single margin tells little. Its direction over years tells more. Ramu’s sales grew 11% a year over FY22 to FY26 but profit after tax grew 13.6% a year, so its net margin crept from 9.1% to 10.0% <span class="tag">example</span>. That is what you would expect while fixed costs are spread over more cups, though a margin alone can’t prove the cause. A one-point climb looks tiny on a bar and is large in profit.</p>
+      <figure>
+        <svg id="f9" viewBox="0 0 800 300" role="img" aria-label="Five bars of Ramu net margin: FY22 9.1 percent, FY23 9.3, FY24 9.6, FY25 9.8 and FY26 10.0, each labelled with profit over sales in rupees crore"></svg>
+      </figure>
+      <div class="field-grid">
+        <div><b>Same business?</b><span>A brand maker and a reseller keep very different shares of a rupee. Compare gross margin only inside one kind of business.</span><em>Part 15 covers peers in full</em></div>
+        <div><b>Same definition?</b><span>EBITDA is each company’s own sum. TCPL’s own two figures differ; the next panel shows how.</span><em>check the working</em></div>
+        <div><b>Same kind of year?</b><span>A one-off gain or a tea-price spike moves a margin without changing the business. Compare several years, not two.</span><em>strip out the one-offs</em></div>
+      </div>
+    </section>
+
+    <!-- 11 REAL -->
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Tata Consumer’s margins, FY2026 vs FY2025</h2>
+      <p>Margins are not printed on the audited statement. You build them from the consolidated statement of profit and loss (Integrated Annual Report 2025-26, page 415), which shows FY2026 and FY2025 side by side, in ₹ crore <span class="tag">public</span>. Gross margin = (revenue − materials consumed − purchases of stock-in-trade − change in inventories) ÷ revenue. In FY26: (20,290.43 − 7,788.16 − 4,108.23 + 40.75) ÷ 20,290.43 = 41.6%. In FY25: (17,618.30 − 6,997.40 − 3,434.37 + 362.49) ÷ 17,618.30 = 42.8%. EBITDA and EBIT here are our sums (Part 3).</p>
+      <figure class="real-fig">
+        <svg id="r1" viewBox="0 0 800 380" role="img" aria-label="TCPL margins, FY2026 and FY2025 side by side: gross 41.6 and 42.8 percent, EBITDA 13.8 and 14.1, EBIT 10.7 and 10.7, net 7.6 and 7.3"></svg>
+      </figure>
+      <ul class="checks">
+        <li><b>EBITDA margin: 13.8% computed, 13.9% presented.</b> Revenue less materials, staff and other expenses is ₹2,791.80 crore, 13.8% of ₹20,290.43 crore. The management report and AGM presentation give ₹2,815 crore, 13.9% (page 223; AGM slide 8). The gap is ₹23 crore. FY25 shows the same pattern: 14.1% computed, 14.2% presented (₹2,502 crore).</li>
+        <li><b>The gap, checked.</b> Neither document prints an EBITDA definition or a bridge, so we tested one by arithmetic. The segment note (Note 38, page 477) says other income of ₹141.76 crore “excludes other income considered as part of segment results”. The statement’s other income is ₹164.75 crore. The difference, ₹22.99 crore, added to our ₹2,791.80 crore gives ₹2,814.79 crore, which rounds to the ₹2,815 crore presented. FY25 ties the same way: 193.25 − 170.17 = 23.08, and 2,479.35 + 23.08 = 2,502.43. So the presented EBITDA appears to count the slice of other income that sits inside segment results. ₹22.99 crore is also the amount of “other non operating income” in Note 22 (page 453). TCPL does not say these are the same item.</li>
+        <li><b>Net margin 7.6%.</b> Profit for the year ₹1,546.80 crore ÷ ₹20,290.43 crore. FY25 was 7.3% (₹1,287.10 crore), the same as the management report (page 223).</li>
+      </ul>
+      <p>Here is what moved between FY25 and FY26, each margin stopping at a different line. Costs as paise per ₹1 of sales:</p>
+      <figure class="real-fig">
+        <svg id="r2" viewBox="0 0 800 250" role="img" aria-label="Where each rupee of TCPL sales went in FY2026 and FY2025: materials 58.4 and 57.1 paise, staff 8.2 and 8.1, other expenses 19.6 and 20.7, EBITDA 13.8 and 14.1"></svg>
+      </figure>
+      <ul class="checks">
+        <li><b>Gross margin fell 1.3 points</b> as materials took 58.4 paise of each rupee against 57.1. The report gives no consolidated gross-margin bridge. It does say that tea and coffee price swings can affect gross margins (page 212); that price increases taken in the second half of FY25 offset higher input costs (page 223); and that the non-branded business reflected coffee price movements (page 222). For the standalone company only, it credits a 140 basis point EBITDA margin gain to “tapering of tea cost inflation in India” (page 224).</li>
+        <li><b>Other expenses grew 9.4% while sales grew 15.2%</b>, from 20.7 to 19.6 paise a rupee, which offset most of the gross margin dip: EBITDA margin fell only 0.3 points. Staff costs grew 16.1%, slightly faster than sales, so they behaved less like a fixed cost than Ramu’s.</li>
+        <li><b>Depreciation and amortisation grew 4.3%</b>, from 3.4 to 3.1 paise a rupee, so EBIT margin was flat at 10.7%. Management’s EBIT grew 15%, the same as sales: the lever was there, but the gross margin dip used it up.</li>
+        <li><b>Net margin rose 0.3 points</b> even though EBIT margin was flat. Finance costs fell from ₹290.20 crore to ₹137.03 crore. The management report says interest cover is higher because of higher interest in the previous year “on borrowings to fund acquisitions” (page 224). The tax rate rose from 22.3% to 24.6% of pre-tax profit; the report notes that FY25 tax included a one-time credit from merging wholly owned subsidiaries (page 223).</li>
+        <li><b>Segments moved apart.</b> Segment results as a share of segment sales (Note 38, page 477; a segment profit measure, not EBITDA): India branded 9.1% → 11.8%, international branded 14.7% → 11.9%, non-branded 21.3% → 11.7%. Non-branded sales grew 25% against the group’s 15%. The report says India margin gains were partly offset by international and non-branded declines (page 223).</li>
+      </ul>
+      <figure class="real-fig">
+        <svg id="r3" viewBox="0 0 800 270" role="img" aria-label="TCPL FY2026 EBITDA: our sum of 2,791.80 crore plus 22.99 crore of other income counted in segment results is 2,814.79, beside the 2,815 crore management presents"></svg>
+      </figure>
+      <div class="field-grid">
+        <div><b>The statement, both years</b><span>Consolidated Statement of Profit and Loss, year ended 31 March 2026</span><em>IAR 2025-26, page 415</em></div>
+        <div><b>Revenue and other income</b><span>Notes 21 and 22</span><em>page 453</em></div>
+        <div><b>Segment results, other income in segments</b><span>Note 38, Segment Information</span><em>page 477</em></div>
+        <div><b>Management’s EBITDA, net margin</b><span>MD&amp;A 4.1, performance snapshot; AGM presentation, financial performance slide</span><em>IAR pages 223–224; AGM slide 8</em></div>
+      </div>
+    </section>
+
+    <!-- 12 SO WHAT -->
+    <section class="panel fg">
+      <p class="kicker">So what</p>
+      <h2>Three questions for any margin</h2>
+      <ol class="checks">
+        <li><b>Which margin am I looking at, and where does it stop?</b> Gross, EBITDA, EBIT and net answer different questions, and companies define EBITDA their own way.</li>
+        <li><b>How much of the cost base is fixed?</b> The more fixed, the longer the lever: sales growth lifts profit faster, and a sales dip hurts faster.</li>
+        <li><b>How close is the company to break-even?</b> DOL is largest near break-even, where a small sales miss can erase profit.</li>
+      </ol>
+      <p>Margins tell you how much of each rupee is kept, but not how fast the business is growing. Interest is a fixed cost too, a second lever that <b>Part 11</b> covers. <b>Part 9, “Growth that’s worth paying for”,</b> answers the next question: how fast sales and profit grow, how compounding builds it, and when growth eats cash.</p>
+      <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A margin is the paise you keep from each rupee, and fixed costs act as a lever: they make profit move several times as much as sales, in both directions.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ---------- shared drawing helpers ----------
+    const $=id=>document.getElementById(id);
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const TEAL='#76d5c1',CORAL='#ff8059',GOLD='#f5c76a',ROSE='#ec6a94',INK='#202020',FG='#f1eee8',MUTED='#a5a29c',LINE='#57534f',FIXED='#6b3a2e';
+    const T=(x,y,t,o={})=>`<text x="${x}" y="${y}" fill="${o.fill||FG}" font-size="${o.size||16}" text-anchor="${o.anchor||'start'}"${o.weight?` font-weight="${o.weight}"`:''}>${esc(t)}</text>`;
+    const R=(x,y,w,h,fill,extra='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" ${extra}/>`;
+    const FIX=(x,y,w,h)=>R(x,y,w,h,FIXED,`stroke="${CORAL}" stroke-width="2"`);   // a fixed cost: dark coral with a coral edge
+    const L=(x1,y1,x2,y2,stroke=LINE,extra='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" ${extra}/>`;
+    const grp=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    function num(v,dec){let s=Math.abs(v).toFixed(dec);if(dec===1)s=s.replace(/\.0$/,'');const p=s.split('.');p[0]=grp(p[0]);return p.join('.');}
+    const money=(v,dec=0)=>(Number(Math.abs(v).toFixed(dec))===0?'':v<0?'−':'')+'₹'+num(v,dec);
+    const delta=(v,dec)=>Number(Math.abs(v).toFixed(dec))===0?'₹0':(v>0?'+':'−')+'₹'+num(v,dec);
+    const pc=(v,dec=0)=>Number(Math.abs(v).toFixed(dec))===0?'0%':(v>0?'+':'−')+Math.abs(v).toFixed(dec)+'%';
+    const pl=(v,dec=1)=>(v<0?'−':'')+Math.abs(v).toFixed(dec)+'%';
+    function niceStep(range,target){const raw=range/target,p=Math.pow(10,Math.floor(Math.log10(raw)));for(const m of [1,2,5,10]) if(m*p>=raw-1e-12) return m*p;return 10*p;}
+    // Waterfall: 'start' = a bar from zero; 'delta' = a signed step from the running total; 'total' = the running total from zero. r.txt overrides the value text.
+    function layout(rows){let run=0;return rows.map(r=>{
+      if(r.kind==='start'){run=r.v;return {r,lo:Math.min(0,run),hi:Math.max(0,run),val:run,total:true,run};}
+      if(r.kind==='delta'){const a=run;run=run+r.v;return {r,lo:Math.min(a,run),hi:Math.max(a,run),val:r.v,total:false,run};}
+      return {r,lo:Math.min(0,run),hi:Math.max(0,run),val:run,total:true,run};});}
+    function waterfall(svg,rows,o){
+      const bars=layout(rows),lo=Math.min(0,...bars.map(b=>b.lo)),hi=Math.max(0,...bars.map(b=>b.hi));
+      const step=niceStep(hi-lo||1,o.maxTicks||6),axLo=Math.floor(lo/step+1e-9)*step,axHi=Math.max(Math.ceil(hi/step-1e-9)*step,axLo+step);
+      const x0=o.labelW,x1=o.W-o.valueW,sx=v=>x0+(v-axLo)*(x1-x0)/(axHi-axLo);
+      const top=o.top||14,rh=o.rowH,bh=Math.round(rh*.62),n=bars.length,bottom=top+n*rh,dec=o.dec||0;
+      const nt=Math.round((axHi-axLo)/step),ticks=[];for(let i=0;i<=nt;i++)ticks.push(Math.round((axLo+i*step)*1e6)/1e6);
+      let s='';
+      ticks.forEach(t=>{s+=L(sx(t),top,sx(t),bottom,t===0?LINE:'#2e2c2a');});
+      bars.forEach((b,i)=>{
+        const cy=top+i*rh+rh/2,y=cy-bh/2,xa=sx(b.lo),xb=sx(b.hi),w=Math.abs(xb-xa),r=b.r,fillW=b.val===0?0:Math.max(w,2);
+        if(i<bars.length-1)s+=L(sx(b.run),y+bh,sx(b.run),y+rh);
+        if(fillW>0) s+=b.total?`<rect data-v="${b.val}" x="${b.val<0?xa:sx(0)}" y="${y}" width="${fillW}" height="${bh}" fill="${r.color}"/>`:`<rect data-lo="${b.lo}" data-hi="${b.hi}" x="${xa}" y="${y}" width="${fillW}" height="${bh}" fill="${r.color}"/>`;
+        s+=T(10,cy+5,r.label,{fill:r.hot?GOLD:(b.total?FG:MUTED),weight:b.total?600:null});
+        s+=T(o.W-10,cy+5,r.txt||(b.total?money(b.val,dec):delta(b.val,dec)),{anchor:'end',fill:r.hot?GOLD:FG,weight:b.total?600:null});
+      });
+      const tf=o.tickFmt||(v=>money(v,0));
+      ticks.forEach(t=>{s+=`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+24}" text-anchor="middle" fill="${MUTED}" font-size="16">${esc(tf(t))}</text>`;});
+      svg.setAttribute('viewBox',`0 0 ${o.W} ${bottom+(o.foot||40)}`);
+      svg.innerHTML=s+(o.extra||'');
+    }
+    // Ramu Chai FY26 operating model. Defaults are the canonical accounts (plan: cost behaviour table).
+    // variable cost per cup = materials + freight 0.25; fixed cash costs = staff 60 + rent/ads/power 80; depreciation 12 fixed.
+    const BASE={cups:100,price:5,fixed:140,vc:2.75};
+    const FREIGHT=0.25,DEP=12,OI=4,FIN=10;
+    function ramu(i){
+      const rev=i.cups*i.price,varc=i.cups*i.vc,mat=i.cups*(i.vc-FREIGHT),contrib=rev-varc,ebitda=contrib-i.fixed,ebit=ebitda-DEP;
+      const pbt=ebit+OI-FIN,tax=Math.max(0,pbt)*17/67,pat=pbt-tax,gross=rev-mat;
+      return {rev,varc,mat,contrib,fixed:i.fixed,ebitda,ebit,pbt,tax,pat,gross,gm:gross/rev*100,em:ebitda/rev*100,om:ebit/rev*100,nm:pat/rev*100};
+    }
+    const BASEC=ramu(BASE);
+  </script>
+
+  <script>
+    // ---------- static drawings ----------
+    // f1: one rupee = 100 paise, 7 px per paisa
+    (function(){const k=7,x=50;let s=T(x,22,'Every ₹1 of sales = 100 paise',{fill:MUTED});
+      let cx=x;[['Materials',50,CORAL,'50p'],['Staff',12,CORAL,'12p'],['Other',21,CORAL,'21p'],['EBITDA',17,GOLD,'17p']].forEach(([n,v,c,l])=>{
+        const w=v*k;s+=T(cx+w/2,46,n,{anchor:'middle',fill:MUTED})+R(cx+1,54,w-2,44,c)+T(cx+w/2,82,l,{anchor:'middle',fill:INK,weight:600});cx+=w;});
+      const ex=x+83*k;
+      s+=L(ex,100,ex,150,MUTED,'stroke-dasharray="4 4"')+L(ex+17*k,100,ex+17*k,150,MUTED,'stroke-dasharray="4 4"');
+      s+=T(x,178,'What the 17p pays for',{fill:MUTED});
+      cx=ex;[[2.4,CORAL],[1.2,ROSE],[3.4,CORAL],[10,GOLD]].forEach(([v,c])=>{const w=v*k;s+=R(cx+(v<5?0:1),152,w-(v<5?0:2),44,c);cx+=w;});
+      s+=T(ex+(2.4+1.2+3.4)*k+5*k,180,'10p',{anchor:'middle',fill:INK,weight:600});
+      s+=R(x,222,12,12,CORAL)+T(x+18,234,'wear and tear 2.4p')+R(x+200,222,12,12,ROSE)+T(x+218,234,'net interest 1.2p')+R(x+400,222,12,12,CORAL)+T(x+418,234,'tax 3.4p');
+      $('f1').innerHTML=s;})();
+    // f2: four margins, 5.6 px per paisa
+    (function(){const k=5.6,x=190;let s='';
+      [['₹1 of sales',100,TEAL,'100p'],['Gross margin',50,TEAL,'50p = 50%'],['EBITDA margin',17,GOLD,'17p = 17%'],['EBIT margin',14.6,GOLD,'14.6p = 14.6%'],['Net margin',10,GOLD,'10p = 10%']].forEach(([n,v,c,l],i)=>{
+        const y=24+i*60,w=v*k;s+=T(10,y+24,n,{fill:i?FG:MUTED})+R(x,y,w,34,c);
+        s+=i===0?T(x+w/2,y+24,l,{anchor:'middle',fill:INK,weight:600}):T(x+w+10,y+24,l,{weight:600});});
+      $('f2').innerHTML=s;})();
+    // f3: two stacks on one scale, 1.3 px per ₹ crore
+    (function(){const k=1.3,x=40;let s='';
+      [[100,'100 crore cups · sales ₹500 crore',275,152,73,['₹275','₹152','₹73'],28],[110,'110 crore cups · sales ₹550 crore',302.5,152,95.5,['₹302.5','₹152','₹95.5'],118]].forEach(([c,t,v,f,p,lab,y0])=>{
+        s+=T(x,y0,t,{fill:MUTED});const y=y0+10,h=52;let cx=x;
+        s+=R(cx,y,v*k-2,h,CORAL)+T(cx+(v*k-2)/2,y+32,'Variable '+lab[0],{anchor:'middle',fill:INK,weight:600});cx+=v*k;
+        s+=FIX(cx+1,y+1,f*k-2,h-2)+T(cx+f*k/2,y+32,'Fixed '+lab[1],{anchor:'middle',weight:600});cx+=f*k;
+        s+=R(cx,y,p*k,h,GOLD)+T(cx+p*k/2,y+32,lab[2],{anchor:'middle',fill:INK,weight:600});});
+      s+=R(x,212,12,12,CORAL)+T(x+18,224,'variable: moves with cups')+FIX(x+264,212,12,12)+T(x+282,224,'fixed: stays put')+R(x+450,212,12,12,GOLD)+T(x+468,224,'profit (EBIT)');
+      $('f3').innerHTML=s;})();
+    // f4: one cup at 128 px per ₹; a line of cups at 6 px per crore cups
+    (function(){const k=128,x=60;let s=T(x,26,'One cup sells for ₹5',{fill:MUTED});
+      s+=R(x,40,2.5*k-2,44,CORAL)+T(x+1.25*k,68,'Materials ₹2.50',{anchor:'middle',fill:INK,weight:600});
+      s+=R(x+2.5*k,40,.25*k-2,44,CORAL)+R(x+2.75*k,40,2.25*k,44,TEAL)+T(x+3.875*k,68,'Contribution ₹2.25',{anchor:'middle',fill:INK,weight:600});
+      s+=T(x+2.625*k,112,'Freight ₹0.25',{anchor:'middle',fill:MUTED});
+      const c=6;s+=T(x,168,'A year of 100 crore cups',{fill:MUTED});
+      const be=140/2.25;
+      s+=FIX(x,182,be*c-2,44)+T(x+be*c/2,210,'Pays fixed ₹140 crore',{anchor:'middle',weight:600});
+      s+=R(x+be*c,182,(100-be)*c,44,GOLD)+T(x+(be+100)*c/2,210,'Profit ₹85 crore',{anchor:'middle',fill:INK,weight:600});
+      s+=L(x,230,x,240)+L(x+be*c,230,x+be*c,240)+L(x+100*c,230,x+100*c,240);
+      s+=T(x,262,'0',{anchor:'middle',fill:MUTED})+T(x+be*c,262,'62.2',{anchor:'middle'})+T(x+100*c,262,'100 crore cups',{anchor:'middle',fill:MUTED});
+      $('f4').innerHTML=s;})();
+    // f5: each "before" bar is 300 px (= 100%); 3 px per 1%
+    (function(){const x=120,k=3;let s='';
+      [['Sales',500,550,TEAL],['EBITDA',85,107.5,GOLD],['EBIT',73,95.5,GOLD]].forEach(([n,a,b,c],i)=>{
+        const y=20+i*88,g=(b/a-1)*100;
+        s+=T(10,y+40,n,{weight:600})+R(x,y,300,22,c,'fill-opacity=".45"')+T(x+310,y+17,'₹'+a+' crore',{fill:MUTED});
+        s+=R(x,y+30,300,22,c)+R(x+300,y+30,g*k,22,c,`stroke="${FG}" stroke-width="2"`)+T(x+310+g*k,y+47,'₹'+b+' crore · +'+Math.round(g)+'%',{weight:600});});
+      s+=L(x+300,10,x+300,284,MUTED,'stroke-dasharray="4 4"');
+      $('f5').innerHTML=s;})();
+    // f6: EBIT = 2.25 × cups − 152. x: 60..140 crore cups over 90..760 px; y: −40..180 over 250..30 px
+    (function(){const px=c=>90+(c-60)*670/80,py=v=>250-(v+40);let s=T(10,22,'EBIT, ₹ crore',{fill:MUTED});
+      s+=L(90,py(0),760,py(0),LINE);
+      [0,50,100,150].forEach(v=>{s+=T(80,py(v)+5,'₹'+v,{anchor:'end',fill:MUTED});s+=L(84,py(v),90,py(v));});
+      for(let c=60;c<=140;c+=10){s+=T(px(c),284,String(c),{anchor:'middle',fill:MUTED});s+=L(px(c),py(-40),px(c),py(-40)+6);}
+      s+=T(425,310,'crore cups sold',{anchor:'middle',fill:MUTED});
+      const be=152/2.25,e=c=>2.25*c-152;
+      s+=`<path d="M${px(60)} ${py(e(60))} L${px(be)} ${py(0)}" stroke="${CORAL}" stroke-width="4" fill="none"/><path d="M${px(be)} ${py(0)} L${px(140)} ${py(e(140))}" stroke="${GOLD}" stroke-width="4" fill="none"/>`;
+      s+=`<circle cx="${px(be)}" cy="${py(0)}" r="6" fill="${INK}" stroke="${CORAL}" stroke-width="3"/>`+T(px(be)+14,py(0)+26,'break-even 67.6',{});
+      [[90,'₹50.5'],[100,'₹73'],[110,'₹95.5']].forEach(([c,l])=>{s+=`<circle cx="${px(c)}" cy="${py(e(c))}" r="7" fill="${GOLD}" stroke="${INK}" stroke-width="2"/>`+T(px(c)-12,py(e(c))-14,l,{anchor:'end',weight:600});});
+      $('f6').innerHTML=s;})();
+    // f7: DOL = 2.25c ÷ (2.25c − 152). x: 70..140 over 90..760; y: 0..12 over 250..30
+    (function(){const px=c=>90+(c-70)*670/70,py=v=>250-v*220/12,d=c=>2.25*c/(2.25*c-152);let s=T(100,18,'DOL (times)',{fill:MUTED});
+      s+=L(90,250,760,250,LINE);
+      [2,4,6,8,10,12].forEach(v=>{s+=T(80,py(v)+5,v+'×',{anchor:'end',fill:MUTED});s+=L(84,py(v),90,py(v));});
+      for(let c=70;c<=140;c+=10){s+=T(px(c),284,String(c),{anchor:'middle',fill:MUTED});s+=L(px(c),250,px(c),256);}
+      s+=T(425,310,'crore cups sold',{anchor:'middle',fill:MUTED});
+      const c0=(12*152)/(2.25*11);let pts=[];for(let i=0;i<=140;i++){const c=c0+(140-c0)*i/140;pts.push(px(c).toFixed(1)+' '+py(d(c)).toFixed(1));}
+      s+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${FG}" stroke-width="3"/>`;
+      s+=T(px(c0)+30,48,'off the chart near 67.6',{fill:MUTED});
+      [[80,'6.4×'],[100,'3.1×'],[120,'2.3×']].forEach(([c,l])=>{s+=`<circle cx="${px(c)}" cy="${py(d(c))}" r="7" fill="${GOLD}" stroke="${INK}" stroke-width="2"/>`+T(px(c)+12,py(d(c))-12,l,{weight:600});});
+      $('f7').innerHTML=s;})();
+    // f8a: two stacks on one scale, 1.3 px per ₹ crore
+    (function(){const k=1.3,x=40;let s='';
+      [['Ramu: fixed ₹152 crore',275,152,['₹275','₹152'],28],['Low-fixed example: fixed ₹52 crore',375,52,['₹375','₹52'],118]].forEach(([t,v,f,lab,y0])=>{
+        s+=T(x,y0,t,{fill:MUTED});const y=y0+10,h=52;let cx=x;
+        s+=R(cx,y,v*k-2,h,CORAL)+T(cx+(v*k-2)/2,y+32,'Variable '+lab[0],{anchor:'middle',fill:INK,weight:600});cx+=v*k;
+        s+=FIX(cx+1,y+1,f*k-2,h-2)+(f>100?T(cx+f*k/2,y+32,'Fixed '+lab[1],{anchor:'middle',weight:600}):T(cx+f*k/2,y+32,lab[1],{anchor:'middle',weight:600}));cx+=f*k;
+        s+=R(cx,y,73*k,h,GOLD)+T(cx+73*k/2,y+32,'₹73',{anchor:'middle',fill:INK,weight:600});});
+      s+=R(x,212,12,12,CORAL)+T(x+18,224,'variable')+FIX(x+140,212,12,12)+T(x+158,224,'fixed')+R(x+250,212,12,12,GOLD)+T(x+268,224,'profit (EBIT)');
+      $('f8a').innerHTML=s;})();
+    // f8b: EBIT change for ±10% sales, 6.5 px per 1%, zero at x=420
+    (function(){const k=6.5,z=420;let s='';
+      [['Ramu +10%',30.82],['Ramu −10%',-30.82],['Low-fixed +10%',17.12],['Low-fixed −10%',-17.12]].forEach(([n,v],i)=>{
+        const y=20+i*58,w=Math.abs(v)*k;s+=T(10,y+24,n,{fill:i<2?FG:MUTED});
+        s+=R(v<0?z-w:z,y,w,34,GOLD)+T(v<0?z-w+w/2:z+w/2,y+24,pc(v),{anchor:'middle',fill:INK,weight:600});});
+      s+=L(z,10,z,258,MUTED,'stroke-dasharray="4 4"');
+      $('f8b').innerHTML=s;})();
+    // f9: Ramu net margin FY22–FY26, 18 px per 1%
+    (function(){const hist=[['FY22',330,30],['FY23',365,34],['FY24',405,39],['FY25',450,44],['FY26',500,50]],k=18,y0=220;let s=L(100,y0,780,y0,LINE);
+      [0,5,10].forEach(v=>{s+=T(90,y0-v*k+5,v+'%',{anchor:'end',fill:MUTED});});
+      hist.forEach(([n,r,p],i)=>{const m=p/r*100,h=m*k,x=130+i*130;
+        s+=R(x,y0-h,80,h,GOLD)+T(x+40,y0-h-10,m.toFixed(1)+'%',{anchor:'middle',weight:600})+T(x+40,y0+24,n,{anchor:'middle'})+T(x+40,y0+48,'₹'+p+' of ₹'+r,{anchor:'middle',fill:MUTED});});
+      $('f9').innerHTML=s;})();
+  </script>
+
+  <script>
+    // ---------- the lab ----------
+    // Configure ids, labConfig and the Ramu model above. Defaults are the canonical FY26 accounts.
+    // #labChart uses one fixed axis (0 to 1000 crore) so bars move rather than rescale; no sales or cost can pass 1000 within the slider limits.
+    const ids=['s-cups','s-price','s-fix','s-var'];
+    const labConfig={format:v=>money(v,0)};
+    const fmtIn={'s-cups':v=>v+' crore','s-price':v=>'₹'+v.toFixed(2),'s-fix':v=>'₹'+v+' crore','s-var':v=>'₹'+v.toFixed(2)};
+    const chg=(a,b)=>(a/b-1)*100;
+    function drawCost(c){
+      const W=640,x0=10,x1=596,sx=v=>x0+v*(x1-x0)/1000,ticks=[0,200,400,600,800,1000],top=34,bh=34,h2=122;
+      let s='';
+      ticks.forEach(t=>{[top,h2].forEach(y=>{s+=L(sx(t),y-4,sx(t),y+bh+4,t===0?LINE:'#2e2c2a');});});
+      [[BASEC,'Base case',top],[c,'Your case',h2]].forEach(([m,name,y],i)=>{
+        const txt=name+': sales '+money(m.rev,1)+' · '+(m.ebit>=0?'profit (EBIT) ':'loss (EBIT) ')+money(m.ebit,1);
+        s+=T(10,y-8,txt,{fill:i?FG:MUTED,weight:i?600:null});
+        s+=`<rect data-v="${m.varc}" x="${sx(0)}" y="${y}" width="${sx(m.varc)-sx(0)}" height="${bh}" fill="${CORAL}"/>`;
+        const f=m.fixed+DEP;
+        s+=`<rect data-lo="${m.varc}" data-hi="${m.varc+f}" x="${sx(m.varc)}" y="${y}" width="${sx(m.varc+f)-sx(m.varc)}" height="${bh}" fill="${FIXED}" stroke="${CORAL}" stroke-width="2"/>`;
+        if(m.ebit>0) s+=`<rect data-lo="${m.varc+f}" data-hi="${m.varc+f+m.ebit}" x="${sx(m.varc+f)}" y="${y}" width="${Math.max(sx(m.varc+f+m.ebit)-sx(m.varc+f),1)}" height="${bh}" fill="${GOLD}"/>`;
+        s+=L(sx(m.rev),y-4,sx(m.rev),y+bh+4,TEAL,'stroke-width="3"');
+      });
+      ticks.forEach(t=>{s+=`<text class="tick" data-v="${t}" x="${sx(t)}" y="${h2+bh+30}" text-anchor="middle" fill="${MUTED}" font-size="16">${esc(labConfig.format(t))}</text>`;});
+      const ly=h2+bh+64;
+      s+=R(10,ly-12,12,12,CORAL)+T(28,ly,'variable costs')+R(170,ly-12,12,12,FIXED,`stroke="${CORAL}" stroke-width="2"`)+T(188,ly,'fixed costs')+R(310,ly-12,12,12,GOLD)+T(328,ly,'profit (EBIT)')+L(470,ly-14,470,ly+2,TEAL,'stroke-width="3"')+T(480,ly,'sales end here');
+      $('labChart').setAttribute('viewBox',`0 0 ${W} ${ly+14}`);
+      $('labChart').innerHTML=s;
+    }
+    function drawSwing(vals){
+      const W=640,x0=100,x1=560,rows=[['Sales',vals.sales,TEAL],['EBITDA',vals.ebitda,GOLD],['EBIT',vals.ebit,GOLD]];
+      const lo=Math.min(0,...rows.map(r=>r[1])),hi=Math.max(0,...rows.map(r=>r[1])),step=niceStep(hi-lo||1,5);
+      const axLo=Math.floor(lo/step+1e-9)*step,axHi=Math.max(Math.ceil(hi/step-1e-9)*step,axLo+step),sx=v=>x0+(v-axLo)*(x1-x0)/(axHi-axLo);
+      const nt=Math.round((axHi-axLo)/step),ticks=[];for(let i=0;i<=nt;i++)ticks.push(Math.round((axLo+i*step)*1e6)/1e6);
+      const top=30,rh=44,bottom=top+rows.length*rh;let s=T(10,20,'Change from the base case',{fill:MUTED});
+      ticks.forEach(t=>{s+=L(sx(t),top,sx(t),bottom,t===0?LINE:'#2e2c2a');});
+      rows.forEach(([n,v,c],i)=>{const y=top+i*rh+7,w=Math.abs(sx(v)-sx(0));
+        s+=T(10,y+22,n,{weight:600});
+        if(Number(Math.abs(v).toFixed(0))!==0) s+=`<rect data-v="${v}" x="${v<0?sx(v):sx(0)}" y="${y}" width="${Math.max(w,2)}" height="30" fill="${c}"/>`;
+        s+=T(W-10,y+22,pc(v,0),{anchor:'end',weight:600,fill:i?GOLD:FG});});
+      ticks.forEach(t=>{s+=`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+24}" text-anchor="middle" fill="${MUTED}" font-size="16">${esc(t===0?'0%':pc(t,0))}</text>`;});
+      $('labSwing').setAttribute('viewBox',`0 0 ${W} ${bottom+40}`);
+      $('labSwing').innerHTML=s;
+    }
+    function update(){
+      window.labResults={valid:false};
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=fmtIn[id](v[i]));
+      const c=ramu({cups:v[0],price:v[1],fixed:v[2],vc:v[3]});
+      const sw={sales:chg(c.rev,BASEC.rev),ebitda:chg(c.ebitda,BASEC.ebitda),ebit:chg(c.ebit,BASEC.ebit)};
+      if(Object.values(c).concat(Object.values(sw)).some(x=>!Number.isFinite(x))) throw new Error('Lab returned a non-finite value');
+      drawCost(c);drawSwing(sw);
+      $('readouts').innerHTML=[['Gross margin',c.gm,BASEC.gm],['EBITDA margin',c.em,BASEC.em],['EBIT margin',c.om,BASEC.om],['Net margin',c.nm,BASEC.nm]]
+        .map(([n,a,b])=>`<div><span>${esc(n)}</span><b>${pl(a)}</b><em>base ${pl(b)}</em></div>`).join('');
+      const cpc=v[1]-v[3],be=cpc>0?v[2]/cpc:null,dol=c.ebit>0?c.contrib/c.ebit:null;
+      const rows=[
+        ['Sales = cups × price',`${v[0]} × ₹${v[1].toFixed(2)} = ${money(c.rev,1)}`],
+        ['Variable costs = cups × cost',`${v[0]} × ₹${v[3].toFixed(2)} = ${money(c.varc,1)}`],
+        ['Contribution = sales − variable',`${money(c.contrib,1)} (${pl(c.contrib/c.rev*100)} of sales)`],
+        ['EBITDA = contribution − fixed',`${money(c.contrib,1)} − ${v[2]} = ${money(c.ebitda,1)}`],
+        ['EBIT = EBITDA − 12',money(c.ebit,1)],
+        ['Pre-tax = EBIT + 4 − 10',money(c.pbt,1)],
+        ['Profit after tax (tax 17/67 if positive)',money(c.pat,1)],
+        ['Gross profit = sales − materials',`${money(c.gross,1)} (materials ${money(c.mat,1)})`],
+        ['Break-even cups = fixed ÷ contribution per cup',be===null?'none: each cup loses money':`${v[2]} ÷ ${cpc.toFixed(2)} = ${be.toFixed(1)} crore`],
+        ['DOL = contribution ÷ EBIT',dol===null?'n/a: EBIT is not positive':dol.toFixed(2)+'×'],
+        ['Change in sales / EBITDA / EBIT',`${pc(sw.sales,1)} / ${pc(sw.ebitda,1)} / ${pc(sw.ebit,1)}`]];
+      $('ledger').innerHTML=rows.map(([k,x])=>`<span>${esc(k)}</span><span>${esc(x)}</span>`).join('');
+      window.labResults={valid:true,truth:c.ebit,model:c,change:sw,breakEven:be,dol};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.p.split(',').map(Number);ids.forEach((id,i)=>$(id).value=p[i]);update();}));
+    update();
+  </script>
+
+  <script>
+    // ---------- real report: TCPL consolidated, ₹ crore (audited, IAR 2025-26 p.415; notes 22, 38; MD&A pp.222-224) ----------
+    const Y26={rev:20290.43,mat:7788.16+4108.23-40.75,emp:1661.00,oth:3981.99,da:626.68,pat:1546.80};
+    const Y25={rev:17618.30,mat:6997.40+3434.37-362.49,emp:1430.10,oth:3639.57,da:600.74,pat:1287.10};
+    const mg=y=>{const g=y.rev-y.mat,e=g-y.emp-y.oth,b=e-y.da;return {gross:g/y.rev*100,ebitda:e/y.rev*100,ebit:b/y.rev*100,net:y.pat/y.rev*100,e};};
+    const M26=mg(Y26),M25=mg(Y25);
+    // r1: margins, FY26 solid and FY25 dimmer, 9 px per 1%
+    (function(){const k=9,x=150;let s='';
+      [['Gross margin',M26.gross,M25.gross,TEAL],['EBITDA margin',M26.ebitda,M25.ebitda,GOLD],['EBIT margin',M26.ebit,M25.ebit,GOLD],['Net margin',M26.net,M25.net,GOLD]].forEach(([n,a,b,c],i)=>{
+        const y=16+i*88;s+=T(10,y+40,n,{weight:600})+R(x,y,a*k,26,c)+T(x+a*k+10,y+19,'FY26 '+a.toFixed(1)+'%',{weight:600})+R(x,y+32,b*k,26,c,'fill-opacity=".45"')+T(x+b*k+10,y+51,'FY25 '+b.toFixed(1)+'%',{fill:MUTED});});
+      $('r1').innerHTML=s;})();
+    // r2: where each ₹1 of sales went, 6.5 px per paisa
+    (function(){const k=6.5,x=80;let s='';
+      [['FY26',Y26,52],['FY25',Y25,142]].forEach(([n,y,y0],j)=>{
+        const parts=[['Materials',y.mat/y.rev*100,CORAL],['Staff',y.emp/y.rev*100,CORAL],['Other',y.oth/y.rev*100,CORAL],['EBITDA',mg(y).ebitda,GOLD]];
+        s+=T(10,y0+30,n,{weight:600});let cx=x;
+        parts.forEach(([pn,v,c])=>{const w=v*k;if(j===0)s+=T(cx+w/2,y0-8,pn,{anchor:'middle',fill:MUTED});s+=R(cx+1,y0,w-2,44,c)+T(cx+w/2,y0+29,v.toFixed(1),{anchor:'middle',fill:INK,weight:600});cx+=w;});});
+      s+=T(x,238,'paise out of each ₹1 of sales',{fill:MUTED});
+      $('r2').innerHTML=s;})();
+    // r3: EBITDA bridge, FY26. Our sum + other income counted in segment results = management's, rounded
+    waterfall($('r3'),[
+      {label:'Our sum',kind:'start',v:M26.e,color:GOLD,txt:'₹2,791.80'},
+      {label:'Segment other income',kind:'delta',v:164.75-141.76,color:TEAL,txt:'+₹22.99'},
+      {label:'Adds up to',kind:'total',color:GOLD,txt:'₹2,814.79'},
+      {label:'Management’s',kind:'start',v:2815,color:GOLD,hot:true,txt:'₹2,815'}],
+      {W:800,labelW:200,valueW:110,rowH:40,top:10,dec:2,maxTicks:6,foot:64,extra:T(10,10+4*40+54,'₹ crore, from zero: the gap is under 1%',{fill:MUTED})});
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
