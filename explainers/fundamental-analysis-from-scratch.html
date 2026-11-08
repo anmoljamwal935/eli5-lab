@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fundamental analysis, from scratch — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. */
+    :root{--danger:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025);overflow-x:auto}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;padding:1px;margin:22px 0 24px}
+    .keys div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .keys b{display:flex;align-items:center;gap:10px;color:var(--fg);font-weight:500;font-size:18px}
+    .keys b i{display:inline-block;width:14px;height:14px;flex:none}
+    .keys span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:6px}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    .reading{list-style:none;margin:22px 0 0;padding:1px;display:grid;gap:1px}
+    .reading li{display:grid;grid-template-columns:56px 1fr auto;gap:4px 16px;align-items:center;padding:16px 18px;background:var(--surface);outline:1px solid var(--border)}
+    .reading .no{font:600 22px/1 var(--font-mono);color:var(--faint)}
+    .reading .tr{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+    .reading b{display:block;font-size:18px;font-weight:500;color:var(--fg);line-height:1.35;margin-top:2px}
+    .reading span.bl{display:block;font-size:14px;line-height:1.5;color:var(--muted);margin-top:2px}
+    .reading .st{font:11px/1.4 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    .reading .st.soon{color:var(--faint)}
+    .reading li.live .no{color:var(--fg)}
+    .reading li.bonus{margin-top:14px}
+    @media (max-width:600px){.reading li{grid-template-columns:40px 1fr}.reading .st{grid-column:2}}
+    .stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;padding:1px;margin:22px 0 0}
+    .stages div{background:var(--surface);outline:1px solid var(--border);padding:16px 18px}
+    .stages b{display:block;color:var(--fg);font-weight:500;font-size:17px}
+    .stages span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:6px}
+    .stages em{display:block;font:11px/1.6 var(--font-mono);font-style:normal;letter-spacing:.06em;color:var(--faint);margin-top:8px}
+    @media (max-width:700px){.panel figure{margin-left:-16px;margin-right:-16px;padding:12px;border-left:0;border-right:0}.panel figure svg{min-width:760px}.panel figure::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body data-series-id="hub" data-series-key="fundamental-analysis">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / SERIES MAP</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>Fundamental analysis, from scratch</h1>
+      <p class="lede">You already know how the stock market works. This series teaches the next skill: reading a company's accounts, judging the business behind them, and working out what it is worth, all in an Indian context. Each part builds on the one before, and every part has a lab you can play with.</p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The plan</p>
+      <h2>Three tracks, one question: what is it worth?</h2>
+      <p>Valuing a company takes three skills. <b>Reading the numbers</b>: the profit and loss, balance sheet and cash flow, and the ratios built from them. <b>Judging the business</b>: how it earns, what protects it, who runs it, and what can go wrong. <b>Price and value</b>: what the market charges, and what the business is really worth. The series switches between them as each needs the others.</p>
+      <p>Read along the line from left to right. A filled dot is published; a hollow one is coming. The numbers at the top are the seven stages.</p>
+      <figure><svg id="mapSvg" viewBox="0 0 1000 380" role="img" aria-label="Thirty-eight parts on three lanes, Numbers, Business and Value, with the reading order moving between them through seven stages, ending with a bonus study"></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Two companies</p>
+      <h2>One made-up company, one real one</h2>
+      <p><b>Ramu Chai Ltd</b> is a made-up tea company with clean, consistent numbers: ₹500 crore of sales, ₹50 crore of profit, 10 crore shares at ₹100 <span class="tag">example</span>. Every lab starts from them, so you meet the same figures in every part. <b>Tata Consumer Products</b> is the real one. Most parts end by finding the same lines in its audited FY2026 annual report <span class="tag">public</span>. Sector parts bring in other real companies where Tata Consumer has nothing to show.</p>
+      <p>Real figures are frozen at FY2026 (the year to 31 March 2026). This series is educational, not a recommendation to buy or sell anything.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How to read it</p>
+      <h2>The same colours mean the same things</h2>
+      <p>Every diagram in every part uses one colour key, so after a part or two you can read the drawings without a legend.</p>
+      <div class="keys">
+        <div><b><i style="background:var(--teal)"></i>Money coming in</b><span>Sales, and cash flowing into the company.</span></div>
+        <div><b><i style="background:var(--accent)"></i>Money going out</b><span>Costs, capital spending, and cash flowing out.</span></div>
+        <div><b><i style="background:var(--gold)"></i>What belongs to shareholders</b><span>Profit, earnings per share, equity, book value and dividends.</span></div>
+        <div><b><i style="background:var(--danger)"></i>What is owed</b><span>Borrowings, interest, and bills the company still has to pay.</span></div>
+        <div><b><i style="background:var(--purple)"></i>The market's view</b><span>Share price, market cap, and multiples such as P/E.</span></div>
+      </div>
+      <p>Facts carry a tag. <span class="tag">public</span> means a company's filed accounts, a regulator's rule, or plain arithmetic. <span class="tag">example</span> means a made-up but consistent number, mostly Ramu Chai's. <span class="tag np">not public</span> means the company has not said. Each part also has <b>Go deeper</b> boxes. They are optional: skip them on a first read and nothing later breaks.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The seven stages</p>
+      <h2>From the accounts to a decision</h2>
+      <div class="stages">
+        <div><b>1 · Start here</b><span>Price vs value, and the map of the series.</span><em>PART 1</em></div>
+        <div><b>2 · The accounts</b><span>Where the numbers live, the P&amp;L, balance sheet and cash flow, and accounting choices.</span><em>PARTS 2–6</em></div>
+        <div><b>3 · Ratios</b><span>P/E, margins, growth, ROE and ROCE, debt, working capital, free cash flow, EV.</span><em>PARTS 7–15</em></div>
+        <div><b>4 · The business</b><span>Business model, moats, management, governance, red flags, corporate actions, the economy.</span><em>PARTS 16–22</em></div>
+        <div><b>5 · Valuation</b><span>Discount rates, DCF, reverse DCF, relative valuation, sum of the parts, margin of safety.</span><em>PARTS 23–28</em></div>
+        <div><b>6 · Sectors</b><span>Banks, NBFCs and insurers, exporters, consumer, cyclicals, utilities and PSUs, loss-makers and IPOs.</span><em>PARTS 29–35</em></div>
+        <div><b>7 · Putting it together</b><span>Screening, one company start to finish, portfolio, taxes and costs.</span><em>PARTS 36–38</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The reading list</p>
+      <h2>Every part, in order</h2>
+      <p>Start at part 1. Each part recaps what it borrows from earlier ones in a line, so you can also jump to a stage you need.</p>
+      <ol class="reading" id="reading"></ol>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why switch tracks?</p>
+      <h2>Each skill needs the others</h2>
+      <p>A P/E ratio (part 7) means little until you know where the profit under it comes from (part 3). A cheap-looking price is only cheap if the business behind it is sound (parts 16–20). And a valuation (parts 23–28) is only as good as the numbers and judgements you feed it. So the order follows the questions you would naturally ask, not one subject at a time.</p>
+      <p>The bonus study, <b>Satyam, decoded</b>, reads India's best-known accounting fraud through the red flags from part 20. It is written to be read once those flags are familiar.</p>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A share's price is what the market says today. Its value is what the business will earn over the years. Fundamental analysis is the habit of checking one against the other.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script>
+    (function(){
+      const S=window.ELI5_SERIES_LIST.find(s=>s.id==='fundamental-analysis'),$=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+      const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const link=p=>`href="${esc(p.file)}" data-series-link="${esc(p.id)}"`;
+      const B=S.bonus;
+
+      // Reading list
+      $('reading').innerHTML=S.parts.map((p,i)=>{const t=S.tracks[p.track];
+        return `<li class="${p.file?'live':''}"><span class="no">${String(i+1).padStart(2,'0')}</span><div><span class="tr" style="color:${t.color}">${esc(t.name)}</span>${p.file?`<a ${link(p)}><b>${esc(p.title)}</b></a>`:`<b>${esc(p.title)}</b>`}<span class="bl">${esc(p.blurb)}</span></div><span class="st ${p.file?'':'soon'}">${p.file?`<a ${link(p)}>Read ↗</a>`:'Coming soon'}</span></li>`;}).join('')+
+        `<li class="bonus ${B.file?'live':''}"><span class="no">+</span><div><span class="tr" style="color:var(--gold)">Bonus deep dive</span>${B.file?`<a ${link(B)}><b>${esc(B.title)}</b></a>`:`<b>${esc(B.title)}</b>`}<span class="bl">${esc(B.blurb)}</span></div><span class="st ${B.file?'':'soon'}">${B.file?`<a ${link(B)}>Read ↗</a>`:'Coming soon'}</span></li>`;
+
+      // Track map: three lanes, one dot per part in reading order, stage numbers above
+      const svg=$('mapSvg'),n=S.parts.length,x0=150,x1=900,dx=(x1-x0)/(n-1),Y={numbers:120,business:210,value:300},R=7;
+      const add=(tag,a,text)=>{const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;};
+      const X=i=>x0+i*dx;
+      // stages: [first part index, last part index] (0-based); a short tick marks each boundary
+      const ST=[[0,0],[1,5],[6,14],[15,21],[22,27],[28,34],[35,37]];
+      ST.forEach(([a,b],k)=>{
+        if(k>0){const xs=(X(a-1)+X(a))/2;add('line',{x1:xs,y1:56,x2:xs,y2:72,stroke:'#57534f','stroke-width':1.5});}
+        add('text',{x:(X(a)+X(b))/2,y:46,'text-anchor':'middle',fill:'#a5a29c','font-size':14},String(k+1));
+      });
+      add('text',{x:20,y:46,fill:'#a5a29c','font-size':12},'STAGE');
+      Object.keys(Y).forEach(k=>add('text',{x:20,y:Y[k]+5,fill:S.tracks[k].color,'font-size':14},S.tracks[k].short.replace(/ track$/i,'').toUpperCase()));
+      const pts=S.parts.map((p,i)=>[X(i),Y[p.track]]),bx=x1+50,by=Y.business;
+      // reading order: dashed segments from the edge of one dot to the edge of the next
+      const seg=(p,q,rq)=>{const [ax,ay]=p,[qx,qy]=q,L=Math.hypot(qx-ax,qy-ay),ux=(qx-ax)/L,uy=(qy-ay)/L;
+        add('line',{x1:ax+ux*(R+2),y1:ay+uy*(R+2),x2:qx-ux*(rq+2),y2:qy-uy*(rq+2),stroke:'#f1eee8','stroke-opacity':.35,'stroke-width':1.2,'stroke-dasharray':'3 3'});};
+      pts.forEach((q,i)=>{if(i)seg(pts[i-1],q,R);});
+      seg(pts[n-1],[bx,by],14);
+      S.parts.forEach((p,i)=>{const [x,y]=pts[i],c=S.tracks[p.track].color;
+        add('circle',{cx:x,cy:y,r:R,fill:p.file?c:'#161616',stroke:c,'stroke-width':2});
+        // put the number where no reading-order line leaves the dot: above, else below, else to the right
+        const nb=[pts[i-1],i===n-1?[bx,by]:pts[i+1]].filter(Boolean),up=nb.some(q=>q[1]<y),down=nb.some(q=>q[1]>y);
+        const at=!up?{x,y:y-14,'text-anchor':'middle'}:!down?{x,y:y+23,'text-anchor':'middle'}:{x:x+11,y:y+4,'text-anchor':'start'};
+        add('text',Object.assign(at,{fill:p.file?'#f1eee8':'#a5a29c','font-size':11}),String(i+1));});
+      add('rect',{x:bx-10,y:by-10,width:20,height:20,fill:B.file?'#f5c76a':'#161616',stroke:'#f5c76a','stroke-width':2,transform:`rotate(45 ${bx} ${by})`});
+      add('text',{x:bx,y:by+34,'text-anchor':'middle',fill:'#f5c76a','font-size':12},'bonus');
+      add('text',{x:20,y:362,fill:'#a5a29c','font-size':14},'filled = published · hollow = coming soon · numbers on top = stages · dashed line = reading order');
+    })();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
