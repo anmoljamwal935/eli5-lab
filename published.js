@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "margins-and-operating-leverage-eli5",
+    "title": "Margins and operating leverage",
+    "category": "Monetary Architecture",
+    "minutes": 16,
+    "summary": "Part 8: why a 10% rise in sales can mean a 31% rise in profit",
+    "bullets": [
+      "Gross, EBITDA, EBIT and net margin: paise kept per rupee",
+      "Fixed costs make profit swing more than sales, both ways",
+      "Pull Ramu's lever, then read TCPL's margins"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SALES",
+      "COSTS",
+      "PROFIT"
+    ],
+    "file": "explainers/margins-and-operating-leverage-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two bars of sales split into variable costs, an unchanged fixed block and profit: 10 percent more sales makes the profit block 31 percent bigger\"><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 8</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#a5a29c\">OPERATING LEVERAGE</text></g><rect x=\"24\" y=\"50\" width=\"126.5\" height=\"22\" fill=\"#ff8059\"/><rect x=\"151.5\" y=\"51\" width=\"67.9\" height=\"20\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"2\"/><rect x=\"220.4\" y=\"50\" width=\"33.6\" height=\"22\" fill=\"#f5c76a\"/><rect x=\"24\" y=\"82\" width=\"139.2\" height=\"22\" fill=\"#ff8059\"/><rect x=\"164.2\" y=\"83\" width=\"67.9\" height=\"20\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"2\"/><rect x=\"233.1\" y=\"82\" width=\"43.9\" height=\"22\" fill=\"#f5c76a\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"136\" fill=\"#f5c76a\">PROFIT +31%</text></g></svg>",
+    "part": 8
+  },
+  {
     "id": "pe-ratio-eli5",
     "title": "P/E: what it says and when it lies",
     "category": "Monetary Architecture",
