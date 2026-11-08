@@ -128,6 +128,39 @@ capital employed 350 · ROCE 20.9% (EBIT / (equity + debt)) · net debt 60 · D/
 FCF 13 (CFO − capex) · CFO/PAT 1.16 · inventory days 80 (on cost of materials) · receivable days 33 · payable days 51 · cash cycle 62 days ·
 market cap 1,000 · P/E 20 · P/B 4 · EV 1,060 · EV/EBITDA 12.5 · dividend yield 2%.
 
+### Ramu Chai Ltd: extra canonical numbers (added for Parts 6–10; use exactly these)
+
+**Units (fixed by Part 3):** 100 crore cups a year at ₹5.00 a cup = ₹500 cr; materials ₹2.50 a cup = ₹250 cr.
+
+**Cost behaviour (Part 8, operating leverage).** Variable costs move with cups sold; fixed costs don't.
+
+| Cost | FY26 | Behaviour |
+|---|---|---|
+| Cost of materials | 250 | variable (₹2.50 a cup) |
+| Other expenses: freight and distributor commissions | 25 | variable (₹0.25 a cup) |
+| Other expenses: rent, advertising, power base load | 80 | fixed |
+| Employee benefits | 60 | fixed |
+| Depreciation | 12 | fixed |
+
+Variable costs 275 (55% of sales, contribution margin 45%). Fixed cash costs 140. EBITDA 85, EBIT 73 as before.
+Worked case: sales +10% (110 cr cups) → contribution 247.5 → EBITDA 107.5 (+26%) → EBIT 95.5 (+31%) → PBT 89.5.
+
+**Five-year history (Part 9, growth).** Shares stay at 10 crore throughout.
+
+| | FY22 | FY23 | FY24 | FY25 | FY26 |
+|---|---|---|---|---|---|
+| Revenue | 330 | 365 | 405 | 450 | 500 |
+| PAT | 30 | 34 | 39 | 44 | 50 |
+| EPS (₹) | 3.00 | 3.40 | 3.90 | 4.40 | 5.00 |
+
+4-year CAGR (FY22→FY26): revenue 11.0%, PAT 13.6%.
+
+**Next-year estimate (Part 7, forward P/E), tagged example:** FY27E revenue 560 (+12%), PAT 57.5 (+15%), EPS ₹5.75.
+At ₹100: trailing P/E 20, forward P/E 17.4, earnings yield 5%.
+
+**DuPont (Part 10), on closing FY26 figures:** net margin 10% × asset turnover 1.25 (500/400) × equity multiplier 1.6 (400/250) = ROE 20%.
+ROCE 20.9% (EBIT 73 / capital employed 350). Use closing balances unless a page explains averages, and say which.
+
 ## Parts (38 + bonus)
 
 `R:` = what the "real report" box shows.
