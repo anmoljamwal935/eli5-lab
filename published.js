@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "accounting-choices-eli5",
+    "title": "Accounting choices that change profit",
+    "category": "Monetary Architecture",
+    "minutes": 30,
+    "summary": "Part 6: how accounting choices move profit while cash stays put",
+    "bullets": [
+      "Capitalise or expense: which year carries a cost",
+      "Depreciation life and method move profit, not cash",
+      "Goodwill is tested, brands are amortised; adjusted EPS adds back"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SPEND",
+      "PROFIT",
+      "CASH"
+    ],
+    "file": "explainers/accounting-choices-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"The same cost booked two ways on one baseline: expensed, one tall block in year one; capitalised, five short blocks over five years, with equal total height.\"><line x1=\"24\" y1=\"118\" x2=\"296\" y2=\"118\" stroke=\"#57534f\" stroke-width=\"1\"/><rect x=\"40\" y=\"58\" width=\"36\" height=\"60\" fill=\"#ff8059\"/><rect x=\"132\" y=\"106\" width=\"24\" height=\"12\" fill=\"#ff8059\"/><rect x=\"162\" y=\"106\" width=\"24\" height=\"12\" fill=\"#ff8059\"/><rect x=\"192\" y=\"106\" width=\"24\" height=\"12\" fill=\"#ff8059\"/><rect x=\"222\" y=\"106\" width=\"24\" height=\"12\" fill=\"#ff8059\"/><rect x=\"252\" y=\"106\" width=\"24\" height=\"12\" fill=\"#ff8059\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 6</text><text x=\"24\" y=\"142\" fill=\"#a5a29c\">SPEND VS SPREAD</text></g></svg>",
+    "part": 6
+  },
+  {
     "id": "cash-flow-and-the-three-statements-eli5",
     "title": "Cash flow, and how the three connect",
     "category": "Monetary Architecture",
