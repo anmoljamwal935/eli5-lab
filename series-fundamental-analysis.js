@@ -12,7 +12,7 @@
     value: { name: 'Price and value', short: 'Value track', color: '#f5c76a' }
   },
   parts: [
-    { id: 'fundamental-analysis-in-one-page-eli5', track: 'value', title: 'Fundamental analysis in one page', blurb: 'Price vs value, market cap, and the map of what this series covers' },
+    { id: 'fundamental-analysis-in-one-page-eli5', track: 'value', title: 'Fundamental analysis in one page', blurb: 'Price vs value, market cap, and the map of what this series covers', file: 'fundamental-analysis-in-one-page-eli5.html' },
     { id: 'where-the-numbers-live-eli5', track: 'numbers', title: 'Where the numbers live', blurb: 'Annual reports, exchange filings, consolidated vs standalone, quarterly results' },
     { id: 'the-profit-and-loss-eli5', track: 'numbers', title: 'The P&L, line by line', blurb: 'From sales to profit after tax, and the lines that hide surprises' },
     { id: 'the-balance-sheet-eli5', track: 'numbers', title: 'The balance sheet', blurb: 'What a company owns, what it owes, and what belongs to shareholders' },
