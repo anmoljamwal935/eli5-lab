@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "fundamental-analysis-in-one-page-eli5",
+    "title": "Fundamental analysis in one page",
+    "category": "Monetary Architecture",
+    "minutes": 8,
+    "summary": "Part 1: price is a mood, value follows profit",
+    "bullets": [
+      "A share is a slice of a business; market cap is price times shares",
+      "Price is noisy day to day; value follows profits over years",
+      "Fundamental vs technical analysis, and a map of the whole series"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SHARE",
+      "PRICE",
+      "VALUE"
+    ],
+    "file": "explainers/fundamental-analysis-in-one-page-eli5.html",
+    "date": "2026-11-08",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A lavender price line wiggling around a slowly rising gold value line.\"><path d=\"M24 123H296\" stroke=\"#57534f\" fill=\"none\"/><path d=\"M24 112L296 52\" stroke=\"#f5c76a\" stroke-width=\"4\" fill=\"none\"/><path d=\"M24 96L44 118L64 92L84 112L104 84L124 106L144 78L164 98L184 66L204 92L224 58L244 80L264 40L284 62L296 50\" stroke=\"#c3b8ff\" stroke-width=\"2.5\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"26\" fill=\"#f5c76a\">PART 1</text><text x=\"24\" y=\"137\" fill=\"#c3b8ff\">PRICE</text><text x=\"296\" y=\"137\" text-anchor=\"end\" fill=\"#f5c76a\">VALUE</text></g></svg>",
+    "part": 1
+  },
+  {
     "id": "fundamental-analysis-from-scratch",
     "title": "Fundamental analysis, from scratch: the series map",
     "category": "Monetary Architecture",
