@@ -71,6 +71,31 @@
     .lab .picks button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
     .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
     .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    /* Part 15 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events,.dashlab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+    .dashlab .dash tr.grp td{padding:16px 10px 6px;border-bottom:0}
+    .dashlab .dash td.line{font:13px/1.4 var(--font-mono)}
+    .dashlab .lights-key{margin:12px 0 0}
+    .dashlab .dl-chart{max-width:560px;margin-top:18px}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:12px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab details.trace{margin-top:16px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab #msg:empty{display:none}
+    .dashlab .gi,.dashlab .nm-short{display:none}
+    @media (max-width:700px){.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash .line{display:none}.dashlab .gi{display:block;margin-top:2px;font:11px/1.4 var(--font-mono);color:var(--muted)}.dashlab .nm-full{display:none}.dashlab .nm-short{display:inline}.dashlab .dash td.val{font-size:14px}}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}}
   </style>
 <!-- link-preview:start -->
 <meta name="description" content="Part 15: peers, PEG, and a one-page dashboard where no ratio stands alone">
@@ -185,17 +210,10 @@
     <section class="panel">
       <p class="kicker">Try it</p>
       <h2>Build the dashboard</h2>
-      <p>Three fictional peers, eight ratios, one light each <span class="tag">example</span>. Move the lines with the sliders and steppers, or press a preset, and watch the lights change. Then edit a company: change Ramu’s, Pahadi’s or Masala’s price, cash or borrowings and see every ratio recompute. Assumptions: 10 crore shares each; equity (₹400 cr and ₹150 cr) and borrowings (₹360 cr and nil) for the two rivals are derived from their ROE and debt ratio, and change none of Ramu’s accounts; P/B is P/E × ROE; PEG uses the four-year EPS CAGR; the light uses the number as shown. Counting lights treats all eight as equally important, which they are not. Working-capital days, EV/EBITDA and yields are not fixed for the rivals, so the sheet skips them; the TCPL panels show them.</p>
-      <div class="lab"><div class="lab-grid">
-        <div class="controls">
-          <p class="group-label" style="margin-top:0">LINES · SLIDERS</p>
-          <div class="control"><label for="roe">ROE: good at or above <output id="roe-o"></output></label><input id="roe" type="range" min="5" max="30" step="1" value="15"></div>
-          <div class="control"><label for="de">Debt ÷ equity: good at or below <output id="de-o"></output></label><input id="de" type="range" min="0.1" max="2" step="0.1" value="0.5"></div>
-          <div class="control"><label for="cfo">CFO ÷ profit: good at or above <output id="cfo-o"></output></label><input id="cfo" type="range" min="0.4" max="1.5" step="0.05" value="1"></div>
-          <div class="control"><label for="peg">PEG: good at or below <output id="peg-o"></output></label><input id="peg" type="range" min="0.5" max="3" step="0.1" value="1.5"></div>
-          <p class="group-label">LINES · STEPPERS</p>
-          <div class="steps"><span class="stl">EPS growth at least</span><button type="button" class="secondary" data-st="g" data-d="-1" aria-label="Lower the EPS growth line">−</button><output id="st-g" role="status"></output><button type="button" class="secondary" data-st="g" data-d="1" aria-label="Raise the EPS growth line">+</button></div><div class="steps"><span class="stl">Net margin at least</span><button type="button" class="secondary" data-st="nm" data-d="-1" aria-label="Lower the net margin line">−</button><output id="st-nm" role="status"></output><button type="button" class="secondary" data-st="nm" data-d="1" aria-label="Raise the net margin line">+</button></div><div class="steps"><span class="stl">P/E at most</span><button type="button" class="secondary" data-st="pe" data-d="-1" aria-label="Lower the P/E line">−</button><output id="st-pe" role="status"></output><button type="button" class="secondary" data-st="pe" data-d="1" aria-label="Raise the P/E line">+</button></div><div class="steps"><span class="stl">P/B at most</span><button type="button" class="secondary" data-st="pb" data-d="-1" aria-label="Lower the P/B line">−</button><output id="st-pb" role="status"></output><button type="button" class="secondary" data-st="pb" data-d="1" aria-label="Raise the P/B line">+</button></div>
-          <p class="group-label">PRESETS</p>
+      <p>Three fictional tea companies, eight ratios, one light each <span class="tag">example</span>. Pick a lens to set the lines, read the lights, then move the lines or edit a company yourself.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Choose a lens</p>
           <div class="presets">
             <button type="button" class="secondary" data-p="rules">Rules of thumb</button>
             <button type="button" class="secondary" data-p="quality">Quality first</button>
@@ -203,26 +221,37 @@
             <button type="button" class="secondary" data-p="heavy">Capital-heavy industry</button>
           </div>
           <p class="msg" id="msg" role="status" aria-live="polite"></p>
-          <p class="group-label">EDIT ONE COMPANY</p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Read the dashboard</p>
+          <div class="table-wrap"><table class="dash" id="dash"></table></div>
+          <p class="lights-key"><span class="lt g">●</span>good: on the right side of the line <span class="lt a">◆</span>watch: within 20% of it <span class="lt r">▲</span>weak: further off</p>
+          <div class="dl-chart"><svg id="labChart" viewBox="0 0 520 290" role="img" aria-label="Bars counting the good lights out of eight for Ramu Chai, Pahadi Leaf and Masala Brew, with the watch and weak counts written under each bar"></svg></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Move the lines yourself</p>
+          <div class="dl-grid">
+            <div class="dl-col"><div class="control"><label for="roe">ROE: good at or above <output id="roe-o"></output></label><input id="roe" type="range" min="5" max="30" step="1" value="15"></div><div class="control"><label for="de">Debt ÷ equity: good at or below <output id="de-o"></output></label><input id="de" type="range" min="0.1" max="2" step="0.1" value="0.5"></div><div class="control"><label for="cfo">CFO ÷ profit: good at or above <output id="cfo-o"></output></label><input id="cfo" type="range" min="0.4" max="1.5" step="0.05" value="1"></div><div class="control"><label for="peg">PEG: good at or below <output id="peg-o"></output></label><input id="peg" type="range" min="0.5" max="3" step="0.1" value="1.5"></div></div>
+            <div class="dl-col"><div class="steps"><span class="stl">EPS growth at least</span><button type="button" class="secondary" data-st="g" data-d="-1" aria-label="Lower the EPS growth line">−</button><output id="st-g" role="status"></output><button type="button" class="secondary" data-st="g" data-d="1" aria-label="Raise the EPS growth line">+</button></div><div class="steps"><span class="stl">Net margin at least</span><button type="button" class="secondary" data-st="nm" data-d="-1" aria-label="Lower the net margin line">−</button><output id="st-nm" role="status"></output><button type="button" class="secondary" data-st="nm" data-d="1" aria-label="Raise the net margin line">+</button></div><div class="steps"><span class="stl">P/E at most</span><button type="button" class="secondary" data-st="pe" data-d="-1" aria-label="Lower the P/E line">−</button><output id="st-pe" role="status"></output><button type="button" class="secondary" data-st="pe" data-d="1" aria-label="Raise the P/E line">+</button></div><div class="steps"><span class="stl">P/B at most</span><button type="button" class="secondary" data-st="pb" data-d="-1" aria-label="Lower the P/B line">−</button><output id="st-pb" role="status"></output><button type="button" class="secondary" data-st="pb" data-d="1" aria-label="Raise the P/B line">+</button></div></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Edit a company</p>
           <div class="events" role="group" aria-label="Company to edit">
             <button type="button" class="secondary" data-co="ramu" aria-pressed="true">Ramu Chai</button>
             <button type="button" class="secondary" data-co="pahadi" aria-pressed="false">Pahadi Leaf</button>
             <button type="button" class="secondary" data-co="masala" aria-pressed="false">Masala Brew</button>
           </div>
-          <div class="steps"><span class="stl">Price</span><button type="button" class="secondary" data-ce="price" data-d="-1" aria-label="Lower the price">−</button><output id="ce-price" role="status"></output><button type="button" class="secondary" data-ce="price" data-d="1" aria-label="Raise the price">+</button></div><div class="steps"><span class="stl">Cash from operations</span><button type="button" class="secondary" data-ce="cfo" data-d="-1" aria-label="Lower the cash from operations">−</button><output id="ce-cfo" role="status"></output><button type="button" class="secondary" data-ce="cfo" data-d="1" aria-label="Raise the cash from operations">+</button></div><div class="steps"><span class="stl">Borrowings</span><button type="button" class="secondary" data-ce="debt" data-d="-1" aria-label="Lower the borrowings">−</button><output id="ce-debt" role="status"></output><button type="button" class="secondary" data-ce="debt" data-d="1" aria-label="Raise the borrowings">+</button></div>
-          <div class="events"><button type="button" class="secondary" id="resetCo">Reset all three companies</button></div>
+          <div class="dl-grid"><div class="dl-col"><div class="steps"><span class="stl">Price</span><button type="button" class="secondary" data-ce="price" data-d="-1" aria-label="Lower the price">−</button><output id="ce-price" role="status"></output><button type="button" class="secondary" data-ce="price" data-d="1" aria-label="Raise the price">+</button></div><div class="steps"><span class="stl">Cash from operations</span><button type="button" class="secondary" data-ce="cfo" data-d="-1" aria-label="Lower the cash from operations">−</button><output id="ce-cfo" role="status"></output><button type="button" class="secondary" data-ce="cfo" data-d="1" aria-label="Raise the cash from operations">+</button></div><div class="steps"><span class="stl">Borrowings</span><button type="button" class="secondary" data-ce="debt" data-d="-1" aria-label="Lower the borrowings">−</button><output id="ce-debt" role="status"></output><button type="button" class="secondary" data-ce="debt" data-d="1" aria-label="Raise the borrowings">+</button></div></div><div class="dl-col"><div class="events"><button type="button" class="secondary" id="resetCo">Reset all three companies</button></div></div></div>
+          <details class="trace"><summary>Show the working for this company</summary><div class="ledger" id="ledger"></div></details>
         </div>
-        <div class="lab-chart">
-          <div class="table-wrap" style="margin:0 0 14px"><table class="dash" id="dash"></table></div>
-          <p class="lights-key"><span class="lt g">●</span>good <span class="lt a">◆</span>watch <span class="lt r">▲</span>weak · a light is judged on the number as shown</p>
-          <svg id="labChart" viewBox="0 0 520 290" role="img" aria-label="Bars counting the good lights out of eight for Ramu Chai, Pahadi Leaf and Masala Brew, with the watch and weak counts written under each bar"></svg>
+        <div class="dl-step">
+          <p class="dl-k">5 · Which would you pick?</p>
+          <div class="picks" role="group" aria-label="Pick a company"><button type="button" class="secondary" data-pick="ramu" aria-pressed="false">Ramu Chai</button><button type="button" class="secondary" data-pick="pahadi" aria-pressed="false">Pahadi Leaf</button><button type="button" class="secondary" data-pick="masala" aria-pressed="false">Masala Brew</button></div>
+          <p class="msg" id="pickMsg" role="status" aria-live="polite">Choose one, then read what you would be betting on.</p>
         </div>
       </div>
-      <div class="ledger" id="ledger"></div>
-      <p class="group-label" style="margin-top:22px">WHICH WOULD YOU PICK?</p>
-      <div class="picks" role="group" aria-label="Pick a company"><button type="button" class="secondary" data-pick="ramu" aria-pressed="false">Ramu Chai</button><button type="button" class="secondary" data-pick="pahadi" aria-pressed="false">Pahadi Leaf</button><button type="button" class="secondary" data-pick="masala" aria-pressed="false">Masala Brew</button></div>
-      <p class="msg" id="pickMsg" role="status" aria-live="polite">Choose one, then read what you would be betting on.</p>
-      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the sheet</summary><p>Each company has 10 crore shares. Equity (₹400 cr and ₹150 cr) and borrowings (₹360 cr and nil) for the two rivals are derived from their ROE and debt ratio, and change none of Ramu’s accounts. P/B is P/E × ROE. PEG uses the four-year EPS CAGR. A light is judged on the number as shown. Counting lights treats all eight as equally important, which they are not. Working-capital days, EV/EBITDA and yields are not fixed for the rivals, so the sheet skips them; the TCPL panels below show them.</p></details>
     </section>
 
     <section class="panel">
@@ -356,7 +385,7 @@
       masala:{name:'Masala Brew',sales:300,pat:39,eq:150,debt:0,cfo:40.95,price:136.5,g:22}};
     const KEYS=['ramu','pahadi','masala'];
     let co=JSON.parse(JSON.stringify(BASE)), sel='ramu', picked=null;
-    const M=[{k:'g',label:'EPS growth, 4-yr',grp:'GROWTH · PART 9',dir:1,dp:1,u:'%'},
+    const M=[{k:'g',label:'EPS growth, 4‑yr',grp:'GROWTH · PART 9',dir:1,dp:1,u:'%'},
       {k:'nm',label:'Net margin',grp:'PROFITABILITY · PARTS 8, 10',dir:1,dp:1,u:'%'},
       {k:'roe',label:'ROE',dir:1,dp:1,u:'%'},
       {k:'de',label:'Debt ÷ equity',grp:'SAFETY · PART 11',dir:-1,dp:2,u:''},
@@ -392,12 +421,12 @@
       Object.keys(ST).forEach(k=>{$('st-'+k).textContent=ST[k].fmt(L[k]);document.querySelector(`[data-st="${k}"][data-d="-1"]`).disabled=L[k]<=ST[k].min;document.querySelector(`[data-st="${k}"][data-d="1"]`).disabled=L[k]>=ST[k].max;});
       KEYS.forEach(k=>{R[k]=ratios(co[k]);LT[k]=M.map(m=>light(m,R[k][m.k]));});
       // table
-      let h='<thead><tr><th>Ratio</th><th>Lines</th>'+KEYS.map(k=>`<th class="${co[k].price!==BASE[k].price||co[k].cfo!==BASE[k].cfo||co[k].debt!==BASE[k].debt?'ed':''}">${co[k].name}</th>`).join('')+'</tr></thead><tbody>';
+      let h='<thead><tr><th>Ratio</th><th class="line">Good if</th>'+KEYS.map(k=>`<th class="${co[k].price!==BASE[k].price||co[k].cfo!==BASE[k].cfo||co[k].debt!==BASE[k].debt?'ed':''}"><span class="nm-full">${co[k].name}</span><span class="nm-short">${co[k].name.split(' ')[0]}</span></th>`).join('')+'</tr></thead><tbody>';
       M.forEach((m,i)=>{
         if(m.grp) h+=`<tr class="grp"><td colspan="5">${m.grp}</td></tr>`;
         const ln=L[m.k],cut=m.dir>0?ln*0.8:ln*1.2,op=m.dir>0?'≥ ':'≤ ';
         const lt=m.u==='%'?(x=>num(x)+'%'):num;
-        h+=`<tr><td>${m.label}</td><td class="line">good ${op}${lt(ln)}<br>watch ${op}${lt(cut)}</td>`+KEYS.map(k=>{const c=LT[k][i];return `<td class="val"><span class="lt ${c}" role="img" aria-label="${NAME[c]}">${SYM[c]}</span>${fv(m,R[k][m.k])}</td>`;}).join('')+'</tr>';});
+        h+=`<tr><td>${m.label}<span class="gi">good if ${op}${lt(ln)}</span></td><td class="line">${op}${lt(ln)}</td>`+KEYS.map(k=>{const c=LT[k][i];return `<td class="val"><span class="lt ${c}" role="img" aria-label="${NAME[c]}">${SYM[c]}</span>${fv(m,R[k][m.k])}</td>`;}).join('')+'</tr>';});
       $('dash').innerHTML=h+'</tbody>';
       // chart: green lights per company, axis 0..8
       const X0=110,XEND=490,k8=(XEND-X0)/8,sx=v=>X0+v*k8;
