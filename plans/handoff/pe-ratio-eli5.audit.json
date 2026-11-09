@@ -356,7 +356,7 @@
     ],
     "coverage_review": "done: every inventory row found on page",
     "semantic_review": "done by author; P/E-vs-cap/profit difference reworded to 'about 0.02%' after checking arithmetic",
-    "artifact_sha256": "03a30fd38e709e2c7eb42661dee85625a458ed5025dbf184a1403bc7457d4134",
+    "artifact_sha256": "c55f46acd3c3c3e98389d94adcdf4c6822f84829f28fc8582790abab6a82393a",
     "structural_lint": {
       "scope": "structural lint only; not semantic, numerical, visual or publication approval",
       "errors": [],
@@ -366,7 +366,7 @@
         "panels": 13,
         "notes": 2
       },
-      "artifact_sha256": "03a30fd38e709e2c7eb42661dee85625a458ed5025dbf184a1403bc7457d4134",
+      "artifact_sha256": "c55f46acd3c3c3e98389d94adcdf4c6822f84829f28fc8582790abab6a82393a",
       "artifact_path": "/home/user/eli5-lab/explainers/pe-ratio-eli5.html"
     }
   },
