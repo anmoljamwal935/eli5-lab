@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Red flags and forensic checks — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in | coral #ff8059 = money going out | gold #f5c76a = what belongs to shareholders
+       rose #ec6a94 = what is owed | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 20: teal = sales, receivables (money owed to us) and cash in, coral = costs, capex and tax, gold = profit and equity,
+       rose = what is owed or pledged (debt, contingent claims, pledged shares), grey = old or neutral balances. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .panel figure+p{margin-top:22px}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    .field-grid a{color:inherit}
+    /* Spot the fudged accounts */
+    .spot{margin-top:18px}
+    .spot-head,.spot-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr);gap:0 12px;align-items:stretch}
+    .spot-head{padding:0 0 8px;font:12px/1.4 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .spot-row{padding:8px 0;border-top:1px solid var(--border)}
+    .spot-name{font-size:15px;line-height:1.4;align-self:center}
+    .spot-a{font:13px/1.4 var(--font-mono);color:var(--muted);align-self:center}
+    .eli5-study-container button.spot-b{padding:8px 10px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer;text-align:left;font:13px/1.4 var(--font-mono);font-weight:400}
+    .eli5-study-container button.spot-b[aria-pressed=true]{border-color:#ec6a94 !important;background:rgba(236,106,148,.14) !important}
+    .eli5-study-container .spot-row.missed button.spot-b{border-color:#ff8059 !important;border-style:dashed}
+    .spot-fb{grid-column:1/-1;margin:8px 0 0;padding:8px 12px;border-left:3px solid var(--border);font-size:14px;line-height:1.5;color:var(--fg)}
+    .spot-fb.flag{border-left-color:#ec6a94}.spot-fb.symptom{border-left-color:#a5a29c}.spot-fb.fine{border-left-color:#57534f;color:var(--muted)}
+    .spot-fb b{font:11px/1.5 var(--font-mono);letter-spacing:.06em;margin-right:6px}
+    .spot-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px}
+    .spot-bar button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .spot-score{margin:14px 0 0;font:13px/1.6 var(--font-mono);color:var(--fg)}
+    @media (max-width:700px){.spot-head,.spot-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.spot-name{grid-column:1/-1;font-weight:500}.spot-head span:first-child{display:none}}
+    /* Checklist scorer */
+    .scorer{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 28px}
+    .scorer li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:8px 0;border-top:1px solid var(--border);font-size:14px;line-height:1.5}
+    .scorer label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;text-transform:none;letter-spacing:0;font:14px/1.5 var(--font-sans);color:var(--fg);margin:0}
+    .scorer input{margin-top:4px;accent-color:var(--accent)}
+    .scorer .rule{grid-column:1/-1;font:12px/1.5 var(--font-mono);color:var(--muted)}
+    .chip{font:11px/1.6 var(--font-mono);letter-spacing:.06em;padding:0 8px;border:1px solid var(--border);color:var(--muted);align-self:start}
+    .chip.trip{color:#ec6a94;border-color:rgba(236,106,148,.6)}.chip.pass{color:#76d5c1;border-color:rgba(118,213,193,.4)}
+    .scoreline{margin:14px 0 0;font:13px/1.6 var(--font-mono);color:var(--fg)}
+    .scoreline.on{color:#ec6a94}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  </style>
+</head>
+<body data-series-id="red-flags-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 28 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Red flags and forensic checks</h1>
+      <p class="lede">Accounts rarely blow up without warning. The warnings are patterns: profit that never turns into cash, customers who owe more every year, costs that slip onto the balance sheet. Each pattern is a question to ask, never a verdict.</p>
+      <p class="source-note">Built from Tata Consumer Products’ audited FY2026 consolidated statements and notes, as printed in its Integrated Annual Report 2025-26, and the arithmetic of the checks themselves · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a> · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">consolidated statements ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a> reads the P&amp;L, including other income and exceptional items; <a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a> reads the balance sheet; <a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">Part 5</a> shows profit is not cash; <a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a> shows how capitalising and asset lives move profit; <a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">Part 12</a> measures receivable and inventory days; <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a> tests profit against cash. This part joins them into a checklist. Part 19 (governance and ownership, being built alongside this one) goes deep on pledges, related-party deals and auditors; here they are only named. Part 21 covers dilution and corporate actions, and Part 36 screening. The bonus study, <i>Satyam, decoded</i>, reads a real fraud through these flags; this part only teaches the flags. <b>Go deeper</b> boxes are optional.</p>
+      <p>Facts carry a tag: <span class="tag">public</span> is a figure from TCPL’s audited statements, <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd, a small tea business, and for its fudged twin, Ramu Chai B. All amounts are ₹ crore (cr). Definitions as in earlier parts: EBIT is EBITDA less D&amp;A; days use year-end balances and 365 days; ratios use closing balances. Real figures are frozen at FY2026. Educational, not a recommendation.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales, cash, receivables</span>
+        <span><i style="background:#ff8059"></i>money going out: costs, capex, tax</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, equity</span>
+        <span><i style="background:#ec6a94"></i>what is owed: debt, claims, pledges</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The idea</p>
+      <h2>A flag is a question, not a verdict</h2>
+      <p>A red flag is a pattern that has often come before trouble. It is not proof of trouble, and most flags have innocent explanations: a new sales channel, a big project, a one-time clean-up. Even the healthy teaching company shows two small ones. In FY26 Ramu’s receivables grew 18.4% against sales growth of 11.1%, and its inventory grew 17.0% <span class="tag">example</span>. <a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">Part 12</a> showed why: the cash cycle lengthened by four days, which is a reason to watch, not to worry.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="Ramu Chai growth FY25 to FY26 on one scale: sales 11.1 percent, receivables 18.4, inventory 17.0, profit 13.6 and cash from operations 11.5 percent"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Sales · FY25 450 to FY26 500</text><rect x="40" y="32" width="222.2" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="272.2" y="51" text-anchor="start" fill="#f1eee8" font-size="16">+11.1%</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Trade receivables · 38 to 45</text><rect x="40" y="90" width="368.4" height="26" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="418.4" y="109" text-anchor="start" fill="#f1eee8" font-size="16">+18.4%</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Inventory · 47 to 55</text><rect x="40" y="148" width="340.4" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="390.4" y="167" text-anchor="start" fill="#f1eee8" font-size="16">+17.0%</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">Profit after tax · 44 to 50</text><rect x="40" y="206" width="272.7" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="322.7" y="225" text-anchor="start" fill="#f1eee8" font-size="16">+13.6%</text><text x="40" y="256" text-anchor="start" fill="#a5a29c" font-size="16">Cash from operations · 52 to 58</text><rect x="40" y="264" width="230.8" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="280.8" y="283" text-anchor="start" fill="#f1eee8" font-size="16">+11.5%</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">20 px = 1 percentage point · Ramu Chai, FY26 over FY25</text></svg></figure>
+      <p>A flag earns attention by its <b>size</b>, its <b>persistence</b> and its <b>company</b>. One mild gap in one year is a note. A large gap, several years running, with other flags beside it, is a pattern. The right response is to ask the company, read the notes, and compare with peers, never to conclude from one number.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Profit without cash</p>
+      <h2>Profit that never arrives as cash</h2>
+      <p>Profit is an accounting number; cash is what reaches the bank. <a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">Part 5</a> showed they differ and <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a> measured the gap as CFO ÷ PAT, cash from operations over profit after tax. Ramu’s FY26 ratio is 58 ÷ 50 = 1.16 <span class="tag">example</span>. Ramu Chai B, our fudged twin, reports a higher profit, 55, but only 15 of operating cash: 15 ÷ 55 = 0.27 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 278" role="img" aria-label="Profit after tax in gold and cash from operations in teal for Ramu Chai and for Ramu Chai B on one scale: Ramu has 50 and 58 crore, Ramu B has 55 and only 15 crore"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · profit after tax ₹50 cr</text><rect x="40" y="32" width="300" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="350" y="51" text-anchor="start" fill="#f1eee8" font-size="16">50</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · cash from operations ₹58 cr · 1.16×</text><rect x="40" y="90" width="348" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="398" y="109" text-anchor="start" fill="#f1eee8" font-size="16">58</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · profit after tax ₹55 cr</text><rect x="40" y="148" width="330" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="380" y="167" text-anchor="start" fill="#f1eee8" font-size="16">55</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · cash from operations ₹15 cr · 0.27×</text><rect x="40" y="206" width="90" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="140" y="225" text-anchor="start" fill="#f1eee8" font-size="16">15</text><text x="40" y="260" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 cr · FY26 · CFO ÷ PAT after the dot</text></svg></figure>
+      <p>Look for CFO well below PAT for <b>two or more years</b>. Part 13’s rule of thumb is a ratio below 0.8. One weak year can be plain timing, such as a big order shipped in the last week of the year. Several years in a row mean profit is being booked but not collected, or spent on something that does not pass through the P&amp;L. <b>Ask:</b> where did the gap go: receivables, inventory, an advance to someone?</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Receivables and stock</p>
+      <h2>Customers owe more, stock piles up</h2>
+      <p><a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">Part 12</a> turned balances into days. If <b>receivables grow much faster than sales</b>, customers are paying later, or sales are being booked early or on easy terms. Ramu’s receivable days went from 31 to 33 (45 ÷ 500 × 365). Ramu B’s went from 31 to 44.5 (61 ÷ 500 × 365): receivables up 60.5% while sales rose 11.1% <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 278" role="img" aria-label="Receivable days on one scale: Ramu Chai 31 then 33 days, Ramu Chai B 31 then 44.5 days"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · FY25 · 38 ÷ 450 × 365</text><rect x="40" y="32" width="308.2" height="26" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="358.2" y="51" text-anchor="start" fill="#f1eee8" font-size="16">31 days</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · FY26 · 45 ÷ 500 × 365</text><rect x="40" y="90" width="328.5" height="26" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="378.5" y="109" text-anchor="start" fill="#f1eee8" font-size="16">33 days</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · FY25 · 38 ÷ 450 × 365</text><rect x="40" y="148" width="308.2" height="26" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="358.2" y="167" text-anchor="start" fill="#f1eee8" font-size="16">31 days</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · FY26 · 61 ÷ 500 × 365</text><rect x="40" y="206" width="445.3" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="495.3" y="225" text-anchor="start" fill="#f1eee8" font-size="16">44.5 days</text><text x="40" y="260" text-anchor="start" fill="#a5a29c" font-size="16">10 px = 1 day · year-end balances, 365 days</text></svg></figure>
+      <p><b>Inventory piling up</b> has two readings. Unsold goods may later need writing down, which hits profit. Or the company may be stocking ahead of a price rise or a festival season. Ramu’s inventory days went from 76 to 80 <span class="tag">example</span>, a mild rise; the test is whether it keeps climbing while sales do not.</p>
+      <p>Innocent explanations are common: a shift to channels that pay slowly (modern trade, exports), a large customer given longer terms, an acquisition, a year-end timing quirk, or a weaker rupee that inflates overseas balances when they are translated into rupees. <b>Ask</b> for the ageing table: how much is overdue, and for how long?</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Capitalised costs</p>
+      <h2>Costs moved onto the balance sheet</h2>
+      <p><a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a> showed that a cost recorded as an asset reaches profit only slowly, through depreciation or amortisation. Some spending genuinely creates an asset; some should be expensed at once. The international standard IAS 38, which India’s Ind AS 38 follows, says internally generated brands are not recognised as intangible assets. So when Ramu B capitalises ₹20 cr of “brand development” <span class="tag">example</span>, only ₹2 cr is amortised (over ten years) and ₹18 cr sits on the balance sheet. Reported profit before tax is 73; expensed, it would be 55, below Ramu’s 67.</p>
+      <figure><svg viewBox="0 0 800 290" role="img" aria-label="Profit before tax on one scale: Ramu 67 crore; Ramu B reported 73 crore of which 18 crore comes from capitalising brand development; Ramu B would show 55 crore if the 20 crore were expensed"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · profit before tax ₹67 cr</text><rect x="40" y="32" width="335" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="207.5" y="56" text-anchor="middle" fill="#202020" font-size="16">67</text><text x="385" y="56" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="94" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · as reported · ₹73 cr</text><rect x="40" y="102" width="275" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="177.5" y="126" text-anchor="middle" fill="#202020" font-size="16">55</text><rect x="315" y="102" width="90" height="34" fill="#ff8059" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="360" y="126" text-anchor="middle" fill="#202020" font-size="16">18</text><text x="415" y="126" text-anchor="start" fill="#f1eee8" font-size="16">73</text><text x="40" y="164" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · if the ₹20 cr were expensed · ₹55 cr</text><rect x="40" y="172" width="275" height="34" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="177.5" y="196" text-anchor="middle" fill="#202020" font-size="16">55</text><text x="325" y="196" text-anchor="start" fill="#f1eee8" font-size="16"></text><rect x="40" y="228" width="14" height="14" fill="#ff8059" opacity="0.6"/><text x="62" y="241" text-anchor="start" fill="#f1eee8" font-size="16">coral: deferred cost, 18</text><text x="40" y="270" text-anchor="start" fill="#a5a29c" font-size="16">5 px = ₹1 cr · FY26</text></svg></figure>
+      <p>The cash still left the company: it shows up under investing, not in CFO, so CFO looks better than the true cost of running the business. <b>Ask:</b> what exactly was capitalised, who did the work, over how many years is it amortised, and what do peers do?</p>
+      <p><b>Long useful lives</b> work the same way. Spreading an asset’s cost over more years lowers each year’s depreciation. As a one-off illustration that does not change Ramu’s accounts, stretching the life of Ramu’s machines by half would cut depreciation from 12 to 8 and lift profit before tax from 67 to 71 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 278" role="img" aria-label="Stretching asset lives by half cuts Ramu depreciation from 12 to 8 crore and lifts profit before tax from 67 to 71 crore, with no change in the business"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Depreciation · lives as now · ₹12 cr</text><rect x="40" y="32" width="96" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="146" y="51" text-anchor="start" fill="#f1eee8" font-size="16">12</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Depreciation · lives 1.5× longer · ₹8 cr</text><rect x="40" y="90" width="64" height="26" fill="#ff8059" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="114" y="109" text-anchor="start" fill="#f1eee8" font-size="16">8</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Profit before tax · lives as now · ₹67 cr</text><rect x="40" y="148" width="536" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="586" y="167" text-anchor="start" fill="#f1eee8" font-size="16">67</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">Profit before tax · lives 1.5× longer · ₹71 cr</text><rect x="40" y="206" width="568" height="26" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="618" y="225" text-anchor="start" fill="#f1eee8" font-size="16">71</text><text x="40" y="260" text-anchor="start" fill="#a5a29c" font-size="16">8 px = ₹1 cr · one-off illustration, Ramu Chai FY26</text></svg></figure>
+      <p>Compare a company’s depreciation rates and asset lives with its peers’ and with its own past. A change in life is disclosed in the notes; a company that changes it in a weak year deserves a question.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Outside the business</p>
+      <h2>Profit that comes from elsewhere</h2>
+      <p><a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a> separated what the business earns from other income (interest on spare cash, dividends, gains) and exceptional items (one-offs shown separately). Ramu’s other income is 4 of its 67 profit before tax, 6% <span class="tag">example</span>. In a one-off lookalike with the same 67, 27 comes from other income: 40% of profit would then rest on treasury returns, not on selling tea.</p>
+      <figure><svg viewBox="0 0 800 246" role="img" aria-label="Two bars of 67 crore profit before tax: in Ramu 63 comes from the business and 4 from other income; in a one-off lookalike 40 comes from the business and 27 from other income"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · profit before tax ₹67 cr · other income is 6%</text><rect x="40" y="32" width="378" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="229" y="56" text-anchor="middle" fill="#202020" font-size="16">63</text><rect x="418" y="32" width="24" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="452" y="56" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="94" text-anchor="start" fill="#a5a29c" font-size="16">A lookalike · same ₹67 cr · other income is 40%</text><rect x="40" y="102" width="240" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="160" y="126" text-anchor="middle" fill="#202020" font-size="16">40</text><rect x="280" y="102" width="162" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="361" y="126" text-anchor="middle" fill="#202020" font-size="16">27</text><text x="452" y="126" text-anchor="start" fill="#f1eee8" font-size="16"></text><rect x="40" y="158" width="14" height="14" fill="#f5c76a"/><text x="62" y="171" text-anchor="start" fill="#f1eee8" font-size="16">gold: profit from the business after interest</text><rect x="40" y="184" width="14" height="14" fill="#76d5c1"/><text x="62" y="197" text-anchor="start" fill="#f1eee8" font-size="16">teal: other income (interest, dividends, gains)</text><text x="40" y="226" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 cr</text></svg></figure>
+      <p><b>Recurring “exceptional” items</b> are the other half. A one-off that appears every year is a cost of doing business under another name, and it flatters the profit shown above it. Count how many of the last five years carried one, and read what it was.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Hidden bills</p>
+      <h2>Bills that are not on the balance sheet</h2>
+      <p>A <b>contingent liability</b> is a possible obligation, such as a disputed tax demand, a lawsuit or a guarantee, that is not on the balance sheet but described in a note. Most are disputes the company expects to win; some are lost. What matters is the size against profit and equity, whether it is growing, and how many past claims were actually paid. Ramu’s accounts carry none; this ₹30 cr dispute is a one-off illustration <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 220" role="img" aria-label="A one-off 30 crore disputed claim next to Ramu profit of 50 crore and equity of 250 crore on one scale"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">A disputed tax claim, not in the accounts · ₹30 cr</text><rect x="40" y="32" width="60" height="26" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="110" y="51" text-anchor="start" fill="#f1eee8" font-size="16">30</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Ramu profit after tax · ₹50 cr</text><rect x="40" y="90" width="100" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="150" y="109" text-anchor="start" fill="#f1eee8" font-size="16">50</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Ramu equity · ₹250 cr</text><rect x="40" y="148" width="500" height="26" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="550" y="167" text-anchor="start" fill="#f1eee8" font-size="16">250</text><text x="40" y="202" text-anchor="start" fill="#a5a29c" font-size="16">2 px = ₹1 cr · one-off example, not in Ramu’s accounts</text></svg></figure>
+      <p>A ₹30 cr claim is 60% of a year’s profit but 12% of equity, so it would hurt without sinking the company. <b>Ask:</b> how much has the company provided, and what happened to the last claims of this kind?</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Who signs, who pledges</p>
+      <h2>Auditors, pledges and related parties</h2>
+      <p>Part 19, “Governance and who owns the company”, is built alongside this part and goes deep. Three flags belong on this list. <b>The auditor:</b> a resignation before the term ends, repeated changes, a <i>qualified</i> opinion (the auditor disagrees on something specific), or an <i>emphasis of matter</i> drawing attention to an uncertainty. <b>Promoter pledges:</b> the owners borrowing against their own shares; a rising share of their holding pledged means they may be short of cash elsewhere. <b>Related-party loans or purchases:</b> money moving between the company and the owners’ other businesses.</p>
+      <figure><svg viewBox="0 0 800 220" role="img" aria-label="Promoters’ 5.5 crore shares: in Ramu 0.55 crore are pledged, in Ramu B 2.2 crore"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · promoters hold 5.5 cr shares</text><rect x="40" y="32" width="44" height="34" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><rect x="84" y="32" width="396" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="282" y="56" text-anchor="middle" fill="#202020" font-size="16">free 4.95</text><text x="490" y="56" text-anchor="start" fill="#f1eee8" font-size="16">10% pledged</text><text x="40" y="94" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · promoters hold 5.5 cr shares</text><rect x="40" y="102" width="176" height="34" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="128" y="126" text-anchor="middle" fill="#f1eee8" font-size="16">pledged 2.2</text><rect x="216" y="102" width="264" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="348" y="126" text-anchor="middle" fill="#202020" font-size="16">free 3.3</text><text x="490" y="126" text-anchor="start" fill="#f1eee8" font-size="16">40% pledged</text><rect x="40" y="158" width="14" height="14" fill="#ec6a94" opacity="0.62"/><text x="62" y="171" text-anchor="start" fill="#f1eee8" font-size="16">rose: pledged to a lender as security for a loan</text><text x="40" y="200" text-anchor="start" fill="#a5a29c" font-size="16">80 px = 1 crore shares</text></svg></figure>
+      <p>Ramu pledges 0.55 cr of its promoters’ 5.5 cr shares, 10%. Ramu B’s pledge rose to 2.2 cr, 40%, its previous auditor resigned two years before its term ended, and it advanced ₹30 cr, 7% of total assets, to a supplier owned by the promoter’s brother <span class="tag">example</span>. Each can be innocent; together they are a pattern. A key audit matter (KAM) is different: it marks an area of heavy judgement, and most large companies’ reports carry one.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Cash, dilution, projects</p>
+      <h2>Rich in cash, yet still borrowing</h2>
+      <p><b>High cash and high borrowings together</b> is odd: why pay 10% on a loan while the cash earns 5%? A one-off company with ₹200 cr of cash and ₹180 cr of borrowings pays ₹18 cr of interest and earns ₹10 cr <span class="tag">example</span>. Sometimes the cash is not really free: it is trapped abroad, pledged, or an overdraft that is netted against it. Sometimes it is a warning that the cash is not all there.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="A one-off company holds 200 crore of cash and 180 crore of borrowings; it pays 18 crore of interest at 10 percent and earns 10 crore at 5 percent on the cash"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">A one-off company · cash ₹200 cr</text><rect x="40" y="38" width="600" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="40" y="98" text-anchor="start" fill="#a5a29c" font-size="16">Borrowings ₹180 cr</text><rect x="40" y="106" width="540" height="30" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="40" y="176" text-anchor="start" fill="#a5a29c" font-size="16">Interest paid at 10% · ₹18 cr</text><rect x="40" y="184" width="216" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="40" y="244" text-anchor="start" fill="#a5a29c" font-size="16">Interest earned on the cash at 5% · ₹10 cr</text><rect x="40" y="252" width="120" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="270" y="205" text-anchor="start" fill="#f1eee8" font-size="16">18</text><text x="174" y="273" text-anchor="start" fill="#f1eee8" font-size="16">10</text><text x="40" y="314" text-anchor="start" fill="#a5a29c" font-size="16">3 px = ₹1 cr above · 12 px = ₹1 cr below</text></svg></figure>
+      <p><b>Frequent equity dilution</b>, new shares issued year after year, spreads the same profit over more shares; Part 21 covers each tool. The flag is repeated raising while the accounts show profits. <b>Capital work in progress stuck for years</b> (<a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a>) is spending on an asset not yet in use: it earns nothing and is not depreciated. A balance that sits for years may be a stalled project or costs parked that should be expensed.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Tax and timing</p>
+      <h2>A low tax rate and late results</h2>
+      <p>The <b>effective tax rate</b> is tax divided by profit before tax. Ramu’s is 17 ÷ 67 = 25.4% <span class="tag">example</span>, close to the 25.17% rate TCPL’s own tax note uses as the Indian rate <span class="tag">public</span>. A rate far below normal means either a legitimate shield (tax-exempt income, losses brought forward, a concession) or profit that is not what it seems. <b>Ask</b> for the reconciliation note, which lists every item between the standard rate and the actual one.</p>
+      <figure><svg viewBox="0 0 800 220" role="img" aria-label="Effective tax rates on one scale: Ramu 25.4 percent, the 25.17 percent statutory rate, and a one-off lookalike with 11.9 percent"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · tax 17 ÷ profit before tax 67</text><rect x="40" y="32" width="507.4" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="557.4" y="51" text-anchor="start" fill="#f1eee8" font-size="16">25.4%</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">The statutory rate TCPL uses in its tax note</text><rect x="40" y="90" width="503.4" height="26" fill="#ff8059" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="553.4" y="109" text-anchor="start" fill="#f1eee8" font-size="16">25.17%</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">A one-off lookalike · tax 8 ÷ 67</text><rect x="40" y="148" width="238.8" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="288.8" y="167" text-anchor="start" fill="#f1eee8" font-size="16">11.9%</text><text x="40" y="202" text-anchor="start" fill="#a5a29c" font-size="16">20 px = 1 percentage point of profit before tax</text></svg></figure>
+      <p><b>Delayed results and frequent restatements</b> are the softest signals. Listed companies must file results by exchange deadlines (<a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">Part 2</a> shows where the filings sit). A late filing, a restated prior year or a changed accounting policy may be a clean-up or a sign the numbers do not hold together. One occurrence is a question; a habit is a pattern.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The flags in one list</h2>
+      <div class="field-grid">
+        <div><b>CFO well below PAT</b><span>Profit not turning into cash for two or more years</span><em>ASK: WHERE DID THE GAP GO? · <a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">PART 5</a>, <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">PART 13</a></em></div>
+        <div><b>Receivables outrun sales</b><span>Receivable days climbing; ageing table worsening</span><em>ASK: WHO OWES AND SINCE WHEN? · <a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">PART 12</a></em></div>
+        <div><b>Inventory piling up</b><span>Stock growing faster than sales, year after year</span><em>ASK: WILL IT SELL AT COST? · <a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">PART 12</a></em></div>
+        <div><b>Capitalised costs, long lives</b><span>Spending held as an asset; depreciation lives stretched</span><em>ASK: WHAT DO PEERS DO? · <a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">PART 6</a></em></div>
+        <div><b>Other income a big share</b><span>Profit leaning on interest, dividends or gains</span><em>ASK: WHAT IS CORE PROFIT? · <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">PART 3</a></em></div>
+        <div><b>Recurring “exceptional” items</b><span>A one-off that appears every year</span><em>ASK: IS IT A COST OF DOING BUSINESS? · <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">PART 3</a></em></div>
+        <div><b>Large or rising contingent liabilities</b><span>Disputed claims noted but not provided for</span><em>ASK: HOW MANY WERE LOST BEFORE? · <a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">PART 2</a></em></div>
+        <div><b>Auditor signals</b><span>Mid-term resignation, qualified opinion, emphasis of matter</span><em>ASK: WHAT DID THE AUDITOR SAY? · PART 19</em></div>
+        <div><b>Rising promoter pledges</b><span>A growing share of the owners’ shares pledged</span><em>ASK: WHY DO THEY NEED THE LOAN? · PART 19</em></div>
+        <div><b>Related-party loans, purchases</b><span>Money moving to the owners’ other businesses</span><em>ASK: IS IT AT ARM’S LENGTH? · PART 19</em></div>
+        <div><b>Cash-rich but borrowing</b><span>High cash and high debt together</span><em>ASK: IS THE CASH REALLY FREE? · <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">PART 11</a></em></div>
+        <div><b>Frequent dilution</b><span>New shares issued year after year</span><em>ASK: WHAT IS THE MONEY FOR? · PART 21</em></div>
+        <div><b>CWIP stuck for years</b><span>Assets under construction that never complete</span><em>ASK: WHEN WILL IT START EARNING? · <a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">PART 4</a></em></div>
+        <div><b>Tax rate far below normal</b><span>Effective rate well under the statutory rate</span><em>ASK: WHAT IS IN THE RECONCILIATION? · <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">PART 3</a></em></div>
+        <div><b>Delayed results, restatements</b><span>Late filings; prior years restated</span><em>ASK: WHAT CHANGED, AND WHY? · <a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">PART 2</a></em></div>
+      </div>
+      <p><b>Screening scores.</b> Some researchers combine several of these ratios into one number. The best known is the Beneish M-score (Messod Beneish, 1999), which blends eight ratios from the financial statements, among them receivables against sales and the gap between accruals and cash, into a probability-style score of earnings manipulation. Such scores are aids, not proof: they were built on one country’s data, they can misfire on fast-growing or acquisitive companies, and they cannot read a note. Use one to decide where to look first, then read the accounts yourself.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it · spot the fudged accounts</p>
+      <h2>Ramu Chai next to its fudged twin</h2>
+      <p>On the left, the real Ramu Chai, with its canonical numbers <span class="tag">example</span>. On the right, <b>Ramu Chai B</b>, a twin built to show the same sales and an even higher profit <span class="tag">example</span>. Six flags are planted in B. Click every line on the right that looks suspicious. You get feedback on each pick, a running score, and <b>Reveal all</b> explains every line. Some lines are <i>symptoms</i>: they are where a flag shows up, and picking them is not a mistake. Others are not planted at all.</p>
+      <figure><svg viewBox="0 0 800 278" role="img" aria-label="The twins on one scale: Ramu profit 50 crore; Ramu B reported profit 55 crore, 41.25 crore if the capitalised brand cost were expensed, and only 15 crore of operating cash"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Ramu · profit after tax</text><rect x="40" y="32" width="300" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="350" y="51" text-anchor="start" fill="#f1eee8" font-size="16">50</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · profit as reported</text><rect x="40" y="90" width="330" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="380" y="109" text-anchor="start" fill="#f1eee8" font-size="16">55</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · profit if the brand cost were expensed</text><rect x="40" y="148" width="247.5" height="26" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="297.5" y="167" text-anchor="start" fill="#f1eee8" font-size="16">41.25</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">Ramu B · cash from operations</text><rect x="40" y="206" width="90" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="140" y="225" text-anchor="start" fill="#f1eee8" font-size="16">15</text><text x="40" y="260" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 cr · FY26 · expensed case at 25% tax, my arithmetic</text></svg></figure>
+      <div class="lab"><div id="spot" class="spot" role="group" aria-label="Ramu Chai and Ramu Chai B, line by line. Press a line on the right to mark it suspicious."></div>
+        <div class="spot-bar"><button type="button" class="secondary" id="spot-reveal">Reveal all</button><button type="button" class="secondary" id="spot-reset">Start again</button></div>
+        <p class="spot-score" id="spot-score" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it · checklist scorer</p>
+      <h2>Tick the checks, see which flags trip</h2>
+      <p>Pick a company with the buttons, tick the checks you want to run, and move the four thresholds. Each check is computed from the company’s own numbers; a check trips when its number crosses the threshold. The chart shows one year’s growth in sales, receivables, inventory, profit and operating cash. Thresholds are teaching rules of thumb, not accounting rules, and a trip is a question, not a verdict: tighten them and even the healthy Ramu trips. TCPL’s figures are the audited FY26 consolidated numbers <span class="tag">public</span>; a check whose input is not in the numbers used here is marked <b>n/a</b> and never counts.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="floor">CFO ÷ PAT floor <output id="floor-o"></output></label><input id="floor" type="range" min="0.5" max="1.2" step="0.05" value="0.8"></div>
+          <div class="control"><label for="gap">Receivables or inventory growth above sales growth <output id="gap-o"></output></label><input id="gap" type="range" min="5" max="40" step="1" value="15"></div>
+          <div class="control"><label for="share">Other income and one-offs as a share of profit before tax <output id="share-o"></output></label><input id="share" type="range" min="5" max="40" step="1" value="15"></div>
+          <div class="control"><label for="taxgap">Tax rate below the 25.17% statutory rate by <output id="taxgap-o"></output></label><input id="taxgap" type="range" min="1" max="10" step="0.5" value="5"></div>
+          <p class="group-label">COMPANY AND RULES</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="ramu">Ramu Chai · canonical</button>
+            <button type="button" class="secondary" data-p="b">Ramu Chai B · fudged</button>
+            <button type="button" class="secondary" data-p="tcpl">TCPL FY26 · public</button>
+            <button type="button" class="secondary" data-p="tight">Tight rules on Ramu</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 440" role="img" aria-label="One year's growth in sales, trade receivables, inventory, profit after tax and cash from operations for the chosen company, on one axis in percent"></svg>
+        </div>
+      </div>
+      <p class="scoreline" id="scoreline"></p>
+      <ul class="scorer" id="scorer"></ul>
+      <div class="ledger" id="ledger"></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: cash, receivables and stock</h2>
+      <p>Tata Consumer Products, consolidated, year to 31 March 2026 <span class="tag">public</span>. This runs the checklist on the audited statements to show how to ask questions, not to accuse: nothing printed here suggests anything improper. <b>Cash.</b> CFO was ₹2,421.85 cr against profit for the year of ₹1,546.80 cr, a CFO ÷ PAT of <b>1.57</b> (FY25: 1.60), healthy, as <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a> found; it includes a ₹145.19 cr inflow from working capital. <b>Receivables</b> are the flag worth asking about: trade receivables rose from ₹869.79 cr to ₹1,148.33 cr, <b>+32.0%</b>, while revenue from operations rose 15.2%. On year-end balances, receivable days went from 18.0 to 20.7. <b>Inventories</b> fell from ₹3,599.91 cr to ₹3,526.76 cr.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="TCPL growth FY25 to FY26 on one scale: revenue 15.2 percent, trade receivables 32.0 percent, inventories down 2.0 percent, cash from operations 17.8 percent and profit 20.2 percent"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Revenue from operations · 17,618.30 to 20,290.43</text><rect x="70" y="32" width="212.3" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M70 28 L70 62" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="292.3" y="51" text-anchor="start" fill="#f1eee8" font-size="16">+15.2%</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Trade receivables · 869.79 to 1,148.33</text><rect x="70" y="90" width="448.3" height="26" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><path d="M70 86 L70 120" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="528.3" y="109" text-anchor="start" fill="#f1eee8" font-size="16">+32.0%</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Inventories · 3,599.91 to 3,526.76</text><rect x="41.6" y="148" width="28.4" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><path d="M70 144 L70 178" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="80" y="167" text-anchor="start" fill="#f1eee8" font-size="16">−2.0%</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">Cash from operations · 2,056.65 to 2,421.85</text><rect x="70" y="206" width="248.6" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M70 202 L70 236" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="328.6" y="225" text-anchor="start" fill="#f1eee8" font-size="16">+17.8%</text><text x="40" y="256" text-anchor="start" fill="#a5a29c" font-size="16">Profit for the year · 1,287.10 to 1,546.80</text><rect x="70" y="264" width="282.5" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M70 260 L70 294" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="362.5" y="283" text-anchor="start" fill="#f1eee8" font-size="16">+20.2%</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">14 px = 1 percentage point · TCPL consolidated, ₹ cr</text></svg></figure>
+      <p><b>What does the report say?</b> Its own ratios are flat: the management discussion shows “debtors’ turnover” of 18 days in both years, and the audited ratio note shows trade-receivables turnover of 20.11 against 19.95. Both use <i>average</i> receivables. The year-end jump looks larger because FY25’s closing balance was low against its average (the printed ratio implies a FY24 close near ₹896 cr, my arithmetic). The report offers no explanation of the FY26 rise itself. It does say that its e-commerce channel “grew 62%+ led by quick commerce” and that it expanded in regional modern trade, channels that can carry different payment terms, but it never connects them to receivables; that link is my guess, not the report’s.</p>
+      <figure><svg viewBox="0 0 800 272" role="img" aria-label="TCPL gross trade receivables by age on one scale: not yet due rose from 624 to 731 crore, up to six months past due rose from 224 to 390 crore, and older balances fell from 85 to 75 crore"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">31 March 2025 · gross receivables ₹933.30 cr</text><rect x="40" y="32" width="311.8" height="34" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="195.9" y="56" text-anchor="middle" fill="#202020" font-size="16">not due 624</text><rect x="351.8" y="32" width="112.2" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="407.9" y="56" text-anchor="middle" fill="#202020" font-size="16">224</text><rect x="464" y="32" width="42.6" height="34" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="485.3" y="56" text-anchor="middle" fill="#f1eee8" font-size="16">85</text><text x="516.7" y="56" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="94" text-anchor="start" fill="#a5a29c" font-size="16">31 March 2026 · gross receivables ₹1,196.49 cr</text><rect x="40" y="102" width="365.5" height="34" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="222.8" y="126" text-anchor="middle" fill="#202020" font-size="16">not due 731</text><rect x="405.5" y="102" width="195" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="503" y="126" text-anchor="middle" fill="#202020" font-size="16">390</text><rect x="600.5" y="102" width="37.7" height="34" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="619.4" y="126" text-anchor="middle" fill="#f1eee8" font-size="16">75</text><text x="648.2" y="126" text-anchor="start" fill="#f1eee8" font-size="16"></text><rect x="40" y="158" width="14" height="14" fill="#76d5c1" opacity="0.5"/><text x="62" y="171" text-anchor="start" fill="#f1eee8" font-size="16">not yet due</text><rect x="40" y="184" width="14" height="14" fill="#76d5c1"/><text x="62" y="197" text-anchor="start" fill="#f1eee8" font-size="16">past due, under 6 months</text><rect x="40" y="210" width="14" height="14" fill="#8a8680"/><text x="62" y="223" text-anchor="start" fill="#f1eee8" font-size="16">past due, over 6 months</text><text x="40" y="252" text-anchor="start" fill="#a5a29c" font-size="16">0.5 px = ₹1 cr · note 12, ₹ cr</text></svg></figure>
+      <p>Of the ₹263.19 cr rise in gross receivables, ₹107.35 cr is not yet due (+17%) and ₹165.71 cr is up to six months past due (+74%); older balances fell by ₹9.87 cr, and the allowance for credit impairment fell from ₹63.51 cr to ₹48.16 cr. Receivables due from a related party were ₹46.24 cr (FY25: ₹17.08 cr). Stock is not piling up: on materials and purchases, inventory days went from 130.5 to 108.6 (my arithmetic, 365 days).</p>
+      <div class="field-grid">
+        <div><b>₹1,148.33 cr receivables</b><span>FY25 ₹869.79 cr; gross ₹1,196.49 cr less ₹48.16 cr allowance; ₹46.24 cr from a related party</span><em>BALANCE SHEET P. 414 · NOTE 12 P. 444</em></div>
+        <div><b>Ageing: ₹390.04 cr under 6 months past due</b><span>FY25 ₹224.33 cr; not yet due ₹731.04 cr (FY25 ₹623.69 cr)</span><em>NOTE 12 AGEING · PP. 444–445</em></div>
+        <div><b>Debtors’ turnover 18 days</b><span>Both years, on average receivables; audited ratio 20.11 vs 19.95 times</span><em>MD&amp;A P. 224 · NOTE 41 P. 483</em></div>
+        <div><b>“E-commerce channel grew 62%+”</b><span>Led by quick commerce; regional modern trade expanded. No link to receivables stated</span><em>INTEGRATED REPORT PP. 212–213</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: one-offs, other income, tax, projects</h2>
+      <p><b>Exceptional items</b> were a net charge of ₹20.06 cr (FY25: ₹5.11 cr), 0.9% of profit before tax <span class="tag">public</span>. The note lists gains of ₹55.57 cr (a fair-value gain on contingent consideration) and ₹35.36 cr (sale of non-core assets), and charges of ₹69.06 cr (asset write down), ₹25.91 cr (new labour codes) and ₹16.02 cr (goodwill impairment, relating to the Bangladesh branded business). FY25 had a different mix, including a ₹72.05 cr asset write down. The line is small, but it appears in both years, and an asset write down appears in both; that is a fair question.</p>
+      <figure><svg viewBox="0 0 800 382" role="img" aria-label="TCPL FY26 exceptional items on one scale: gains of 55.57 and 35.36 crore, charges of 69.06, 25.91 and 16.02 crore, net minus 20.06 crore"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Fair value gain on contingent consideration</text><rect x="330" y="32" width="222.3" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M330 28 L330 62" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="562.3" y="51" text-anchor="start" fill="#f1eee8" font-size="16">+55.57</text><text x="40" y="80" text-anchor="start" fill="#a5a29c" font-size="16">Profit on sale of non-core assets</text><rect x="330" y="88" width="141.4" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><path d="M330 84 L330 118" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="481.4" y="107" text-anchor="start" fill="#f1eee8" font-size="16">+35.36</text><text x="40" y="136" text-anchor="start" fill="#a5a29c" font-size="16">Asset write down</text><rect x="53.8" y="144" width="276.2" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><path d="M330 140 L330 174" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="340" y="163" text-anchor="start" fill="#f1eee8" font-size="16">−69.06</text><text x="40" y="192" text-anchor="start" fill="#a5a29c" font-size="16">Statutory impact of new labour codes</text><rect x="226.4" y="200" width="103.6" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><path d="M330 196 L330 230" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="340" y="219" text-anchor="start" fill="#f1eee8" font-size="16">−25.91</text><text x="40" y="248" text-anchor="start" fill="#a5a29c" font-size="16">Impairment of goodwill (Bangladesh)</text><rect x="265.9" y="256" width="64.1" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><path d="M330 252 L330 286" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="340" y="275" text-anchor="start" fill="#f1eee8" font-size="16">−16.02</text><text x="40" y="304" text-anchor="start" fill="#a5a29c" font-size="16">Net exceptional items</text><rect x="249.8" y="312" width="80.2" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M330 308 L330 342" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="340" y="331" text-anchor="start" fill="#f1eee8" font-size="16">−20.06</text><text x="40" y="364" text-anchor="start" fill="#a5a29c" font-size="16">4 px = ₹1 cr · note 29, FY26</text></svg></figure>
+      <p><b>Other income</b> was ₹164.75 cr, 7.6% of profit before tax of ₹2,172.78 cr (FY25: ₹193.25 cr, 10.9%): interest on advances and deposits ₹89.80 cr, gains on current investments ₹28.55 cr, other non-operating income ₹22.99 cr, dividends ₹11.83 cr and interest on a tax refund ₹11.58 cr. Operating profit, EBITDA less D&amp;A, was ₹2,165.12 cr, so the business, not treasury income, carries the profit.</p>
+      <figure><svg viewBox="0 0 800 278" role="img" aria-label="TCPL profit before tax built up on one scale: operating profit 2,165.12 crore, plus other income 164.75, less finance costs 137.03 and exceptional items 20.06 crore, giving 2,172.78 crore"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Operating profit (EBITDA − D&A) · 2,165.12</text><rect x="40" y="32" width="541.3" height="26" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="591.3" y="51" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">Other income · 164.75 (7.6% of profit before tax)</text><rect x="40" y="90" width="41.2" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="91.2" y="109" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Finance costs · 137.03</text><rect x="40" y="148" width="34.3" height="26" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="84.3" y="167" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">Exceptional items, net · 20.06</text><rect x="40" y="206" width="5" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="55" y="225" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="260" text-anchor="start" fill="#a5a29c" font-size="16">0.25 px = ₹1 cr · 2,165.12 + 164.75 − 137.03 − 20.06 = 2,172.78</text></svg></figure>
+      <p><b>Tax.</b> The charge was ₹535.28 cr, an effective rate of 24.64% against the 25.17% statutory rate in the note (FY25: 22.30%, helped by ₹73.82 cr from recognising previously unused tax losses). Nothing is far below normal. <b>Projects.</b> Capital work in progress was ₹459.90 cr (FY25: ₹206.81 cr), up 122%, but 86% of it is under a year old; balances over three years old fell from ₹44.06 cr to ₹38.26 cr. One item is stuck in plain sight: ₹213.58 cr of investment property under development, the Yeshwantpur project, unchanged for two years and described as “temporarily on hold” because the Group thinks the approvals “do not permit development to full potential”. The note gives a land fair value of ₹243.67 cr, from independent valuers.</p>
+      <figure><svg viewBox="0 0 800 272" role="img" aria-label="TCPL capital work in progress by age on one scale: 206.81 crore in FY25 and 459.90 crore in FY26, most of the rise being under one year old; balances over three years old fell from 44.06 to 38.26 crore"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">31 March 2025 · CWIP ₹206.81 cr</text><rect x="40" y="32" width="107" height="34" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="93.5" y="56" text-anchor="middle" fill="#202020" font-size="16">134</text><rect x="147" y="32" width="23.2" height="34" fill="#ff8059" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="170.2" y="32" width="35.2" height="34" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="187.8" y="56" text-anchor="middle" fill="#f1eee8" font-size="16">44</text><text x="215.4" y="56" text-anchor="start" fill="#f1eee8" font-size="16"></text><text x="40" y="94" text-anchor="start" fill="#a5a29c" font-size="16">31 March 2026 · CWIP ₹459.90 cr</text><rect x="40" y="102" width="317" height="34" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="198.5" y="126" text-anchor="middle" fill="#202020" font-size="16">under 1 year 396</text><rect x="357" y="102" width="20.3" height="34" fill="#ff8059" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="377.3" y="102" width="30.6" height="34" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="392.6" y="126" text-anchor="middle" fill="#f1eee8" font-size="16">38</text><text x="417.9" y="126" text-anchor="start" fill="#f1eee8" font-size="16"></text><rect x="40" y="158" width="14" height="14" fill="#ff8059"/><text x="62" y="171" text-anchor="start" fill="#f1eee8" font-size="16">under 1 year</text><rect x="40" y="184" width="14" height="14" fill="#ff8059" opacity="0.5"/><text x="62" y="197" text-anchor="start" fill="#f1eee8" font-size="16">1 to 3 years (29.06 and 25.42)</text><rect x="40" y="210" width="14" height="14" fill="#8a8680"/><text x="62" y="223" text-anchor="start" fill="#f1eee8" font-size="16">over 3 years</text><text x="40" y="252" text-anchor="start" fill="#a5a29c" font-size="16">0.8 px = ₹1 cr · note 3 ageing, ₹ cr</text></svg></figure>
+      <div class="field-grid">
+        <div><b>−₹20.06 cr exceptional items</b><span>FY25 −₹5.11 cr; five components in FY26, four in FY25</span><em>P&amp;L P. 415 · NOTE 29 P. 456</em></div>
+        <div><b>₹164.75 cr other income</b><span>FY25 ₹193.25 cr; profit before tax ₹2,172.78 cr</span><em>P&amp;L P. 415 · NOTE 22 P. 453</em></div>
+        <div><b>₹535.28 cr tax</b><span>Reconciliation from 25.17% to the actual rate</span><em>NOTE 20 P. 451</em></div>
+        <div><b>₹459.90 cr CWIP; ₹213.58 cr on hold</b><span>Ageing schedule; Yeshwantpur project, land fair value ₹243.67 cr</span><em>NOTES 3–4 · P. 435</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: claims, cash, auditor, and questions</h2>
+      <p><b>Contingent liabilities.</b> Note 33 lists statutory and commercial claims of <b>₹651.83 cr</b> (FY25: ₹567.84 cr): taxes, statutory duties and levies ₹645.23 cr and commercial claims ₹6.60 cr, plus labour disputes of ₹0.26 cr, and other claims with amounts “not ascertainable”. That is 2.8% of total equity but 30% of profit before tax; a claim is not an expected loss, and the note does not say what the Group expects to pay. <b>Cash and borrowings.</b> Cash and cash equivalents of ₹3,046.57 cr sit beside borrowings of ₹2,120.31 cr, a “cash-rich but borrowing” look. But ₹1,595.17 cr of the cash and ₹1,595.17 cr of the borrowings are the same cash-pooling arrangement, “with corresponding offsetting balances”: the series’ net cash of ₹926 cr is unchanged by it.</p>
+      <figure><svg viewBox="0 0 800 278" role="img" aria-label="TCPL contingent liabilities of 651.83 crore as a share of equity 2.8 percent, cash 21.4 percent, profit before tax 30.0 percent and profit for the year 42.1 percent"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">… of total equity · ₹23,188.86 cr</text><rect x="40" y="32" width="28.1" height="26" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="78.1" y="51" text-anchor="start" fill="#f1eee8" font-size="16">2.8%</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">… of cash and cash equivalents · ₹3,046.57 cr</text><rect x="40" y="90" width="214" height="26" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="264" y="109" text-anchor="start" fill="#f1eee8" font-size="16">21.4%</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">… of profit before tax · ₹2,172.78 cr</text><rect x="40" y="148" width="300" height="26" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="350" y="167" text-anchor="start" fill="#f1eee8" font-size="16">30.0%</text><text x="40" y="198" text-anchor="start" fill="#a5a29c" font-size="16">… of profit for the year · ₹1,546.80 cr</text><rect x="40" y="206" width="421.4" height="26" fill="#ec6a94" opacity="0.62" stroke="#202020" stroke-width="2"/><text x="471.4" y="225" text-anchor="start" fill="#f1eee8" font-size="16">42.1%</text><text x="40" y="260" text-anchor="start" fill="#a5a29c" font-size="16">10 px = 1% · the same ₹651.83 cr claims measured against four things</text></svg></figure>
+      <p><b>The auditor.</b> Deloitte Haskins &amp; Sells LLP gives an opinion that the statements give a true and fair view, with no qualification and no emphasis of matter. Its report has two key audit matters: impairment of goodwill pertaining to the UK and Europe cash-generating unit, whose carrying value is ₹2,184.50 cr (risk arising from “competitive pressures and decline in black tea demand” there), and the carrying value of ₹53.19 cr of preference shares in an associate that made losses. Deloitte’s second term runs to the 2027 annual meeting, and the Board has proposed a successor, to be put to shareholders: a scheduled change, not a resignation. <b>Dilution.</b> Weighted-average shares rose 1.1%, from 97.87 cr to 98.95 cr (note 30, p. 456), consistent with the FY25 rights issue counting for only part of that year (my reading; FY26’s count was flat at the year-end 98,95,61,780).</p>
+      <div class="field-grid">
+        <div><b>₹651.83 cr claims</b><span>Taxes and duties ₹645.23 cr; FY25 ₹567.84 cr</span><em>NOTE 33 P. 456</em></div>
+        <div><b>₹1,595.17 cr pooled</b><span>Cash-pooling overdraft offset by current-account balances</span><em>NOTES 13, 15 · PP. 445, 448</em></div>
+        <div><b>Unmodified opinion; two KAMs</b><span>UK and Europe goodwill ₹2,184.50 cr; associate investment ₹53.19 cr</span><em>AUDITOR’S REPORT PP. 404–405</em></div>
+        <div><b>Auditor term to 2027</b><span>Successor proposed on 6 March 2026, subject to shareholders</span><em>INTEGRATED REPORT PP. 187–188</em></div>
+      </div>
+      <p><b>What looks clean:</b> cash comfortably above profit, falling inventory, other income a small share of profit, a normal tax rate, an unmodified opinion with no emphasis of matter, an orderly auditor rotation, and a pooled overdraft that explains the odd cash-and-debt look. <b>What I would ask management:</b> why year-end receivables rose 32% against 15% sales growth, and why the part not yet due and the part under six months past due both grew; what the ₹46.24 cr due from a related party is; what sits behind an asset write down in both years; how the ₹645 cr of tax claims have fared in past years; and when the Yeshwantpur land will be developed or sold. This is a set of questions, not a verdict on the company.</p>
+      <details class="trace"><summary>Go deeper: what the UK goodwill KAM asks</summary>
+        <p>Goodwill is what was paid above the value of assets bought (<a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a>); it is tested each year against the cash the unit is expected to earn. For UK and Europe the note uses a 10.15% pre-tax discount rate and 1.44% long-term growth, and concludes that no reasonable change in the assumptions would make recoverable value fall below carrying value. A KAM tells you the auditor spent time on a judgement, not that the judgement is wrong.</p>
+      </details>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements in its Integrated Annual Report 2025-26 (printed pages as cited). Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Five habits for any set of accounts</h2>
+      <ol class="checks">
+        <li><b>Compare profit with cash, over years.</b> CFO well below profit for two years is the first flag to chase.</li>
+        <li><b>Compare balances with sales.</b> Receivables, inventory and capital work in progress should not outgrow the business without a reason.</li>
+        <li><b>Read the notes.</b> Capitalised costs, contingent liabilities, related parties and tax reconciliations live there.</li>
+        <li><b>Count flags, then read them.</b> Several small flags together say more than one big one; each is a question.</li>
+        <li><b>Ask before you conclude.</b> Most flags have an innocent reason. Part 37 will put the whole checklist on one company, start to finish.</li>
+      </ol>
+      <p>The next part, Part 21, “Corporate actions and dilution”, asks what bonus issues, splits, buybacks, rights issues, QIPs, ESOPs and demergers do to a shareholder’s stake, and which of them cut earnings per share.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A red flag is a pattern worth a question, not proof of a problem: compare profit with cash, balances with sales, read the notes, and ask before you conclude.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLD='#f5c76a',TEAL='#76d5c1',ROSE='#ec6a94',COR='#ff8059';
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fx=(v,d)=>(v<0?'−':'')+Math.abs(v).toFixed(d===undefined?1:d);
+    const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v*100)/100)+'%';
+
+    // ================= Lab 1: spot the fudged accounts (Ramu Chai canonical vs Ramu Chai B, both tagged example) =================
+    const FLAGS={1:'receivables outrun sales',2:'profit without cash',3:'capitalised brand development',4:'related-party advance',5:'rising pledge',6:'auditor resigned'};
+    const SPOT=[
+      {id:'rev',g:'PROFIT AND LOSS',n:'Revenue from operations',a:'450 → 500 (+11.1%)',b:'450 → 500 (+11.1%)',k:'fine',fb:'Same sales as the real Ramu, +11.1%. Nothing wrong here; the flags are in what happens next to sales.'},
+      {id:'oth',g:'PROFIT AND LOSS',n:'Other expenses',a:'105',b:'97',k:'symptom',f:3,fb:'Sales rose 11% yet this line is 8 below Ramu’s 105, because ₹20 cr of spending was moved to the balance sheet (flag 3). B’s true other expenses are 117.'},
+      {id:'ebitda',g:'PROFIT AND LOSS',n:'EBITDA',a:'85 (17.0%)',b:'93 (18.6%)',k:'symptom',f:3,fb:'A better margin than the twin, thanks to the capitalised cost. Expensed, EBITDA would be 73 (14.6%).'},
+      {id:'dep',g:'PROFIT AND LOSS',n:'Depreciation and amortisation',a:'12',b:'14',k:'symptom',f:3,fb:'Includes ₹2 cr of amortisation on the capitalised brand cost: it reaches profit at 2 a year instead of 20 at once.'},
+      {id:'pat',g:'PROFIT AND LOSS',n:'Profit after tax',a:'44 → 50 (+13.6%)',b:'44 → 55 (+25.0%)',k:'symptom',f:2,fb:'Profit +25% on sales +11%. Higher profit is not a flag by itself; the question is whether cash came with it (flag 2).'},
+      {id:'intang',g:'BALANCE SHEET',n:'Intangible assets: brand development',a:'none',b:'0 → 18',k:'flag',f:3,fb:'₹20 cr of advertising and brand work was capitalised instead of expensed; ₹2 cr amortised, 18 left. Expensed, profit before tax would be 55, not 73 (Part 6).'},
+      {id:'recv',g:'BALANCE SHEET',n:'Trade receivables',a:'38 → 45 (+18.4%)',b:'38 → 61 (+60.5%)',k:'flag',f:1,fb:'Receivables +60.5% against sales +11.1%: receivable days 31 → 44.5 (Ramu 31 → 33). Sales may be booked but not collected (Part 12). Innocent causes exist: a new channel, longer terms for a big customer. Ask for the ageing.'},
+      {id:'inv',g:'BALANCE SHEET',n:'Inventory',a:'47 → 55 (+17.0%)',b:'47 → 55 (+17.0%)',k:'fine',fb:'Identical to the real twin. +17% against sales +11% is a mild build, not planted; worth watching if it repeats (Part 12).'},
+      {id:'oca',g:'BALANCE SHEET',n:'Other current assets',a:'15 → 15',b:'15 → 45',k:'symptom',f:4,fb:'A ₹30 cr jump in “other” assets. Read the note: it is an advance to a related party (flag 4).'},
+      {id:'cash',g:'BALANCE SHEET',n:'Cash and equivalents',a:'41 → 40',b:'41 → 7',k:'symptom',f:2,fb:'Cash fell 34 while profit “rose” to 55: a symptom of flags 1 to 4 together.'},
+      {id:'debt',g:'BALANCE SHEET',n:'Borrowings',a:'90 → 100',b:'90 → 130',k:'symptom',f:2,fb:'₹40 cr of new debt funded the gap between profit and cash. Debt rising with profit is the usual companion of flag 2 (Part 11).'},
+      {id:'eq',g:'BALANCE SHEET',n:'Total equity',a:'218 → 250',b:'218 → 255',k:'fine',fb:'Rises by profit less dividend: 218 + 55 − 18 = 255. It adds up; the problem is not arithmetic.'},
+      {id:'cfo',g:'CASH FLOW',n:'Cash from operations',a:'52 → 58',b:'52 → 15',k:'flag',f:2,fb:'CFO ÷ PAT is 15 ÷ 55 = 0.27 against Ramu’s 1.16. Profit of 55 with only 15 of cash (Parts 5 and 13).'},
+      {id:'cfi',g:'CASH FLOW',n:'Cash from investing',a:'−41',b:'−61',k:'symptom',f:3,fb:'Same ₹45 cr capex as Ramu, plus ₹20 cr that left as “brand development” under investing. The cash cost is real; it just sits outside CFO.'},
+      {id:'rp',g:'NOTES AND FILINGS',n:'Note: related-party advance',a:'none',b:'₹30 cr to a company of the promoter’s brother',k:'flag',f:4,fb:'7% of total assets advanced to a supplier owned by a promoter’s relative: company money mixed with the owners’ other business (Part 19).'},
+      {id:'pledge',g:'NOTES AND FILINGS',n:'Promoter shares pledged',a:'10% of promoter holding',b:'10% → 40%',k:'flag',f:5,fb:'2.2 cr of the promoters’ 5.5 cr shares are pledged, up from 0.55 cr. Owners borrowing against their shares may be short of cash elsewhere (Part 19).'},
+      {id:'aud',g:'NOTES AND FILINGS',n:'Statutory auditor',a:'mid-sized firm, unmodified',b:'resigned two years early; new firm, unmodified',k:'flag',f:6,fb:'The previous auditor resigned before its term ended. Resignations can be innocent; ask what the auditor said, and when (Part 19).'}];
+    const picks=new Set();let revealed=false;
+    const KT={flag:'PLANTED FLAG',symptom:'SYMPTOM',fine:'NOT PLANTED'};
+    function spotScore(){
+      const rows=SPOT.filter(r=>picks.has(r.id));
+      const found=new Set(rows.filter(r=>r.k==='flag').map(r=>r.f));
+      const sym=rows.filter(r=>r.k==='symptom').length, fine=rows.filter(r=>r.k==='fine').length;
+      const missed=Object.keys(FLAGS).map(Number).filter(i=>!found.has(i));
+      return {found:found.size,sym,fine,missed,picked:rows.length};
+    }
+    function spotRender(){
+      let h='<div class="spot-head"><span></span><span>Ramu Chai <i class="tag">example</i></span><span>Ramu Chai B <i class="tag">example</i></span></div>',g='';
+      SPOT.forEach(r=>{
+        if(r.g!==g){g=r.g;h+=`<p class="group-label">${g}</p>`;}
+        const on=picks.has(r.id),missed=revealed&&!on&&r.k==='flag';
+        h+=`<div class="spot-row${on?' picked':''}${missed?' missed':''}"><span class="spot-name">${esc(r.n)}</span><span class="spot-a">${esc(r.a)}</span><button type="button" class="spot-b secondary" data-id="${r.id}" aria-pressed="${on}">${esc(r.b)}</button>`;
+        if(on||revealed) h+=`<p class="spot-fb ${r.k}"><b>${KT[r.k]}${r.k==='flag'?' '+r.f:''}</b>${esc(r.fb)}</p>`;
+        h+='</div>';
+      });
+      $('spot').innerHTML=h;
+      const s=spotScore();
+      $('spot-score').textContent=`Flags found: ${s.found} of 6 · symptoms picked: ${s.sym} · picked but not planted: ${s.fine}`+(revealed&&s.missed.length?` · missed: ${s.missed.map(i=>FLAGS[i]).join(', ')}`:'')+(s.found===6?' · all six found':'');
+      window.spotResults={found:s.found,symptoms:s.sym,fine:s.fine,missed:s.missed,revealed,picks:[...picks]};
+    }
+    $('spot').addEventListener('click',e=>{const b=e.target.closest('.spot-b');if(!b)return;const id=b.dataset.id;picks.has(id)?picks.delete(id):picks.add(id);spotRender();const nb=$('spot').querySelector(`.spot-b[data-id="${id}"]`);if(nb)nb.focus();});
+    $('spot-reveal').addEventListener('click',()=>{revealed=true;spotRender();});
+    $('spot-reset').addEventListener('click',()=>{picks.clear();revealed=false;spotRender();});
+    spotRender();
+
+    // ================= Lab 2: checklist scorer =================
+    // Ramu Chai and Ramu Chai B are tagged example (plan canonical; B is the planted twin). TCPL is the audited FY26 consolidated statements (public).
+    // null means the number is not in the figures used for that company: the check is n/a and never counts.
+    const CO={
+      ramu:{name:'Ramu Chai',sales:[450,500],recv:[38,45],inv:[47,55],pat:[44,50],cfo:[52,58],pbt:67,tax:17,oi:4,exc:0,cap:0,cont:null,pledge:10,rp:0,ta:400,aud:0,cash:40,debt:100,eq:250,sh:[10,10]},
+      b:{name:'Ramu Chai B',sales:[450,500],recv:[38,61],inv:[47,55],pat:[44,55],cfo:[52,15],pbt:73,tax:18,oi:4,exc:0,cap:20,cont:null,pledge:40,rp:30,ta:431,aud:1,cash:7,debt:130,eq:255,sh:[10,10]},
+      tcpl:{name:'TCPL FY26',sales:[17618.30,20290.43],recv:[869.79,1148.33],inv:[3599.91,3526.76],pat:[1287.10,1546.80],cfo:[2056.65,2421.85],pbt:2172.78,tax:535.28,oi:164.75,exc:-20.06,cap:null,cont:651.83,pledge:null,rp:null,ta:34452.96,aud:0,cash:3046.57,debt:2120.31,eq:23188.86,sh:[97.8715461,98.9535734]}};
+    const STAT=25.17, CAPMIN=10, CONTMIN=10, PLEDGEMIN=25, RPMIN=5, CASHEQ=0.05, DILMAX=5;
+    const growth=(a)=>(a[1]/a[0]-1)*100;
+    // each check returns {x, text, trip} or null when not testable
+    const CHECKS=[
+      {id:'cfo',name:'Profit without cash',rule:v=>`CFO ÷ PAT below ${v.floor.toFixed(2)}`,run:(c,v)=>{const x=c.cfo[1]/c.pat[1];return{x,text:`${x.toFixed(2)}× vs floor ${v.floor.toFixed(2)}`,trip:x<v.floor};}},
+      {id:'recv',name:'Receivables outrun sales',rule:v=>`receivables growth above sales growth by more than ${v.gap} pp`,run:(c,v)=>{const g=growth(c.recv)-growth(c.sales);return{x:g,text:`receivables ${pct(growth(c.recv))} vs sales ${pct(growth(c.sales))}: gap ${g.toFixed(1)} pp vs ${v.gap}`,trip:g>v.gap};}},
+      {id:'inv',name:'Inventory piling up',rule:v=>`inventory growth above sales growth by more than ${v.gap} pp`,run:(c,v)=>{const g=growth(c.inv)-growth(c.sales);return{x:g,text:`inventory ${pct(growth(c.inv))} vs sales ${pct(growth(c.sales))}: gap ${g.toFixed(1)} pp vs ${v.gap}`,trip:g>v.gap};}},
+      {id:'cap',name:'Capitalised costs',rule:()=>`capitalised spending at least ${CAPMIN}% of profit before tax`,run:(c)=>{if(c.cap===null)return null;const x=c.cap/c.pbt*100;return{x,text:`${c.cap} ÷ ${c.pbt} = ${x.toFixed(1)}% vs ${CAPMIN}%`,trip:x>=CAPMIN};}},
+      {id:'oi',name:'Other income and one-offs',rule:v=>`other income plus net exceptional items above ${v.share}% of profit before tax`,run:(c,v)=>{const x=(c.oi+Math.abs(c.exc))/c.pbt*100;return{x,text:`(${c.oi} + ${Math.abs(c.exc)}) ÷ ${c.pbt} = ${x.toFixed(1)}% vs ${v.share}%`,trip:x>v.share};}},
+      {id:'cont',name:'Contingent liabilities',rule:()=>`claims at least ${CONTMIN}% of equity`,run:(c)=>{if(c.cont===null)return null;const x=c.cont/c.eq*100;return{x,text:`${c.cont} ÷ ${c.eq} = ${x.toFixed(1)}% vs ${CONTMIN}%`,trip:x>=CONTMIN};}},
+      {id:'aud',name:'Auditor signal',rule:()=>'mid-term resignation, qualified opinion or emphasis of matter',run:(c)=>({x:c.aud,text:c.aud?'resigned mid-term':'none printed; opinion unmodified',trip:c.aud===1})},
+      {id:'pledge',name:'Promoter pledge',rule:()=>`pledged share of promoter holding at least ${PLEDGEMIN}%`,run:(c)=>{if(c.pledge===null)return null;return{x:c.pledge,text:`${c.pledge}% vs ${PLEDGEMIN}%`,trip:c.pledge>=PLEDGEMIN};}},
+      {id:'rp',name:'Related-party advances',rule:()=>`loans or advances at least ${RPMIN}% of total assets`,run:(c)=>{if(c.rp===null)return null;const x=c.rp/c.ta*100;return{x,text:`${c.rp} ÷ ${c.ta} = ${x.toFixed(1)}% vs ${RPMIN}%`,trip:x>=RPMIN};}},
+      {id:'cash',name:'Cash-rich but borrowing',rule:()=>`cash at least equal to borrowings, and borrowings at least ${CASHEQ*100}% of equity`,run:(c)=>{const r=c.cash/c.debt,d=c.debt/c.eq;return{x:r,text:`cash ${c.cash} vs borrowings ${c.debt}; borrowings ${(d*100).toFixed(1)}% of equity`,trip:c.cash>=c.debt&&d>=CASHEQ};}},
+      {id:'tax',name:'Tax rate far below normal',rule:v=>`effective rate more than ${v.taxgap} pp below ${STAT}%`,run:(c,v)=>{const etr=c.tax/c.pbt*100,s=STAT-etr;return{x:s,text:`${etr.toFixed(1)}% vs ${STAT}%: ${s.toFixed(1)} pp below, limit ${v.taxgap}`,trip:s>v.taxgap};}},
+      {id:'dil',name:'Frequent dilution',rule:()=>`share count up more than ${DILMAX}% in the year`,run:(c)=>{const x=growth(c.sh);return{x,text:`${pct(x)} vs ${DILMAX}%`,trip:x>DILMAX};}}];
+    const ids=['floor','gap','share','taxgap'];
+    const labConfig={format:pct,sliderFormats:[v=>(+v).toFixed(2)+'×',v=>(+v)+' pp',v=>(+v)+'%',v=>(+v)+' pp']};
+    let cur='ramu';const ticked=new Set(CHECKS.map(c=>c.id));
+    const PRESETS={ramu:['ramu',0.8,15,15,5,'Ramu Chai, canonical: nothing trips at the default thresholds. A few checks are n/a because Ramu’s canonical accounts print no contingent-liability figure.'],
+      b:['b',0.8,15,15,5,'Ramu Chai B, the fudged twin: six checks trip, the six planted flags (receivables, CFO, capitalised costs, pledge, related-party advance, auditor).'],
+      tcpl:['tcpl',0.8,15,15,5,'TCPL FY26: receivables outrunning sales trips at 15 pp (gap 16.8 pp), and cash-rich-but-borrowing trips on the balance sheet. Both have explanations to ask about; the rest pass or are n/a.'],
+      tight:['ramu',1.2,5,5,1,'Tight rules on Ramu: with a floor of 1.2× and 5-point gaps, the healthy company trips four checks. Thresholds create flags; a flag is only a question.']};
+    function compute(v){
+      const c=CO[cur],val={floor:v[0],gap:v[1],share:v[2],taxgap:v[3]};
+      const res=CHECKS.map(ch=>({id:ch.id,name:ch.name,rule:ch.rule(val),r:ch.run(c,val),ticked:ticked.has(ch.id)}));
+      const testable=res.filter(r=>r.r&&r.ticked), trips=testable.filter(r=>r.r.trip);
+      const rows=[['Sales',growth(c.sales),TEAL,null],['Receivables',growth(c.recv),TEAL,.5],['Inventory',growth(c.inv),COR,null],['Profit after tax',growth(c.pat),GOLD,null],['Cash from operations',growth(c.cfo),TEAL,null]];
+      return {c,res,testable:testable.length,trips:trips.length,na:res.filter(r=>r.ticked&&!r.r).length,rows};
+    }
+    const nice=x=>{for(const m of [5,10,20,25,50,100]) if(m>=x-1e-9) return m;return 200;};
+    function update(){
+      window.labResults={valid:false};
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const o=compute(v), vals=o.rows.map(r=>r[1]);
+      const mn=Math.min(0,...vals), mx=Math.max(0,...vals), step=nice((mx-mn)/6), lo=Math.floor(mn/step-1e-9)*step, hi=Math.ceil(mx/step-1e-9)*step;
+      const XL=24,XR=470,k=(XR-XL)/(hi-lo),sx=t=>XL+(t-lo)*k,z=sx(0);
+      let s=`<text x="10" y="22" text-anchor="start" fill="${FGC}" font-size="16">${esc(o.c.name)} · growth over the year</text>`;
+      const top=44,pitch=64;
+      o.rows.forEach(([n,val,col,op],i)=>{
+        const y=top+i*pitch;
+        s+=`<text x="10" y="${y+14}" text-anchor="start" fill="${MUTC}" font-size="16">${esc(n)}</text>`;
+        const w=Math.abs(val)*k,x0=val>=0?z:z-w;
+        s+=`<path d="M${z.toFixed(1)} ${y+18} L${z.toFixed(1)} ${y+48}" stroke="${MUTC}" stroke-width="1.5" fill="none"/>`;
+        s+=`<rect data-v="${val.toFixed(4)}" x="${x0.toFixed(2)}" y="${y+22}" width="${w.toFixed(2)}" height="22" fill="${col}"${op?` opacity="${op}"`:''}/>`;
+        const lx=val>=0?z+w+6:z+6;
+        s+=`<text x="${lx.toFixed(1)}" y="${y+39}" text-anchor="start" fill="${FGC}" font-size="16">${esc(pct(Math.round(val*10)/10))}</text>`;
+      });
+      const ay=top+5*pitch+12;
+      for(let t=lo;t<=hi+1e-9;t+=step) s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${ay}" text-anchor="middle" fill="${MUTC}" font-size="16">${esc(labConfig.format(t))}</text>`;
+      s+=`<text x="10" y="${ay+30}" text-anchor="start" fill="${MUTC}" font-size="16">one axis · percent change, FY26 over FY25</text>`;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${ay+44}`);
+      $('labChart').innerHTML=s;
+      // checklist
+      $('scorer').innerHTML=o.res.map(r=>{
+        const chip=!r.r?'<span class="chip">n/a</span>':r.r.trip?'<span class="chip trip">TRIPS</span>':'<span class="chip pass">passes</span>';
+        return `<li><label><input type="checkbox" data-id="${r.id}"${r.ticked?' checked':''}> ${esc(r.name)}</label>${r.ticked?chip:'<span class="chip">off</span>'}<span class="rule">${esc(r.rule)}</span></li>`;}).join('');
+      const on=o.trips>0;
+      $('scoreline').textContent=`${o.trips} of ${o.testable} ticked checks trip`+(o.na?` · ${o.na} ticked n/a`:'')+(on?' · each trip is a question, not a verdict':'');
+      $('scoreline').className='scoreline'+(on?' on':'');
+      $('ledger').innerHTML=o.res.map(r=>`<span>${esc(r.name)}${r.ticked?'':' (off)'}</span><span>${r.r?esc(r.r.text):'n/a: not in the figures used here'}</span>`).join('');
+      window.labResults={valid:[...vals,o.trips,o.testable].every(Number.isFinite),co:cur,growth:vals,trips:o.trips,testable:o.testable,na:o.na,
+        checks:Object.fromEntries(o.res.map(r=>[r.id,r.r?{x:r.r.x,trip:r.r.trip}:null])),axis:[lo,hi,step]};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';update();}));
+    $('scorer').addEventListener('change',e=>{const i=e.target.closest('input[data-id]');if(!i)return;i.checked?ticked.add(i.dataset.id):ticked.delete(i.dataset.id);update();});
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];cur=p[0];ids.forEach((id,i)=>$(id).value=p[i+1]);update();$('msg').textContent=p[5];}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26 (consolidated statements and full report)",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-09",
+    "duration_or_sections": "consolidated.pdf 83 pages (printed 403-485) read in extracted text; full IAR 428 PDF pages text-searched",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext -layout; pages located by footers and per-page search",
+    "beginning_middle_end_evidence": "Auditor report pp.404-407, balance sheet p.414, P&L p.415, cash flow pp.417-418, notes 3-4, 6, 12, 13, 15, 20, 22, 29, 30, 33, 41; IAR pp.187-188, 212-213, 224",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "https://www.ifrs.org/issued-standards/list-of-standards/ias-38-intangible-assets/"
+    ],
+    "limitations": "No data aggregator used. Price not used on this page. Promoter pledge, related-party loans and capitalised costs for TCPL are n/a in the scorer (not examined). Ramu numbers are plan canonical; Ramu B and one-off examples are designed and tagged example. Part 19 and Part 21 are named, not linked. Ind AS 38 text not opened."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "A flag is a question, not a verdict; size, persistence, company",
+      "kind": "claim",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "panel 1"
+    },
+    {
+      "id": 2,
+      "item": "Profit without cash: CFO well below PAT for years; Ramu 1.16, B 0.27",
+      "kind": "mechanism",
+      "locator": "brief/plan",
+      "check_needed": true,
+      "destination": "panel 2, lab, TCPL box 1"
+    },
+    {
+      "id": 3,
+      "item": "Receivables growing faster than sales; days 31→33 vs 31→44.5",
+      "kind": "mechanism",
+      "locator": "brief/plan",
+      "check_needed": true,
+      "destination": "panel 3, TCPL box 1"
+    },
+    {
+      "id": 4,
+      "item": "Inventory piling up; Ramu days 76→80",
+      "kind": "mechanism",
+      "locator": "brief/plan",
+      "check_needed": true,
+      "destination": "panel 3, TCPL box 1"
+    },
+    {
+      "id": 5,
+      "item": "Capitalised costs; IAS 38 internally generated brands not recognised; B: 20 capitalised, PBT 73 vs 55",
+      "kind": "mechanism",
+      "locator": "brief/IFRS IAS 38 page",
+      "check_needed": true,
+      "destination": "panel 4, lab"
+    },
+    {
+      "id": 6,
+      "item": "Long useful lives: depreciation 12→8 lifts PBT 67→71 (one-off)",
+      "kind": "example",
+      "locator": "derived from canon",
+      "check_needed": true,
+      "destination": "panel 4"
+    },
+    {
+      "id": 7,
+      "item": "Other income share of profit; recurring exceptional items",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "panel 5, TCPL box 2"
+    },
+    {
+      "id": 8,
+      "item": "Contingent liabilities (one-off 30 cr example; TCPL note 33)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "panel 6, TCPL box 3"
+    },
+    {
+      "id": 9,
+      "item": "Auditor signals (resignation, qualified, EoM, KAM)",
+      "kind": "definition",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "panel 7, TCPL box 3"
+    },
+    {
+      "id": 10,
+      "item": "Promoter pledges and related-party loans; Part 19 named",
+      "kind": "mechanism",
+      "locator": "brief/plan",
+      "check_needed": true,
+      "destination": "panel 7, lab"
+    },
+    {
+      "id": 11,
+      "item": "Cash-rich but borrowing; TCPL cash-pooling offset",
+      "kind": "mechanism",
+      "locator": "brief + notes 13, 15",
+      "check_needed": true,
+      "destination": "panel 8, TCPL box 3"
+    },
+    {
+      "id": 12,
+      "item": "Frequent dilution (Part 21 named)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "panel 8, TCPL box 3"
+    },
+    {
+      "id": 13,
+      "item": "CWIP stuck for years; TCPL CWIP ageing and Yeshwantpur",
+      "kind": "mechanism",
+      "locator": "brief + notes 3-4",
+      "check_needed": true,
+      "destination": "panel 8, TCPL box 2"
+    },
+    {
+      "id": 14,
+      "item": "Tax rate far below normal; TCPL 24.64% vs 25.17%",
+      "kind": "mechanism",
+      "locator": "brief + note 20",
+      "check_needed": true,
+      "destination": "panel 9, TCPL box 2"
+    },
+    {
+      "id": 15,
+      "item": "Delayed results, restatements",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "panel 9"
+    },
+    {
+      "id": 16,
+      "item": "Screening scores (Beneish M-score) as aids not proof",
+      "kind": "claim",
+      "locator": "general knowledge",
+      "check_needed": true,
+      "destination": "field guide"
+    },
+    {
+      "id": 17,
+      "item": "Satyam, decoded bonus study mentioned without detail",
+      "kind": "context",
+      "locator": "plan",
+      "check_needed": true,
+      "destination": "hero, panel 1"
+    },
+    {
+      "id": 18,
+      "item": "Ramu B twin: six planted flags, balanced accounts",
+      "kind": "example",
+      "locator": "designed",
+      "check_needed": false,
+      "destination": "lab 1, lab 2"
+    },
+    {
+      "id": 19,
+      "item": "TCPL receivables +32.0% vs revenue +15.2%; report gives no explanation; e-commerce +62%",
+      "kind": "number",
+      "locator": "consolidated.pdf; iar pp.212-213, 224, 483",
+      "check_needed": true,
+      "destination": "TCPL box 1"
+    },
+    {
+      "id": 20,
+      "item": "TCPL exceptional items -20.06 and components",
+      "kind": "number",
+      "locator": "note 29 p.456",
+      "check_needed": true,
+      "destination": "TCPL box 2"
+    },
+    {
+      "id": 21,
+      "item": "TCPL contingent liabilities 651.83",
+      "kind": "number",
+      "locator": "note 33 p.456",
+      "check_needed": true,
+      "destination": "TCPL box 3"
+    },
+    {
+      "id": 22,
+      "item": "TCPL auditor Deloitte, unmodified, two KAMs; successor proposed",
+      "kind": "claim",
+      "locator": "pp.404-405; iar pp.187-188",
+      "check_needed": true,
+      "destination": "TCPL box 3"
+    },
+    {
+      "id": 23,
+      "item": "Other income 164.75; CWIP 459.90 vs 206.81; ETR 535.28/2172.78",
+      "kind": "number",
+      "locator": "pp.414-415, 435, 451, 453",
+      "check_needed": true,
+      "destination": "TCPL box 2"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 19,
+      "claim": "Trade receivables 1,148.33 (869.79); revenue 20,290.43 (17,618.30)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "p.414 balance sheet; p.415 P&L; note 12 p.444",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "Gross receivables 1,196.49 (933.30); not due 731.04 (623.69); <6 months past due 390.04 (224.33); related-party 46.24 (17.08); allowance 48.16 (63.51)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "note 12 pp.444-445",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "MD&A debtors turnover 18 days both years; audited receivables turnover 20.11 vs 19.95 (average basis)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "iar p.224; consolidated note 41 p.483",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "\"E-commerce channel grew 62%+ led by quick commerce\"; regional modern trade expansion",
+      "verdict": "Supported (quotation); link to receivables is my inference, stated as such",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "iar pp.212-213",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "No passage found explaining FY26 year-end receivables rise",
+      "verdict": "Unverifiable absence (searched receivable/debtor/working capital/collection in extracted report text)",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "iar full text",
+      "page_correction": "attributed on page as my inference/arithmetic"
+    },
+    {
+      "inventory_id": 2,
+      "claim": "CFO 2,421.85 (2,056.65); profit 1,546.80 (1,287.10); CFO/PAT 1.57 (1.60)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "p.415, p.418; Part 13",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 4,
+      "claim": "Inventories 3,526.76 (3,599.91)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "p.414",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 20,
+      "claim": "Exceptional items (20.06) (5.11): +55.57, +35.36, -69.06, -25.91, -16.02; FY25 +120.00, -72.05, -42.06, -11.00",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "note 29 p.456",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 20,
+      "claim": "Goodwill impairment 16.02 relates to Bangladesh branded business",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "note 6 p.439",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "Other income 164.75 (193.25) and components",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "note 22 p.453",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Tax 535.28; PBT 2,172.78; statutory rate used 25.17%; FY25 396.24 / 1,776.55",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "note 20 p.451; p.415",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "CWIP 459.90 (206.81); ageing 396.22/22.01/3.41/38.26; Yeshwantpur 213.58 on hold, land fair value 243.67",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "p.414; ageing p.435",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 21,
+      "claim": "Contingent liabilities 651.83 (567.84): taxes etc 645.23, commercial 6.60",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "note 33 p.456",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 11,
+      "claim": "Cash pooling 1,595.17 (1,311.89) in both cash and overdraft; total borrowings 2,120.31, overdraft 1,633.78",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "notes 13 p.445, 15 p.448, cash flow p.418",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Unmodified opinion; KAM1 UK&Europe goodwill carrying 2,184.50; KAM2 associate pref shares 53.19; no emphasis of matter found",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "pp.404-405; searched text for \"emphasis of matter\" (none)",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Deloitte second term to 64th AGM 2027; Board proposed successor on 6 March 2026 subject to shareholders; no qualifications",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "iar pp.187-188",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 12,
+      "claim": "Weighted-average shares 978,715,461 -> 989,535,734 (+1.1%)",
+      "verdict": "Supported; \"part-year rights issue\" reading is inference, stated as such",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage": "note 30 p.456",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 5,
+      "claim": "IAS 38: internally generated brands, mastheads, publishing titles, customer lists not recognised as intangible assets",
+      "verdict": "Supported (IFRS summary page read); Ind AS 38 equivalence not separately opened",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.ifrs.org/issued-standards/list-of-standards/ias-38-intangible-assets/",
+      "supporting_passage": "https://www.ifrs.org/issued-standards/list-of-standards/ias-38-intangible-assets/",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Beneish M-score (1999) uses eight ratios; built on US data",
+      "verdict": "Mostly supported; from general knowledge, paper not opened this session",
+      "as_of": "2026-11-09",
+      "evidence_url": "",
+      "supporting_passage": "",
+      "page_correction": "attributed on page as my inference/arithmetic"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "A flag is a question, not a verdict",
+      "inventory_ids": [
+        1
+      ],
+      "visual_types": "growth bars 20 px/pt",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p2",
+      "heading": "Profit that never arrives as cash",
+      "inventory_ids": [
+        2
+      ],
+      "visual_types": "bars 6 px/cr",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p3",
+      "heading": "Customers owe more, stock piles up",
+      "inventory_ids": [
+        3,
+        4
+      ],
+      "visual_types": "days bars 10 px/day",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p4",
+      "heading": "Costs moved onto the balance sheet",
+      "inventory_ids": [
+        5,
+        6
+      ],
+      "visual_types": "PBT bars 5 px/cr; lives bars 8 px/cr",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p5",
+      "heading": "Profit that comes from elsewhere",
+      "inventory_ids": [
+        7
+      ],
+      "visual_types": "stacked bars 6 px/cr",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p6",
+      "heading": "Bills that are not on the balance sheet",
+      "inventory_ids": [
+        8
+      ],
+      "visual_types": "bars 2 px/cr",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p7",
+      "heading": "Auditors, pledges and related parties",
+      "inventory_ids": [
+        9,
+        10
+      ],
+      "visual_types": "stacked shares 80 px/cr shares",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p8",
+      "heading": "Rich in cash, yet still borrowing",
+      "inventory_ids": [
+        11,
+        12,
+        13
+      ],
+      "visual_types": "two-scale bars",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p9",
+      "heading": "A low tax rate and late results",
+      "inventory_ids": [
+        14,
+        15
+      ],
+      "visual_types": "rate bars 20 px/pt",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p10",
+      "heading": "The flags in one list",
+      "inventory_ids": [
+        16
+      ],
+      "visual_types": "field guide",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p11",
+      "heading": "Ramu Chai next to its fudged twin",
+      "inventory_ids": [
+        17,
+        18
+      ],
+      "visual_types": "bars 6 px/cr + clickable table",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p12",
+      "heading": "Tick the checks, see which flags trip",
+      "inventory_ids": [
+        18
+      ],
+      "visual_types": "signed growth bars, 4 sliders, 4 presets",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p13",
+      "heading": "TCPL: cash, receivables and stock",
+      "inventory_ids": [
+        2,
+        3,
+        4,
+        19
+      ],
+      "visual_types": "signed growth bars; ageing stack 0.5 px/cr",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p14",
+      "heading": "TCPL: one-offs, other income, tax, projects",
+      "inventory_ids": [
+        7,
+        13,
+        14,
+        20,
+        23
+      ],
+      "visual_types": "signed bars 4 px/cr; PBT build 0.25 px/cr; CWIP stack 0.8 px/cr",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p15",
+      "heading": "TCPL: claims, cash, auditor, and questions",
+      "inventory_ids": [
+        8,
+        9,
+        11,
+        12,
+        21,
+        22
+      ],
+      "visual_types": "percent bars 10 px/pt",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    },
+    {
+      "id": "p16",
+      "heading": "Five habits for any set of accounts",
+      "inventory_ids": [
+        1
+      ],
+      "visual_types": "so what",
+      "quantities": "₹ crore, % and days",
+      "scale": "stated on each drawing",
+      "assumptions": "see page"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration (lab 1 is a click-to-find exercise; lab 2 is a threshold scorer)",
+    "assumptions": [
+      "Ramu Chai canonical, unchanged",
+      "Ramu Chai B: sales 450→500, PAT 44→55, other expenses reported 97 (true 117, 20 capitalised, 2 amortised), EBITDA 93, D&A 14, PBT 73, tax 18, CFO 15, receivables 38→61, inventory 47→55, other current assets 15→45 (30 related-party advance), cash 41→7, borrowings 90→130, equity 218→255, total assets 431; pledge 10%→40%; auditor resigned",
+      "B balance sheet balances (431) and cash flow reconciles (15 − 61 + 12 = −34)",
+      "TCPL from audited consolidated statements; checks with no input are n/a and never count",
+      "thresholds are teaching rules of thumb"
+    ],
+    "units": {
+      "money": "₹ crore",
+      "growth": "percent",
+      "gap": "percentage points"
+    },
+    "independent_calculation_method": "scratchpad/build/labtest.py recomputes every check from raw statement numbers (not the page compute()) and compares with window.labResults via Playwright; spot lab driven by clicks",
+    "cases": [
+      {
+        "name": "preset Ramu (defaults)",
+        "inputs": [
+          0.8,
+          15,
+          15,
+          5
+        ],
+        "expected": "0 of 11 trip",
+        "observed": "0 of 11",
+        "pass": true
+      },
+      {
+        "name": "preset Ramu B",
+        "inputs": [
+          0.8,
+          15,
+          15,
+          5
+        ],
+        "expected": "6 trip: cfo, recv, cap, aud, pledge, rp",
+        "observed": "6 of 11",
+        "pass": true
+      },
+      {
+        "name": "preset TCPL",
+        "inputs": [
+          0.8,
+          15,
+          15,
+          5
+        ],
+        "expected": "2 of 9 trip: recv gap 16.85 pp, cash-rich",
+        "observed": "2 of 9",
+        "pass": true
+      },
+      {
+        "name": "preset tight rules on Ramu",
+        "inputs": [
+          1.2,
+          5,
+          5,
+          1
+        ],
+        "expected": "4 trip",
+        "observed": "4",
+        "pass": true
+      },
+      {
+        "name": "3 companies × 3×3×3×3 slider min/mid/max grid (243 cases)",
+        "inputs": "grid",
+        "expected": "per-check trips, counts, growth bars match oracle within 1e-9",
+        "observed": "243/243 match",
+        "pass": true
+      },
+      {
+        "name": "untick CFO check on B",
+        "inputs": "click",
+        "expected": "5 trips of 10 testable",
+        "observed": "5 of 10",
+        "pass": true
+      },
+      {
+        "name": "spot lab: 6 flag rows → 6 found; symptom/fine counted separately; toggle off; reset; symptoms alone find 0 flags; reveal → 17 feedback rows, 6 missed",
+        "inputs": "clicks",
+        "expected": "as stated",
+        "observed": "all true",
+        "pass": true
+      }
+    ],
+    "tolerance": "1e-9 on growth bars; exact on booleans and counts",
+    "invariants": [
+      "B statements balance",
+      "n/a checks never counted",
+      "unticked checks never counted"
+    ],
+    "axis_and_clipping_policy": "axis from nice step covering all growth values and zero; ticks via one scale function; bars carry data-v; no clipping"
+  },
+  "verification": {
+    "supplementary_checks": "check_render: 0 errors incl. every preset and all-min/all-max slider combos; labtest.py 248/248; JS errors none; no sideways scroll at 390px",
+    "screenshots": "scratchpad/shots/desktop-00..16, phone-00..16; build/lab1.png, lab2*.png, card.png",
+    "screenshots_inspection": "Viewed hero-adjacent panels 1, 4, 10-13 and TCPL boxes 1-2 at desktop, lab 2 at phone. Fixed: zero line through labels, button styling (secondary class), scorer layout moved full width, phone ledger. Sticky masthead overlay in element screenshots is a capture artefact.",
+    "coverage_review": "Every inventory row mapped to a panel; hand-off to Part 21 in So what",
+    "semantic_review": "Flags framed as questions; TCPL box makes no verdict; inferences labelled as mine; Part 19/21 not linked",
+    "artifact_sha256": "c823d7755427baf0ce1a29a1f7629a718182d067d332ab6d98e2af01ff6c9bec",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 18,
+        "panels": 16,
+        "notes": 0
+      },
+      "artifact_sha256": "c823d7755427baf0ce1a29a1f7629a718182d067d332ab6d98e2af01ff6c9bec",
+      "artifact_path": "/home/user/eli5-lab/explainers/red-flags-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (hand-off only; publishing forbidden for this task)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
