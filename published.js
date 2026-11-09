@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "free-cash-flow-eli5",
+    "title": "Free cash flow and earnings quality",
+    "category": "Monetary Architecture",
+    "minutes": 16,
+    "summary": "Part 13: the cash left after capex, and why profit without cash is a warning",
+    "bullets": [
+      "FCF = CFO minus capex; split maintenance from growth capex",
+      "CFO/PAT over several years tests earnings quality",
+      "TCPL's FCF, lease payments and where the cash went"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CFO",
+      "CAPEX",
+      "FCF"
+    ],
+    "file": "explainers/free-cash-flow-eli5.html",
+    "date": "2026-11-09",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three bars on one scale: profit in gold, cash from operations in pale teal, and below it the same cash split into a long coral capex piece and a short solid teal piece of free cash flow\"><rect x=\"60\" y=\"42\" width=\"150\" height=\"18\" fill=\"#f5c76a\"/><rect x=\"60\" y=\"68\" width=\"174\" height=\"18\" fill=\"#76d5c1\" fill-opacity=\"0.45\"/><rect x=\"60\" y=\"94\" width=\"135\" height=\"18\" fill=\"#ff8059\"/><rect x=\"195\" y=\"94\" width=\"39\" height=\"18\" fill=\"#76d5c1\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 13</text><text x=\"60\" y=\"139\" fill=\"#a5a29c\">CASH LEFT</text></g></svg>",
+    "part": 13
+  },
+  {
     "id": "working-capital-cycle-eli5",
     "title": "Working capital and the cash cycle",
     "category": "Monetary Architecture",
