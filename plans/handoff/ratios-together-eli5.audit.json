@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26, Consolidated Financial Statements",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "printed pp.414, 415, 417, 418, 445-447 read",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext -layout (PDF page n = printed page n+402)",
+    "beginning_middle_ending_evidence": "Balance sheet p.414, P&L p.415, cash flow pp.417-418, notes 14 pp.445-447 read in full from the downloaded PDF",
+    "sampled_visual_timestamps": [],
+    "limitations": "NSE bhavcopy for 6 Nov 2026 (price 1,086.30) could not be re-fetched in this session (automated download refused by the exchange site; I did not work around it). The price is the figure already checked in the brief and printed in live Part 7. Annual report URL (full IAR) not re-read; only the consolidated statements PDF. Peer table figures are fictional, from plans/fundamental-analysis-series.md."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Each ratio answers one question; same P/E can hide different stories (Co. X is a one-off example)",
+      "kind": "mechanism",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "why-alone"
+    },
+    {
+      "id": 2,
+      "item": "Four groups: growth, profitability, safety, cash and price; which Part teaches which",
+      "kind": "context",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "fieldguide"
+    },
+    {
+      "id": 3,
+      "item": "Peer comparison: same industry, size band, accounting basis",
+      "kind": "mechanism",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "peers"
+    },
+    {
+      "id": 4,
+      "item": "TCPL sales 25x Pahadi: not a peer of fictional firms",
+      "kind": "number",
+      "locator": "plan/brief",
+      "check_needed": true,
+      "destination": "peers"
+    },
+    {
+      "id": 5,
+      "item": "PEG = P/E / EPS growth (% points); Ramu 1.47~1.5, Pahadi 1.9, Masala 1.6",
+      "kind": "definition+number",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "peg"
+    },
+    {
+      "id": 6,
+      "item": "PEG limits: which growth, fade, capital needs, rebound, near-zero growth",
+      "kind": "misconception",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "peg-limits"
+    },
+    {
+      "id": 7,
+      "item": "Traffic-light thresholds are rules of thumb, differ by industry; D/E example",
+      "kind": "mechanism",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "lights"
+    },
+    {
+      "id": 8,
+      "item": "Dashboard lab with adjustable lines, edit-a-company, which-would-you-pick",
+      "kind": "mechanism",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "lab"
+    },
+    {
+      "id": 9,
+      "item": "Ratios contradict: low P/E vs weak cash and others; contradictions point to next reading",
+      "kind": "mechanism",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "contradict"
+    },
+    {
+      "id": 10,
+      "item": "How to read a ratio sheet: basis, price date, definition, peers, blanks, trend; same label different numbers (ROCE 8.55/9.1/8.3, P/E 69.7/62.8, net cash 926/2,978)",
+      "kind": "mechanism",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "ratio-sheet"
+    },
+    {
+      "id": 11,
+      "item": "TCPL growth: revenue +15.2%, owners' profit +20.6%, EPS +19.4%",
+      "kind": "number",
+      "locator": "plan/brief",
+      "check_needed": true,
+      "destination": "tcpl-business"
+    },
+    {
+      "id": 12,
+      "item": "TCPL margins gross 41.6, EBITDA 13.8, net 7.6",
+      "kind": "number",
+      "locator": "plan/brief",
+      "check_needed": true,
+      "destination": "tcpl-business"
+    },
+    {
+      "id": 13,
+      "item": "TCPL ROE 7.08, ROCE 8.55",
+      "kind": "number",
+      "locator": "plan/brief",
+      "check_needed": true,
+      "destination": "tcpl-business"
+    },
+    {
+      "id": 14,
+      "item": "TCPL net cash 926 (series def), interest cover 15.8, current ratio 1.57, cash cycle ~10 days",
+      "kind": "number",
+      "locator": "plan/brief",
+      "check_needed": true,
+      "destination": "tcpl-business"
+    },
+    {
+      "id": 15,
+      "item": "TCPL CFO/PAT 1.57, FCF 1,973.28",
+      "kind": "number",
+      "locator": "plan/brief",
+      "check_needed": true,
+      "destination": "tcpl-business"
+    },
+    {
+      "id": 16,
+      "item": "TCPL at 1,086.30: mcap 107,496; P/E 69.7; P/B 4.93; EV 107,971; EV/EBITDA 38.7; div yield 0.92%; FCF yield 1.84%; PEG 3.6",
+      "kind": "number",
+      "locator": "plan/brief",
+      "check_needed": true,
+      "destination": "tcpl-price"
+    },
+    {
+      "id": 17,
+      "item": "Story: strong cash and clean balance sheet; modest returns from goodwill; high multiple means market expects a lot; no verdict",
+      "kind": "claim",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "tcpl-price"
+    },
+    {
+      "id": 18,
+      "item": "Hand-off to Part 16",
+      "kind": "context",
+      "locator": "plan/brief",
+      "check_needed": false,
+      "destination": "so-what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 11,
+      "claim": "20,290.43/17,618.30-1=15.17%; 1,542.30/1,278.47-1=20.64%; 15.59/13.06-1=19.37%",
+      "verdict": "Supported (recomputed with Python from printed figures)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415 (revenue, profit attributable to owners, basic EPS)",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 12,
+      "claim": "(20,290.43-11,855.64)/20,290.43=41.57%; 2,791.80/20,290.43=13.76%; 1,546.80/20,290.43=7.62%",
+      "verdict": "Supported (recomputed with Python from printed figures)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415; materials 7,788.16+4,108.23-40.75=11,855.64; EBITDA=20,290.43-11,855.64-1,661.00-3,981.99=2,791.80",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "ROE 1,542.30/21,787.53=7.079%; ROCE 2,165.12/(23,188.86+2,120.31)=8.555%",
+      "verdict": "Supported (recomputed with Python from printed figures)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "balance sheet p.414, P&L p.415",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "2,120.31-3,046.57=-926.26; 2,165.12/137.03=15.80x; 10,317.09/6,578.56=1.568; days 108.58+20.66-119.31=9.93 (365-day, year-end balances; base materials 11,855.64 and revenue)",
+      "verdict": "Supported (recomputed with Python from printed figures)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "balance sheet p.414 (borrowings 302.14+1,818.17; current assets/liabilities), P&L p.415. Cash-cycle bases follow the plan's definition; Part 12 may present differently",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "2,421.85/1,546.80=1.566; 2,421.85-448.57=1,973.28",
+      "verdict": "Supported (recomputed with Python from printed figures)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "cash flow p.417: net cash from operating 2,421.85; payment for PP&E incl. intangibles (448.57)",
+      "page_treatment": "tagged public; working shown on page"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "98,95,61,780 x 1,086.30 = 107,496.1 cr; P/E 69.68; P/B 107,496/21,787.53=4.934; EV=107,496+2,120.31-3,046.57+1,401.33=107,971.07; EV/EBITDA 38.67; yield 10/1,086.30=0.92%; FCF yield 1.836%; PEG 69.68/19.37=3.60",
+      "verdict": "Supported (shares and statement lines read; price taken from the brief, not re-fetched)",
+      "as_of": "6 Nov 2026 close",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "shares p.445-446 (989561780); dividend note 14(a) p.447 'recommended a final dividend payment of Rs 10 per share'; price: NSE bhavcopy https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_06112026.csv (NOT re-read this session)",
+      "page_treatment": "tagged public; date stated; limitation recorded in this audit"
+    },
+    {
+      "inventory_id": 5,
+      "claim": "Ramu 20/13.6=1.47; Pahadi 15/8=1.875; Masala 35/22=1.59; derived P/B=P/E x ROE 4.0, 2.1, 9.1; equity 400/150 and borrowings 360/0 derived from plan ROE and D/E",
+      "verdict": "Supported (arithmetic; fictional inputs from plan)",
+      "as_of": "plan",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "supporting_passage_and_locator": "Peers for comparison (Part 15) table",
+      "page_treatment": "tagged example; derivations disclosed in the lab intro"
+    }
+  ],
+  "panels": [
+    {
+      "id": "why-alone",
+      "heading": "No ratio stands alone",
+      "visual": "paired bars Ramu vs Co. X, each row own scale"
+    },
+    {
+      "id": "fieldguide",
+      "heading": "Four questions, eight ratios",
+      "visual": "field guide (no drawing, allowed)"
+    },
+    {
+      "id": "peers",
+      "heading": "Compare like with like",
+      "visual": "sales bars 1px=Rs2cr, TCPL broken"
+    },
+    {
+      "id": "peg",
+      "heading": "PEG: P/E divided by growth",
+      "visual": "P/E bar with growth-length blocks, 12px per point"
+    },
+    {
+      "id": "peg-limits",
+      "heading": "PEG's limits",
+      "visual": "curve PEG=20/g with scale function"
+    },
+    {
+      "id": "lights",
+      "heading": "Traffic lights are rules of thumb",
+      "visual": "D/E bands 0-2.5 for two industries"
+    },
+    {
+      "id": "lab",
+      "heading": "Build the dashboard",
+      "visual": "table of lights + green-count bars 0..8 + ledger"
+    },
+    {
+      "id": "contradict",
+      "heading": "Contradictions are information",
+      "visual": "profit vs cash bars 4px=Rs1cr"
+    },
+    {
+      "id": "ratio-sheet",
+      "heading": "One label, several numbers",
+      "visual": "three rows of bars, each own scale"
+    },
+    {
+      "id": "tcpl-business",
+      "heading": "TCPL's dashboard: the business",
+      "visual": "table + profit vs CFO bars 0.2px=Rs1cr"
+    },
+    {
+      "id": "tcpl-price",
+      "heading": "TCPL's dashboard: the price",
+      "visual": "table + EV bridge on true scale (1px~Rs154cr)"
+    },
+    {
+      "id": "so-what",
+      "heading": "Questions before any verdict",
+      "visual": "checklist, no drawing (allowed)"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "10 crore shares each",
+      "Pahadi equity 400 and borrowings 360, Masala equity 150 and borrowings 0 derived from plan ROE and D/E",
+      "P/B = P/E x ROE",
+      "PEG on 4-yr EPS CAGR",
+      "light good if on right side of line, watch within 20%, weak beyond; compared on number as displayed (1-2 dp)",
+      "count of greens is not a score"
+    ],
+    "units": {
+      "percent": "g, net margin, ROE",
+      "times": "D/E, CFO/PAT, P/E, P/B, PEG",
+      "rupees": "price, CFO, borrowings"
+    },
+    "independent_calculation_method": "scratchpad/test/labtest.py: separate Python oracle (Decimal, half-up rounding of the exact binary value like JS toFixed) driven through Playwright; not the page compute()",
+    "cases": [
+      {
+        "case": "defaults",
+        "expected_lights": {
+          "ramu": "gagggggg",
+          "pahadi": "rrarrggr",
+          "masala": "gggggrra"
+        },
+        "observed_lights": {
+          "ramu": "gagggggg",
+          "pahadi": "rrarrggr",
+          "masala": "gggggrra"
+        },
+        "pass": true
+      },
+      {
+        "case": "plan PEG 1.5/1.9/1.6 and P/B 4.0/2.1/9.1",
+        "pass": true
+      },
+      {
+        "case": "4 presets",
+        "pass": true
+      },
+      {
+        "case": "16 slider extreme combinations",
+        "pass": true
+      },
+      {
+        "case": "each of 4 steppers to min and max",
+        "pass": true
+      },
+      {
+        "case": "company edits: price, CFO, borrowings to min/max for all three companies, single steps, reset",
+        "pass": true
+      },
+      {
+        "case": "pick reveal for 3 companies",
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "labResults.valid true; no NaN/Infinity",
+      "values match oracle to 1e-6 relative",
+      "counts equal letters in lights string"
+    ],
+    "tolerance": "1e-6 relative on ratios; lights exact",
+    "axis_and_clipping": "count chart axis fixed 0..8 with ticks 0,4,8; zero count draws no bar; no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "labtest.py: 1683 checks, 0 failures, 0 JS errors",
+      "check_render.py: 0 errors (defaults, 4 presets, 16 slider extremes, 390px)"
+    ],
+    "screenshots": [
+      "desktop-00..12 and phone-00..12 inspected: all drawings, lab (default state and all-max state), tables, EV bridge; fixed PEG axis-label overlap, stepper wrapping, unstyled pick buttons after first look"
+    ],
+    "coverage_review": "All 18 inventory rows mapped to panels, checked by eye",
+    "semantic_review": "No buy/sell/expensive/cheap verdict on TCPL; high multiple stated as market expectation; no site named; Parts 11-14 unlinked; Parts 2-10 linked",
+    "browser_check_render": "0 errors",
+    "artifact_sha256": "72ec4f3a3c4bf621f198450fa2c1f927b53fa7ca833c239925cffdd4453d4edf",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 10,
+        "panels": 12,
+        "notes": 0
+      },
+      "artifact_sha256": "72ec4f3a3c4bf621f198450fa2c1f927b53fa7ca833c239925cffdd4453d4edf",
+      "artifact_path": "/home/user/eli5-lab/explainers/ratios-together-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published; handed off (branch claude/fa-part-15-ratios-together)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
