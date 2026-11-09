@@ -221,6 +221,15 @@ Board: 8 directors, 4 independent. Auditor: a mid-sized firm, unmodified opinion
 
 **Red flags (Part 20).** "Ramu Chai B" is a fudged twin for the spot-the-difference lab, tagged example. Keep the real Ramu's numbers unchanged; put all the differences in Ramu B.
 
+### Lab layout rule (owner feedback on Part 15, 9 Nov 2026)
+
+A longer page is fine; a crowded one is not.
+- Side-by-side `lab-grid` (controls left, chart right) only for small labs: up to 4 sliders and a few buttons.
+- Anything bigger, or more than one tool in a lab: one column of numbered steps ("1 · …"), each with a short heading and a divider, charts and tables full width under their controls. Model: `explainers/ratios-together-eli5.html` (`.dashlab`).
+- Tables: one short column per idea, no two-line cells; on phones override the shared `table{min-width:620px}` so every column fits without sideways scrolling.
+- Working, formulas and long assumptions go behind `<details class="trace">`.
+- Check the 390px screenshots for crowding before finishing.
+
 ## Parts (38 + bonus)
 
 `R:` = what the "real report" box shows.
