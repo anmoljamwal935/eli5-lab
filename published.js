@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "how-much-debt-eli5",
+    "title": "Debt: how much is too much",
+    "category": "Monetary Architecture",
+    "minutes": 20,
+    "summary": "Part 11: leverage, interest cover, and what a rate hike does to a borrower",
+    "bullets": [
+      "Debt is cheap and lifts ROE, but interest is due in bad years too",
+      "D/E, net debt/EBITDA and interest cover, with where cover breaks",
+      "TCPL (net cash) against Tata Steel (net debt 2.2x EBITDA)"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "BORROW",
+      "COVER",
+      "RATE HIKE"
+    ],
+    "file": "explainers/how-much-debt-eli5.html",
+    "date": "2026-11-09",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A gauge of interest cover with a rose danger zone on the left, a paler thin zone, a teal comfortable zone, and a needle far into the comfortable zone\"><path d=\"M40 70 H80 V100 H40 Z\" fill=\"#ec6a94\" fill-opacity=\"0.85\"/><path d=\"M80 70 H120 V100 H80 Z\" fill=\"#ec6a94\" fill-opacity=\"0.4\"/><path d=\"M120 70 H280 V100 H120 Z\" fill=\"#76d5c1\" fill-opacity=\"0.35\"/><path d=\"M227 50 H243 L235 64 Z\" fill=\"#f1eee8\"/><path d=\"M40 112 H235\" stroke=\"#a5a29c\" stroke-width=\"8\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">PART 11</text><text x=\"160\" y=\"139\" text-anchor=\"middle\" fill=\"#a5a29c\">INTEREST COVER</text></g></svg>",
+    "part": 11
+  },
+  {
     "id": "the-balance-sheet-eli5",
     "title": "The balance sheet",
     "category": "Monetary Architecture",
