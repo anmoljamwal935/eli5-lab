@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Working capital and the cash cycle — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, customers' cash) | coral #ff8059 = money going out (stock bought, cash paid) | gold #f5c76a = what belongs to shareholders
+       rose #ec6a94 = what is owed (payables, current liabilities) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Working-capital extras: neutral grey #c9c6c0 = the net amount or the gap (cash tied up, cash cycle). Gold and lavender are not needed in this part. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .panel figure+p{margin-top:22px}
+    .eq b{color:var(--fg)}
+    /* Working-capital lab */
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+    .lab .steps output{min-width:12ch}
+    .steps button,.lab .toggle{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab .toggle[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .readouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 18px}
+    .lab .readouts div{padding:10px 12px;border:1px solid var(--border)}
+    .lab .readouts b{display:block;font-size:22px;font-weight:600;color:var(--fg)}
+    .lab .readouts span{display:block;font:11px/1.5 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .lab-chart svg+svg{margin-top:18px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+  </style>
+</head>
+<body data-series-id="working-capital-cycle-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 16 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Working capital and the cash cycle</h1>
+      <p class="lede">A company can be profitable and still run short of cash, because stock, customers’ dues and suppliers’ credit all hold money in the business. Three counts of days tell you how long a rupee stays stuck, and why growth makes it worse.</p>
+      <p class="source-note">Built from Tata Consumer Products’ audited FY2026 consolidated statements, as printed in its Integrated Annual Report 2025-26, Tata Steel’s audited FY2026 consolidated statements, and the arithmetic of the ratios themselves · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a> reads sales down to profit, with the cost of materials as one line; <a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a> introduces inventory, receivables and payables; <a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">Part 5</a> shows the working-capital line inside cash from operations (CFO); <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> warns that growth can eat cash; and <a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a> divides profit by the capital employed. This part explains where that cash goes. Facts carry a tag: <span class="tag">public</span> is a figure from a company’s audited statements, <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd, a small tea business. All amounts are ₹ crore (cr). Part 11 covers debt, Part 13 covers free cash flow and earnings quality, Part 20 covers red flags in full. <b>Go deeper</b> boxes are optional.</p>
+      <p>Series definitions used here: <b>days</b> use year-end balances and 365 days; inventory days and payable days divide by the cost of goods (materials), receivable days by sales; working capital below means <b>operating</b> working capital, inventory plus receivables minus payables.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: customers</span>
+        <span><i style="background:#ff8059"></i>money going out: stock, cash paid</span>
+        <span><i style="background:#ec6a94"></i>what is owed: payables</span>
+        <span><i style="background:#c9c6c0"></i>the net amount, the gap</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Cash stuck in running the business</h2>
+      <p>Ramu has ₹55 cr of tea and packets in stock and customers owe it ₹45 cr <span class="tag">example</span>. That ₹100 cr is cash already spent, not yet back. Suppliers have not been paid ₹35 cr yet, which lends some of it back. <b>Working capital</b> is what remains: ₹65 cr that Ramu’s own money has to carry, every day it operates.</p>
+      <figure><svg viewBox="0 0 800 244" role="img" aria-label="Ramu holds 55 crore of stock and 45 crore of customers dues, 100 crore in all, of which suppliers fund 35 crore through payables and Ramu funds the remaining 65 crore"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16">TIED UP IN STOCK AND CUSTOMERS’ DUES</text><rect x="40" y="44" width="220" height="44" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="150" y="72" text-anchor="middle" fill="#202020" font-size="16">Inventory 55</text><rect x="260" y="44" width="180" height="44" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="350" y="72" text-anchor="middle" fill="#202020" font-size="16">Receivables 45</text><text x="460" y="72" text-anchor="start" fill="#f1eee8" font-size="16">₹100 cr tied up</text><text x="40" y="124" text-anchor="start" fill="#a5a29c" font-size="16">WHO FUNDED IT</text><rect x="40" y="134" width="140" height="44" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="110" y="162" text-anchor="middle" fill="#202020" font-size="16">Payables 35</text><rect x="180" y="134" width="260" height="44" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="310" y="162" text-anchor="middle" fill="#202020" font-size="16">Ramu’s own cash 65</text><text x="460" y="162" text-anchor="start" fill="#f1eee8" font-size="16">₹65 cr is Ramu’s own</text><text x="40" y="222" text-anchor="start" fill="#a5a29c" font-size="16">4 px = ₹1 cr</text></svg></figure>
+      <span class="eq">working capital = inventory + receivables − payables = 55 + 45 − 35 = ₹65 cr</span>
+      <details class="trace"><summary>Go deeper: two meanings of “working capital”</summary>
+        <p>Accountants also use current assets minus current liabilities: Ramu’s 155 − 80 = ₹75 cr. That counts cash and short-term borrowings too. This part uses the operating version, inventory plus receivables minus payables, because it isolates the cash the trading cycle itself locks up. Companies pick their own definitions; the real-report panels show how far they can differ.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Three clocks</p>
+      <h2>Inventory, receivable and payable days</h2>
+      <p>Each balance becomes a count of days. <b>Inventory days</b>: how long stock waits before it sells. <b>Receivable days</b> (also called DSO, days sales outstanding): how long customers take to pay. <b>Payable days</b>: how long Ramu takes to pay suppliers. Stock and payables are carried at cost, so they divide by the ₹250 cr cost of materials; customers owe selling prices, so receivables divide by ₹500 cr of sales <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 290" role="img" aria-label="Three bars on one scale for Ramu: stock stays 80 days before it is sold, customers take 33 days to pay, and Ramu pays suppliers after 51 days"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">INVENTORY DAYS</text><rect x="40" y="40" width="400" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="452" y="62" text-anchor="start" fill="#f1eee8" font-size="16">80 days</text><text x="40" y="110" text-anchor="start" fill="#a5a29c" font-size="16">RECEIVABLE DAYS</text><rect x="40" y="120" width="165" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="217" y="142" text-anchor="start" fill="#f1eee8" font-size="16">33 days</text><text x="40" y="190" text-anchor="start" fill="#a5a29c" font-size="16">PAYABLE DAYS</text><rect x="40" y="200" width="255" height="30" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="307" y="222" text-anchor="start" fill="#f1eee8" font-size="16">51 days</text><text x="40" y="272" text-anchor="start" fill="#a5a29c" font-size="16">5 px = 1 day</text></svg></figure>
+      <span class="eq">inventory days = 55 ÷ 250 × 365 = 80 · receivable days = 45 ÷ 500 × 365 = 33 · payable days = 35 ÷ 250 × 365 = 51</span>
+      <p>Why cost and not sales for stock? The stock on the shelf was bought at cost; dividing it by sales would mix two different prices. Year-end balances can mislead a seasonal business like tea, where Q3 is the peak (<a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a>), so compare the same date each year.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The cash conversion cycle</p>
+      <h2>The gap Ramu has to fund</h2>
+      <p>Follow one rupee. The leaves arrive on day 0. They sit 80 days, then sell; the customer takes 33 more days to pay: cash returns on day 113. But the supplier wants payment on day 51. From day 51 to day 113 Ramu is out of pocket: 80 + 33 − 51 = <b>62 days</b>. That is the <b>cash conversion cycle</b> <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 310" role="img" aria-label="On a day scale Ramu holds stock for 80 days and customers pay 33 days later, 113 days after the leaves arrive, while the supplier waits only 51 days, so Ramu funds the 62 days between"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">STOCK, THEN CUSTOMERS</text><rect x="40" y="40" width="400" height="34" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="240" y="63" text-anchor="middle" fill="#202020" font-size="16">in stock 80</text><rect x="440" y="40" width="165" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="522.5" y="63" text-anchor="middle" fill="#202020" font-size="16">customers 33</text><text x="40" y="112" text-anchor="start" fill="#a5a29c" font-size="16">SUPPLIER GIVES RAMU</text><rect x="40" y="122" width="255" height="34" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="167.5" y="145" text-anchor="middle" fill="#202020" font-size="16">credit 51</text><text x="40" y="194" text-anchor="start" fill="#a5a29c" font-size="16">RAMU FUNDS</text><path d="M295 156 L295 204" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><path d="M605 74 L605 204" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><rect x="295" y="204" width="310" height="34" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="450" y="227" text-anchor="middle" fill="#202020" font-size="16">62 days</text><text x="40" y="290" text-anchor="start" fill="#a5a29c" font-size="16">5 px = 1 day · day 0 is when the leaves arrive</text></svg></figure>
+      <span class="eq">cash conversion cycle = inventory days + receivable days − payable days = 80 + 33 − 51 = 62 days</span>
+      <p>A shorter cycle means less cash tied up for the same sales. Every day shaved off is worth about one day’s sales at cost, here ₹250 cr ÷ 365 ≈ ₹0.7 cr per inventory or payable day, and ₹500 cr ÷ 365 ≈ ₹1.4 cr per receivable day.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why growth costs cash</p>
+      <h2>A bigger business needs more working capital</h2>
+      <p>Working capital rises with sales. Ramu’s sales grew from ₹450 cr to ₹500 cr, 11%, so the same cycle would hold 11% more cash: ₹55 cr × 11% ≈ ₹6.1 cr. The cycle also lengthened from 58 to 62 days, which added the other ₹3.9 cr. Total: ₹55 cr became ₹65 cr, and that ₹10 cr is the working-capital line in Ramu’s cash flow <span class="tag">example</span>. This is one way to split it; the two effects interact.</p>
+      <figure><svg viewBox="0 0 800 344" role="img" aria-label="Ramu cash stuck in working capital rises from 55 crore to 65 crore: about 6.1 crore from 11 percent growth and about 3.9 crore from a longer cash cycle"><text x="40" y="40" text-anchor="start" fill="#a5a29c" font-size="16">FY25 · CASH STUCK</text><rect x="40" y="50" width="330" height="30" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="382" y="72" text-anchor="start" fill="#f1eee8" font-size="16">₹55 cr</text><text x="40" y="112" text-anchor="start" fill="#a5a29c" font-size="16">ADDED BY 11% GROWTH</text><rect x="370" y="122" width="36.7" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="418.7" y="144" text-anchor="start" fill="#f1eee8" font-size="16">+₹6.1 cr</text><text x="40" y="184" text-anchor="start" fill="#a5a29c" font-size="16">ADDED BY A LONGER CYCLE</text><rect x="406.7" y="194" width="23.3" height="30" fill="#ff8059" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="442" y="216" text-anchor="start" fill="#f1eee8" font-size="16">+₹3.9 cr</text><text x="40" y="256" text-anchor="start" fill="#a5a29c" font-size="16">FY26 · CASH STUCK</text><rect x="40" y="266" width="390" height="30" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="442" y="288" text-anchor="start" fill="#f1eee8" font-size="16">₹65 cr</text><text x="40" y="326" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 cr</text></svg></figure>
+      <p>This is the growth that eats cash from <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a>: Ramu made ₹50 cr profit and ₹85 cr EBITDA, yet CFO was ₹58 cr (<a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">Part 5</a>), partly because ₹10 cr stayed behind in stock and dues. A fast grower can look profitable and still have to borrow.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>One rupee round the cycle</h2>
+      <p>Move the days and the growth rate. The top picture follows a rupee through four events: step through them. The bars show each event’s day on one axis. Defaults are Ramu’s FY26 days, 80 / 33 / 51, a 62-day cycle <span class="tag">example</span>. Assumptions: sales ₹500 cr and cost of materials ₹250 cr (50% of sales) grow together; the days stay as set, so next year’s cash tied up is this year’s times (1 + growth), and the extra is the hit to CFO, before any change in profit (the FY26 days give ₹65.07 cr; the printed balances give ₹65 cr); for the ratios, cash and the other lines stay at FY26 values, so they ignore cash spent on stock. The 12% default is the FY27 estimate from <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a>.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="readouts" aria-label="Live readouts">
+            <div><b id="rCcc"></b><span>CASH CONVERSION CYCLE</span></div>
+            <div><b id="rTied"></b><span>CASH TIED UP, AT FY26 SALES</span></div>
+            <div><b id="rHit"></b><span id="rHitL">NEXT-YEAR HIT TO CFO</span></div>
+            <div><b id="rRatio"></b><span>CURRENT · QUICK RATIO</span></div>
+          </div>
+          <div class="control"><label for="inv">Inventory days <output id="inv-o"></output></label><input id="inv" type="range" min="20" max="150" step="1" value="80"></div>
+          <div class="control"><label for="rec">Receivable days <output id="rec-o"></output></label><input id="rec" type="range" min="0" max="90" step="1" value="33"></div>
+          <div class="control"><label for="pay">Payable days <output id="pay-o"></output></label><input id="pay" type="range" min="0" max="120" step="1" value="51"></div>
+          <div class="control"><label for="gr">Sales growth next year <output id="gr-o"></output></label><input id="gr" type="range" min="0" max="40" step="1" value="12"></div>
+          <p class="group-label">SITUATIONS</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="80,33,51,12">FY26 · Ramu</button>
+            <button type="button" class="secondary" data-p="76,31,49,">FY25 · Ramu</button>
+            <button type="button" class="secondary" data-p="30,2,60,">Customers pay first</button>
+            <button type="button" class="secondary" data-p="110,33,51,">Stock piling up</button>
+          </div>
+          <p class="group-label">FY25 AGAINST FY26</p>
+          <div class="steps"><button type="button" class="secondary toggle" id="cmpBtn" aria-pressed="false">Compare with FY25</button></div>
+          <p class="msg" id="cmpMsg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="lab-chart">
+          <svg id="rupeeTrack" viewBox="0 0 520 270" role="img" aria-label="A rupee moving along three bars on one day axis: stock then customers' dues, the supplier's credit, and the cash gap"></svg>
+          <div class="steps"><button type="button" class="secondary" id="stepBack">◀ Earlier</button><button type="button" class="secondary" id="stepNext">Later ▶</button><output id="stepOut" role="status" aria-live="polite"></output></div>
+          <p class="msg" id="stepMsg" role="status" aria-live="polite"></p>
+          <svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars in days on one axis: when the supplier is paid, when stock is sold, when the customer pays, and the cash gap between them"></svg>
+        </div>
+      </div>
+      <div class="ledger" id="ledger"></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The other side</p>
+      <h2>When customers pay first</h2>
+      <p>Some businesses have a cycle below zero. A retailer sells for cash within 30 days of stocking an item and pays its supplier after 60: for 30 days it holds other people’s money. Cash cycle: 30 + 0 − 60 = −30 days <span class="tag">example</span>. This is a one-off example, not Ramu’s accounts. Here growth releases cash instead of eating it, which is why supermarkets and FMCG distributors can expand fast without raising capital.</p>
+      <figure><svg viewBox="0 0 800 296" role="img" aria-label="A retailer that sells for cash after 30 days of stock and pays its supplier after 60 days holds its customers money for 30 days: a cash cycle of minus 30 days"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">A RETAILER · STOCK, THEN CASH</text><rect x="40" y="40" width="180" height="34" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="130" y="63" text-anchor="middle" fill="#202020" font-size="16">in stock 30</text><rect x="220" y="40" width="14" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="248" y="63" text-anchor="start" fill="#f1eee8" font-size="16">cash in at day 30</text><text x="40" y="112" text-anchor="start" fill="#a5a29c" font-size="16">SUPPLIER GIVES</text><rect x="40" y="122" width="360" height="34" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="220" y="145" text-anchor="middle" fill="#202020" font-size="16">credit 60</text><text x="40" y="194" text-anchor="start" fill="#a5a29c" font-size="16">CASH IN HAND</text><path d="M220 74 L220 122" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><path d="M220 156 L220 204" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><path d="M400 156 L400 204" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><rect x="220" y="204" width="180" height="34" fill="#76d5c1" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="310" y="227" text-anchor="middle" fill="#202020" font-size="16">float 30 days</text><text x="40" y="278" text-anchor="start" fill="#a5a29c" font-size="16">6 px = 1 day · one-off example, not Ramu</text></svg></figure>
+      <p>Try the “Customers pay first” button in the lab: the cash gap bar swings left of zero and the hit to CFO turns positive. The catch: the float lasts only while suppliers keep extending credit and sales keep growing. If either turns, the cash has to be found.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Two quick tests</p>
+      <h2>Current ratio, quick ratio, and their limits</h2>
+      <p>The <b>current ratio</b> is current assets divided by current liabilities: can Ramu cover what it owes within a year? 155 ÷ 80 = <b>1.94</b>. The <b>quick ratio</b> drops inventory, the hardest asset to turn into cash quickly: (155 − 55) ÷ 80 = <b>1.25</b> <span class="tag">example</span>. Current assets are inventory 55, receivables 45, other 15 and cash 40; current liabilities are payables 35, short-term borrowings 30 and other 15.</p>
+      <figure><svg viewBox="0 0 800 322" role="img" aria-label="Ramu current assets of 155 crore drawn above current liabilities of 80 crore on one scale; a dashed box marks the 100 crore of quick assets left after removing inventory"><text x="40" y="34" text-anchor="start" fill="#a5a29c" font-size="16">CURRENT ASSETS · ₹155 CR</text><rect x="40" y="44" width="220" height="44" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="150" y="72" text-anchor="middle" fill="#202020" font-size="16">Inventory 55</text><rect x="260" y="44" width="180" height="44" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="350" y="72" text-anchor="middle" fill="#202020" font-size="16">Receivables 45</text><rect x="440" y="44" width="60" height="44" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="470" y="72" text-anchor="middle" fill="#202020" font-size="16">15</text><rect x="500" y="44" width="160" height="44" fill="#76d5c1" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="580" y="72" text-anchor="middle" fill="#202020" font-size="16">Cash 40</text><rect x="260" y="39" width="400" height="54" fill="none" stroke="#f1eee8" stroke-width="1.5" stroke-dasharray="5 4"/><text x="270" y="112" text-anchor="start" fill="#f1eee8" font-size="16">quick assets ₹100 cr</text><text x="40" y="146" text-anchor="start" fill="#a5a29c" font-size="16">CURRENT LIABILITIES · ₹80 CR</text><rect x="40" y="156" width="140" height="44" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="110" y="184" text-anchor="middle" fill="#202020" font-size="16">Payables 35</text><rect x="180" y="156" width="120" height="44" fill="#ec6a94" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="240" y="184" text-anchor="middle" fill="#202020" font-size="16">Borrowings 30</text><rect x="300" y="156" width="60" height="44" fill="#ec6a94" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="330" y="184" text-anchor="middle" fill="#f1eee8" font-size="16">15</text><text x="40" y="244" text-anchor="start" fill="#f1eee8" font-size="16">current ratio 155 ÷ 80 = 1.94</text><text x="40" y="274" text-anchor="start" fill="#f1eee8" font-size="16">quick ratio (155 − 55) ÷ 80 = 1.25</text><text x="40" y="306" text-anchor="start" fill="#a5a29c" font-size="16">4 px = ₹1 cr</text></svg></figure>
+      <ol class="checks">
+        <li><b>They are a snapshot, not a timetable.</b> They do not say when each bill falls due or each customer pays.</li>
+        <li><b>Quality hides inside.</b> Stock may be unsellable; receivables may be uncollectable. Try “Stock piling up” in the lab: the current ratio <em>rises</em> while the cash cycle worsens.</li>
+        <li><b>Normal depends on the business.</b> Under 1 is routine for a retailer funded by suppliers, and alarming for a manufacturer with short-term loans.</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Warning signs</p>
+      <h2>When balances outgrow sales</h2>
+      <p>Compare how fast each balance grew with how fast sales grew. Ramu’s sales rose 11.1%, but inventory rose 17.0% and receivables 18.4% <span class="tag">example</span>. Stock growing faster than sales can mean unsold goods; dues growing faster can mean customers paying later, or sales booked too generously. Here it is mild, and it is exactly the 4-day lengthening you saw. It is a prompt to ask why, not proof of a problem. Part 20 covers red flags in full.</p>
+      <figure><svg viewBox="0 0 800 344" role="img" aria-label="Ramu FY26 growth of balances against sales growth of 11.1 percent: inventory up 17.0, receivables up 18.4, payables up 16.7, all above the dashed sales line"><text x="40" y="40" text-anchor="start" fill="#a5a29c" font-size="16">SALES 450 → 500</text><rect x="40" y="50" width="222.2" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="274.2" y="72" text-anchor="start" fill="#f1eee8" font-size="16">+11.1%</text><text x="40" y="110" text-anchor="start" fill="#a5a29c" font-size="16">INVENTORY 47 → 55</text><rect x="40" y="120" width="340.4" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="392.4" y="142" text-anchor="start" fill="#f1eee8" font-size="16">+17.0%</text><text x="40" y="180" text-anchor="start" fill="#a5a29c" font-size="16">RECEIVABLES 38 → 45</text><rect x="40" y="190" width="368.4" height="30" fill="#76d5c1" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="420.4" y="212" text-anchor="start" fill="#f1eee8" font-size="16">+18.4%</text><text x="40" y="250" text-anchor="start" fill="#a5a29c" font-size="16">PAYABLES 30 → 35</text><rect x="40" y="260" width="333.3" height="30" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="385.3" y="282" text-anchor="start" fill="#f1eee8" font-size="16">+16.7%</text><path d="M262.2 30 L262.2 300" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="40" y="326" text-anchor="start" fill="#a5a29c" font-size="16">20 px = 1% growth · dashed = sales growth</text></svg></figure>
+      <p>Payables also grew faster than sales, 16.7%, which hides part of the strain: Ramu is leaning harder on its suppliers. Check the three together, and check them for several years.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: its cash cycle from the statements</h2>
+      <p>Tata Consumer Products, consolidated, year to 31 March 2026 <span class="tag">public</span>. Cost of goods is materials consumed, plus purchases of stock in trade, plus the change in inventories: ₹7,788.16 cr + ₹4,108.23 cr − ₹40.75 cr = ₹11,855.64 cr (P&amp;L, p. 415). For FY25: ₹6,997.40 cr + ₹3,434.37 cr − ₹362.49 cr = ₹10,069.28 cr, from the comparative column.</p>
+      <span class="eq">inventory days FY26 = 3,526.76 ÷ 11,855.64 × 365 = <b>108.6</b> · FY25 = 3,599.91 ÷ 10,069.28 × 365 = 130.5</span>
+      <span class="eq">receivable days FY26 = 1,148.33 ÷ 20,290.43 × 365 = <b>20.7</b> · FY25 = 869.79 ÷ 17,618.30 × 365 = 18.0</span>
+      <span class="eq">payable days FY26 = 3,875.30 ÷ 11,855.64 × 365 = <b>119.3</b> · FY25 = 3,508.43 ÷ 10,069.28 × 365 = 127.2</span>
+      <span class="eq">cash conversion cycle FY26 = 108.6 + 20.7 − 119.3 = <b>9.9 days</b> · FY25 = 130.5 + 18.0 − 127.2 = <b>21.3 days</b> (unrounded values)</span>
+      <figure><svg viewBox="0 0 800 340" role="img" aria-label="TCPL cash cycle on one day scale: FY26 stock 108.6 days, customers 20.7, supplier credit 119.3, leaving a gap of 9.9 days; FY25 gap was 21.3 days"><text x="40" y="36" text-anchor="start" fill="#a5a29c" font-size="16">FY26 · CASH CYCLE</text><rect x="40" y="44" width="434.3" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="257.2" y="63" text-anchor="middle" fill="#202020" font-size="16">in stock 108.6</text><rect x="474.3" y="44" width="82.6" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="515.6" y="63" text-anchor="middle" fill="#202020" font-size="16">20.7</text><rect x="40" y="78" width="477.2" height="26" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="278.6" y="97" text-anchor="middle" fill="#202020" font-size="16">supplier credit 119.3</text><rect x="517.2" y="112" width="39.7" height="26" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="568.9" y="131" text-anchor="start" fill="#f1eee8" font-size="16">9.9 days</text><text x="40" y="182" text-anchor="start" fill="#a5a29c" font-size="16">FY25 · CASH CYCLE</text><rect x="40" y="190" width="522" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="301" y="209" text-anchor="middle" fill="#202020" font-size="16">in stock 130.5</text><rect x="562" y="190" width="72.1" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="598" y="209" text-anchor="middle" fill="#202020" font-size="16">18.0</text><rect x="40" y="224" width="508.7" height="26" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="294.4" y="243" text-anchor="middle" fill="#202020" font-size="16">supplier credit 127.2</text><rect x="548.7" y="258" width="85.3" height="26" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="591.4" y="277" text-anchor="middle" fill="#202020" font-size="16">21.3 days</text><text x="40" y="322" text-anchor="start" fill="#a5a29c" font-size="16">4 px = 1 day · same colours as Ramu</text></svg></figure>
+      <p>TCPL’s cycle <b>shortened</b> by 11 days, the opposite of Ramu’s. Inventories fell to ₹3,526.76 cr from ₹3,599.91 cr even as revenue grew 15%, and the cash flow statement shows working capital <b>releasing ₹145.19 cr</b> in FY26 (receivables and other assets −₹291.07 cr, inventories +₹200.03 cr, payables and other liabilities +₹236.23 cr; p. 417). In FY25 the same line was +₹4.77 cr. The ₹200.03 cr in the cash flow is larger than the ₹73.15 cr balance-sheet fall; I have not traced that bridge, though currency translation of overseas stock is one thing the statement adjusts for.</p>
+      <div class="field-grid">
+        <div><b>₹3,526.76 cr inventories</b><span>FY25: ₹3,599.91 cr. Receivables ₹1,148.33 cr (₹869.79 cr); trade payables ₹3,875.30 cr (₹3,508.43 cr)</span><em>CONSOLIDATED BALANCE SHEET · P. 414</em></div>
+        <div><b>₹11,855.64 cr cost of goods</b><span>Materials ₹7,788.16 cr + purchases ₹4,108.23 cr − ₹40.75 cr inventory change; revenue ₹20,290.43 cr</span><em>CONSOLIDATED P&amp;L · P. 415</em></div>
+        <div><b>+₹145.19 cr working capital</b><span>The change in working capital inside cash from operations of ₹2,421.85 cr</span><em>CASH FLOW · P. 417</em></div>
+      </div>
+      <details class="trace"><summary>Go deeper: why these days are only a guide</summary>
+        <p>Trade payables include money owed for services, packaging and capital goods, not just materials, so dividing them by materials cost overstates payable days. TCPL also buys some goods in trade (₹4,108.23 cr) and sells in many countries, so one year-end snapshot of a group is a rough picture. The point is the direction and the comparison with Ramu, not the second decimal.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s own 21 days, and the ratios</h2>
+      <p>TCPL reports its own figure. Its AGM presentation of 10 June 2026 shows <b>net working capital days of 21</b> for FY26, down from 59 in FY20, and separately “India business NWC at −2 day” (slide 10). The annual report’s “Days of Operating Working Capital” reads 21 for FY26 and 26 for FY25 (p. 56). In the pages I read, TCPL prints no formula for it. Mine is 9.9 days. The definitions differ, and I can only show how much that matters.</p>
+      <figure><svg viewBox="0 0 800 334" role="img" aria-label="Four working-capital day counts for TCPL FY26: 9.9 days on cost of goods, 14.4 on sales, 21.9 on sales with other operating items, and TCPL own reported 21 days"><text x="40" y="40" text-anchor="start" fill="#a5a29c" font-size="16">ON COST OF GOODS · THIS SERIES</text><rect x="40" y="50" width="148.9" height="28" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="200.9" y="72" text-anchor="start" fill="#f1eee8" font-size="16">9.9 days</text><text x="40" y="106" text-anchor="start" fill="#a5a29c" font-size="16">ON SALES</text><rect x="40" y="116" width="215.8" height="28" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="267.8" y="138" text-anchor="start" fill="#f1eee8" font-size="16">14.4 days</text><text x="40" y="172" text-anchor="start" fill="#a5a29c" font-size="16">ON SALES, PLUS OTHER ITEMS</text><rect x="40" y="182" width="327.9" height="28" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="379.9" y="204" text-anchor="start" fill="#f1eee8" font-size="16">21.9 days</text><text x="40" y="238" text-anchor="start" fill="#a5a29c" font-size="16">TCPL’S OWN FIGURE · FORMULA NOT PRINTED</text><rect x="40" y="248" width="315" height="28" fill="#c9c6c0" opacity="0.55" stroke="#f1eee8" stroke-width="2"/><text x="367" y="270" text-anchor="start" fill="#f1eee8" font-size="16">21 days</text><text x="40" y="316" text-anchor="start" fill="#a5a29c" font-size="16">15 px = 1 day · TCPL FY26, same year-end balances</text></svg></figure>
+      <span class="eq">same balances, but on sales: 3,526.76 + 1,148.33 − 3,875.30 = 799.79 · 799.79 ÷ 20,290.43 × 365 = <b>14.4 days</b></span>
+      <span class="eq">adding other current assets less other current liabilities: (614.19 − 198.80) ÷ 20,290.43 × 365 = 7.5 → <b>21.9 days</b></span>
+      <span class="eq">TCPL’s own ratio table (note 41): inventory turnover 5.69 (64 days), receivables turnover 20.11 (18 days), payables turnover 4.26 (86 days), all on average balances</span>
+      <p>So the same balance sheet gives 9.9, 14.4, 21.9 or other answers depending on three choices: <b>cost or sales</b> as the base, <b>which lines</b> are counted, and <b>closing or average</b> balances. My revenue-basis arithmetic lands near 21 but I cannot reconcile TCPL’s number exactly. The scope also differs: the AGM figure is a group measure, and the −2 days is the India business only. Compare days only across companies that use the same method, which is why this series fixes its own.</p>
+      <span class="eq">current ratio = 10,317.09 ÷ 6,578.56 = <b>1.57</b> · quick ratio = (10,317.09 − 3,526.76) ÷ 6,578.56 = <b>1.03</b></span>
+      <p>TCPL’s current ratio matches the 1.57 in its own ratio table (note 41, p. 482). Both are lower than Ramu’s 1.94 and 1.25, yet TCPL’s cash cycle is far shorter. A lower ratio and a short cycle can go together, because suppliers carry much of its stock (payables of ₹3,875.30 cr exceed inventories).</p>
+      <div class="field-grid">
+        <div><b>21 days</b><span>Net working capital days, FY26 (FY20: 59); India business −2 days. No formula printed beside it</span><em>AGM PRESENTATION · SLIDE 10</em></div>
+        <div><b>21 days</b><span>Days of Operating Working Capital, FY26 (FY25: 26)</span><em>INTEGRATED ANNUAL REPORT · P. 56</em></div>
+        <div><b>₹10,317.09 cr and ₹6,578.56 cr</b><span>Current assets and current liabilities; current ratio 1.57 in note 41</span><em>BALANCE SHEET · P. 414 · NOTE 41 · P. 482</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Tata Steel: a heavy-inventory contrast</h2>
+      <p>Tata Steel, consolidated, year to 31 March 2026 <span class="tag">public</span>, from its Integrated Report &amp; Annual Accounts 2025-26. Cost of goods: ₹74,468.93 cr + ₹18,159.14 cr + ₹989.62 cr = ₹93,617.69 cr; revenue ₹2,32,139.94 cr. Trade payables are the three lines in the balance sheet, ₹1,898.89 cr + ₹32,613.49 cr + ₹297.76 cr = ₹34,810.14 cr. Same method as above.</p>
+      <span class="eq">inventory days = 47,249.22 ÷ 93,617.69 × 365 = <b>184.2</b> · receivable days = 4,916.89 ÷ 2,32,139.94 × 365 = <b>7.7</b> · payable days = 34,810.14 ÷ 93,617.69 × 365 = <b>135.7</b></span>
+      <span class="eq">cash conversion cycle = 184.2 + 7.7 − 135.7 = <b>56.2 days</b> · FY25: 171.3 + 8.8 − 112.6 = <b>67.5 days</b> (cost of goods ₹95,000.65 cr)</span>
+      <figure><svg viewBox="0 0 800 340" role="img" aria-label="Tata Steel and TCPL cash cycles on one day scale: Tata Steel stock 184.2 days, customers 7.7, supplier credit 135.7, gap 56.2 days; TCPL gap 9.9 days"><text x="40" y="36" text-anchor="start" fill="#a5a29c" font-size="16">TATA STEEL · FY26</text><rect x="40" y="44" width="552.7" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="316.3" y="63" text-anchor="middle" fill="#202020" font-size="16">in stock 184.2</text><rect x="592.7" y="44" width="23.2" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="40" y="78" width="407.2" height="26" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="243.6" y="97" text-anchor="middle" fill="#202020" font-size="16">supplier credit 135.7</text><rect x="447.2" y="112" width="168.7" height="26" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="531.5" y="131" text-anchor="middle" fill="#202020" font-size="16">56.2 days</text><text x="40" y="182" text-anchor="start" fill="#a5a29c" font-size="16">TCPL · FY26</text><rect x="40" y="190" width="325.7" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="202.9" y="209" text-anchor="middle" fill="#202020" font-size="16">in stock 108.6</text><rect x="365.7" y="190" width="62" height="26" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="396.7" y="209" text-anchor="middle" fill="#202020" font-size="16">20.7</text><rect x="40" y="224" width="357.9" height="26" fill="#ec6a94" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="219" y="243" text-anchor="middle" fill="#202020" font-size="16">supplier credit 119.3</text><rect x="397.9" y="258" width="29.8" height="26" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="439.7" y="277" text-anchor="start" fill="#f1eee8" font-size="16">9.9 days</text><text x="40" y="322" text-anchor="start" fill="#a5a29c" font-size="16">3 px = 1 day · both on the same method</text></svg></figure>
+      <p>Tata Steel locks up far more per rupee of materials than TCPL: a 56-day cycle against 10, with stock that is 15.7% of total assets against 10.2% for TCPL (₹47,249.22 cr of ₹3,01,254.11 cr, and ₹3,526.76 cr of ₹34,452.96 cr). Customers pay almost at once, so the cycle is all stock. Its own ratio table shows the same story on its own bases: inventory 73 days and debtors 8 days (average balances), current ratio 0.80 after excluding current maturities of debt (p. F3). By the plain definition the current ratio is 72,265.11 ÷ 96,917.64 = 0.75 and the quick ratio 0.26: heavy stock plus large short-term borrowings. The cycle also improved, by about 11 days, as payables rose.</p>
+      <div class="field-grid">
+        <div><b>₹47,249.22 cr inventories</b><span>Note 14: raw materials ₹15,375.38 cr, finished goods ₹18,110.08 cr, stores and spares ₹7,063.87 cr. Receivables ₹4,916.89 cr</span><em>CONSOLIDATED BALANCE SHEET · P. F142 · NOTE 14 · P. F190</em></div>
+        <div><b>₹34,810.14 cr trade payables</b><span>FY25: ₹29,314.38 cr. Current liabilities total ₹96,917.64 cr</span><em>BALANCE SHEET · P. F143 · NOTE 27 · P. F214</em></div>
+        <div><b>₹93,617.69 cr cost of goods</b><span>Materials, purchases and inventory change; revenue ₹2,32,139.94 cr</span><em>CONSOLIDATED P&amp;L · P. F144</em></div>
+      </div>
+      <details class="trace"><summary>Go deeper: how heavy is “heavy”?</summary>
+        <p>On sales rather than cost, Tata Steel’s stock is 74 days against TCPL’s 63, a smaller gap. Materials are only part of a steelmaker’s costs (power, labour and other expenses sit elsewhere), so dividing by materials cost lengthens its inventory days; the same shortcut flatters payables. The contrast to rely on is the 56-day cycle and the share of assets in stock, not any single day count. Raw materials in transit alone were ₹3,444.12 cr (note 14).</p>
+      </details>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements and AGM presentation, and Tata Steel’s audited consolidated statements and ratio table, in their FY2025-26 reports (printed pages as cited). Days are my arithmetic on year-end balances, not company-reported figures. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions for any company</h2>
+      <ol class="checks">
+        <li><b>How long is the cycle, and which way is it moving?</b> Compute the three days for two or three years, on one method. A lengthening cycle drains cash even when profit rises.</li>
+        <li><b>Is growth being paid for in working capital?</b> Multiply the cash tied up by the growth rate. If that is large against CFO, growth needs funding.</li>
+        <li><b>Do balances grow faster than sales?</b> Stock and receivables outrunning sales is the first thing to ask about.</li>
+      </ol>
+      <p>Ramu turns ₹85 cr of EBITDA into ₹58 cr of CFO and ₹13 cr of free cash flow, and working capital is only one of the leaks. Part 13, “Free cash flow and earnings quality”, adds capex and asks whether reported profit turns into cash that can be spent.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Every business funds the days between paying for its goods and being paid for them: inventory days plus receivable days minus payable days is the cash conversion cycle, and the longer it is, the more cash growth swallows.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',DKC='#202020',TEAL='#76d5c1',ROSE='#ec6a94',COR='#ff8059',LGR='#c9c6c0';
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${esc(s)}</text>`;
+    // ---- Ramu Chai FY26 (canonical, example): sales 500, cost of materials 250, 365 days
+    const SALES=500,COGS=250,DAYS=365,OTHER_CA=15,CASH=40,CL_OTHER=45; // short-term borrowings 30 + other 15 stay fixed
+    const FY26=[80,33,51],FY25=[76,31,49];
+    const tied=(I,R,P)=>(I*COGS+R*SALES-P*COGS)/DAYS;
+        const ids=['inv','rec','pay','gr'];
+    const fmtD=v=>(v<0?'−':'')+(Math.round(Math.abs(v)*10)/10)+' days';
+    const labConfig={format:fmtD,sliderFormats:[v=>v+' days',v=>v+' days',v=>v+' days',v=>v+'%']};
+    const nice=x=>Math.max(20,Math.ceil(x/10)*10);
+    const money=v=>(v<0?'−₹':'₹')+Math.abs(v).toFixed(1)+' cr';
+    // compute() is the only formula
+    function compute(I,R,P,g){
+      const ccc=I+R-P, t0=tied(I,R,P), f1=1+g/100, t1=t0*f1, hit=-(t1-t0);
+      const inv=I*COGS/DAYS, rec=R*SALES/DAYS, pay=P*COGS/DAYS;
+      const ca=inv+rec+OTHER_CA+CASH, cl=pay+CL_OTHER;
+      return {I,R,P,g,ccc,t0,t1,hit,inv,rec,pay,ca,cl,cr:ca/cl,qr:(ca-inv)/cl,sales1:SALES*f1,cogs1:COGS*f1};
+    }
+    let step=0,cmp=false;
+    function events(c){
+      const ev=[{k:0,day:0,row:2},{k:1,day:c.I,row:1},{k:2,day:c.P,row:2},{k:3,day:c.I+c.R,row:1}];
+      return ev.sort((a,b)=>a.day-b.day||a.k-b.k);
+    }
+    function msgFor(e,c){
+      const d=e.day;
+      if(e.k===0) return 'Day 0: the tea leaves arrive. Nothing has been paid; the supplier will wait until day '+c.P+'.';
+      if(e.k===1) return 'Day '+d+': the stock is sold. The rupee now sits as a customer’s dues'+(c.R?' for '+c.R+' days.':'; this customer pays on the spot.');
+      if(e.k===2) return 'Day '+d+': Ramu pays the supplier. This is the day cash leaves'+(c.P<c.I+c.R?', and Ramu is out of pocket until day '+(c.I+c.R)+'.':'; the customer has already paid, so no cash is out of pocket.');
+      return 'Day '+d+': the customer pays and the rupee is back as cash. Cash cycle: '+fmtD(c.ccc)+'.';
+    }
+    function drawTrack(c){
+      const T_=nice(Math.max(c.P,c.I+c.R,1)), x0=40, W=440, sx=v=>x0+v*W/T_;
+      let s='';
+      s+=T(40,36,'STOCK, THEN CUSTOMERS',null,MUTC)+`<rect x="${sx(0)}" y="46" width="${(c.I*W/T_).toFixed(1)}" height="26" fill="${COR}"/><rect x="${sx(c.I).toFixed(1)}" y="46" width="${(c.R*W/T_).toFixed(1)}" height="26" fill="${TEAL}"/>`;
+      s+=T(40,100,'SUPPLIER GIVES RAMU',null,MUTC)+`<rect x="${sx(0)}" y="110" width="${(c.P*W/T_).toFixed(1)}" height="26" fill="${ROSE}" opacity="0.8"/>`;
+      const gl=c.ccc>=0?'RAMU FUNDS · '+fmtD(c.ccc):'FLOAT · '+fmtD(-c.ccc);
+      s+=T(40,164,gl,null,MUTC);
+      const gx=Math.min(sx(c.P),sx(c.I+c.R)), gw=Math.abs(c.ccc)*W/T_;
+      s+=`<rect x="${gx.toFixed(1)}" y="174" width="${gw.toFixed(1)}" height="26" fill="${c.ccc>=0?LGR:TEAL}"${c.ccc>=0?'':' opacity="0.55"'}/>`;
+      const evs=events(c), e=evs[step];
+      const cy=e.row===1?59:123, cx=sx(e.day);
+      s+=`<circle cx="${cx.toFixed(1)}" cy="${cy}" r="12" fill="${FGC}" stroke="${DKC}" stroke-width="2"/><text x="${cx.toFixed(1)}" y="${cy+6}" text-anchor="middle" fill="${DKC}" font-size="16">₹</text>`;
+      [0,T_/2,T_].forEach((t,i)=>{s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(1)}" y="228" text-anchor="${['start','middle','end'][i]}" fill="${MUTC}" font-size="16">${t}</text>`;});
+      s+=T(40,256,'days after the leaves arrive',null,MUTC);
+      $('rupeeTrack').innerHTML=s;
+      $('stepOut').textContent='Event '+(step+1)+' of 4 · day '+e.day;
+      $('stepMsg').textContent=msgFor(e,c);
+      $('stepBack').disabled=step<=0;$('stepNext').disabled=step>=3;
+      return {days:T_,coinDay:e.day};
+    }
+    function drawBars(c){
+      const f25=compute(...FY25,c.g);
+      const rowsDef=[['Supplier waits',c.P,ROSE,f25.P],['Stock sold on day',c.I,COR,f25.I],['Customer pays on day',c.I+c.R,TEAL,f25.I+f25.R],['Cash gap',c.ccc,LGR,f25.ccc]];
+      const vals=rowsDef.map(r=>r[1]).concat(cmp?rowsDef.map(r=>r[3]):[]);
+      const hi=nice(Math.max(0,...vals)), mn=Math.min(0,...vals), lo=mn<0?-Math.max(Math.ceil(-mn/10)*10,Math.ceil(hi/30)*10):0; // keep the −/0 tick labels apart
+      const X0=60,W=400,k=W/(hi-lo),sx=v=>X0+(v-lo)*k,zero=sx(0);
+      const band=cmp?96:82, first=80, ticks=lo<0?[lo,0,hi]:[0,hi/2,hi];
+      const bottom=first+3*band+(cmp?48:30)+16;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${bottom+78}`);
+      let s=T(260,25,'days after the leaves arrive','middle',FGC);
+      rowsDef.forEach(([name,val,col,g25],i)=>{
+        const y=first+i*band,x=sx(val);
+        if(i===2) s+=`<rect data-v="${val}" x="${Math.min(x,zero)}" y="${y}" width="${Math.abs(x-zero)}" height="26" fill="${col}"/><rect x="${zero}" y="${y}" width="${Math.abs(sx(c.I)-zero)}" height="26" fill="${COR}"/>`;
+        else s+=`<rect data-v="${val}" x="${Math.min(x,zero)}" y="${y}" width="${Math.abs(x-zero)}" height="26" fill="${col}"${col===ROSE?' opacity="0.8"':''}/>`;
+        s+=`<line x1="${zero}" y1="${y-4}" x2="${zero}" y2="${y+(cmp?48:30)}" stroke="#57534f"/>`;
+        if(cmp) s+=`<rect data-v="${g25}" x="${Math.min(sx(g25),zero)}" y="${y+30}" width="${Math.abs(sx(g25)-zero)}" height="14" fill="${col}" opacity="0.4"/>`;
+        s+=T(30,y-28,name,null,MUTC)+T(30,y-8,fmtD(val)+(cmp?' · FY25 '+fmtD(g25):''),null,FGC);
+      });
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="${MUTC}" font-size="16">${esc(labConfig.format(t))}</text>`).join('');
+      s+=T(30,bottom+57,cmp?'Faded bars: FY25 (76 / 31 / 49).':'Axis adjusts to values.',null,MUTC);
+      $('labChart').innerHTML=s;
+      return {axis:{lo,hi},rows:rowsDef.map(r=>r[1])};
+    }
+    function update(){
+      window.labResults={valid:false};
+      const v=ids.map(id=>+$(id).value);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const c=compute(v[0],v[1],v[2],v[3]);
+      if(![c.ccc,c.t0,c.hit,c.cr,c.qr].every(Number.isFinite)) throw new Error('Lab returned non-finite results');
+      $('rCcc').textContent=fmtD(c.ccc);
+      $('rTied').textContent=money(c.t0);
+      $('rHit').textContent=(c.hit<0?'−':'+')+money(Math.abs(c.hit));
+      $('rHitL').textContent=c.hit<0?'NEXT-YEAR HIT TO CFO · CASH ABSORBED':'NEXT-YEAR HIT TO CFO · CASH RELEASED';
+      $('rRatio').textContent=c.cr.toFixed(2)+' · '+c.qr.toFixed(2);
+      const f25=compute(...FY25,c.g), d=c.ccc-f25.ccc;
+      $('cmpMsg').textContent=cmp?'FY25 cycle '+fmtD(f25.ccc)+' (76 + 31 − 49); now '+fmtD(c.ccc)+': '+(d===0?'unchanged.':(d>0?d+' days longer.':(-d)+' days shorter.')):'';
+      const bars=drawBars(c), tr=drawTrack(c);
+      const led=[['Inventory',c.I+' × '+COGS+' ÷ 365 = '+money(c.inv)],['Receivables',c.R+' × '+SALES+' ÷ 365 = '+money(c.rec)],['Payables',c.P+' × '+COGS+' ÷ 365 = '+money(c.pay)],
+        ['Cash tied up',c.inv.toFixed(1)+' + '+c.rec.toFixed(1)+' − '+c.pay.toFixed(1)+' = '+money(c.t0)],
+        ['Cash cycle',c.I+' + '+c.R+' − '+c.P+' = '+fmtD(c.ccc)],
+        ['Next-year sales / materials','₹'+c.sales1.toFixed(1)+' cr / ₹'+c.cogs1.toFixed(1)+' cr (+'+c.g+'%)'],
+        ['Next-year cash tied up',money(c.t0)+' × '+(1+c.g/100).toFixed(2)+' = '+money(c.t1)],
+        ['Hit to CFO','−('+c.t1.toFixed(1)+' − '+c.t0.toFixed(1)+') = '+(c.hit<0?'−':'+')+money(Math.abs(c.hit))],
+        ['Current ratio','('+c.inv.toFixed(1)+' + '+c.rec.toFixed(1)+' + 15 + 40) ÷ ('+c.pay.toFixed(1)+' + 45) = '+c.cr.toFixed(2)],
+        ['Quick ratio','('+c.ca.toFixed(1)+' − '+c.inv.toFixed(1)+') ÷ '+c.cl.toFixed(1)+' = '+c.qr.toFixed(2)]];
+      $('ledger').innerHTML=led.map(([a,b])=>`<span>${esc(a)}</span><span>${esc(b)}</span>`).join('');
+      window.labResults={valid:true,ccc:c.ccc,tied:c.t0,tiedNext:c.t1,hit:c.hit,cr:c.cr,qr:c.qr,rows:bars.rows,axis:bars.axis,step,cmp,coinDay:tr.coinDay,trackDays:tr.days};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{
+      b.dataset.p.split(',').forEach((x,i)=>{if(x!=='')$(ids[i]).value=x;});step=0;update();}));
+    $('stepBack').addEventListener('click',()=>{step=Math.max(0,step-1);update();});
+    $('stepNext').addEventListener('click',()=>{step=Math.min(3,step+1);update();});
+    $('cmpBtn').addEventListener('click',()=>{cmp=!cmp;$('cmpBtn').setAttribute('aria-pressed',cmp);$('cmpBtn').textContent=cmp?'Hide FY25':'Compare with FY25';update();});
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
