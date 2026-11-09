@@ -10,7 +10,7 @@ python3.12 scripts/publish-eli5.py explainers/how-much-debt-eli5.html \
   --summary "Part 11: leverage, interest cover, and what a rate hike does to a borrower" \
   --bullet "Debt is cheap and lifts ROE, but interest is due in bad years too" \
   --bullet "D/E, net debt/EBITDA and interest cover, with where cover breaks" \
-  --bullet "TCPL (net cash) against Tata Steel (net debt 2.3x EBITDA)" \
+  --bullet "TCPL (net cash) against Tata Steel (net debt 2.2x EBITDA)" \
   --nodes "BORROW,COVER,RATE HIKE" \
   --subcategory "Fundamental analysis, from scratch" --part 11 \
   --card-svg plans/handoff/how-much-debt-eli5.card.svg
