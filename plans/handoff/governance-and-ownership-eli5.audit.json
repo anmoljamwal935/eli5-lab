@@ -1,0 +1,734 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26 (governance, shareholder information, directors' report, auditors' reports, notes 6 and RPT note) + NSE shareholding-pattern XBRL filing for 31 Mar 2026 + SEBI LODR Regulations (amended up to 22 Jan 2026)",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP; NSE; SEBI",
+    "verified_date": "2026-11-09",
+    "duration_or_sections": "AR 428 PDF pages = printed pages offset +86; read printed pp.188-189, 231-233, 243, 249, 254, 257, 333, 387-388, 404-405, 438-439; SEBI LODR regs 2(1)(zb), 17, 18, 23, 31, 44, Schedule XII",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext -layout (AR, SEBI LODR); curl of NSE XBRL file located via NSE corporate-share-holdings-master API",
+    "beginning_middle_end_evidence": "Each cited passage read in full on its page; PDF-to-printed page mapped from footers (pdf 163=p.249, 168=p.254, 171=p.257, 247=p.333, 318=p.404, 352=p.438)",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml",
+      "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "https://www.nseindia.com/api/corporate-share-holdings-master?index=equities&symbol=TATACONSUM (list of filings with promoter %, 23 quarters)",
+      "https://www.sebi.gov.in/sebi_data/meetingfiles/jan-2026/1767338915207_1.pdf (SEBI board memo: cross-check of Schedule XII bands; gives a different effective date)",
+      "https://resource.cdn.icai.org/44096aasb33841-sa705.pdf and sa701 (search results only)"
+    ],
+    "limitations": "BSE shareholding page is JS-rendered and returned no data; NSE XBRL used as the exchange filing. AR page of consolidated note for Form AOC-1 (p.487) and the brief's checked TCPL P&L/balance figures taken from the brief, not re-read. SA 700/705/706/701 numbering and meanings and Companies Act s.114 not read from primary text (ICAI search results only; MCA/IndiaCode blocked) so the page states s.114 only as 'larger majority'. Reg 17(1)(b) 'related to promoter' status of TCPL's chairman not asserted. Plan's '60% of packaging spend' for Ramu's RPT does not reconcile with canonical cup+packaging ₹0.30 x 100 cr cups = ₹30 cr (15/30 = 50%): page uses only ₹15 cr and 3% of sales."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Ownership = control: Ramu promoters 5.5 cr of 10 cr shares, 55%, majority line",
+      "kind": "example",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p1"
+    },
+    {
+      "id": 2,
+      "item": "Shareholding pattern: filed within 21 days of quarter end (LODR 31(1)(b)); promoter group vs public; FPIs/DIIs sit inside public",
+      "kind": "definition",
+      "locator": "LODR reg 31",
+      "check_needed": false,
+      "destination": "p2"
+    },
+    {
+      "id": 3,
+      "item": "Four boxes: promoters & group (deemed related party, reg 2(1)(zb)), FPIs, DIIs (MFs, insurers), public",
+      "kind": "definition",
+      "locator": "LODR reg 2(1)(zb)",
+      "check_needed": false,
+      "destination": "p2"
+    },
+    {
+      "id": 4,
+      "item": "What a change in the pattern can and cannot tell you (sell vs pledge; snapshot lag)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "p6"
+    },
+    {
+      "id": 5,
+      "item": "Why promoters pledge; 0.55 cr shares, ₹22 cr loan, 2.5x cover, 2.0x requirement",
+      "kind": "mechanism",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p3"
+    },
+    {
+      "id": 6,
+      "item": "Cover = S x P / L; margin-call price = c x L / S = ₹80; headroom 20%",
+      "kind": "definition",
+      "locator": "plan arithmetic",
+      "check_needed": false,
+      "destination": "p3"
+    },
+    {
+      "id": 7,
+      "item": "Margin call, forced selling, price impact, spiral; one-off 2%/₹1 cr",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "p4"
+    },
+    {
+      "id": 8,
+      "item": "Why rising pledges are watched; pledge does not predict a fall",
+      "kind": "claim",
+      "locator": "brief",
+      "check_needed": true,
+      "destination": "p4"
+    },
+    {
+      "id": 9,
+      "item": "Pledge lab: sliders price, pledged shares, loan, cover; readouts; forced selling",
+      "kind": "mechanism",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p5"
+    },
+    {
+      "id": 10,
+      "item": "Shareholding lab: 55/10/15/20; promoter sells 5% vs pledges more, signals and caveats",
+      "kind": "mechanism",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p6"
+    },
+    {
+      "id": 11,
+      "item": "RPT definition and why scrutiny; Ramu ₹15 cr from promoter's brother's firm, 3% of sales",
+      "kind": "definition",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p7"
+    },
+    {
+      "id": 12,
+      "item": "RPT approvals: audit committee for all (independent members only), shareholders for material, related parties cannot vote (reg 23(2),(4))",
+      "kind": "claim",
+      "locator": "LODR reg 23",
+      "check_needed": true,
+      "destination": "p7"
+    },
+    {
+      "id": 13,
+      "item": "Material RPT threshold: Schedule XII, 10% of consolidated turnover up to ₹20,000 cr, tiers above, w.e.f. 19.12.2025; before: lower of ₹1,000 cr or 10%; royalty 5%",
+      "kind": "number",
+      "locator": "LODR Schedule XII, reg 23(1),(1A) + footnotes",
+      "check_needed": true,
+      "destination": "p7"
+    },
+    {
+      "id": 14,
+      "item": "RPT check lab: ₹15 cr vs ₹50 cr line; approvals; price vs market (one-off ₹0.28)",
+      "kind": "mechanism",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p8"
+    },
+    {
+      "id": 15,
+      "item": "Board: reg 17(1)(a) 50% non-executive + woman director; 17(1)(b) one-third / half independent; Ramu 4 of 8",
+      "kind": "claim",
+      "locator": "LODR reg 17",
+      "check_needed": true,
+      "destination": "p9"
+    },
+    {
+      "id": 16,
+      "item": "Audit committee: min 3, two-thirds independent, financially literate (reg 18(1)); approves RPTs",
+      "kind": "claim",
+      "locator": "LODR reg 18, 23(2)",
+      "check_needed": true,
+      "destination": "p9"
+    },
+    {
+      "id": 17,
+      "item": "Auditor opinions: unmodified, qualified, emphasis of matter, KAMs",
+      "kind": "definition",
+      "locator": "ICAI SA 700/705/706/701",
+      "check_needed": false,
+      "destination": "p10"
+    },
+    {
+      "id": 18,
+      "item": "Minority protections: e-voting reg 44, related parties barred reg 23(4), bigger majority for special resolutions, independent directors",
+      "kind": "claim",
+      "locator": "LODR reg 44, 23(4)",
+      "check_needed": true,
+      "destination": "p11"
+    },
+    {
+      "id": 19,
+      "item": "TCPL shareholding 31 Mar 2026: promoters 33.83%, public 66.17%, FPIs 20.79%, DIIs 24.19% (MF 9.00, insurers 12.61, PF 2.35), other public 21.19%, Tata Sons 28.68%",
+      "kind": "number",
+      "locator": "NSE XBRL; AR p.254",
+      "check_needed": true,
+      "destination": "p12"
+    },
+    {
+      "id": 20,
+      "item": "TCPL promoter pledge/encumbrance: none (all three flags false)",
+      "kind": "number",
+      "locator": "NSE XBRL",
+      "check_needed": true,
+      "destination": "p12"
+    },
+    {
+      "id": 21,
+      "item": "TCPL board: 7 directors, 4 independent (57%); chair non-executive; Balaji resigned 3 Nov 2025; 6 board meetings",
+      "kind": "number",
+      "locator": "AR pp.231-233",
+      "check_needed": true,
+      "destination": "p13"
+    },
+    {
+      "id": 22,
+      "item": "TCPL audit committee: 4 independent members, 5 meetings all attended; terms include RPT approval",
+      "kind": "number",
+      "locator": "AR p.243",
+      "check_needed": true,
+      "destination": "p13"
+    },
+    {
+      "id": 23,
+      "item": "TCPL material RPT: Capital Foods postal ballot, votes for 37,97,87,311 (99.9884%), against 43,967; dates; AC approval 22 Jul 2025",
+      "kind": "number",
+      "locator": "AR pp.188-189, 249",
+      "check_needed": true,
+      "destination": "p14"
+    },
+    {
+      "id": 24,
+      "item": "TCPL standalone RPT lines with Capital Foods: purchases 832.56, loans taken 388.00, repaid 281.00",
+      "kind": "number",
+      "locator": "AR pp.387-388",
+      "check_needed": true,
+      "destination": "p14"
+    },
+    {
+      "id": 25,
+      "item": "Schedule XII applied to TCPL turnover 20,290.43: 2,000 + 5% x 290.43 = 2,014.52",
+      "kind": "number",
+      "locator": "arithmetic on regulation",
+      "check_needed": true,
+      "destination": "p14"
+    },
+    {
+      "id": 26,
+      "item": "TCPL auditor Deloitte Haskins & Sells LLP: no modified opinion, KAMs (UK & Europe goodwill ₹2,184.50 cr; associate ₹53.19 cr; standalone ₹223.21 cr)",
+      "kind": "number",
+      "locator": "AR pp.257, 333, 404-405",
+      "check_needed": true,
+      "destination": "p15"
+    },
+    {
+      "id": 27,
+      "item": "TCPL note 6: UK&Europe goodwill 1,929.82 -> 2,184.50 (FX +254.68), Bangladesh impairment 16.02, 10.15% discount, 1.44% growth, no reasonable change",
+      "kind": "number",
+      "locator": "AR pp.438-439",
+      "check_needed": true,
+      "destination": "p15"
+    },
+    {
+      "id": 28,
+      "item": "Three questions; hand-off to Part 20",
+      "kind": "context",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p16"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 12,
+      "claim": "Every RPT needs prior audit-committee approval, only independent members approve; material RPT needs shareholder resolution; no related party may vote",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "reg 23(2) first proviso; 23(4) text in LODR (amended to 22 Jan 2026), pdf pp.40,43",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Schedule XII bands: 10% (<=20,000 cr); 2,000 cr+5% above 20,000 (<=40,000); 3,000 cr+2.5% above 40,000 or 5,000 cr whichever lower; w.e.f. 19.12.2025",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "Schedule XII, pdf p.225; footnote 206 'substituted ... Fifth Amendment 2025 w.e.f. 19.12.2025; before: rupees one thousand crore or ten per cent ... whichever is lower'",
+      "page_correction": "SEBI's January 2026 board memo says the bands were 'notified w.e.f. 19 Nov 2025'; page follows the regulation's own footnote (19 Dec 2025). Flagged as dates differ between SEBI documents."
+    },
+    {
+      "inventory_id": 15,
+      "claim": "Reg 17(1)(a),(b) text",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "pdf p.28",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Reg 18(1)(a)-(c)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "pdf p.35",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 18,
+      "claim": "Reg 44(1) remote e-voting on all shareholder resolutions; 44(3) results within two working days",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "pdf p.86",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 2,
+      "claim": "Reg 31(1)(b) quarterly within 21 days",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "pdf p.62",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 3,
+      "claim": "Reg 2(1)(zb) promoter/promoter group deemed related party",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "LODR definitions",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "SA 700/705/706/701 meanings",
+      "verdict": "Mostly supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://resource.cdn.icai.org/44095aasb33841-sa701.pdf",
+      "supporting_passage": "ICAI search results only (SA 705, SA 701 PDFs); AR p.404 prints the KAM definition",
+      "page_correction": "Standard textbook meanings; primary standards not opened in full."
+    },
+    {
+      "inventory_id": 19,
+      "claim": "Shareholding pattern 31 Mar 2026",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml",
+      "supporting_passage": "XBRL ShareholdingOfPromoterAndPromoterGroup 334813834 / 0.3383; PublicShareholding 654747946 / 0.6617; InstitutionsDomestic 0.2419; InstitutionsForeign 0.2079; MutualFundsOrUTI 0.09; InsuranceCompanies 0.1261; ProvidentFundsOrPensionFunds 0.0235; NonInstitutions 0.2118; Governments 0.0001; total 989561780; AR p.254 table: 33.83 / MF 9.00 / FII+foreign cos 21.54 (=20.79+0.75 foreign companies); top-ten Tata Sons 28,38,54,264 = 28.68, LIC 9.02",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 20,
+      "claim": "No promoter pledge/encumbrance",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml",
+      "supporting_passage": "XBRL WhetherAnySharesHeldByPromotersAreEncumberedUnderPledged = false; ...NonDisposalUndertaking = false; ...OtherThanByWayOfPledgeOrNDU = false",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "Promoter % per quarter 33.84 (Mar-Dec 2025), 33.83 (Mar 2026)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.nseindia.com/companies-listing/corporate-filings-shareholding-pattern",
+      "supporting_passage": "NSE corporate-share-holdings-master listing",
+      "page_correction": "Taken from NSE's filing list, not the single filing; page says so."
+    },
+    {
+      "inventory_id": 21,
+      "claim": "Board and committees",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "AR printed pp.231 (57%/29%/14% chart), 232-233 table (7 directors on 31 Mar 2026), 243 audit committee table",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 23,
+      "claim": "Postal ballot votes",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "AR p.249: 379787311 for 99.9884%; 43967 against 0.0116%; e-voting 24 Sep-23 Oct 2025; results 28 Oct 2025",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 23,
+      "claim": "Approval sequence",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "AR pp.188-189: AC approved 22 Jul 2025; board; ordinary resolution via postal ballot closing 23 Oct 2025; policy revised",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 24,
+      "claim": "Standalone RPT lines",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "AR pp.387-388: purchases 832.56 / 713.99; ICD taken 388.00 / 100.00; repaid 281.00 / nil",
+      "page_correction": "Sum 1,501.56 labelled my arithmetic; AR does not print the value placed before members."
+    },
+    {
+      "inventory_id": 25,
+      "claim": "Schedule XII applied",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf",
+      "supporting_passage": "2,000 + 0.05 x (20,290.43 - 20,000) = 2,014.52 (Python)",
+      "page_correction": "Assumes turnover = revenue from operations 20,290.43 (brief); regulation says 'annual consolidated turnover'. Labelled as my arithmetic."
+    },
+    {
+      "inventory_id": 26,
+      "claim": "Auditor and KAMs",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "AR p.257 'do not contain any modified audit opinion'; pp.404-405 KAM 1 goodwill UK & Europe CGU ₹2,184.50 cr, KAM 2 associate ₹53.19 cr; p.333 standalone KAM ₹223.21 cr. grep of AR text finds no 'emphasis of matter'",
+      "page_correction": "'No Emphasis of Matter found' is a text search of pdftotext output, stated on the page as 'I found'."
+    },
+    {
+      "inventory_id": 27,
+      "claim": "Note 6",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage": "AR p.438 goodwill table and p.439 discount/growth rates, impairment 16.02, sensitivity statement",
+      "page_correction": "none needed"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "Forced-selling dynamics",
+      "verdict": "Opinion / prediction",
+      "as_of": "2026-11-09",
+      "evidence_url": "—",
+      "supporting_passage": "Model, not a fact: price impact 0.5-4% per ₹1 cr is a labelled one-off assumption",
+      "page_correction": "Tagged one-off on the page."
+    },
+    {
+      "inventory_id": 11,
+      "claim": "Ramu RPT: ₹15 cr, 3% of sales",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "plans/fundamental-analysis-series.md",
+      "supporting_passage": "plan section 'Ownership (Part 19)'",
+      "page_correction": "Plan's '60% of packaging spend' does not reconcile with ₹0.30 x 100 cr cups = ₹30 cr; page omits the 60% and shows 50 cr cups x ₹0.30 = ₹15 cr (a one-off split that does not change Ramu's accounts)."
+    },
+    {
+      "inventory_id": 12,
+      "claim": "Companies Act s.114 special resolution needs larger majority",
+      "verdict": "Mostly supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.mca.gov.in/content/dam/mca/pdf/CompaniesAct2013.pdf",
+      "supporting_passage": "search snippets; MCA/IndiaCode pages blocked",
+      "page_correction": "Page says only 'larger majority'; the 3x figure is not stated."
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "Whoever holds the votes holds the company",
+      "inventory_ids": [
+        1
+      ],
+      "visual_types": "ownership bar 70 px = 1 cr shares",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "ownership bar 70 px = 1 cr shares",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p2",
+      "heading": "The shareholding pattern, box by box (field guide)",
+      "inventory_ids": [
+        2,
+        3
+      ],
+      "visual_types": "field guide",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "field guide",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p3",
+      "heading": "Why promoters pledge shares",
+      "inventory_ids": [
+        5,
+        6
+      ],
+      "visual_types": "three bars 10 px = ₹1 cr",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "three bars 10 px = ₹1 cr",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p4",
+      "heading": "A margin call can feed itself",
+      "inventory_ids": [
+        7,
+        8
+      ],
+      "visual_types": "8-round price bars 4.6 px = ₹1",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "8-round price bars 4.6 px = ₹1",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p5",
+      "heading": "Drive the margin call (lab 1)",
+      "inventory_ids": [
+        9
+      ],
+      "visual_types": "lab chart axis ₹0-200",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "lab chart axis ₹0-200",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p6",
+      "heading": "Promoter sells, or promoter pledges (lab 2)",
+      "inventory_ids": [
+        4,
+        10
+      ],
+      "visual_types": "stacked bar 4.6 px = 1%",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "stacked bar 4.6 px = 1%",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p7",
+      "heading": "Related-party deals need extra eyes",
+      "inventory_ids": [
+        11,
+        12,
+        13
+      ],
+      "visual_types": "zones 9 px = ₹1 cr",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "zones 9 px = ₹1 cr",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p8",
+      "heading": "Check Ramu's packaging deal (lab 3)",
+      "inventory_ids": [
+        14
+      ],
+      "visual_types": "bars ₹0-70",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "bars ₹0-70",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p9",
+      "heading": "Independent directors and the audit committee",
+      "inventory_ids": [
+        15,
+        16
+      ],
+      "visual_types": "8 seats",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "8 seats",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p10",
+      "heading": "What the auditor's opinion says",
+      "inventory_ids": [
+        17
+      ],
+      "visual_types": "four equal bars",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "four equal bars",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p11",
+      "heading": "How minority holders still have a say",
+      "inventory_ids": [
+        18
+      ],
+      "visual_types": "two bars 70 px = 1 cr",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "two bars 70 px = 1 cr",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p12",
+      "heading": "TCPL: who owns it",
+      "inventory_ids": [
+        19,
+        20
+      ],
+      "visual_types": "6 px = 1%",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "6 px = 1%",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p13",
+      "heading": "TCPL: the board and its audit committee",
+      "inventory_ids": [
+        21,
+        22
+      ],
+      "visual_types": "seat rows",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "seat rows",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p14",
+      "heading": "TCPL: a material related-party vote",
+      "inventory_ids": [
+        23,
+        24,
+        25
+      ],
+      "visual_types": "6 px = 1% votes; 0.3 px = ₹1 cr",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "6 px = 1% votes; 0.3 px = ₹1 cr",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p15",
+      "heading": "TCPL: the auditor's report",
+      "inventory_ids": [
+        26,
+        27
+      ],
+      "visual_types": "1 px = ₹40 cr",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "1 px = ₹40 cr",
+      "assumptions": "see page; one-offs tagged"
+    },
+    {
+      "id": "p16",
+      "heading": "Three questions before you trust the numbers",
+      "inventory_ids": [
+        28
+      ],
+      "visual_types": "so what",
+      "quantities": "shares, %, ₹ crore",
+      "scale": "so what",
+      "assumptions": "see page; one-offs tagged"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Lab 1: Ramu canonical (0.55 cr shares, ₹22 cr loan, 2.0x, ₹100); cover = S*P/L; call price = c*L/S",
+      "forced sales sell x=(cL-SP)/(P(c-1)) shares at the pre-impact price, then price falls k*proceeds (k = 0.5/1/2/4% per ₹1 cr, one-off); rounds stop when cover >= c-0.005 or after 8",
+      "Lab 2: sells 5% = 5 percentage points of company moved to the chosen buyer; pledges more = 25% of promoter holding (1.375 cr), one-off",
+      "Lab 3: seller price in paise steps, cups 10-160 cr in steps of 10, market ₹0.28 (one-off), sales 500, materiality = 10% of sales strictly exceeded, EBITDA 85, tax 25%"
+    ],
+    "units": {
+      "price": "₹ per share",
+      "shares": "crore",
+      "loan": "₹ crore",
+      "cover": "x",
+      "pct": "% of shares",
+      "purchase": "₹ crore"
+    },
+    "independent_calculation_method": "scratchpad/labtest.py: separate Python oracle (cascade solved by bisection per round, not the page's closed form) drives the page through Playwright and compares window.labResults / shareResults / rptResults and chart geometry",
+    "cases": [
+      {
+        "name": "default Ramu canonical",
+        "expected": "cover 2.5, call price 80, fall 20%, 8 rounds, end price 63.2799",
+        "observed": "match",
+        "pass": true
+      },
+      {
+        "name": "4 presets",
+        "expected": "slider values as listed",
+        "observed": "match",
+        "pass": true
+      },
+      {
+        "name": "81-point slider grid {40,100,150}x{0.1,0.55,1.1}x{5,22,50}x{1.2,2.0,3.0} x 4 shock/impact pairs",
+        "expected": "oracle",
+        "observed": "0 mismatches",
+        "pass": true
+      },
+      {
+        "name": "150 random slider/shock/impact combinations",
+        "expected": "oracle",
+        "observed": "0 mismatches",
+        "pass": true
+      },
+      {
+        "name": "Lab 2 all 3 scenarios x 3 buyers",
+        "expected": "oracle and segment widths",
+        "observed": "0 mismatches",
+        "pass": true
+      },
+      {
+        "name": "Lab 3 2 sellers x 16 cup values x 13 prices, boundary 160 cr x 32p material, 31p not",
+        "expected": "oracle",
+        "observed": "0 mismatches",
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "total shares % = 100",
+      "no call and no rounds when price >= call price",
+      "cascade price non-increasing",
+      "bar ends equal tick scale",
+      "no NaN/Infinity text",
+      "stepper clamps at 10-160 cups and 24-36 paise"
+    ],
+    "tolerance": "1e-5 relative (geometry 1.5 px, widths 1e-3)",
+    "axis_and_clipping": "Lab 1 axis fixed ₹0-200 with ticks from one scale function; a margin-call bar beyond ₹200 is clipped to the axis end and labelled 'off the scale' with its full value; zero is at the left edge."
+  },
+  "verification": {
+    "lint": "check_explainer.py 0 errors 0 warnings",
+    "supplementary_checks": [
+      "check_render.py 0 errors (lab at defaults, 4 presets and all 16 min/max slider combinations; 390px no sideways page scroll)",
+      "labtest.py: 900 cases, 0 mismatches, 0 page errors",
+      "check_card.py 0 errors 0 warnings; card rendered and viewed",
+      "every TCPL figure re-derived from source text/XBRL (shares sum 334813834+654747946=989561780; 20.79+0.75=21.54; 2,184.50/21,787.53=10.03%; Schedule XII arithmetic)"
+    ],
+    "screenshots": [
+      "scratchpad/shots/desktop-00..16.png",
+      "scratchpad/shots/phone-00..16.png",
+      "scratchpad/shots/def-4,5,7.png",
+      "scratchpad/shots/card.png"
+    ],
+    "screenshots_inspection": "Viewed desktop 01,03,04,05,06,07,08,09,10,11,12,13,14,15 and phone 05,10, plus default-state shots of all three labs. Fixed: step buttons were solid coral (added class secondary); majority line crossed a label in the minority drawing (label left-aligned); auditor rows too tight (pitch raised). Wide figures scroll sideways on phones with a swipe hint, as in earlier parts.",
+    "coverage_review": "Every inventory row located on the page; scope bullets (shareholding pattern, pledges, RPTs and thresholds, board, auditor, minority) all present; red flags in full named as Part 20",
+    "semantic_review": "Colour key checked; real figures tagged public; one-offs tagged; no judgement on TCPL governance beyond documents; publication not attempted",
+    "artifact_sha256": "696e169649f8a3bd78813c2d8e9645c1eb08155c26a243ca4a9fa2ef80ac6bb3",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 15,
+        "panels": 16,
+        "notes": 1
+      },
+      "artifact_sha256": "696e169649f8a3bd78813c2d8e9645c1eb08155c26a243ca4a9fa2ef80ac6bb3",
+      "artifact_path": "/home/user/eli5-lab/explainers/governance-and-ownership-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (hand-off only; no dry run, no shared files touched)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
