@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "Tata Consumer Products Integrated Annual Report 2025-26; consolidated statements; AGM presentation 10 Jun 2026",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-09",
+    "duration_or_sections": "pdf pages 29, 90-95, 124-127, 137-138, 169, 329, 367-369 read; AGM slide 4",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext (IAR pdf page n = printed page n+86 in the 329-369 range; printed folios used on page)",
+    "beginning_middle_ending_evidence": "Topic-based part with a TCPL real-report box; only cited pages used. Sources: https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf ; https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf ; https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+    "sampled_visual_timestamps": "AGM slide 4 and IAR p.54 rendered to image and inspected",
+    "source_paths": "scratchpad src/ (outside repo)",
+    "limitations": "Industry and moat teaching is general; no market-share or company claims beyond TCPL's own filings. Lab model is illustrative. TCPL brand claims are unverified company claims."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Industry: market size, growth, share (Ramu 12,500 cr, 8%, 2.4%)",
+      "kind": "definition",
+      "locator": "plan Part 17 canonical",
+      "check_needed": false,
+      "destination": "industry"
+    },
+    {
+      "id": 2,
+      "item": "Concentration, top-three 55%, fragmented vs consolidated; HHI",
+      "kind": "definition",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "concentration"
+    },
+    {
+      "id": 3,
+      "item": "Indian context: why telecom and cement consolidated (general, no figures)",
+      "kind": "context",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "concentration"
+    },
+    {
+      "id": 4,
+      "item": "Porter's five forces, one line + tea example each",
+      "kind": "definition",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "forces"
+    },
+    {
+      "id": 5,
+      "item": "What a moat is; six types (brand, switching, network, scale, reach, licence/regulation)",
+      "kind": "definition",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "moat-ring, fieldguide"
+    },
+    {
+      "id": 6,
+      "item": "Moat in numbers: high stable ROCE vs cost of capital (Part 10)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "roce-excess"
+    },
+    {
+      "id": 7,
+      "item": "Moat in numbers: steady gross margin, pricing power through input-cost spike (Part 8)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "cup-pricing"
+    },
+    {
+      "id": 8,
+      "item": "Moat erosion: new channels, technology, regulation",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "erosion"
+    },
+    {
+      "id": 9,
+      "item": "Lab: A rival arrives (4 sliders, with vs without moat, 12% line)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "lab-rival"
+    },
+    {
+      "id": 10,
+      "item": "Five-forces weak/strong panel with margin effect",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "lab-forces"
+    },
+    {
+      "id": 11,
+      "item": "TCPL brand claims on AGM slide 4",
+      "kind": "claim",
+      "locator": "AGM slide 4",
+      "check_needed": true,
+      "destination": "tcpl-claims"
+    },
+    {
+      "id": 12,
+      "item": "TCPL gross margin FY25 42.85% -> FY26 41.57%",
+      "kind": "number",
+      "locator": "IAR p.415",
+      "check_needed": true,
+      "destination": "tcpl-gm"
+    },
+    {
+      "id": 13,
+      "item": "MD&A statements on tea/coffee cost, pricing",
+      "kind": "claim",
+      "locator": "IAR pp.176-179, 212, 223",
+      "check_needed": true,
+      "destination": "tcpl-gm"
+    },
+    {
+      "id": 14,
+      "item": "Advertisement and sales charges 1,225.48 (1,155.84), Note 28",
+      "kind": "number",
+      "locator": "IAR p.455",
+      "check_needed": true,
+      "destination": "tcpl-ad"
+    },
+    {
+      "id": 15,
+      "item": "Distribution reach: 4.5mn outlets, 290mn households etc.",
+      "kind": "number",
+      "locator": "IAR p.213, AGM slide 4",
+      "check_needed": true,
+      "destination": "tcpl-claims"
+    },
+    {
+      "id": 16,
+      "item": "TCPL RoCE 41.87% vs series 8.55%; capital employed definition; 5-yr RoCE",
+      "kind": "number",
+      "locator": "IAR pp.54, 224",
+      "check_needed": true,
+      "destination": "tcpl-roce"
+    },
+    {
+      "id": 17,
+      "item": "Five questions about any moat; Part 18 hand-off",
+      "kind": "context",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "sowhat"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 11,
+      "claim": "Ten brand claims quoted verbatim, slide 4",
+      "verdict": "Supported as TCPL's statements (basis unverified, stated on page)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage_and_locator": "slide 4 of AGM presentation (pdftotext + rendered image)",
+      "page_treatment": "tagged public; quoted as claims where company statements"
+    },
+    {
+      "inventory_id": 12,
+      "claim": "GM FY26 (20290.43-11855.64)/20290.43=41.570%; FY25 (17618.30-10069.28)/17618.30=42.848%; 7788.16+4108.23-40.75=11855.64; 6997.40+3434.37-362.49=10069.28",
+      "verdict": "Supported (recomputed in Python from printed lines)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Consolidated P&L, printed p.415",
+      "page_treatment": "tagged public; quoted as claims where company statements"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Quotes on tea cost tapering, calibrated price increases, price reductions, coffee costs and US tariffs; gross-margin change not explained as such",
+      "verdict": "Supported (verbatim quotes); no cause inferred",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Board's report pp.176,177,179; MD&A pp.212,223 (pdftotext)",
+      "page_treatment": "tagged public; quoted as claims where company statements"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Ad and sales charges 1,225.48 / 1,155.84; 6.04% / 6.56% of revenue",
+      "verdict": "Supported (arithmetic recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Note 28, printed p.455",
+      "page_treatment": "tagged public; quoted as claims where company statements"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "4.5 million outlets, 290 million households, 100+ super-stockists, 3,000+ sub-stockists, >40,000 pharmacy outlets, e-commerce +62%",
+      "verdict": "Supported as TCPL statements",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "MD&A p.213; AGM slide 4",
+      "page_treatment": "tagged public; quoted as claims where company statements"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Series ROCE FY26 2165.12/(23188.86+2120.31)=8.55%; FY25 1878.61/(21390.30+1848.65)=8.08%; TCPL RoCE 41.87%/37.54%; five-year 33/34/43/38/42",
+      "verdict": "Supported (arithmetic recomputed; TCPL figures as printed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "MD&A p.224; highlights p.54 incl. footnote definition (read as rendered image)",
+      "page_treatment": "tagged public; quoted as claims where company statements"
+    }
+  ],
+  "panels": [
+    {
+      "id": "industry",
+      "heading": "Size, growth and share",
+      "visual": "market bar + growth bars, 1px=Rs40cr"
+    },
+    {
+      "id": "concentration",
+      "heading": "Concentrated or fragmented",
+      "visual": "three share bars, 6px=1%"
+    },
+    {
+      "id": "forces",
+      "heading": "Porter's five forces",
+      "visual": "five arrows on profit circle + cards"
+    },
+    {
+      "id": "moat-ring",
+      "heading": "A moat keeps rivals out",
+      "visual": "ring of six walls, rival arrow"
+    },
+    {
+      "id": "fieldguide",
+      "heading": "Six walls, with tea examples",
+      "visual": "field guide"
+    },
+    {
+      "id": "roce-excess",
+      "heading": "Return above the cost of capital",
+      "visual": "EBIT split 42+31, 8px=Rs1cr; steady vs swingy ROCE columns"
+    },
+    {
+      "id": "cup-pricing",
+      "heading": "Steady gross margins, sticky prices",
+      "visual": "four cup bars, 100px=Rs1"
+    },
+    {
+      "id": "erosion",
+      "heading": "Channels, technology, rules",
+      "visual": "ROCE curve with three events"
+    },
+    {
+      "id": "lab-rival",
+      "heading": "A rival arrives",
+      "visual": "ROCE lines with/without moat"
+    },
+    {
+      "id": "lab-forces",
+      "heading": "Weak or strong, force by force",
+      "visual": "margin bar 16px/pt"
+    },
+    {
+      "id": "tcpl-claims",
+      "heading": "TCPL: brand claims and reach",
+      "visual": "claims grid + log-scale reach bars"
+    },
+    {
+      "id": "tcpl-gm",
+      "heading": "TCPL: gross margin, FY25 to FY26",
+      "visual": "two bars 1px=Rs33cr"
+    },
+    {
+      "id": "tcpl-ad",
+      "heading": "TCPL: advertising and sales charges",
+      "visual": "two bars 1px=Rs4cr"
+    },
+    {
+      "id": "tcpl-roce",
+      "heading": "TCPL: two ROCEs, no verdict",
+      "visual": "ROCE bars 10px/pt + 5-year columns"
+    },
+    {
+      "id": "sowhat",
+      "heading": "Five questions about any moat",
+      "visual": "so what (no drawing, allowed)"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "start ROCE 73/350=20.857%, assumed cost of capital 12% (Part 23 estimates it), excess 8.857 points",
+      "erosion e=(1-moat)*min(1,2*cut)*(1-0.15*ads%) per war year applied to customers and excess profit alike",
+      "ads cost ads%*500/350 ROCE points per war year",
+      "lost customers do not return; capital 350 fixed; market 12,500 growing 8%; share 2.4%",
+      "without-moat line = same model, moat 0",
+      "five forces: weights rivalry 2.0, entrants 1.5, substitutes 1.0, buyers 2.0, suppliers 1.5 points of sales (illustrative); base EBIT margin 14.6%; ROCE=margin*500/350; need 8.4% for 12%"
+    ],
+    "units": {
+      "ROCE": "%",
+      "share": "%",
+      "profit": "Rs cr",
+      "margin": "% of sales"
+    },
+    "independent_calculation_method": "closed-form Python oracle (oracle.py) written separately from the page JS; compared through Playwright",
+    "cases": [],
+    "invariants": [
+      "no price cut -> both lines flat 20.857% (ads 0)",
+      "moat 100% -> with-moat line flat when ads 0",
+      "moat 0 -> with == without",
+      "all-typical forces -> margin 14.6%, ROCE 20.857%, excess 31",
+      "all strong 6.6% / all weak 22.6%"
+    ],
+    "tolerance": "1e-6 relative",
+    "axis_and_clipping": "y axis fixed 0-25%, min possible ROCE 12-5.71>6; x ticks 0..10 via data-v; forces bar axis 0-30% (range 6.6-22.6); no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "labtest.py: 11,823 checks, 0 failures, 0 JS errors (defaults, 4 presets, reset, 16 slider extremes, 320-point grid, all 243 five-force combinations, invariants)",
+      "check_render.py: 0 errors (defaults, presets, 16 slider extremes, 390px)",
+      "check_card.py: 0 errors, 0 warnings; card rendered and inspected"
+    ],
+    "screenshots": [
+      "shots desktop/phone 00-15 inspected; fixed: overlapping erosion labels, clipped lab axis title, style block closed early (force controls), cramped force controls"
+    ],
+    "coverage_review": "All 17 inventory rows mapped to panels, checked by eye",
+    "semantic_review": "No verdict on TCPL; claims quoted as claims; MD&A causes quoted not inferred; telecom/cement description tagged general with no figures; lab and forces weights labelled illustrative",
+    "artifact_sha256": "da352787084510e321ff5a526bb2e8e0f66d2f93f33d35334593ef7946dd675c",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 15,
+        "panels": 15,
+        "notes": 0
+      },
+      "artifact_sha256": "da352787084510e321ff5a526bb2e8e0f66d2f93f33d35334593ef7946dd675c",
+      "artifact_path": "/home/user/eli5-lab/explainers/industry-and-moats-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published; handed off (branch claude/fa-part-17-industry-moats)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
