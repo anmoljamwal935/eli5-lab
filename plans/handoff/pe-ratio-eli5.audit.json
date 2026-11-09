@@ -16,9 +16,9 @@
     ],
     "beginning_middle_ending_evidence": "Topic build from primary documents and the series plan; no video/article source.",
     "limitations": [
-      "No dated exchange close verified (NSE 403; BSE access not pursued after a sandbox block).",
       "Adjusted EPS bridge not published by TCPL.",
-      "Ramu numbers are canonical examples from the plan."
+      "Ramu numbers are canonical examples from the plan.",
+      "Price read on 2026-11-09 via raw MCP JSON-RPC calls to mcp.nseindia.in (read-only); nseindia.in ownership not independently verified; page P/E uses FY26 EPS with a Nov 2026 price."
     ]
   },
   "inventory": [
@@ -175,12 +175,12 @@
     },
     {
       "inventory_id": "I12",
-      "claim": "No dated NSE/BSE closing price quoted",
-      "verdict": "Unverifiable",
+      "claim": "TATACONSUM NSE close ₹1,086.30 on 2026-11-06 (EQ series)",
+      "verdict": "Supported (exchange data service; page states source and date)",
       "as_of": "2026-11-08",
-      "evidence_url": "exchange sites",
-      "supporting_passage": "NSE API returned 403; a further BSE fetch was blocked by the sandbox and not worked around",
-      "page_treatment": "Page gives a reader price input only and says why"
+      "evidence_url": "https://mcp.nseindia.in/bhavcopy/cm/mcp",
+      "supporting_passage": "get_ltp_by_date(TATACONSUM, 2026-11-06) returned 1086.3; get_stock_history(1 month to 2026-11-06) last_close 1086.3, to_date 2026-11-06; server states data source is official NSE Bhavcopy files. Endpoint taken from the NSE-MCP setup page the user supplied; domain nseindia.in not independently confirmed as NSE's.",
+      "page_treatment": "Dated and sourced in the TCPL box; input pre-filled and editable"
     },
     {
       "inventory_id": "I5",
@@ -356,7 +356,7 @@
     ],
     "coverage_review": "done: every inventory row found on page",
     "semantic_review": "done by author; P/E-vs-cap/profit difference reworded to 'about 0.02%' after checking arithmetic",
-    "artifact_sha256": "9275475f4485cbfe755fc1a95277d2a5bc9888faa97d8b74ca721895daff6c35",
+    "artifact_sha256": "03a30fd38e709e2c7eb42661dee85625a458ed5025dbf184a1403bc7457d4134",
     "structural_lint": {
       "scope": "structural lint only; not semantic, numerical, visual or publication approval",
       "errors": [],
@@ -366,7 +366,7 @@
         "panels": 13,
         "notes": 2
       },
-      "artifact_sha256": "9275475f4485cbfe755fc1a95277d2a5bc9888faa97d8b74ca721895daff6c35",
+      "artifact_sha256": "03a30fd38e709e2c7eb42661dee85625a458ed5025dbf184a1403bc7457d4134",
       "artifact_path": "/home/user/eli5-lab/explainers/pe-ratio-eli5.html"
     }
   },

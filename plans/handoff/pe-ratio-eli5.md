@@ -20,4 +20,4 @@ python3.12 scripts/publish-eli5.py explainers/pe-ratio-eli5.html \
 Dry run done and reverted (published.js, sitemap, feed, og images, link-preview block).
 After the real publish, re-run `check_explainer.py --audit` (the preview block changes the file hash).
 
-Open items: no dated NSE/BSE closing price is quoted (could not verify one); the TCPL box takes a reader-typed price. Page links Parts 1 and 3 only; Parts 6, 8+ are named in text, not linked, because they are not live yet.
+Price: the TCPL box is pre-filled with the NSE close of ₹1,086.30 on Fri 6 Nov 2026 (EQ series), read on 9 Nov via NSE's bhavcopy MCP (`get_ltp_by_date`, `get_stock_history`); the endpoint came from the NSE-MCP setup page the owner supplied and the nseindia.in domain was not independently confirmed. The input stays editable. Page links Parts 1 and 3 only; Parts 6, 8+ are named in text, not linked, because they are not live yet.
