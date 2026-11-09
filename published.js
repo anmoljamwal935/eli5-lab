@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "working-capital-cycle-eli5",
+    "title": "Working capital and the cash cycle",
+    "category": "Monetary Architecture",
+    "minutes": 16,
+    "summary": "Part 12: inventory, customers and suppliers: how long a rupee stays stuck",
+    "bullets": [
+      "Inventory, receivable and payable days make the cash conversion cycle",
+      "Growth needs more working capital, so profit can outrun cash",
+      "TCPL's 10-day cycle against Tata Steel's 56"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "STOCK",
+      "CUSTOMERS",
+      "SUPPLIER"
+    ],
+    "file": "explainers/working-capital-cycle-eli5.html",
+    "date": "2026-11-09",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three bars on one day scale: stock then customers in coral and teal, the supplier credit in rose, and the grey cash gap between the supplier being paid and the customer paying\"><rect x=\"24.0\" y=\"36\" width=\"192.0\" height=\"18\" fill=\"#ff8059\"/><rect x=\"216.0\" y=\"36\" width=\"79.2\" height=\"18\" fill=\"#76d5c1\"/><rect x=\"24.0\" y=\"66\" width=\"122.4\" height=\"18\" fill=\"#ec6a94\" fill-opacity=\"0.85\"/><path d=\"M146.4 54 L146.4 96 M295.2 54 L295.2 96\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\" stroke-dasharray=\"3 3\"/><rect x=\"146.4\" y=\"96\" width=\"148.8\" height=\"18\" fill=\"#a5a29c\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"26\" fill=\"#76d5c1\">PART 12</text><text x=\"296\" y=\"135\" text-anchor=\"end\" fill=\"#a5a29c\">62-DAY GAP</text></g></svg>",
+    "part": 12
+  },
+  {
     "id": "how-much-debt-eli5",
     "title": "Debt: how much is too much",
     "category": "Monetary Architecture",
