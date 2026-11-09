@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "pb-dividends-ev-eli5",
+    "title": "The other price tags: P/B, dividends, EV/EBITDA",
+    "category": "Monetary Architecture",
+    "minutes": 16,
+    "summary": "Part 14: book value, dividends, and pricing the whole company with its debt",
+    "bullets": [
+      "P/B, dividend yield, payout and sustainable growth (ROE x retention)",
+      "Enterprise value: market cap + debt - cash, and why EV/EBITDA compares debt fairly",
+      "TCPL's P/B, dividend history and EV, worked line by line"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "BOOK",
+      "DIVIDENDS",
+      "EV"
+    ],
+    "file": "explainers/pb-dividends-ev-eli5.html",
+    "date": "2026-11-09",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two enterprise-value bars with the same lavender market cap: the first adds a short rose block of debt, the second adds a long one, so the whole-company price differs\"><rect x=\"40\" y=\"46\" width=\"140\" height=\"20\" fill=\"#c3b8ff\"/><rect x=\"180\" y=\"46\" width=\"14\" height=\"20\" fill=\"#ec6a94\" fill-opacity=\"0.75\"/><rect x=\"40\" y=\"80\" width=\"140\" height=\"20\" fill=\"#c3b8ff\"/><rect x=\"180\" y=\"80\" width=\"56\" height=\"20\" fill=\"#ec6a94\" fill-opacity=\"0.75\"/><path d=\"M180 38 V108\" stroke=\"#a5a29c\" stroke-width=\"1\" stroke-dasharray=\"3 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#f5c76a\">PART 14</text><text x=\"244\" y=\"94\" fill=\"#ec6a94\">EV</text><text x=\"40\" y=\"132\" fill=\"#a5a29c\">SAME MARKET CAP</text></g></svg>",
+    "part": 14
+  },
+  {
     "id": "free-cash-flow-eli5",
     "title": "Free cash flow and earnings quality",
     "category": "Monetary Architecture",
