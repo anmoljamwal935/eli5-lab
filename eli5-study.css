@@ -106,7 +106,7 @@ header.study-masthead::after {
 }
 
 header.study-masthead .masthead-inner {
-  max-width: 860px;
+  max-width: min(1560px, max(860px, calc((100vw + 860px) / 2)));
   margin: 0 auto;
   padding: 0 24px;
   height: 100%;
@@ -234,8 +234,9 @@ body.in-frame .eli5-study-container {
 /* ==========================================================================
    2. UNIFIED CONTENT CONTAINER (All studies share exact same alignment)
    ========================================================================== */
+/* Reading column: 900px, plus half of the remaining screen width (owner: keep 50% of the side space), capped for ultra-wide screens. */
 .eli5-study-container {
-  max-width: 900px;
+  max-width: min(1600px, max(900px, calc((100vw + 900px) / 2)));
   margin: 0 auto;
   padding: 40px 24px 90px;
   width: 100%;
@@ -785,7 +786,7 @@ body {
 }
 
 .eli5-study-container :where(.lead, .lede, .body) {
-  max-width: 68ch !important;
+  max-width: none !important;
   color: var(--muted) !important;
   font-size: clamp(17px, 2vw, 20px) !important;
   line-height: 1.65 !important;
@@ -1013,4 +1014,11 @@ a.series-card:hover { background: var(--raised); color: var(--fg); }
   .series-cards { grid-template-columns: 1fr; }
   .series-cards > :last-child { text-align: left; }
   .series-cards > span:empty { display: none; }
+}
+
+/* Wider reading column: keep diagrams at a comfortable size instead of scaling them up with it. */
+.eli5-study-container figure > svg {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
 }
