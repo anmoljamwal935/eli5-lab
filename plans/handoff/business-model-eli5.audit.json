@@ -1,0 +1,430 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26 (printed pp.176-177, 220-223, 477-479) and AGM presentation FY26 (slides 7, 22, 23, 25)",
+    "author": "Tata Consumer Products Ltd",
+    "verified_date": "2026-11-09",
+    "duration_or_sections": "IAR 428 PDF pages (PDF page = printed page − 86 for the pages used); AGM 29 slides",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl of the two tataconsumer.com PDFs + pdftotext -layout; passages located by text search and read in context",
+    "beginning_middle_ending_evidence": "Note 38 read in full (pp.477-479); MD&A segment commentary pp.220-223 read; AGM slides 7, 22, 23, 25, 26, 28 read",
+    "sampled_visual_timestamps": [],
+    "limitations": "Part 16 uses Ramu Chai's canonical numbers from plans/fundamental-analysis-series.md; ₹4.50/₹7.50 channel prices and the café/packaged fixed-cost split are our one-off assumptions, labelled on the page. Not re-fetched: price (no price used in this part). Ind AS 108 customer-disclosure rule deliberately not cited (not read this session)."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Revenue = volume × price × mix; Ramu 100 cr cups × ₹5.00 = ₹500 cr",
+      "kind": "mechanism",
+      "locator": "plan Part 16 + brief",
+      "check_needed": false,
+      "destination": "f1 panel 1"
+    },
+    {
+      "id": 2,
+      "item": "Channel mix: shops 300 (60%), cafés 125 (25%), offices 75 (15%); one-off assumption of ₹4.50 packaged and ₹7.50 café price reproduces 100 cr cups and ₹500 cr",
+      "kind": "example",
+      "locator": "plan Part 16",
+      "check_needed": false,
+      "destination": "f1 panel 1"
+    },
+    {
+      "id": 3,
+      "item": "One cup: price 5.00; tea 0.90, milk 1.10, sugar 0.20, cup 0.30, freight 0.25; contribution 2.25 (45%)",
+      "kind": "number",
+      "locator": "plan Part 16",
+      "check_needed": false,
+      "destination": "f2 panel 2"
+    },
+    {
+      "id": 4,
+      "item": "Fixed per cup falls with volume; break-even 140 ÷ 2.25 = 62.2 cr cups (Part 8 linked, not re-taught)",
+      "kind": "mechanism",
+      "locator": "plan Part 16",
+      "check_needed": false,
+      "destination": "f3 panel 3"
+    },
+    {
+      "id": 5,
+      "item": "Mix shifts move contribution margin more than EBITDA margin when fixed costs follow the mix (cafés higher price and higher fixed costs: one-off assumption)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "f4a/f4b panel 4 and lab mix buttons"
+    },
+    {
+      "id": 6,
+      "item": "Customer concentration: ₹60 cr distributor (12%) lost → EBITDA 85 → 58 (−32%)",
+      "kind": "number",
+      "locator": "plan Part 16",
+      "check_needed": false,
+      "destination": "f5a/f5b panel 5 and lab toggle"
+    },
+    {
+      "id": 7,
+      "item": "Recurring vs one-off revenue; habit is not contract",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "f6 panel 6"
+    },
+    {
+      "id": 8,
+      "item": "Asset-light vs asset-heavy; link to Part 10 turnover (Ramu 400/500; two labelled one-off neighbours)",
+      "kind": "mechanism",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "f7 panel 7"
+    },
+    {
+      "id": 9,
+      "item": "Questions: who pays, for what, how often, what stops switching; moats named, Part 17 teaches",
+      "kind": "context",
+      "locator": "brief",
+      "check_needed": false,
+      "destination": "so-what panel 10"
+    },
+    {
+      "id": 10,
+      "item": "TCPL AGM segment revenue 6,467 / 6,588 / 4,885 / 2,387; consolidated 20,290; classification differs from Note 38",
+      "kind": "number",
+      "locator": "AGM slide 7",
+      "check_needed": true,
+      "destination": "r1/r2 panel 9"
+    },
+    {
+      "id": 11,
+      "item": "Note 38 segment revenue and results FY26/FY25, margins on segment revenue",
+      "kind": "number",
+      "locator": "IAR p.477",
+      "check_needed": true,
+      "destination": "r2/r3 panel 9"
+    },
+    {
+      "id": 12,
+      "item": "AGM claim: Capital Foods + Organic India combined gross margin 48%, significantly accretive; revenue 839 and 478",
+      "kind": "claim",
+      "locator": "AGM slide 25",
+      "check_needed": true,
+      "destination": "panel 9 text (quoted as TCPL's claim)"
+    },
+    {
+      "id": 13,
+      "item": "MD&A drivers: volume vs price per segment (tea 3% vol / 6% value; salt 10/14; foods 12/18; core volume-led plus price; international pricing in US; non-branded volumes and realisation; UK volume decline)",
+      "kind": "claim",
+      "locator": "IAR pp.220,222,223; AGM slide 23",
+      "check_needed": true,
+      "destination": "r4 panel 9"
+    },
+    {
+      "id": 14,
+      "item": "Segment assets and segment result per rupee of assets (our arithmetic); geography revenue India 71.5%; no customer named in Note 38",
+      "kind": "number",
+      "locator": "IAR pp.477-479",
+      "check_needed": true,
+      "destination": "panel 9 bullets"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 10,
+      "claim": "6,467+6,588+4,885+2,387 = 20,327; less 37 eliminations = 20,290; slide note (f) says classification differs from financial results",
+      "verdict": "Supported (read; arithmetic recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage_and_locator": "AGM slide 7 (PDF page 7); note f quoted",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 11,
+      "claim": "India 12,778.88 / result 1,503.74 = 11.77%; Intl 5,250.67 / 626.13 = 11.92%; NB 2,387.00 / 280.47 = 11.75%; FY25 9.08%, 14.66%, 21.32%",
+      "verdict": "Supported (read; recomputed in Python)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Note 38 B(a),(b), IAR printed p.477 (PDF page 391)",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 11,
+      "claim": "Bridge 2,410.34+141.76−137.03−222.23−20.06 = 2,172.78 = PBT; so segment result already after depreciation (our reading, labelled on page)",
+      "verdict": "Supported (arithmetic); inference labelled",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Note 38 B(b) p.477",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 11,
+      "claim": "India result +47% on sales +14%; Intl −6% on +15%; NB −31% on +25%",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Note 38 p.477",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 12,
+      "claim": "Quoted: 'Capital Foods and Organic India, combined, grew 12%' and 'Combined gross margin at 48%; significantly accretive to the base India businesses.' Revenue 839 and 478",
+      "verdict": "Supported as a quotation; the 48% is an unverifiable company claim (no definition; audited statements give no gross margin for these businesses)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage_and_locator": "AGM slide 25 (PDF page 25)",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Tea +3% volume, +6% value; salt +14% value, +10% volume (quoted)",
+      "verdict": "Supported (read)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "IAR printed p.220 (PDF page 134)",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "India Foods +18% revenue, +12% volume; India Packaged Beverages +6%, +3% (tea figures identical, not double-counted)",
+      "verdict": "Supported (read)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage_and_locator": "AGM slides 22, 23",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Core 'led by volume aided by increased distribution and the benefit of price increases implemented during the second half of FY25'; growth businesses 'volume-led'; International 'driven by US on account of pricing intervention'; Non-Branded 'higher volumes in Solubles and higher realisation in both'",
+      "verdict": "Supported (quoted)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "IAR printed p.223 (PDF page 137)",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "UK 'declined by -1% in constant currency, led by volume decline on account of demand softness'",
+      "verdict": "Supported (quoted)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "IAR printed p.222",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Margin drivers: India 'tapering of tea cost...'; International 'increase in coffee costs and the impact of U.S. tariffs'; Non-Branded 'margins reverted to the normative levels'",
+      "verdict": "Supported (quoted)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "IAR printed pp.176-177 (directors' report)",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "Price and mix residual: 1.06/1.03 = +2.9%; 1.14/1.10 = +3.6%; 1.18/1.12 = +5.4%",
+      "verdict": "Supported arithmetic on rounded reported growth; labelled our arithmetic",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "",
+      "supporting_passage_and_locator": "computed",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Segment result / closing segment assets FY26: NB 9.63%, India 8.94%, Intl 7.53%; assets per ₹1 of revenue 1.22, 1.32, 1.58",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Note 38 B(c) pp.477-478",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Revenue by geography: India 14,515.95 (71.5% of 20,290.43)",
+      "verdict": "Supported (read; recomputed)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Note 38 C, printed p.479",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "No single customer is named in Note 38 (text search for customer disclosures found none)",
+      "verdict": "Supported as an absence in the note; page says it is a gap, not a finding",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Note 38 pp.477-479",
+      "page_treatment": "tagged public / example; working shown on page"
+    },
+    {
+      "inventory_id": 6,
+      "claim": "EBITDA 12 cr cups × 2.25 = 27; 85−27 = 58; −31.8%",
+      "verdict": "Supported (recomputed; example numbers)",
+      "as_of": "FY2026 (31 Mar 2026)",
+      "evidence_url": "",
+      "supporting_passage_and_locator": "plan",
+      "page_treatment": "tagged public / example; working shown on page"
+    }
+  ],
+  "panels": [
+    {
+      "id": "f1",
+      "heading": "Revenue is volume × price × mix",
+      "visual": "three blocks, width cups (6px per cr), height price (28px per ₹), area = sales"
+    },
+    {
+      "id": "f2",
+      "heading": "What one cup earns, slice by slice",
+      "visual": "one cup, 128px per ₹"
+    },
+    {
+      "id": "f3",
+      "heading": "Profit per cup depends on how many cups",
+      "visual": "contribution bars split fixed per cup/EBITDA per cup, 160px per ₹"
+    },
+    {
+      "id": "f4a/f4b",
+      "heading": "Not every cup earns the same",
+      "visual": "café vs packaged cup 88px per ₹; EBITDA for three mixes 4px per ₹ cr"
+    },
+    {
+      "id": "f5a/f5b",
+      "heading": "Losing 12% of sales costs 32% of EBITDA",
+      "visual": "₹500 cr bar with ₹60 cr slice; EBITDA bridge"
+    },
+    {
+      "id": "f6",
+      "heading": "Revenue you can count on next year",
+      "visual": "this-year vs next-year bars, 10px per ₹1,000"
+    },
+    {
+      "id": "f7",
+      "heading": "How many assets each ₹100 of sales needs",
+      "visual": "assets bars 3.4px per ₹, profit ₹10"
+    },
+    {
+      "id": "lab",
+      "heading": "The economics of one cup",
+      "visual": "cup bar fixed axis ₹0-10, swing chart"
+    },
+    {
+      "id": "r1-r4",
+      "heading": "Tata Consumer's segments, FY2026",
+      "visual": "two segment bars (0.035px per ₹ cr), result margins 18px per point, growth 20px per point"
+    },
+    {
+      "id": "sowhat",
+      "heading": "Four questions about any business",
+      "visual": "text exception"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "variable cost = 0.90 + milk + 0.20 + 0.30 + 0.25",
+      "only milk moves in variable cost",
+      "fixed = fixed cash costs; below EBITDA not modelled",
+      "mix buttons set price and fixed dials: more cafés price 5.30 fixed 164, more packaged price 4.70 fixed 116 (one-off example, café ₹7.50 vs packaged ₹4.50, café fixed ₹2.40/cup follows café cups, packaged fixed stays)",
+      "distributor toggle removes 12 cr cups at the average price, fixed unchanged"
+    ],
+    "units": {
+      "price": "₹ a cup",
+      "cups": "crore",
+      "fixed": "₹ crore"
+    },
+    "independent_calculation_method": "scratchpad labtest.py: separate Python formulas, driven through Playwright against window.labResults and the readout text; not the page cup()",
+    "cases": [
+      {
+        "case": "defaults/base",
+        "expected": {
+          "cpc": 2.25,
+          "epc": 0.85,
+          "ebitda": 85,
+          "be": 62.22
+        },
+        "observed": "2.25 / 0.85 / 85 / 62.2",
+        "pass": true
+      },
+      {
+        "case": "more cafés (5.3,1.1,100,164)",
+        "expected": {
+          "ebitda": 91
+        },
+        "observed": "91",
+        "pass": true
+      },
+      {
+        "case": "more packaged (4.7,1.1,100,116)",
+        "expected": {
+          "ebitda": 79
+        },
+        "observed": "79",
+        "pass": true
+      },
+      {
+        "case": "milk 1.50",
+        "expected": {
+          "cpc": 1.85,
+          "ebitda": 45
+        },
+        "observed": "matches",
+        "pass": true
+      },
+      {
+        "case": "distributor lost, defaults",
+        "expected": {
+          "ebitda": 58,
+          "epc": 0.659,
+          "sales": 440,
+          "be": 62.2
+        },
+        "observed": "58 / 0.66 / 440 / 62.2",
+        "pass": true
+      },
+      {
+        "case": "all 16 min/max slider combinations x toggle on/off (32) plus loss-per-cup and break-even-adjacent cases",
+        "expected": "formulas",
+        "observed": "39 cases, 0 failures, 0 JS errors",
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "contribution per cup = price − variable cost",
+      "EBITDA = cups × contribution per cup − fixed",
+      "EBITDA per cup × cups = EBITDA",
+      "break-even none when contribution ≤ 0",
+      "canonical defaults 2.25 / 0.85 / 85 / 62.2"
+    ],
+    "tolerance": "1e-9 absolute on numbers; readouts compared as displayed",
+    "axis_and_clipping": "fixed axis ₹0-₹10 a cup (price ≤ ₹8, fixed per cup ≤ 240÷28 = ₹8.57); swing chart auto axis from zero; phone shows swipe hint"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "labtest.py: 39 cases, 0 failures, 0 JS errors",
+      "check_render.py: 0 errors (defaults, 4 presets, 16 slider extremes, 390px)"
+    ],
+    "screenshots": [
+      "desktop-00..10 and phone-00..10 viewed: fixed footnote clipped by viewBox in f1; removed in-bar label crossing dividers in f6; widened f4a scale to fit the ₹0.55 label; lab chart on phone scrolls sideways with swipe hint by house pattern"
+    ],
+    "coverage_review": "All 14 inventory rows mapped to panels and checked by eye",
+    "semantic_review": "No buy/sell verdict on TCPL; 48% gross margin quoted as TCPL's claim and flagged unverifiable; segment-result inference labelled; price-and-mix residual labelled our arithmetic; Parts 8, 10, 3, 12 linked; Parts 17-20 named without links (Part 17 hand-off text only)",
+    "browser_check_render": "0 errors",
+    "artifact_sha256": "812c5431d51e2f8ceb335b7f055f6d963505d75394b1667f03609c77141581a7",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 15,
+        "panels": 10,
+        "notes": 1
+      },
+      "artifact_sha256": "812c5431d51e2f8ceb335b7f055f6d963505d75394b1667f03609c77141581a7",
+      "artifact_path": "/home/user/eli5-lab/explainers/business-model-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published (by instruction)",
+    "commit": "",
+    "live_url": "",
+    "readback_results": ""
+  }
+}
