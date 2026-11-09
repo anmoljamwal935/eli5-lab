@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "ratios-together-eli5",
+    "title": "Reading ratios together",
+    "category": "Monetary Architecture",
+    "minutes": 16,
+    "summary": "Part 15: peers, PEG, and a one-page dashboard where no ratio stands alone",
+    "bullets": [
+      "Peer comparison and PEG: price against growth, and its limits",
+      "A traffic-light dashboard with thresholds you can move",
+      "TCPL's dashboard read as a story, with no verdict"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PEERS",
+      "PEG",
+      "DASHBOARD"
+    ],
+    "file": "explainers/ratios-together-eli5.html",
+    "date": "2026-11-09",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A dashboard grid of green, amber and red traffic-light marks for three companies across four ratio groups, with a gold part label\"><path d=\"M92 40 H228\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"130\" cy=\"52\" r=\"7\" fill=\"#76d5c1\"/><path d=\"M130 66 L138 74 L130 82 L122 74 Z\" fill=\"#f5c76a\"/><circle cx=\"130\" cy=\"96\" r=\"7\" fill=\"#76d5c1\"/><circle cx=\"130\" cy=\"118\" r=\"7\" fill=\"#76d5c1\"/><path d=\"M180 44 L188 59 L172 59 Z\" fill=\"#f87171\"/><path d=\"M180 66 L188 81 L172 81 Z\" fill=\"#f87171\"/><path d=\"M180 88 L188 96 L180 104 L172 96 Z\" fill=\"#f5c76a\"/><path d=\"M180 110 L188 125 L172 125 Z\" fill=\"#f87171\"/><circle cx=\"230\" cy=\"52\" r=\"7\" fill=\"#76d5c1\"/><circle cx=\"230\" cy=\"74\" r=\"7\" fill=\"#76d5c1\"/><circle cx=\"230\" cy=\"96\" r=\"7\" fill=\"#76d5c1\"/><circle cx=\"230\" cy=\"118\" r=\"7\" fill=\"#76d5c1\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#f5c76a\">PART 15</text><text x=\"296\" y=\"140\" text-anchor=\"end\" fill=\"#c3b8ff\">ONE PAGE</text></g></svg>",
+    "part": 15
+  },
+  {
     "id": "pb-dividends-ev-eli5",
     "title": "The other price tags: P/B, dividends, EV/EBITDA",
     "category": "Monetary Architecture",
