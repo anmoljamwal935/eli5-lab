@@ -407,7 +407,7 @@
     "coverage_review": "All 14 inventory rows mapped to panels and checked by eye",
     "semantic_review": "No buy/sell verdict on TCPL; 48% gross margin quoted as TCPL's claim and flagged unverifiable; segment-result inference labelled; price-and-mix residual labelled our arithmetic; Parts 8, 10, 3, 12 linked; Parts 17-20 named without links (Part 17 hand-off text only)",
     "browser_check_render": "0 errors",
-    "artifact_sha256": "812c5431d51e2f8ceb335b7f055f6d963505d75394b1667f03609c77141581a7",
+    "artifact_sha256": "383b622bd7264ecf7e6c3377f15f4cd68faac15baf63a5bc25f143852919623b",
     "structural_lint": {
       "scope": "structural lint only; not semantic, numerical, visual or publication approval",
       "errors": [],
@@ -417,7 +417,7 @@
         "panels": 10,
         "notes": 1
       },
-      "artifact_sha256": "812c5431d51e2f8ceb335b7f055f6d963505d75394b1667f03609c77141581a7",
+      "artifact_sha256": "383b622bd7264ecf7e6c3377f15f4cd68faac15baf63a5bc25f143852919623b",
       "artifact_path": "/home/user/eli5-lab/explainers/business-model-eli5.html"
     }
   },
