@@ -201,6 +201,26 @@ retention 60% → sustainable growth = ROE 20% × 60% = 12% · EV 1,060 (market 
 | PEG | 1.5 | 1.9 | 1.6 |
 | CFO/PAT | 1.16 | 0.70 | 1.05 |
 
+### Ramu Chai Ltd: extra canonical numbers (added for Parts 16–20; use exactly these)
+
+**One cup (Part 16).** Price ₹5.00. Variable cost ₹2.75: tea ₹0.90, milk powder ₹1.10, sugar ₹0.20, cup and packaging ₹0.30 (these four = materials ₹2.50), freight and distributor commission ₹0.25.
+Contribution ₹2.25 a cup (45%). Fixed cash costs ₹1.40 a cup at 100 crore cups → EBITDA ₹0.85 a cup (17%). Break-even volume: 140 ÷ 2.25 = 62.2 crore cups.
+Revenue mix: packaged tea through shops ₹300 cr (60%) · Ramu cafés ₹125 cr (25%) · offices and institutions ₹75 cr (15%).
+Largest customer: one regional distributor, ₹60 cr (12% of sales).
+
+**Industry (Part 17), fictional.** Ramu sells in a ₹12,500 cr regional packaged-tea market growing 8% a year; Ramu's share is 2.4% (packaged tea ₹300 cr ÷ 12,500). The top three brands hold 55%.
+
+**Capital allocation (Part 18).** Spare cash to decide on: ₹50 cr, over 10 years. Four choices, each tagged example:
+reinvest in Ramu at its 20% return · buy a rival that earns 8% on the price paid · pay it out as a dividend (₹5 a share) · buy back 0.5 crore shares at ₹100.
+Track record (example): management guided 10% sales growth for each of FY24–FY26 and delivered 11.0% (405/365), 11.1% (450/405) and 11.1% (500/450).
+
+**Ownership (Part 19).** Shareholding pattern at 31 March 2026: promoters (the Ramu family) 55% (5.5 crore shares) · foreign portfolio investors 10% · domestic institutions (mutual funds, insurers) 15% · public 20%.
+Pledge: 0.55 crore promoter shares (10% of the promoter holding) pledged for a ₹22 cr loan. At ₹100 the shares are worth ₹55 cr (2.5× cover); the lender calls for more security below 2.0× cover, i.e. below ₹80 a share (−20%).
+Related party: Ramu buys ₹15 cr a year of cups and packaging from a company owned by the promoter's brother (3% of sales; 60% of packaging spend).
+Board: 8 directors, 4 independent. Auditor: a mid-sized firm, unmodified opinion.
+
+**Red flags (Part 20).** "Ramu Chai B" is a fudged twin for the spot-the-difference lab, tagged example. Keep the real Ramu's numbers unchanged; put all the differences in Ramu B.
+
 ## Parts (38 + bonus)
 
 `R:` = what the "real report" box shows.
