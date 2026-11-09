@@ -26,7 +26,7 @@
     { id: 'working-capital-cycle-eli5', track: 'numbers', title: 'Working capital and the cash cycle', blurb: 'Inventory, customers and suppliers: how long a rupee stays stuck', file: 'working-capital-cycle-eli5.html' },
     { id: 'free-cash-flow-eli5', track: 'numbers', title: 'Free cash flow and earnings quality', blurb: 'The cash test every reported profit has to pass', file: 'free-cash-flow-eli5.html' },
     { id: 'pb-dividends-ev-eli5', track: 'value', title: 'The other price tags: P/B, dividends, EV/EBITDA', blurb: 'Book value, payouts, and pricing the whole company including its debt', file: 'pb-dividends-ev-eli5.html' },
-    { id: 'ratios-together-eli5', track: 'value', title: 'Reading ratios together', blurb: 'Peers, PEG, and a one-page dashboard where no ratio stands alone' },
+    { id: 'ratios-together-eli5', track: 'value', title: 'Reading ratios together', blurb: 'Peers, PEG, and a one-page dashboard where no ratio stands alone', file: 'ratios-together-eli5.html' },
     { id: 'business-model-eli5', track: 'business', title: 'Business model and unit economics', blurb: 'How the company really makes money, one unit at a time' },
     { id: 'industry-and-moats-eli5', track: 'business', title: 'Industry structure and moats', blurb: 'Competition, pricing power, and what keeps rivals out' },
     { id: 'management-and-capital-allocation-eli5', track: 'business', title: 'Management, capital allocation and concalls', blurb: 'What the people in charge do with the cash, and whether they keep promises' },
