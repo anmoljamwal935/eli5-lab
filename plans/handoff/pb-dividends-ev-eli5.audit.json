@@ -1,0 +1,470 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26: Consolidated Financial Statements (printed pp.414, 415, 418, 446-447, 457, 469) and AGM presentation FY26 (10 June 2026)",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-08",
+    "duration_or_sections": "consolidated.pdf 455 KB read via pdftotext -layout; AGM presentation 632 lines read at slides 1, 8, 10",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext -layout; WebSearch (leads only) for the Companies Act and T+1 questions; WebFetch of the statute reproduction",
+    "beginning_middle_end_evidence": "Balance sheet p.414, P&L p.415, cash flow p.418, notes 14 (pp.446-447), 34 (p.457), 36 (p.469) read; AGM title slide and slide 10",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf (full report download was cut off by the proxy, so it was NOT read; only the separately published consolidated statements were used)",
+      "https://bnblegal.com/bareact/companies-act-2013-chapter-viii/"
+    ],
+    "limitations": "NSE bhavcopy for 6 Nov 2026 could not be downloaded (connection reset); the price Rs 1,086.30 is the series brief value, checked only by arithmetic against the market cap. TCPL record/payment dates came only from aggregator sites and were not used. Ex-date vs record-date gap not verified. Companies Act text read on a reproduction. Ramu numbers are plan canonical; the borrower company B, the two P/B firms and the payout-lab ROE what-ifs are labelled one-off examples."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Market cap measured against profit, equity and dividends: P/E 20, P/B 4, yield 2% (Ramu)",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "one-price"
+    },
+    {
+      "id": 2,
+      "item": "Book value per share = equity / shares; Ramu 250/10 = 25; P/B = price/BVPS = 4.0",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "books"
+    },
+    {
+      "id": 3,
+      "item": "P/B below 1 / market pays multiples of book; P/B stepper readout",
+      "kind": "mechanism",
+      "locator": "lab 3",
+      "check_needed": false,
+      "destination": "books"
+    },
+    {
+      "id": 4,
+      "item": "P/B matters for asset-heavy firms and banks (Part 29), not brand-heavy firms; internally built brands generally not on balance sheet",
+      "kind": "claim",
+      "locator": "general accounting",
+      "check_needed": true,
+      "destination": "pb-when"
+    },
+    {
+      "id": 5,
+      "item": "DPS, dividend yield, payout ratio, retention; Ramu 2.00, 2.0%, 40%, 60%",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "dividends"
+    },
+    {
+      "id": 6,
+      "item": "Yield moves inversely with price; payout >100% uses reserves",
+      "kind": "misconception",
+      "locator": "general",
+      "check_needed": false,
+      "destination": "dividends"
+    },
+    {
+      "id": 7,
+      "item": "Indian dividend calendar: interim by board, final recommended then approved at AGM, paid next year; record date; ex-date; 30-day payment rule; tax is Part 38",
+      "kind": "mechanism",
+      "locator": "TCPL Note 14 p.446-447; Companies Act s.123,127",
+      "check_needed": true,
+      "destination": "calendar"
+    },
+    {
+      "id": 8,
+      "item": "Sustainable growth = ROE x retention; Ramu 20% x 60% = 12%; links Parts 9 and 10",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "growth"
+    },
+    {
+      "id": 9,
+      "item": "Payout slider lab: DPS, yield, payout, sustainable growth (canonical 40/2/12)",
+      "kind": "lab",
+      "locator": "lab 2",
+      "check_needed": false,
+      "destination": "payout-lab"
+    },
+    {
+      "id": 10,
+      "item": "Enterprise value = market cap + debt - cash (+NCI, +leases); Ramu 1,060; net debt definition; series definitions",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "ev"
+    },
+    {
+      "id": 11,
+      "item": "NCI and leases in EV; Ind AS lease cost below EBITDA; other debt-like items",
+      "kind": "claim",
+      "locator": "Ind AS 116 (general)",
+      "check_needed": true,
+      "destination": "ev"
+    },
+    {
+      "id": 12,
+      "item": "EV/EBITDA 12.5x and EV/Sales 2.1x; pair EV with pre-lender earnings, market cap with owners numbers",
+      "kind": "definition+number",
+      "locator": "plan canonical",
+      "check_needed": false,
+      "destination": "ev-multiples"
+    },
+    {
+      "id": 13,
+      "item": "EV multiples compare different debt fairly; Part 7 last trap finished (same P/E 20, EBITDA 85 vs 115)",
+      "kind": "mechanism",
+      "locator": "derived example",
+      "check_needed": false,
+      "destination": "ev-debt"
+    },
+    {
+      "id": 14,
+      "item": "Lab: same market cap, different debt; sliders debt, cash, EBITDA; EV, EV/EBITDA, P/E, cheaper-on-which",
+      "kind": "lab",
+      "locator": "lab 1",
+      "check_needed": false,
+      "destination": "ev-lab"
+    },
+    {
+      "id": 15,
+      "item": "TCPL BVPS = 21,787.53 / 98.956178 cr = 220.17; P/B 4.93 at 1,086.30",
+      "kind": "number",
+      "locator": "cons. BS p.414; Note 14 p.446; price per brief",
+      "check_needed": true,
+      "destination": "tcpl-pb"
+    },
+    {
+      "id": 16,
+      "item": "TCPL DPS 10 recommended FY26 (989.56 cr); yield 0.92%; payout 64.2%; retention 35.8%; ROE x retention 2.54%",
+      "kind": "number",
+      "locator": "Note 14 p.447; P&L p.415",
+      "check_needed": true,
+      "destination": "tcpl-pb"
+    },
+    {
+      "id": 17,
+      "item": "TCPL dividend history FY21 4.05 to FY26 10.00 (AGM slide 10); CAGR 19.8%",
+      "kind": "number",
+      "locator": "AGM presentation slide 10",
+      "check_needed": true,
+      "destination": "tcpl-pb"
+    },
+    {
+      "id": 18,
+      "item": "TCPL EV = 107,496 + 2,120.31 - 3,046.57 + 1,401.33 = 107,971.07; with leases 108,670.27; with TCPL net cash 105,919.84",
+      "kind": "number",
+      "locator": "BS p.414; Note 34 p.457; Note 36 p.469",
+      "check_needed": true,
+      "destination": "tcpl-ev"
+    },
+    {
+      "id": 19,
+      "item": "TCPL EV/EBITDA 38.7/38.9/37.9; EV/Sales 5.32/5.36/5.22; P/E 69.7",
+      "kind": "number",
+      "locator": "P&L p.415",
+      "check_needed": true,
+      "destination": "tcpl-ev"
+    },
+    {
+      "id": 20,
+      "item": "FY26 equity +8.9% helped by OCI 829.18 (currency translation); dividends 820.30 cash vs 816.34 equity note",
+      "kind": "number",
+      "locator": "P&L p.415; CF p.418; Note 14 p.447",
+      "check_needed": true,
+      "destination": "tcpl-pb"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 4,
+      "claim": "Internally generated brands generally are not recognised on the balance sheet; acquired brands are",
+      "verdict": "Mostly supported (accounting standard IAS 38/Ind AS 38 from general knowledge; not re-read in this session). TCPL: other intangibles 7,112 incl. brands 6,882 (Part 10 audit)",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "Balance sheet p.414 (goodwill 11,883.90, other intangibles 7,111.76)",
+      "page_treatment": "worded \"generally\"; tagged only TCPL numbers public"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "Final dividend is subject to shareholder approval at the AGM; interim is not",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "Note 14 p.446: \"The dividend proposed by the Board of Directors is subject to the approval of the shareholders in the ensuing Annual General Meeting, except in case of interim dividend\"",
+      "page_treatment": "quoted on page, tagged public"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "Board recommended Rs 10 on 8 May 2026",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "Note 14 p.447: \"The Board of Directors in its meeting held on May 08, 2026, has recommended a final dividend payment of Rs 10 per share\"",
+      "page_treatment": "dated on page"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "AGM held 10 June 2026",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage_and_locator": "Title slide: \"63rd Annual General Meeting ... 10th June 2026\"",
+      "page_treatment": "dated on page; page says \"payment falls in FY27, once shareholders have approved it\" because the AGM outcome was not read"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "FY26 cash flow carries the FY25 dividend Rs 8.25/share, Rs 816.34 cr",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "Note 14 p.447 (dividend paid 816.34, DPS 8.25); cash flow p.418 shows 820.30 incl. non-controlling shareholders",
+      "page_treatment": "shown on page; 3.96 difference explained in go-deeper"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "Declared dividend must be paid within 30 days (Companies Act s.127); interim dividend declared by the board (s.123(3))",
+      "verdict": "Mostly supported: statute text read on a reproduction of the Act, not the government gazette",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://bnblegal.com/bareact/companies-act-2013-chapter-viii/",
+      "supporting_passage_and_locator": "s.123(3) interim dividend by the Board; s.127 \"not been paid ... within thirty days from the date of declaration\"",
+      "page_treatment": "stated plainly; section number given"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "Ex-date: first trading day without the dividend; relation to record date under T+1",
+      "verdict": "Unverifiable as to the exact gap: sources read via search conflict (same day vs one trading day before). Page states only the definition and tells readers to use the exchange notice",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "(no primary source retrieved)",
+      "supporting_passage_and_locator": "search results only; no SEBI/NSE page read",
+      "page_treatment": "page does not claim a gap; defers to exchange notice"
+    },
+    {
+      "inventory_id": 7,
+      "claim": "TCPL record date for the FY26 final dividend",
+      "verdict": "Not used: only aggregator sites returned it, which the brief forbids as a source",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "(aggregator sites only)",
+      "supporting_passage_and_locator": "n/a",
+      "page_treatment": "record date omitted from the page"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "BVPS 21,787.53/98.956178 = 220.1735; P/B 1,086.30/220.1735 = 4.9338",
+      "verdict": "Supported (recomputed); price from series brief",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "BS p.414 equity attributable 21,787.53; Note 14 p.446 shares 989,561,780",
+      "page_treatment": "working shown"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "Price Rs 1,086.30 NSE close 6 Nov 2026; market cap 107,496 cr",
+      "verdict": "Supported by brief and arithmetic (1,086.30 x 98.956178 = 107,496.10); NSE bhavcopy file could not be downloaded from this session (connection reset), so the price was not re-read at source",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_06112026.csv",
+      "supporting_passage_and_locator": "fetch failed twice (curl 52/000)",
+      "page_treatment": "price dated on page and in source note"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "Yield 10/1,086.30 = 0.9206%; payout 989.56/1,542.30 = 64.161%; retention 35.839%; ROE 7.0788% x 35.839% = 2.537%",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415 owners 1,542.30; Note 14 p.447",
+      "page_treatment": "working shown"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "DPS FY21 4.05, FY22 6.05, FY23 8.45, FY24 7.75, FY25 8.25, FY26 10.00 (recommended); CAGR (10/4.05)^(1/5)-1 = 19.81%",
+      "verdict": "Supported (slide) + recomputed CAGR",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "supporting_passage_and_locator": "Slide 10 (printed 10), \"Steady dividends (Rs. per share)\", footnote ^Recommended dividend",
+      "page_treatment": "labelled my arithmetic"
+    },
+    {
+      "inventory_id": 18,
+      "claim": "EV 107,496 + 2,120.31 - 3,046.57 + 1,401.33 = 107,971.07; + lease 699.20 = 108,670.27; with adjusted net cash 2,977.49: 105,919.84",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "BS p.414 (borrowings 302.14+1,818.17; cash 3,046.57; NCI 1,401.33; leases 608.64+90.56); Note 34 p.457 total 699.20; Note 36 p.469 adjusted net cash 2,977.49",
+      "page_treatment": "all versions on page"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "EBITDA 20,290.43-11,855.64-1,661.00-3,981.99 = 2,791.80; EV/EBITDA 38.67/38.92/37.94; EV/Sales 5.321/5.356/5.220; P/E 1,086.30/15.59 = 69.68",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "P&L p.415",
+      "page_treatment": "working shown; company EBITDA 2,815 noted as its own definition"
+    },
+    {
+      "inventory_id": 20,
+      "claim": "Owners equity 20,001.08 -> 21,787.53 = +8.93%; OCI to owners 829.18; exchange differences 908.17; NCI dividends 3.96",
+      "verdict": "Supported (recomputed)",
+      "as_of": "FY2026 (31 Mar 2026); read 2026-11-08",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "supporting_passage_and_locator": "BS p.414; P&L p.415; statement of changes in equity; CF p.418",
+      "page_treatment": "go-deeper and body text"
+    }
+  ],
+  "panels": [
+    {
+      "id": "one-price",
+      "heading": "One price, three more yardsticks",
+      "visual": "market-cap bar vs profit/equity/dividend bars, 0.6px=Rs1cr"
+    },
+    {
+      "id": "books",
+      "heading": "Book value per share, and P/B",
+      "visual": "dynamic price bar sliced in book values, stepper, 2px=Rs1"
+    },
+    {
+      "id": "pb-when",
+      "heading": "Book value suits some firms, not others",
+      "visual": "two firms, one 4px=Rs1 scale"
+    },
+    {
+      "id": "dividends",
+      "heading": "Dividends: DPS, yield and payout",
+      "visual": "profit split bar + price bar with DPS sliver"
+    },
+    {
+      "id": "calendar",
+      "heading": "Interim, final, record date, ex-date",
+      "visual": "two-year timeline"
+    },
+    {
+      "id": "growth",
+      "heading": "Growth you can fund: ROE x retention",
+      "visual": "equity before/after, 1.6px=Rs1cr"
+    },
+    {
+      "id": "payout-lab",
+      "heading": "Payout, yield and growth",
+      "visual": "lab 2: 1 slider + ROE stepper, split bar + percent bars"
+    },
+    {
+      "id": "ev",
+      "heading": "Enterprise value: buying it all, loan included",
+      "visual": "waterfall 0.4px=Rs1cr"
+    },
+    {
+      "id": "ev-multiples",
+      "heading": "EV/EBITDA and EV/Sales",
+      "visual": "EV bar and slices of EBITDA/sales"
+    },
+    {
+      "id": "ev-debt",
+      "heading": "Why EV compares debt fairly and P/E doesn't",
+      "visual": "EBITDA+other income split, 5px=Rs1cr"
+    },
+    {
+      "id": "ev-lab",
+      "heading": "Same market cap, different debt",
+      "visual": "lab 1: 3 sliders, 4 presets, EV bars and multiples bars"
+    },
+    {
+      "id": "tcpl-pb",
+      "heading": "TCPL: P/B, dividends and growth",
+      "visual": "price/book/dividend bars, payout bars, dividend history columns"
+    },
+    {
+      "id": "tcpl-ev",
+      "heading": "TCPL's enterprise value, three ways",
+      "visual": "zoomed waterfall 0.1px=Rs1cr"
+    },
+    {
+      "id": "so-what",
+      "heading": "Three questions for any price tag",
+      "visual": "text exception"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Company A = Ramu fixed (debt 100, cash 40, EBITDA 85, market cap 1,000)",
+      "Company B has market cap 1,000; sliders set debt 0-800 step 10, cash 0-300 step 5, EBITDA 40-200 step 5; default 400/40/115 (Part 7 trap)",
+      "EV = 1,000 + debt - cash; EV/EBITDA = EV/EBITDA",
+      "PBT = EBITDA - 12 D&A - 10% x debt + 10% x cash; PAT = PBT x 50/67 (Ramu own tax share 17 of 67) if PBT>0 else PBT; P/E = 1,000/PAT only if PAT>0",
+      "P/E bars cut at 100x with \"(cut)\" and the full value printed",
+      "Payout lab: equity 250, 10 cr shares, price 100; profit = ROE x 250; ROE stepper 5-40 step 5; payout slider 0-100 step 5",
+      "P/B stepper: BVPS 25, price 25-300 step 25"
+    ],
+    "units": {
+      "EV": "Rs crore",
+      "multiples": "x",
+      "payout/yield/growth": "percent"
+    },
+    "independent_calculation_method": "labtest.py: exact Fraction oracle written separately from page compute(); driven through Playwright (Chromium); compares window.labResults / payResults / pbResults and bar geometry",
+    "cases": [
+      {
+        "case": "EV lab",
+        "count": 320,
+        "detail": "default, 4 presets (twin equals A exactly), 8 slider corners, PBT=0 break-even, PBT 0.5/1 P/E-cap cases, loss case, 300 random points",
+        "passed": true
+      },
+      {
+        "case": "payout lab",
+        "count": 147,
+        "detail": "payout 0..100 step 5 x ROE 20,5,10,25,30,35,40; invariants kept/equity == ROE x retention; bars start at 0 and end at axis value; canonical 40/20 gives DPS 2, yield 2, retention 60, growth 12",
+        "passed": true
+      },
+      {
+        "case": "P/B stepper",
+        "detail": "25 (P/B 1, minus disabled) .. 300 (P/B 12, plus disabled), back to 100 = 4.0",
+        "passed": true
+      }
+    ],
+    "invariants": [
+      "A always EV 1,060, EV/EBITDA 12.5, P/E 20",
+      "twin preset equals A",
+      "payout bar widths = value x 2.68; EV lab ticks 0, m/2, m with bars from zero",
+      "no NaN/Infinity/undefined in chart, ledger or verdict",
+      "exactly 4 range sliders, 4 preset buttons"
+    ],
+    "tolerance": "1e-9 relative; bar widths 0.02px",
+    "axis_and_clipping": "EV lab axis = nice(max bar), grows with data; P/E above 100 drawn at 100 with \"(cut)\" and full value in label; payout axis fixed 0-100; n/m P/E has no bar"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render.py: 0 errors (defaults, 4 presets, slider extremes, 390px); labtest.py all pass",
+      "static drawings are generated from computed coordinates (build script), labels 16px, one scale per comparable figure"
+    ],
+    "browser_check_render": "0 errors",
+    "screenshots": "desktop-00..14 and phone-00..14 saved; desktop 01-13 viewed, phone 05 and 11 viewed. Fixed: dark numbers on dim D&A/interest segments; replaced \"AGM approves\" with \"AGM held\" because approval was not sourced. Sticky header overlays in screenshots are capture artefacts.",
+    "coverage_review": "all 20 inventory rows located on the page (see panels)",
+    "semantic_review": "EV lab P/E model labelled as assumptions; \"cheaper\" defined as lower multiple; TCPL multiples described as descriptions of a dated price, not a view; ex-date gap not claimed",
+    "card": "plans/handoff/pb-dividends-ev-eli5.card.svg: check_card 0 errors/0 warnings, rendered at 640 and 330 px and viewed",
+    "dry_run": "not run; no shared files touched",
+    "artifact_sha256": "4a103a4e4241aa725840f0e46066b31753e9ec820f203fea1df2da454fff4455",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 17,
+        "panels": 14,
+        "notes": 1
+      },
+      "artifact_sha256": "4a103a4e4241aa725840f0e46066b31753e9ec820f203fea1df2da454fff4455",
+      "artifact_path": "/home/user/eli5-lab/explainers/pb-dividends-ev-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published; handed off to owner",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
