@@ -671,10 +671,10 @@
   "verification": {
     "supplementary_checks": "check_render: 0 errors incl. every preset and all-min/all-max slider combos; labtest.py 248/248; JS errors none; no sideways scroll at 390px",
     "screenshots": "scratchpad/shots/desktop-00..16, phone-00..16; build/lab1.png, lab2*.png, card.png",
-    "screenshots_inspection": "Viewed hero-adjacent panels 1, 4, 10-13 and TCPL boxes 1-2 at desktop, lab 2 at phone. Fixed: zero line through labels, button styling (secondary class), scorer layout moved full width, phone ledger. Sticky masthead overlay in element screenshots is a capture artefact.",
+    "screenshots_inspection": "Viewed hero-adjacent panels 1, 4, 10-13 and TCPL boxes 1-2 at desktop, lab 2 at phone. Fixed: zero line through labels, button styling (secondary class), scorer layout moved full width, phone ledger. Sticky masthead overlay in element screenshots is a capture artefact. Later restacked the scorer into numbered steps (pick, thresholds, chart, checks, working in a details box) after a layout note from another session; re-viewed phone screenshots of both labs and re-ran all lab tests (248/248).",
     "coverage_review": "Every inventory row mapped to a panel; hand-off to Part 21 in So what",
     "semantic_review": "Flags framed as questions; TCPL box makes no verdict; inferences labelled as mine; Part 19/21 not linked",
-    "artifact_sha256": "c823d7755427baf0ce1a29a1f7629a718182d067d332ab6d98e2af01ff6c9bec",
+    "artifact_sha256": "2d3807e54f3f0620828c80c647a1a5ca7bcae4517eea1c1449794c38daca28db",
     "structural_lint": {
       "scope": "structural lint only; not semantic, numerical, visual or publication approval",
       "errors": [],
@@ -684,7 +684,7 @@
         "panels": 16,
         "notes": 0
       },
-      "artifact_sha256": "c823d7755427baf0ce1a29a1f7629a718182d067d332ab6d98e2af01ff6c9bec",
+      "artifact_sha256": "2d3807e54f3f0620828c80c647a1a5ca7bcae4517eea1c1449794c38daca28db",
       "artifact_path": "/home/user/eli5-lab/explainers/red-flags-eli5.html"
     }
   },

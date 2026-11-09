@@ -78,6 +78,10 @@
     .scoreline{margin:14px 0 0;font:13px/1.6 var(--font-mono);color:var(--fg)}
     .scoreline.on{color:#ec6a94}
     @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .step{padding:18px 0 4px;border-top:1px solid var(--border)}.lab .step:first-child{border-top:0;padding-top:6px}
+    .lab .step-h{margin:0 0 6px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--accent)}
+    .lab .sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 28px}
+    .lab .step .lab-chart svg{max-width:760px;margin:0 auto}
     .lab .steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
   </style>
 </head>
@@ -229,13 +233,8 @@
       <p class="kicker">Try it · checklist scorer</p>
       <h2>Tick the checks, see which flags trip</h2>
       <p>Pick a company with the buttons, tick the checks you want to run, and move the four thresholds. Each check is computed from the company’s own numbers; a check trips when its number crosses the threshold. The chart shows one year’s growth in sales, receivables, inventory, profit and operating cash. Thresholds are teaching rules of thumb, not accounting rules, and a trip is a question, not a verdict: tighten them and even the healthy Ramu trips. TCPL’s figures are the audited FY26 consolidated numbers <span class="tag">public</span>; a check whose input is not in the numbers used here is marked <b>n/a</b> and never counts.</p>
-      <div class="lab"><div class="lab-grid">
-        <div class="controls">
-          <div class="control"><label for="floor">CFO ÷ PAT floor <output id="floor-o"></output></label><input id="floor" type="range" min="0.5" max="1.2" step="0.05" value="0.8"></div>
-          <div class="control"><label for="gap">Receivables or inventory growth above sales growth <output id="gap-o"></output></label><input id="gap" type="range" min="5" max="40" step="1" value="15"></div>
-          <div class="control"><label for="share">Other income and one-offs as a share of profit before tax <output id="share-o"></output></label><input id="share" type="range" min="5" max="40" step="1" value="15"></div>
-          <div class="control"><label for="taxgap">Tax rate below the 25.17% statutory rate by <output id="taxgap-o"></output></label><input id="taxgap" type="range" min="1" max="10" step="0.5" value="5"></div>
-          <p class="group-label">COMPANY AND RULES</p>
+      <div class="lab">
+        <div class="step"><p class="step-h">1 · Pick a company</p>
           <div class="presets">
             <button type="button" class="secondary" data-p="ramu">Ramu Chai · canonical</button>
             <button type="button" class="secondary" data-p="b">Ramu Chai B · fudged</button>
@@ -244,13 +243,23 @@
           </div>
           <p class="msg" id="msg" role="status" aria-live="polite"></p>
         </div>
-        <div class="lab-chart">
-          <svg id="labChart" viewBox="0 0 520 440" role="img" aria-label="One year's growth in sales, trade receivables, inventory, profit after tax and cash from operations for the chosen company, on one axis in percent"></svg>
+        <div class="step"><p class="step-h">2 · Set the thresholds</p>
+          <div class="sliders">
+            <div class="control"><label for="floor">CFO ÷ PAT floor <output id="floor-o"></output></label><input id="floor" type="range" min="0.5" max="1.2" step="0.05" value="0.8"></div>
+            <div class="control"><label for="gap">Receivables or inventory growth above sales <output id="gap-o"></output></label><input id="gap" type="range" min="5" max="40" step="1" value="15"></div>
+            <div class="control"><label for="share">Other income and one-offs, share of profit <output id="share-o"></output></label><input id="share" type="range" min="5" max="40" step="1" value="15"></div>
+            <div class="control"><label for="taxgap">Tax rate below 25.17% by <output id="taxgap-o"></output></label><input id="taxgap" type="range" min="1" max="10" step="0.5" value="5"></div>
+          </div>
         </div>
+        <div class="step"><p class="step-h">3 · Read the growth chart</p>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 440" role="img" aria-label="One year's growth in sales, trade receivables, inventory, profit after tax and cash from operations for the chosen company, on one axis in percent"></svg></div>
+        </div>
+        <div class="step"><p class="step-h">4 · Tick the checks</p>
+          <p class="scoreline" id="scoreline"></p>
+          <ul class="scorer" id="scorer"></ul>
+        </div>
+        <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
       </div>
-      <p class="scoreline" id="scoreline"></p>
-      <ul class="scorer" id="scorer"></ul>
-      <div class="ledger" id="ledger"></div></div>
     </section>
 
     <section class="panel">
@@ -340,7 +349,7 @@
     // ================= Lab 1: spot the fudged accounts (Ramu Chai canonical vs Ramu Chai B, both tagged example) =================
     const FLAGS={1:'receivables outrun sales',2:'profit without cash',3:'capitalised brand development',4:'related-party advance',5:'rising pledge',6:'auditor resigned'};
     const SPOT=[
-      {id:'rev',g:'PROFIT AND LOSS',n:'Revenue from operations',a:'450 → 500 (+11.1%)',b:'450 → 500 (+11.1%)',k:'fine',fb:'Same sales as the real Ramu, +11.1%. Nothing wrong here; the flags are in what happens next to sales.'},
+      {id:'rev',g:'PROFIT AND LOSS',n:'Revenue from operations',a:'450 → 500 (+11%)',b:'450 → 500 (+11%)',k:'fine',fb:'Same sales as the real Ramu, +11.1%. Nothing wrong here; the flags are in what happens next to sales.'},
       {id:'oth',g:'PROFIT AND LOSS',n:'Other expenses',a:'105',b:'97',k:'symptom',f:3,fb:'Sales rose 11% yet this line is 8 below Ramu’s 105, because ₹20 cr of spending was moved to the balance sheet (flag 3). B’s true other expenses are 117.'},
       {id:'ebitda',g:'PROFIT AND LOSS',n:'EBITDA',a:'85 (17.0%)',b:'93 (18.6%)',k:'symptom',f:3,fb:'A better margin than the twin, thanks to the capitalised cost. Expensed, EBITDA would be 73 (14.6%).'},
       {id:'dep',g:'PROFIT AND LOSS',n:'Depreciation and amortisation',a:'12',b:'14',k:'symptom',f:3,fb:'Includes ₹2 cr of amortisation on the capitalised brand cost: it reaches profit at 2 a year instead of 20 at once.'},
@@ -354,9 +363,9 @@
       {id:'eq',g:'BALANCE SHEET',n:'Total equity',a:'218 → 250',b:'218 → 255',k:'fine',fb:'Rises by profit less dividend: 218 + 55 − 18 = 255. It adds up; the problem is not arithmetic.'},
       {id:'cfo',g:'CASH FLOW',n:'Cash from operations',a:'52 → 58',b:'52 → 15',k:'flag',f:2,fb:'CFO ÷ PAT is 15 ÷ 55 = 0.27 against Ramu’s 1.16. Profit of 55 with only 15 of cash (Parts 5 and 13).'},
       {id:'cfi',g:'CASH FLOW',n:'Cash from investing',a:'−41',b:'−61',k:'symptom',f:3,fb:'Same ₹45 cr capex as Ramu, plus ₹20 cr that left as “brand development” under investing. The cash cost is real; it just sits outside CFO.'},
-      {id:'rp',g:'NOTES AND FILINGS',n:'Note: related-party advance',a:'none',b:'₹30 cr to a company of the promoter’s brother',k:'flag',f:4,fb:'7% of total assets advanced to a supplier owned by a promoter’s relative: company money mixed with the owners’ other business (Part 19).'},
-      {id:'pledge',g:'NOTES AND FILINGS',n:'Promoter shares pledged',a:'10% of promoter holding',b:'10% → 40%',k:'flag',f:5,fb:'2.2 cr of the promoters’ 5.5 cr shares are pledged, up from 0.55 cr. Owners borrowing against their shares may be short of cash elsewhere (Part 19).'},
-      {id:'aud',g:'NOTES AND FILINGS',n:'Statutory auditor',a:'mid-sized firm, unmodified',b:'resigned two years early; new firm, unmodified',k:'flag',f:6,fb:'The previous auditor resigned before its term ended. Resignations can be innocent; ask what the auditor said, and when (Part 19).'}];
+      {id:'rp',g:'NOTES AND FILINGS',n:'Note: related-party advance',a:'none',b:'₹30 cr to a relative’s firm',k:'flag',f:4,fb:'7% of total assets advanced to a supplier owned by a promoter’s relative: company money mixed with the owners’ other business (Part 19).'},
+      {id:'pledge',g:'NOTES AND FILINGS',n:'Promoter shares pledged',a:'10% of holding',b:'10% → 40%',k:'flag',f:5,fb:'2.2 cr of the promoters’ 5.5 cr shares are pledged, up from 0.55 cr. Owners borrowing against their shares may be short of cash elsewhere (Part 19).'},
+      {id:'aud',g:'NOTES AND FILINGS',n:'Statutory auditor',a:'mid-sized, unmodified',b:'resigned early; new firm',k:'flag',f:6,fb:'The previous auditor resigned before its term ended. Resignations can be innocent; ask what the auditor said, and when (Part 19).'}];
     const picks=new Set();let revealed=false;
     const KT={flag:'PLANTED FLAG',symptom:'SYMPTOM',fine:'NOT PLANTED'};
     function spotScore(){
