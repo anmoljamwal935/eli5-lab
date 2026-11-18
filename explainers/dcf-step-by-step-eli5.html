@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DCF, step by step — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (capex, costs, reinvestment) | gold #f5c76a = what belongs to shareholders (profit, NOPAT, equity, value a share)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 24: solid teal = free cash flow worth today; pale teal = the same cash before discounting. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{background:var(--surface);padding:16px 18px;outline:1px solid var(--border)}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eq b{color:var(--fg)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:5.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    /* Part 24 lab layout: one column of numbered steps (lab layout rule, as Part 15's .dashlab) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .presets button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:4px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .control input[type=range]{display:block;width:100%}
+    .dashlab .lab-chart{margin-top:16px}
+    .dashlab .lab-chart svg{display:block;width:100%;max-width:640px;height:auto}
+    .dashlab .lab-chart svg text{font-family:Outfit,system-ui,sans-serif}
+    .dashlab .readout{margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}
+    .dashlab .readout b{color:var(--fg);font-weight:600}
+    .dashlab .key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .dashlab .key i{display:inline-block;width:10px;height:10px;margin:0 5px 0 0;vertical-align:0}
+    .dashlab .key i+i{margin-left:0}
+    .dashlab .key span{margin-right:14px;white-space:nowrap}
+    .dashlab #msg:empty{display:none}
+    .dashlab details.trace{margin-top:16px}
+    .yrs{width:100%;font-size:14px;border-collapse:collapse}
+    .yrs th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--border)}
+    .yrs td{padding:6px 8px;text-align:right;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.05)}
+    .yrs th:first-child,.yrs td:first-child{text-align:left}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.eli5-study-container table.yrs,.eli5-study-container table.rep{min-width:0}.yrs th,.yrs td{padding:6px 4px;font-size:13px}.rep td.wk{display:none}.rep th.wk{display:none}.rep td,.rep th{padding:8px 6px}}
+  </style>
+</head>
+<body data-series-id="dcf-step-by-step-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 22 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>DCF, step by step</h1>
+      <p class="lede">A discounted cash flow (DCF) values a business as the free cash it will produce in future, shrunk to what that cash is worth today. Four steps take Ramu Chai from a profit forecast to ₹76.7 a share, and show which guesses decide the answer.</p>
+      <p class="source-note">Built from this series’ example accounts for Ramu Chai Ltd, the arithmetic of discounting, and Tata Consumer Products’ audited FY2026 consolidated statements, as printed in its Integrated Annual Report 2025-26 · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> warns that growth eats cash; <a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a> measures the return a company earns on its capital, about 20% for Ramu; <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a> finds Ramu’s FY26 free cash flow of 13; <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> defines enterprise value and net debt. Part 23, “Discounting and the discount rate”, builds the 11.6% discount rate used here. This part puts them together. Part 25 runs the model backwards, Part 27 covers dividend and sum-of-the-parts valuations, and Part 28 turns one answer into scenarios.</p>
+      <p>Facts carry a tag: <span class="tag">public</span> is a figure from TCPL’s audited statements, <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd, a small tea business. All amounts are ₹ crore (cr) unless they are per share. Real figures are frozen at FY2026. <b>Go deeper</b> boxes are optional. Educational, not a recommendation.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: free cash flow</span>
+        <span><i style="background:#76d5c1;opacity:.35"></i>the same cash, before discounting</span>
+        <span><i style="background:#ff8059"></i>money going out: reinvestment, capex, tax</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: NOPAT, equity, value a share</span>
+        <span><i style="background:#ec6a94"></i>what is owed: net debt</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: the share price</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The idea</p>
+      <h2>A business is worth its future cash</h2>
+      <p>A share is a slice of a business (<a href="fundamental-analysis-in-one-page-eli5.html" data-series-link="fundamental-analysis-in-one-page-eli5">Part 1</a>). A DCF puts a number on the business: forecast the free cash it will produce each year, for as long as it exists, then shrink each rupee by how long you must wait for it. Ramu’s forecast cash grows every year <span class="tag">example</span>; the far years count for least today.</p>
+      <figure><svg viewBox="0 0 800 360" role="img" aria-label="Teal bars of Ramu Chai’s forecast free cash flow rising from 24.5 crore in FY27 to 85.1 crore in FY36, then dashed bars for the years after, with an arrow pointing back to today"><defs><marker id="ah1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9z" fill="#a5a29c"/></marker></defs><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">₹ cr of free cash flow, by year</text><rect x="90" y="200.76" width="36" height="39.24" fill="#76d5c1"/><rect x="142" y="196.05" width="36" height="43.95" fill="#76d5c1"/><rect x="194" y="190.77" width="36" height="49.23" fill="#76d5c1"/><rect x="246" y="184.86" width="36" height="55.14" fill="#76d5c1"/><rect x="298" y="178.25" width="36" height="61.75" fill="#76d5c1"/><rect x="350" y="139.96" width="36" height="100.04" fill="#76d5c1"/><rect x="402" y="131.96" width="36" height="108.04" fill="#76d5c1"/><rect x="454" y="123.31" width="36" height="116.69" fill="#76d5c1"/><rect x="506" y="113.98" width="36" height="126.02" fill="#76d5c1"/><rect x="558" y="103.90" width="36" height="136.10" fill="#76d5c1"/><rect x="610" y="61.37" width="36" height="178.63" fill="#76d5c1" opacity="0.35" stroke="#76d5c1" stroke-width="1.5" stroke-dasharray="4 3"/><rect x="662" y="52.43" width="36" height="187.57" fill="#76d5c1" opacity="0.35" stroke="#76d5c1" stroke-width="1.5" stroke-dasharray="4 3"/><rect x="714" y="43.06" width="36" height="196.94" fill="#76d5c1" opacity="0.35" stroke="#76d5c1" stroke-width="1.5" stroke-dasharray="4 3"/><text x="108" y="192.76" text-anchor="middle" fill="#f1eee8" font-size="16">24.5</text><text x="576" y="95.90" text-anchor="middle" fill="#f1eee8" font-size="16">85.1</text><text x="628" y="53.37" text-anchor="middle" fill="#f1eee8" font-size="16">111.65</text><path d="M60 240 L770 240" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="108" y="264" text-anchor="middle" fill="#a5a29c" font-size="16">FY27</text><text x="576" y="264" text-anchor="middle" fill="#a5a29c" font-size="16">FY36</text><text x="680" y="264" text-anchor="middle" fill="#a5a29c" font-size="16">after FY36 …</text><path d="M560 286 L110 286" stroke="#a5a29c" stroke-width="2" fill="none" marker-end="url(#ah1)"/><text x="40" y="292" text-anchor="start" fill="#f1eee8" font-size="16">today</text><text x="335" y="318" text-anchor="middle" fill="#a5a29c" font-size="16">each rupee shrinks on the way back</text><text x="760" y="342" text-anchor="end" fill="#a5a29c" font-size="16">1.6 px = ₹1 cr</text></svg></figure>
+      <p>There are four steps, one panel each below: forecast the cash, discount it, add a terminal value for all the years after the forecast, then go from the whole firm to one share.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Step 1 · Forecast</p>
+      <h2>Free cash is profit minus reinvestment</h2>
+      <p>Start from <b>NOPAT</b>, net operating profit after tax: EBIT taxed as if the company had no debt. Ramu’s FY26 EBIT of 73 at 25% tax gives 54.75 <span class="tag">example</span>. To grow, part of it must go back in as capex and working capital, and how much depends on the return that new money earns (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>). Growing 12% at a 20% return needs 12 ÷ 20 = 60% of NOPAT reinvested. What is left is <b>free cash flow to the firm</b> (FCFF).</p>
+      <span class="eq">FCFF = NOPAT × (1 − growth ÷ return on new investment)<br>FY27: NOPAT 54.75 × 1.12 = 61.3 → 61.3 × (1 − 12% ÷ 20%) = <b>24.5</b></span>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Three NOPAT bars on one scale, each split into teal free cash flow and coral reinvestment: FY27 61.3 splits 24.5 and 36.8, FY32 104.2 splits 62.5 and 41.7, FY37 148.9 splits 111.6 and 37.2"><text x="140" y="30" text-anchor="start" fill="#a5a29c" font-size="16">NOPAT 61.3 · grows 12% · reinvests 60%</text><text x="20" y="61" text-anchor="start" fill="#f1eee8" font-size="16">FY27</text><rect x="140" y="40" width="98.11" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="238.11" y="40" width="147.17" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="148" y="61" text-anchor="start" fill="#202020" font-size="16">free 24.5</text><text x="246.11" y="61" text-anchor="start" fill="#202020" font-size="16">reinvest 36.8</text><text x="140" y="114" text-anchor="start" fill="#a5a29c" font-size="16">NOPAT 104.2 · grows 8% · reinvests 40%</text><text x="20" y="145" text-anchor="start" fill="#f1eee8" font-size="16">FY32</text><rect x="140" y="124" width="250.10" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="390.10" y="124" width="166.73" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="148" y="145" text-anchor="start" fill="#202020" font-size="16">free 62.5</text><text x="398.10" y="145" text-anchor="start" fill="#202020" font-size="16">reinvest 41.7</text><text x="140" y="198" text-anchor="start" fill="#a5a29c" font-size="16">NOPAT 148.9 · grows 5% · reinvests 25%</text><text x="20" y="229" text-anchor="start" fill="#f1eee8" font-size="16">FY37</text><rect x="140" y="208" width="446.58" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="586.58" y="208" width="148.86" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="148" y="229" text-anchor="start" fill="#202020" font-size="16">free 111.65</text><text x="594.58" y="229" text-anchor="start" fill="#202020" font-size="16">reinvest 37.2</text><text x="20" y="284" text-anchor="start" fill="#a5a29c" font-size="16">4 px = ₹1 cr · whole bar = NOPAT</text></svg></figure>
+      <p>Slower growth needs less reinvestment, so free cash jumps when growth eases: FY32’s NOPAT is 1.7 times FY27’s, but its free cash is 2.5 times. The 20% is Ramu’s ROE and ROCE, both about 20% (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>), assumed to hold for new money too. That is an assumption, not a fact, and the lab lets you change it.</p>
+      <details class="trace"><summary>Go deeper: why EBIT, and where growth ÷ return comes from</summary>
+        <p><b>Why EBIT, not profit after tax.</b> This cash belongs to lenders and owners together. Interest is paid out of it, so it is not taken off here; the cost of both kinds of money is in the discount rate instead. Other income (Ramu’s ₹4 cr of interest on its cash) is left out too, because the cash itself is counted in Step 4, when net debt is subtracted. Counting both would count the cash twice.</p>
+        <p><b>Why growth ÷ return.</b> To lift FY27’s NOPAT of 61.3 by 12% in FY28 Ramu needs 7.4 more profit a year. If each new rupee invested earns 20%, that takes 7.4 ÷ 20% = 36.8 of new investment, which is 60% of 61.3. The same logic sets reinvestment at 40% when growth is 8%, and 25% when it is 5%.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The forecast</p>
+      <h2>Ten years at two speeds, then for ever</h2>
+      <p>The plan <span class="tag">example</span>: 12% a year from FY27 to FY31, close to Ramu’s recent pace (sales grew 11.0% a year and profit 13.6% over FY22–26, <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a>); 8% from FY32 to FY36 as it matures; then 5% a year for ever. The last rate is kept below the long-run growth of the economy in rupee terms, because no company can outgrow its economy for ever. Reinvestment falls from 60% of NOPAT to 40%, then 25%.</p>
+      <figure><svg viewBox="0 0 800 362" role="img" aria-label="Eleven stacked bars from FY27 to FY37, each a year’s NOPAT split into teal free cash flow and coral reinvestment; the coral share shrinks from 60 percent to 40 percent in FY32 and 25 percent in FY37"><rect x="90" y="255.66" width="40" height="34.34" fill="#76d5c1"/><rect x="90" y="204.15" width="40" height="51.51" fill="#ff8059"/><text x="110" y="196.15" text-anchor="middle" fill="#a5a29c" font-size="16">61</text><text x="110" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY27</text><rect x="152" y="251.54" width="40" height="38.46" fill="#76d5c1"/><rect x="152" y="193.85" width="40" height="57.69" fill="#ff8059"/><text x="172" y="185.85" text-anchor="middle" fill="#a5a29c" font-size="16">69</text><text x="172" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY28</text><rect x="214" y="246.92" width="40" height="43.08" fill="#76d5c1"/><rect x="214" y="182.31" width="40" height="64.61" fill="#ff8059"/><text x="234" y="174.31" text-anchor="middle" fill="#a5a29c" font-size="16">77</text><text x="234" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY29</text><rect x="276" y="241.76" width="40" height="48.24" fill="#76d5c1"/><rect x="276" y="169.39" width="40" height="72.37" fill="#ff8059"/><text x="296" y="161.39" text-anchor="middle" fill="#a5a29c" font-size="16">86</text><text x="296" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY30</text><rect x="338" y="235.97" width="40" height="54.03" fill="#76d5c1"/><rect x="338" y="154.92" width="40" height="81.05" fill="#ff8059"/><text x="358" y="146.92" text-anchor="middle" fill="#a5a29c" font-size="16">96</text><text x="358" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY31</text><rect x="400" y="202.47" width="40" height="87.53" fill="#76d5c1"/><rect x="400" y="144.11" width="40" height="58.36" fill="#ff8059"/><text x="420" y="136.11" text-anchor="middle" fill="#a5a29c" font-size="16">104</text><text x="420" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY32</text><rect x="462" y="195.46" width="40" height="94.54" fill="#76d5c1"/><rect x="462" y="132.44" width="40" height="63.02" fill="#ff8059"/><text x="482" y="124.44" text-anchor="middle" fill="#a5a29c" font-size="16">113</text><text x="482" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY33</text><rect x="524" y="187.90" width="40" height="102.10" fill="#76d5c1"/><rect x="524" y="119.83" width="40" height="68.07" fill="#ff8059"/><text x="544" y="111.83" text-anchor="middle" fill="#a5a29c" font-size="16">122</text><text x="544" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY34</text><rect x="586" y="179.73" width="40" height="110.27" fill="#76d5c1"/><rect x="586" y="106.22" width="40" height="73.51" fill="#ff8059"/><text x="606" y="98.22" text-anchor="middle" fill="#a5a29c" font-size="16">131</text><text x="606" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY35</text><rect x="648" y="170.91" width="40" height="119.09" fill="#76d5c1"/><rect x="648" y="91.52" width="40" height="79.39" fill="#ff8059"/><text x="668" y="83.52" text-anchor="middle" fill="#a5a29c" font-size="16">142</text><text x="668" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY36</text><rect x="710" y="133.70" width="40" height="156.30" fill="#76d5c1" opacity="0.55"/><rect x="710" y="81.59" width="40" height="52.10" fill="#ff8059" opacity="0.55"/><text x="730" y="73.59" text-anchor="middle" fill="#a5a29c" font-size="16">149</text><text x="730" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">FY37</text><path d="M70 290 L770 290" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M90 54 L90 48 L378 48 L378 54" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="234" y="36" text-anchor="middle" fill="#f1eee8" font-size="16">grows 12% a year</text><path d="M400 54 L400 48 L688 48 L688 54" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="544" y="36" text-anchor="middle" fill="#f1eee8" font-size="16">8% a year</text><path d="M710 54 L710 48 L750 48 L750 54" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="750" y="36" text-anchor="end" fill="#f1eee8" font-size="16">5% for ever</text><text x="70" y="348" text-anchor="start" fill="#a5a29c" font-size="16">1.4 px = ₹1 cr · top: NOPAT · FY37: first year after</text></svg></figure>
+      <details class="trace"><summary>Go deeper: the ten years in numbers</summary>
+        <div class="table-wrap"><table class="yrs"><thead><tr><th>Year</th><th>Growth</th><th>NOPAT</th><th>Reinvest</th><th>FCFF</th><th>PV</th></tr></thead><tbody><tr><td>FY27</td><td>12%</td><td>61.3</td><td>36.8</td><td>24.5</td><td>22.0</td></tr><tr><td>FY28</td><td>12%</td><td>68.7</td><td>41.2</td><td>27.5</td><td>22.1</td></tr><tr><td>FY29</td><td>12%</td><td>76.9</td><td>46.2</td><td>30.8</td><td>22.1</td></tr><tr><td>FY30</td><td>12%</td><td>86.2</td><td>51.7</td><td>34.5</td><td>22.2</td></tr><tr><td>FY31</td><td>12%</td><td>96.5</td><td>57.9</td><td>38.6</td><td>22.3</td></tr><tr><td>FY32</td><td>8%</td><td>104.2</td><td>41.7</td><td>62.5</td><td>32.4</td></tr><tr><td>FY33</td><td>8%</td><td>112.5</td><td>45.0</td><td>67.5</td><td>31.3</td></tr><tr><td>FY34</td><td>8%</td><td>121.5</td><td>48.6</td><td>72.9</td><td>30.3</td></tr><tr><td>FY35</td><td>8%</td><td>131.3</td><td>52.5</td><td>78.8</td><td>29.3</td></tr><tr><td>FY36</td><td>8%</td><td>141.8</td><td>56.7</td><td>85.1</td><td>28.4</td></tr></tbody></table></div>
+        <p>₹ crore. PV is the free cash flow discounted to 31 March 2026 at the 11.6% WACC (Step 2).</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Step 2 · Discount</p>
+      <h2>Shrink each year’s cash to today</h2>
+      <p>Part 23, “Discounting and the discount rate”, builds Ramu’s <b>weighted average cost of capital</b> (WACC): 11.6%, the return lenders and owners together expect for lending to and owning a business like this. Cash due in <i>t</i> years is divided by 1.116 multiplied by itself <i>t</i> times. FY27’s 24.5 is worth 22.0 today; FY36’s 85.1 only 28.4, a third of it <span class="tag">example</span>.</p>
+      <span class="eq">Present value = FCFF ÷ 1.116<sup>t</sup> · FY27: 24.5 ÷ 1.116 = 22.0 · FY36: 85.1 × 0.334 = 28.4</span>
+      <figure><svg viewBox="0 0 800 354" role="img" aria-label="For each year FY27 to FY36 a pale bar of free cash flow with a solid bar inside it of the same cash discounted at 11.6 percent: FY27 keeps 22 of 24.5, FY36 keeps only 28 of 85"><rect x="90" y="201.13" width="44" height="58.87" fill="#76d5c1" opacity="0.3"/><rect x="90" y="207.25" width="44" height="52.75" fill="#76d5c1"/><text x="112" y="227.25" text-anchor="middle" fill="#202020" font-size="16">22.0</text><text x="112" y="193.13" text-anchor="middle" fill="#a5a29c" font-size="16">24.5</text><text x="112" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY27</text><rect x="156" y="194.07" width="44" height="65.93" fill="#76d5c1" opacity="0.3"/><rect x="156" y="207.06" width="44" height="52.94" fill="#76d5c1"/><text x="178" y="227.06" text-anchor="middle" fill="#202020" font-size="16">22.1</text><text x="178" y="186.07" text-anchor="middle" fill="#a5a29c" font-size="16">27.5</text><text x="178" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY28</text><rect x="222" y="186.16" width="44" height="73.84" fill="#76d5c1" opacity="0.3"/><rect x="222" y="206.87" width="44" height="53.13" fill="#76d5c1"/><text x="244" y="226.87" text-anchor="middle" fill="#202020" font-size="16">22.1</text><text x="244" y="178.16" text-anchor="middle" fill="#a5a29c" font-size="16">30.8</text><text x="244" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY29</text><rect x="288" y="177.30" width="44" height="82.70" fill="#76d5c1" opacity="0.3"/><rect x="288" y="206.68" width="44" height="53.32" fill="#76d5c1"/><text x="310" y="226.68" text-anchor="middle" fill="#202020" font-size="16">22.2</text><text x="310" y="169.30" text-anchor="middle" fill="#a5a29c" font-size="16">34.5</text><text x="310" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY30</text><rect x="354" y="167.37" width="44" height="92.63" fill="#76d5c1" opacity="0.3"/><rect x="354" y="206.49" width="44" height="53.51" fill="#76d5c1"/><text x="376" y="226.49" text-anchor="middle" fill="#202020" font-size="16">22.3</text><text x="376" y="159.37" text-anchor="middle" fill="#a5a29c" font-size="16">38.6</text><text x="376" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY31</text><rect x="420" y="109.94" width="44" height="150.06" fill="#76d5c1" opacity="0.3"/><rect x="420" y="182.33" width="44" height="77.67" fill="#76d5c1"/><text x="442" y="202.33" text-anchor="middle" fill="#202020" font-size="16">32.4</text><text x="442" y="101.94" text-anchor="middle" fill="#a5a29c" font-size="16">62.5</text><text x="442" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY32</text><rect x="486" y="97.94" width="44" height="162.06" fill="#76d5c1" opacity="0.3"/><rect x="486" y="184.83" width="44" height="75.17" fill="#76d5c1"/><text x="508" y="204.83" text-anchor="middle" fill="#202020" font-size="16">31.3</text><text x="508" y="89.94" text-anchor="middle" fill="#a5a29c" font-size="16">67.5</text><text x="508" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY33</text><rect x="552" y="84.97" width="44" height="175.03" fill="#76d5c1" opacity="0.3"/><rect x="552" y="187.26" width="44" height="72.74" fill="#76d5c1"/><text x="574" y="207.26" text-anchor="middle" fill="#202020" font-size="16">30.3</text><text x="574" y="76.97" text-anchor="middle" fill="#a5a29c" font-size="16">72.9</text><text x="574" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY34</text><rect x="618" y="70.97" width="44" height="189.03" fill="#76d5c1" opacity="0.3"/><rect x="618" y="189.60" width="44" height="70.40" fill="#76d5c1"/><text x="640" y="209.60" text-anchor="middle" fill="#202020" font-size="16">29.3</text><text x="640" y="62.97" text-anchor="middle" fill="#a5a29c" font-size="16">78.8</text><text x="640" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY35</text><rect x="684" y="55.85" width="44" height="204.15" fill="#76d5c1" opacity="0.3"/><rect x="684" y="191.87" width="44" height="68.13" fill="#76d5c1"/><text x="706" y="211.87" text-anchor="middle" fill="#202020" font-size="16">28.4</text><text x="706" y="47.85" text-anchor="middle" fill="#a5a29c" font-size="16">85.1</text><text x="706" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">FY36</text><path d="M70 260 L770 260" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="70" y="314" text-anchor="start" fill="#a5a29c" font-size="16">pale: cash when it comes · solid: worth today</text><text x="70" y="338" text-anchor="start" fill="#a5a29c" font-size="16">2.4 px = ₹1 cr</text></svg></figure>
+      <p>The ten years add up to <b>262.4</b> today. Growth makes the later cash bigger and discounting makes it smaller, and here they nearly cancel: each year adds between 22 and 32.</p>
+      <details class="trace"><summary>Go deeper: timing, and the other route</summary>
+        <p>This page counts each year’s cash as if it arrived on 31 March, a full year after the last, and values the company on 31 March 2026. Many analysts assume cash arrives through the year, on average mid-year, which lifts the value by half a year of discounting, about 5.6% at 11.6%. Neither is wrong; say which you used.</p>
+        <p>FCFF goes with the WACC because both cover lenders and owners. The other route discounts the cash left for owners alone, after interest and debt repayments, at the cost of equity (12% for Ramu, Part 23). Done carefully the two land in the same place; mixing them, say owners’ cash at the WACC, does not.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Step 3 · Terminal value</p>
+      <h2>Everything after FY36, in one number</h2>
+      <p>The forecast stops; the business does not. If free cash grows at a steady rate <i>g</i> for ever, all of it is worth next year’s cash ÷ (WACC − <i>g</i>), valued one year before that cash arrives. FY37’s NOPAT is 141.8 × 1.05 = 148.9; at 5% growth only 25% is reinvested, leaving 111.65. At FY36 the rest of time is worth 1,691.6, and today 564.5 <span class="tag">example</span>.</p>
+      <span class="eq">Terminal value at FY36 = FCFF FY37 ÷ (WACC − g) = 111.65 ÷ (11.6% − 5%) = <b>1,691.6</b><br>Worth today = 1,691.6 ÷ 1.116<sup>10</sup> = 1,691.6 × 0.334 = <b>564.5</b></span>
+      <figure><svg viewBox="0 0 800 280" role="img" aria-label="A pale bar of the 1,691.6 crore terminal value at FY36 above a solid bar a third as long, 564.5 crore, its value today, and a shorter bar of 262.4 crore for the ten forecast years"><text x="40" y="40" text-anchor="start" fill="#a5a29c" font-size="16">value of all later years, at FY36: ₹1,691.6 cr</text><rect x="40" y="50" width="676.64" height="30" fill="#76d5c1" opacity="0.35"/><text x="40" y="112" text-anchor="start" fill="#a5a29c" font-size="16">worth today, × 0.334: ₹564.5 cr</text><rect x="40" y="122" width="225.80" height="30" fill="#76d5c1"/><text x="40" y="184" text-anchor="start" fill="#a5a29c" font-size="16">for scale: FY27–36 cash, worth today: ₹262.4 cr</text><rect x="40" y="194" width="104.96" height="30" fill="#76d5c1"/><text x="40" y="264" text-anchor="start" fill="#a5a29c" font-size="16">0.4 px = ₹1 cr</text></svg></figure>
+      <p>The formula only works while the WACC is above <i>g</i>. As <i>g</i> creeps up to the WACC the answer runs off towards infinity, which is a warning about the formula, not a discovery about the company.</p>
+      <details class="trace"><summary>Go deeper: why the formula works, and exit multiples</summary>
+        <p>A cash flow <i>C</i> next year, growing at <i>g</i> and discounted at <i>r</i>, is worth <i>C</i> ÷ (1 + <i>r</i>) + <i>C</i>(1 + <i>g</i>) ÷ (1 + <i>r</i>)² + … , a series that adds up to <i>C</i> ÷ (<i>r</i> − <i>g</i>) when <i>r</i> is above <i>g</i>.</p>
+        <p>Some analysts use an exit multiple instead, such as an EV/EBITDA at FY36 (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>). That hides the same growth and return assumptions inside a multiple. Ramu’s terminal value is 11.4 times FY37’s NOPAT; check that any exit multiple you pick implies something sensible.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Two-thirds of the value comes after FY36</h2>
+      <p>Put the pieces on one bar, to scale. The ten forecast years give 262.4 of the 826.9 total, 32%. The years after FY36 give 564.5: <b>68%</b> of the value rests on what happens more than ten years from now <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 224" role="img" aria-label="One enterprise-value bar of 826.9 crore drawn to scale: 110.7 from FY27 to FY31 and 151.7 from FY32 to FY36 together make 32 percent, and the terminal value of 564.5 makes 68 percent"><text x="40" y="26" text-anchor="start" fill="#f1eee8" font-size="16">Enterprise value ₹826.9 cr</text><rect x="40" y="90" width="94.08" height="44" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="134.08" y="90" width="128.96" height="44" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="263.04" y="90" width="479.82" height="44" fill="#76d5c1" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="48" y="118" text-anchor="start" fill="#202020" font-size="16">110.7</text><text x="142.08" y="118" text-anchor="start" fill="#202020" font-size="16">151.7</text><text x="273.04" y="118" text-anchor="start" fill="#f1eee8" font-size="16">564.5</text><path d="M40 82 L40 76 L260.04 76 L260.04 82" stroke="#a5a29c" stroke-width="1.5" fill="none"/><path d="M266.04 82 L266.04 76 L742.85 76 L742.85 82" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="151.52" y="66" text-anchor="middle" fill="#f1eee8" font-size="16">ten years · 32%</text><text x="502.94" y="66" text-anchor="middle" fill="#f1eee8" font-size="16">after FY36 · 68%</text><text x="87.04" y="158" text-anchor="middle" fill="#a5a29c" font-size="16">FY27–31</text><text x="198.56" y="158" text-anchor="middle" fill="#a5a29c" font-size="16">FY32–36</text><text x="502.94" y="158" text-anchor="middle" fill="#a5a29c" font-size="16">for ever after</text><text x="40" y="208" text-anchor="start" fill="#a5a29c" font-size="16">0.85 px = ₹1 cr, worth today</text></svg></figure>
+      <p>That is normal for a growing company, and it is why the terminal assumptions deserve the most scrutiny. Move terminal growth from 4% to 6% and the terminal share moves from 66% to 71%, and the value a share from ₹72.0 to ₹82.9.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Step 4 · Per share</p>
+      <h2>From the whole firm to one share</h2>
+      <p>The 826.9 is <b>enterprise value</b> (EV): what the whole business is worth to lenders and owners together (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>). The lenders’ claim comes off first. Net debt, borrowings of 100 less cash of 40, is 60, which leaves equity of 766.9 for the owners. Divide by 10 crore shares <span class="tag">example</span>.</p>
+      <span class="eq">Value a share = (EV − net debt) ÷ shares = (826.9 − 60) ÷ 10 = <b>₹76.7</b>, against a price of ₹100</span>
+      <figure><svg viewBox="0 0 800 352" role="img" aria-label="A teal enterprise-value bar of 826.9 crore over a gold equity bar of 766.9 plus a rose net debt sliver of 60; below, on a per-share scale, a gold value of 76.7 rupees against a longer lavender price bar of 100"><text x="40" y="38" text-anchor="start" fill="#a5a29c" font-size="16">Enterprise value ₹826.9 cr</text><rect x="40" y="48" width="661.51" height="30" fill="#76d5c1"/><text x="40" y="108" text-anchor="start" fill="#a5a29c" font-size="16">owners’ equity + lenders’ net claim</text><rect x="40" y="118" width="613.51" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="653.51" y="118" width="48" height="30" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="48" y="139" text-anchor="start" fill="#202020" font-size="16">equity 766.9</text><text x="661.51" y="139" text-anchor="start" fill="#202020" font-size="16">60</text><text x="40" y="176" text-anchor="start" fill="#a5a29c" font-size="16">0.8 px = ₹1 cr · net debt = borrowings 100 − cash 40</text><text x="40" y="222" text-anchor="start" fill="#a5a29c" font-size="16">a share: equity ÷ 10 crore shares, against the price</text><rect x="40" y="232" width="383.44" height="30" fill="#f5c76a"/><text x="48" y="253" text-anchor="start" fill="#202020" font-size="16">value ₹76.7</text><rect x="40" y="272" width="500" height="30" fill="#c3b8ff"/><text x="48" y="293" text-anchor="start" fill="#202020" font-size="16">price ₹100</text><text x="40" y="336" text-anchor="start" fill="#a5a29c" font-size="16">5 px = ₹1 a share</text></svg></figure>
+      <p>At ₹100 the market’s own EV is 1,060 (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>), 233 more than this forecast. So the market is pricing in more cash, or safer cash, than these assumptions give. Finding out which is the job of the next three parts.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Build Ramu’s DCF yourself</h2>
+      <p>Five settings drive the whole model <span class="tag">example</span>. Start from a scenario, then change one setting at a time and watch where the value moves. The defaults are the base case above.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Choose a scenario</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="base" aria-pressed="true">Base case</button>
+            <button type="button" class="secondary" data-p="need" aria-pressed="false">What ₹100 needs</button>
+            <button type="button" class="secondary" data-p="cost" aria-pressed="false">Growth that only earns its cost</button>
+            <button type="button" class="secondary" data-p="hurdle" aria-pressed="false">Higher hurdle</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Forecast the cash</p>
+          <div class="dl-grid">
+            <div class="dl-col">
+              <div class="control"><label for="g1">Growth, FY27–31: <output id="g1-o"></output> a year</label><input id="g1" type="range" min="0" max="25" step="0.1" value="12"></div>
+              <div class="steps"><span class="stl">Growth, FY32–36</span><button type="button" class="secondary" data-st="g2" data-d="-1" aria-label="Lower the FY32 to FY36 growth">−</button><output id="g2-o" role="status"></output><button type="button" class="secondary" data-st="g2" data-d="1" aria-label="Raise the FY32 to FY36 growth">+</button></div>
+            </div>
+            <div class="dl-col">
+              <div class="control"><label for="r">Return on new investment: <output id="r-o"></output></label><input id="r" type="range" min="8" max="40" step="0.1" value="20"></div>
+            </div>
+          </div>
+          <div class="lab-chart"><svg id="fcChart" viewBox="0 0 600 270" role="img" aria-label="Stacked bars for FY27 to FY36: each year’s NOPAT split into teal free cash flow and coral reinvestment, redrawn as the growth and return settings change"></svg></div>
+          <p class="key"><span><i style="background:#76d5c1"></i>free cash flow</span><span><i style="background:#ff8059"></i>reinvested</span><span>bar = NOPAT, ₹ cr</span></p>
+          <p class="readout" id="fcOut"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Discount it</p>
+          <div class="dl-grid"><div class="dl-col"><div class="control"><label for="w">Discount rate (WACC): <output id="w-o"></output></label><input id="w" type="range" min="8" max="16" step="0.1" value="11.6"></div></div></div>
+          <div class="lab-chart"><svg id="pvChart" viewBox="0 0 600 270" role="img" aria-label="For FY27 to FY36, pale bars of free cash flow with solid bars inside of the same cash discounted to today at the chosen WACC"></svg></div>
+          <p class="key"><span><i style="background:#76d5c1;opacity:.35"></i>cash when it comes</span><span><i style="background:#76d5c1"></i>worth today</span><span>₹ cr</span></p>
+          <p class="readout" id="pvOut"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Add the terminal value</p>
+          <div class="dl-grid"><div class="dl-col"><div class="control"><label for="gt">Growth after FY36, for ever: <output id="gt-o"></output></label><input id="gt" type="range" min="0" max="7" step="0.1" value="5"></div></div></div>
+          <div class="lab-chart"><svg id="tvChart" viewBox="0 0 600 216" role="img" aria-label="Bars on one scale for the ten forecast years’ cash worth today, the terminal value worth today, and their sum, the enterprise value"></svg></div>
+          <p class="readout" id="tvOut"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">5 · Value a share</p>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 600 334" role="img" aria-label="Bars in rupees a share: the forecast years’ cash, the terminal value, net debt taken off, the resulting value a share, and the market price of 100 rupees"></svg></div>
+          <p class="msg" id="verdict" role="status" aria-live="polite"></p>
+          <p class="readout" id="sensOut"></p>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div><div class="table-wrap"><table class="yrs" id="yrs"></table></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>NOPAT starts at FY26’s 54.75 and grows at the chosen rate each year. Reinvestment each year is NOPAT × growth ÷ return on new investment, so a return below the growth rate makes free cash negative: the company has to raise money to grow. Cash is counted at each year end and discounted to 31 March 2026. The terminal value uses FY37’s cash at the terminal growth rate. Net debt (60) and shares (10 crore) stay fixed. The WACC slider never goes below 8% and terminal growth never above 7%, so the WACC is always above it.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Sensitivity</p>
+      <h2>Small changes in WACC, big changes in value</h2>
+      <p>The discount rate is an estimate too (Part 23). Everything else held at the base case, Ramu’s value a share runs from ₹108.7 at a WACC of 10% to ₹59.5 at 13% <span class="tag">example</span>. One point either side of 11.6% gives ₹94.5 and ₹63.7.</p>
+      <figure><svg viewBox="0 0 800 328" role="img" aria-label="Gold bars of Ramu’s value a share at five discount rates: 108.7 rupees at 10 percent, 86.6 at 11, 76.7 at 11.6, 71.0 at 12 and 59.5 at 13, against a dashed price line at 100"><text x="20" y="61" text-anchor="start" fill="#a5a29c" font-size="16">WACC 10%</text><rect x="130" y="40" width="543.34" height="30" fill="#f5c76a" opacity="0.6"/><text x="683.34" y="61" text-anchor="start" fill="#f1eee8" font-size="16">₹108.7</text><text x="20" y="111" text-anchor="start" fill="#a5a29c" font-size="16">WACC 11%</text><rect x="130" y="90" width="433.09" height="30" fill="#f5c76a" opacity="0.6"/><text x="573.09" y="111" text-anchor="start" fill="#f1eee8" font-size="16">₹86.6</text><text x="20" y="161" text-anchor="start" fill="#f1eee8" font-size="16">WACC 11.6%</text><rect x="130" y="140" width="383.44" height="30" fill="#f5c76a"/><text x="523.44" y="161" text-anchor="start" fill="#f1eee8" font-size="16">₹76.7</text><text x="20" y="211" text-anchor="start" fill="#a5a29c" font-size="16">WACC 12%</text><rect x="130" y="190" width="355.25" height="30" fill="#f5c76a" opacity="0.6"/><text x="495.25" y="211" text-anchor="start" fill="#f1eee8" font-size="16">₹71.0</text><text x="20" y="261" text-anchor="start" fill="#a5a29c" font-size="16">WACC 13%</text><rect x="130" y="240" width="297.60" height="30" fill="#f5c76a" opacity="0.6"/><text x="437.60" y="261" text-anchor="start" fill="#f1eee8" font-size="16">₹59.5</text><path d="M630 32 L630 282" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="6 4"/><text x="630" y="22" text-anchor="middle" fill="#c3b8ff" font-size="16">price ₹100</text><text x="20" y="312" text-anchor="start" fill="#a5a29c" font-size="16">5 px = ₹1 a share · everything else as in the base case</text></svg></figure>
+      <p>The terminal value takes most of the swing. It is the most distant cash, and the WACC appears in it twice: once in the discount factor and again in WACC − <i>g</i>. At 10% the terminal value is 75% of EV; at 13%, 63%.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Reconcile</p>
+      <h2>Why 11.75 here, when Part 13 found 13</h2>
+      <p><a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a>’s FY26 free cash flow was cash from operations 58 less capex 45 = 13. The DCF’s version for FY26 is NOPAT 54.75 less reinvestment of 43 (capex 45 less depreciation 12 = 33 of net capex, plus 10 into working capital) = 11.75 <span class="tag">example</span>. Both start from EBITDA of 85 and take off the same capex and working capital. The gap of 1.25 is tax, and behind the tax, interest.</p>
+      <figure><svg viewBox="0 0 800 262" role="img" aria-label="Two bars of Ramu’s FY26 EBITDA of 85 crore on one scale: Part 13 takes off capex 45, working capital 10 and tax paid 17 to leave 13; the DCF takes off tax on EBIT of 18.25 instead, leaving 11.75"><text x="40" y="40" text-anchor="start" fill="#a5a29c" font-size="16">Part 13: CFO − capex</text><rect x="40" y="50" width="360" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="71" text-anchor="start" fill="#202020" font-size="16">capex 45</text><rect x="400" y="50" width="80" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="408" y="71" text-anchor="start" fill="#202020" font-size="16">WC 10</text><rect x="480" y="50" width="136" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="488" y="71" text-anchor="start" fill="#202020" font-size="16">tax paid 17</text><rect x="616" y="50" width="104" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="624" y="71" text-anchor="start" fill="#202020" font-size="16">FCF 13</text><text x="40" y="126" text-anchor="start" fill="#a5a29c" font-size="16">DCF: NOPAT − reinvestment</text><rect x="40" y="136" width="360" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="157" text-anchor="start" fill="#202020" font-size="16">capex 45</text><rect x="400" y="136" width="80" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="408" y="157" text-anchor="start" fill="#202020" font-size="16">WC 10</text><rect x="480" y="136" width="146" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="488" y="157" text-anchor="start" fill="#202020" font-size="16">tax 18.25</text><rect x="626" y="136" width="94" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="634" y="157" text-anchor="start" fill="#202020" font-size="16">11.75</text><path d="M616 84 L616 170" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/><text x="621" y="192" text-anchor="middle" fill="#f1eee8" font-size="16">1.25 more tax</text><text x="40" y="246" text-anchor="start" fill="#a5a29c" font-size="16">8 px = ₹1 cr · both bars are FY26 EBITDA of 85</text></svg></figure>
+      <ol class="checks">
+        <li><b>Part 13 takes off the tax actually paid, 17.</b> Interest is deductible, so that bill is lower than it would be with no debt.</li>
+        <li><b>The DCF takes off tax on EBIT, 73 × 25% = 18.25</b>, as if Ramu had neither debt nor interest income. Net interest of 10 − 4 = 6 saves 25% × 6 = 1.5 of tax; the other −0.25 is because the 17 paid is a little more than 25% of profit before tax of 67 (16.75).</li>
+        <li><b>The saving is not lost.</b> The WACC uses the after-tax cost of debt, 7.5% rather than 10% (Part 23). Counting the saving in the cash as well would count it twice.</li>
+      </ol>
+      <p>So 13 and 11.75 are both right, for different questions. A DCF uses the one its discount rate was built for.</p>
+      <details class="trace"><summary>Go deeper: FY26 against the forecast</summary>
+        <p>In FY26 Ramu reinvested 43, 79% of NOPAT. The forecast assumes 60% for FY27, which needs the 20% return on new money to hold. If FY26’s rate were the norm at 12% growth, the return on new money would be nearer 12% ÷ 79% ≈ 15%, and the value a share ₹61.5 instead of ₹76.7. One year is a thin basis either way, which is why Part 13 reads five.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>₹76.7 is not a verdict on ₹100</h2>
+      <p>It is tempting to read “value ₹76.7, price ₹100” as “overpriced by 30%”. Every input above is a judgement. Move each one across a range a careful analyst could defend, one at a time, and the value moves a long way <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 368" role="img" aria-label="A tornado chart of Ramu’s value a share when one input at a time moves across a defensible range: the discount rate swings it most, from 63.7 to 94.5 rupees, and no single bar reaches the dashed price line at 100"><text x="20" y="71" text-anchor="start" fill="#a5a29c" font-size="16">WACC 10.6–12.6%</text><rect x="297.50" y="50" width="129.39" height="30" fill="#f5c76a" opacity="0.6"/><rect x="426.89" y="50" width="177.75" height="30" fill="#f5c76a"/><text x="303.50" y="71" text-anchor="start" fill="#202020" font-size="16">₹63.7</text><text x="598.64" y="71" text-anchor="end" fill="#202020" font-size="16">₹94.5</text><text x="20" y="121" text-anchor="start" fill="#a5a29c" font-size="16">New-money return 15–25%</text><rect x="275.11" y="100" width="151.78" height="30" fill="#f5c76a" opacity="0.6"/><rect x="426.89" y="100" width="91.07" height="30" fill="#f5c76a"/><text x="281.11" y="121" text-anchor="start" fill="#202020" font-size="16">₹61.5</text><text x="511.95" y="121" text-anchor="end" fill="#202020" font-size="16">₹85.8</text><text x="20" y="171" text-anchor="start" fill="#a5a29c" font-size="16">Terminal 4–6%</text><rect x="380.31" y="150" width="46.57" height="30" fill="#f5c76a" opacity="0.6"/><rect x="426.89" y="150" width="62.36" height="30" fill="#f5c76a"/><text x="372.31" y="171" text-anchor="end" fill="#f1eee8" font-size="16">₹72.0</text><text x="483.25" y="171" text-anchor="end" fill="#202020" font-size="16">₹82.9</text><text x="20" y="221" text-anchor="start" fill="#a5a29c" font-size="16">Growth FY27–31 10–14%</text><rect x="385.60" y="200" width="41.29" height="30" fill="#f5c76a" opacity="0.6"/><rect x="426.89" y="200" width="43.17" height="30" fill="#f5c76a"/><text x="377.60" y="221" text-anchor="end" fill="#f1eee8" font-size="16">₹72.6</text><text x="478.05" y="221" text-anchor="start" fill="#f1eee8" font-size="16">₹81.0</text><text x="20" y="271" text-anchor="start" fill="#a5a29c" font-size="16">Growth FY32–36 6–10%</text><rect x="392.42" y="250" width="34.47" height="30" fill="#f5c76a" opacity="0.6"/><rect x="426.89" y="250" width="35.99" height="30" fill="#f5c76a"/><text x="384.42" y="271" text-anchor="end" fill="#f1eee8" font-size="16">₹73.2</text><text x="470.88" y="271" text-anchor="start" fill="#f1eee8" font-size="16">₹80.3</text><path d="M426.89 40 L426.89 290" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="426.89" y="28" text-anchor="middle" fill="#f1eee8" font-size="16">base ₹76.7</text><path d="M660 40 L660 290" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="6 4"/><text x="660" y="28" text-anchor="middle" fill="#c3b8ff" font-size="16">price ₹100</text><path d="M160 300 L760 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="160" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">₹50</text><text x="260" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">₹60</text><text x="360" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">₹70</text><text x="460" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">₹80</text><text x="560" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">₹90</text><text x="660" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">₹100</text><text x="760" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">₹110</text><text x="20" y="352" text-anchor="start" fill="#a5a29c" font-size="16">10 px = ₹1 a share · one input moved at a time</text></svg></figure>
+      <p>No single range reaches ₹100, but two modest moves together do: a WACC of 10.6% with growth of 14% to FY31 gives ₹100.3. The gap between ₹76.7 and ₹100 says that the price assumes more growth, better returns on new money or a lower discount rate than this forecast. Whether those assumptions are right is the real question.</p>
+      <p class="note">A DCF is only as good as its assumptions. Its answer looks precise, to a tenth of a rupee, but it inherits every guess about growth, returns and the discount rate, and two-thirds of it comes from years nobody can see. Use it to make those guesses explicit and testable, not as the answer. Part 28 turns this into scenarios and a margin of safety.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s DCF inputs, line by line</h2>
+      <p>Tata Consumer Products, consolidated, year to 31 March 2026, ₹ crore <span class="tag">public</span>. A DCF of TCPL starts from the same lines as Ramu’s. Definitions are this series’ own: EBIT is EBITDA less D&amp;A, and net debt is borrowings less cash and cash equivalents. Each line is computed from the printed statements, with the working shown. Part 25 asks what growth TCPL’s share price assumes.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Input</th><th class="wk">Working</th><th>Value</th><th>Printed page</th></tr></thead>
+        <tbody>
+          <tr><td>EBIT</td><td class="wk">EBITDA 2,791.80 − D&amp;A 626.68</td><td class="val">2,165.12</td><td class="pg">P. 415</td></tr>
+          <tr><td>Tax rate</td><td class="wk">tax 535.28 ÷ profit before tax 2,172.78</td><td class="val">24.6%</td><td class="pg">P. 415</td></tr>
+          <tr><td>NOPAT</td><td class="wk">2,165.12 × (1 − 24.6%)</td><td class="val">1,631.7</td><td class="pg">P. 415</td></tr>
+          <tr><td>Capex less D&amp;A</td><td class="wk">448.57 − 626.68</td><td class="val">−178.11</td><td class="pg">PP. 415, 417</td></tr>
+          <tr><td>Working capital</td><td class="wk">released during the year</td><td class="val">+145.19</td><td class="pg">P. 417</td></tr>
+          <tr><td>FCFF, FY26</td><td class="wk">1,631.7 + 178.11 + 145.19</td><td class="val">1,955.0</td><td class="pg">PP. 415, 417</td></tr>
+          <tr><td>Bought firms, FY25</td><td class="wk">acquisition of subsidiaries</td><td class="val">1,809.00</td><td class="pg">P. 417</td></tr>
+          <tr><td>Net debt</td><td class="wk">borrowings 2,120.31 − cash 3,046.57</td><td class="val">net cash 926.26</td><td class="pg">P. 414</td></tr>
+          <tr><td>Shares</td><td class="wk">₹1 face value each</td><td class="val">98,95,61,780</td><td class="pg">P. 445</td></tr>
+        </tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 316" role="img" aria-label="Five bars on one scale for Tata Consumer Products: NOPAT of 1,631.7 crore and free cash flow to the firm of 1,955.0 in FY26, capex of 448.57 below D&amp;A of 626.68, and 1,809.00 spent buying subsidiaries in FY25"><text x="20" y="51" text-anchor="start" fill="#a5a29c" font-size="16">NOPAT, FY26</text><rect x="200" y="30" width="456.88" height="30" fill="#f5c76a"/><text x="208" y="51" text-anchor="start" fill="#202020" font-size="16">1,631.7</text><text x="20" y="101" text-anchor="start" fill="#a5a29c" font-size="16">FCFF, FY26</text><rect x="200" y="80" width="547.4" height="30" fill="#76d5c1"/><text x="208" y="101" text-anchor="start" fill="#202020" font-size="16">1,955.0</text><text x="20" y="151" text-anchor="start" fill="#a5a29c" font-size="16">Capex, FY26</text><rect x="200" y="130" width="125.60" height="30" fill="#ff8059"/><text x="208" y="151" text-anchor="start" fill="#202020" font-size="16">448.57</text><text x="20" y="201" text-anchor="start" fill="#a5a29c" font-size="16">D&amp;A, FY26</text><rect x="200" y="180" width="175.47" height="30" fill="#a5a29c"/><text x="208" y="201" text-anchor="start" fill="#202020" font-size="16">626.68</text><text x="20" y="251" text-anchor="start" fill="#a5a29c" font-size="16">Bought firms, FY25</text><rect x="200" y="230" width="506.52" height="30" fill="#ff8059"/><text x="208" y="251" text-anchor="start" fill="#202020" font-size="16">1,809.00</text><text x="20" y="300" text-anchor="start" fill="#a5a29c" font-size="16">0.28 px = ₹1 cr · TCPL consolidated</text></svg></figure>
+      <p>One year can mislead. In FY26 TCPL spent less on capex (448.57) than it charged as D&amp;A (626.68) and released working capital, so its free cash flow to the firm, 1,955.0, was larger than its NOPAT, 1,631.7: negative reinvestment, on Step 1’s formula. Yet in FY25 it paid 1,809.00 for subsidiaries, more than a year’s NOPAT, and 342.67 of FY26’s D&amp;A is amortisation of intangible assets, not wear on machines. For a company that grows by buying, reinvestment has to include the acquisitions and be averaged over several years, and the return on new investment has to count the price paid: TCPL’s ROCE is 8.55% with goodwill in the base (<a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a>).</p>
+      <details class="trace"><summary>Go deeper: choices behind these numbers</summary>
+        <p>EBITDA is revenue 20,290.43 less materials, purchases and the inventory change (11,855.64), employee costs (1,661.00) and other expenses (3,981.99). EBIT leaves out other income (164.75) and the share of associates and joint ventures (−90.70). Tax is current tax 545.27 plus deferred tax −9.99. Capex is the cash flow line “payment for property, plant and equipment including intangible assets”; sale proceeds of 42.48 are left out. D&amp;A splits into depreciation of property, plant and equipment 187.61, of right-of-use (leased) assets 96.40, and amortisation of intangibles 342.67 (Note 27, p. 455). Net debt leaves out lease liabilities of 699.20, as in Part 15. TCPL’s own “net cash ₹2,978 cr” also counts other bank balances, current investments and inter-corporate deposits (<a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a>).</p>
+      </details>
+      <div class="field-grid">
+        <div><b>₹2,165.12 cr EBIT</b><span>EBITDA less depreciation and amortisation of 626.68, of which 342.67 is amortisation</span><em>P&amp;L · P. 415 · NOTE 27 · P. 455</em></div>
+        <div><b>₹448.57 cr capex</b><span>Payment for property, plant and equipment; FY25 also had 1,809.00 of acquisitions</span><em>CASH FLOW · P. 417</em></div>
+        <div><b>98,95,61,780 shares</b><span>Issued and paid up at 31 March 2026, ₹1 each</span><em>NOTE 14(a) · P. 445</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements in its Integrated Annual Report 2025-26 (printed pages as cited). Ramu Chai Ltd and every forecast on this page are examples. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before trusting any DCF</h2>
+      <ol class="checks">
+        <li><b>What growth, for how long?</b> Compare it with the company’s record and its industry (Parts 9 and 17).</li>
+        <li><b>What does new money earn?</b> Growth adds value only when that return beats the WACC. The lab’s “Growth that only earns its cost” shows growth adding almost nothing.</li>
+        <li><b>How much is terminal value?</b> If it is two-thirds or more, the answer rests on the far future: test terminal growth and the WACC.</li>
+        <li><b>Which cash, which rate?</b> Cash to the firm with the WACC, then net debt off at the end; cash to owners with the cost of equity. Never mix them.</li>
+      </ol>
+      <p>A DCF asks what a set of assumptions makes the shares worth. Part 25, “Reverse DCF”, turns the question round: what growth does the ₹100 price already assume? On this model, about 15.3% a year for all ten years.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A DCF is free cash forecast, shrunk to today and split by the shares. Ramu’s ₹76.7 rests on growth, the return on new money, a discount rate and a terminal value that is two-thirds of the answer, so test the assumptions before trusting the number.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const TEAL='#76d5c1',CORAL='#ff8059',GOLD='#f5c76a',ROSE='#ec6a94',LAV='#c3b8ff',FGC='#f1eee8',MUTC='#a5a29c',AXC='#57534f',DK='#202020';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const RC=(x,y,w,h,fill,extra)=>`<rect x="${(+x).toFixed(2)}" y="${(+y).toFixed(2)}" width="${Math.max(0,+w).toFixed(2)}" height="${Math.max(0,+h).toFixed(2)}" fill="${fill}"${extra||''}/>`;
+    // ---- DCF lab. Fixed inputs are Ramu Chai's example numbers; every output is computed here from the settings.
+    const FIX={nopat0:54.75,netDebt:60,shares:10,price:100};
+    const DEF={g1:12,g2:8,w:11.6,gt:5,r:20};
+    const S={...DEF};
+    const SLIDERS=['g1','r','w','gt'];
+    const G2={min:0,max:20,step:1};
+    const pct=v=>(Math.round(v*10)/10).toFixed(1)+'%';
+    const one=v=>(Math.round(v*10)/10).toFixed(1);
+    const rs=v=>(v<0?'−₹':'₹')+one(Math.abs(v));
+    const cr=v=>(v<0?'−':'')+Math.abs(Math.round(v*10)/10).toLocaleString('en-IN',{minimumFractionDigits:1,maximumFractionDigits:1});
+    const PRESETS={
+      base:{v:{g1:12,g2:8,w:11.6,gt:5,r:20},t:'Base case: 12% a year to FY31, 8% to FY36, then 5% for ever; 20% earned on new money; WACC 11.6%. Value ₹76.7 a share against a price of ₹100.'},
+      need:{v:{g1:15.3,g2:15.3,w:11.6,gt:5,r:20},t:'What ₹100 needs: about 15.3% a year for all ten years, with the same returns and discount rate. Part 25 solves for that growth properly.'},
+      cost:{v:{g1:12,g2:8,w:11.6,gt:5,r:11.6},t:'Growth that only earns its cost: new money earns 11.6%, the same as the WACC. The growth is unchanged but adds almost nothing: ₹43.7 a share, close to the ₹41.2 Ramu would be worth with no growth at all.'},
+      hurdle:{v:{g1:12,g2:8,w:13,gt:5,r:20},t:'A higher hurdle: the same cash discounted at 13% instead of 11.6%. Value ₹59.5 a share.'}};
+    function compute(p){
+      const g1=p.g1/100,g2=p.g2/100,w=p.w/100,gt=p.gt/100,r=p.r/100;
+      let n=FIX.nopat0,pv=0;const yrs=[];
+      for(let t=1;t<=10;t++){const g=t<=5?g1:g2;n*=1+g;const f=n*(1-g/r),df=1/Math.pow(1+w,t),d=f*df;pv+=d;
+        yrs.push({year:2026+t,g:g*100,nopat:n,reinv:n-f,fcff:f,df,pv:d});}
+      const n11=n*(1+gt),f11=n11*(1-gt/r),tv=f11/(w-gt),df10=1/Math.pow(1+w,10),ptv=tv*df10;
+      const ev=pv+ptv,eq=ev-FIX.netDebt,ps=eq/FIX.shares;
+      return {yrs,pv,n11,f11,tv,df10,ptv,ev,eq,ps,tvShare:ev>0?ptv/ev:NaN};
+    }
+    function niceStep(span){const raw=span/5,m=Math.pow(10,Math.floor(Math.log10(raw)));for(const k of [1,2,5,10]) if(k*m>=raw) return k*m;return 10*m;}
+    // vertical bar charts for steps 2 and 3, one scale function each
+    function vscale(lo,hi,top,bot){return v=>bot-(v-lo)/(hi-lo)*(bot-top);}
+    function drawForecast(m){
+      const lo=Math.min(0,...m.yrs.map(y=>y.fcff)),hi=Math.max(1,...m.yrs.map(y=>y.nopat));
+      const sy=vscale(lo,hi,40,226),X0=50,SL=54,BW=34;let s='';
+      m.yrs.forEach((y,i)=>{const x=X0+i*SL,z=sy(0);
+        s+=RC(x,sy(y.nopat),BW,sy(Math.min(y.fcff,y.nopat))-sy(y.nopat),CORAL);
+        if(y.fcff>=0) s+=RC(x,sy(y.fcff),BW,z-sy(y.fcff),TEAL); else s+=RC(x,z,BW,sy(y.fcff)-z,TEAL,' opacity="0.85"');
+        s+=T(x+BW/2,sy(y.nopat)-8,one(y.nopat),'middle',MUTC)+T(x+BW/2,252,'FY'+(y.year%100),'middle',MUTC);});
+      s+=`<path d="M40 ${sy(0).toFixed(1)} L590 ${sy(0).toFixed(1)}" stroke="${AXC}" stroke-width="1.5" fill="none"/>`;
+      $('fcChart').innerHTML=s;
+      const y1=m.yrs[0],y6=m.yrs[5];
+      $('fcOut').innerHTML=`FY27: NOPAT <b>${cr(y1.nopat)}</b>, reinvested ${Math.round(100*y1.reinv/y1.nopat)}%, free cash <b>${cr(y1.fcff)}</b> · FY32: reinvested ${Math.round(100*y6.reinv/y6.nopat)}%, free cash <b>${cr(y6.fcff)}</b>`+(m.yrs.some(y=>y.fcff<0)?' · Below zero: growth costs more than the profit, so Ramu must raise money.':'');
+    }
+    function drawDiscount(m){
+      const lo=Math.min(0,...m.yrs.map(y=>y.fcff)),hi=Math.max(1,...m.yrs.map(y=>Math.max(y.fcff,y.pv)));
+      const sy=vscale(lo,hi,40,226),X0=50,SL=54,BW=34;let s='';
+      m.yrs.forEach((y,i)=>{const x=X0+i*SL,z=sy(0);
+        const bar=(v,op)=>v>=0?RC(x,sy(v),BW,z-sy(v),TEAL,op):RC(x,z,BW,sy(v)-z,TEAL,op);
+        s+=bar(y.fcff,' opacity="0.3"')+bar(y.pv,'');
+        s+=T(x+BW/2,sy(Math.max(0,y.fcff,y.pv))-8,one(y.pv),'middle',MUTC)+T(x+BW/2,252,'FY'+(y.year%100),'middle',MUTC);});
+      s+=`<path d="M40 ${sy(0).toFixed(1)} L590 ${sy(0).toFixed(1)}" stroke="${AXC}" stroke-width="1.5" fill="none"/>`;
+      $('pvChart').innerHTML=s;
+      $('pvOut').innerHTML=`Ten years’ free cash, worth today: <b>${cr(m.pv)}</b> · ₹1 due in FY36 is worth ₹${m.df10.toFixed(3)} today · numbers on the bars: worth today`;
+    }
+    function drawTerminal(m){
+      const rows=[['FY27–36 cash',m.pv,TEAL,''],['After FY36',m.ptv,TEAL,' opacity="0.55"'],['Whole firm, EV',m.ev,TEAL,' stroke="#f1eee8" stroke-width="1.5"']];
+      const lo=Math.min(0,...rows.map(r=>r[1])),hi=Math.max(1,...rows.map(r=>r[1]));
+      const X0=236,X1=580,sx=v=>X0+(v-lo)/(hi-lo)*(X1-X0),z=sx(0);let s='';
+      rows.forEach(([lab,v,c,ex],i)=>{const y=16+i*54;
+        s+=T(14,y+12,lab,'start',MUTC)+(v>=0?RC(z,y,sx(v)-z,30,c,ex):RC(sx(v),y,z-sx(v),30,c,ex));
+        const share=i<2&&m.ev>0?' · '+Math.round(100*v/m.ev)+'%':'';
+        s+=T(14,y+32,'₹'+cr(v)+' cr'+share,'start',FGC);});
+      s+=`<path d="M${z.toFixed(1)} 8 L${z.toFixed(1)} 178" stroke="${AXC}" stroke-width="1.5" fill="none"/>`+T(14,204,'₹ cr, worth today','start',MUTC);
+      $('tvChart').innerHTML=s;
+      $('tvOut').innerHTML=`FY37 free cash ${cr(m.f11)} ÷ (${pct(S.w)} − ${pct(S.gt)}) = terminal value <b>${cr(m.tv)}</b> at FY36, worth <b>${cr(m.ptv)}</b> today`+(m.ev>0?`: <b>${Math.round(100*m.tvShare)}%</b> of EV`:'');
+    }
+    function drawPerShare(m){
+      const sh=FIX.shares;
+      const rows=[['FY27–36 cash',m.pv/sh,TEAL,''],['After FY36',m.ptv/sh,TEAL,' opacity="0.55"'],['Net debt',-FIX.netDebt/sh,ROSE,''],['Value a share',m.ps,GOLD,''],['Price',FIX.price,LAV,'']];
+      const vals=rows.map(r=>r[1]),mn=Math.min(0,...vals),mx=Math.max(...vals);
+      const step=niceStep(mx-mn),lo=Math.floor(mn/step)*step,hi=Math.ceil(mx/step)*step;
+      const X0=236,X1=550,sx=v=>X0+(v-lo)/(hi-lo)*(X1-X0),z=sx(0);let s='';
+      rows.forEach(([lab,v,c,ex],i)=>{const y=14+i*54;
+        s+=T(14,y+12,lab,'start',i===3?FGC:MUTC);
+        s+=v>=0?`<rect data-v="${v.toFixed(3)}" x="${z.toFixed(2)}" y="${y}" width="${(sx(v)-z).toFixed(2)}" height="30" fill="${c}"${ex}/>`:`<rect data-v="${v.toFixed(3)}" x="${sx(v).toFixed(2)}" y="${y}" width="${(z-sx(v)).toFixed(2)}" height="30" fill="${c}"${ex}/>`;
+        s+=T(14,y+32,rs(v),'start',i===3?GOLD:FGC);});
+      s+=`<path d="M${z.toFixed(1)} 8 L${z.toFixed(1)} 268" stroke="${AXC}" stroke-width="1.5" fill="none"/>`;
+      for(let v=lo,k=0;v<=hi+1e-9&&k<20;v+=step,k++){const vv=Math.round(v);s+=`<text class="tick" data-v="${vv}" x="${sx(vv).toFixed(2)}" y="292" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(vv)}</text>`;}
+      s+=T(14,320,'₹ a share · net debt and shares fixed','start',MUTC);
+      $('labChart').innerHTML=s;
+      const gap=m.ps-FIX.price;
+      $('verdict').textContent=m.ps<0?`On these settings the value is ${rs(m.ps)} a share: growth that earns too little burns more cash than the business is worth. That is a verdict on the settings, not on Ramu.`:
+        `Value ${rs(m.ps)} a share against a price of ₹100: ${Math.abs(gap)<0.05?'equal to the price':(gap<0?rs(-gap)+' below':rs(gap)+' above')} it. That is a statement about these assumptions, not yet a verdict on the shares.`;
+      const okLo=S.w-1>S.gt+1e-9,lo1=okLo?compute({...S,w:S.w-1}).ps:null,hi1=compute({...S,w:S.w+1}).ps;
+      $('sensOut').innerHTML=`Same settings, WACC one point lower (${pct(S.w-1)}): <b>${okLo?rs(lo1):'no answer, as the WACC must stay above terminal growth'}</b> · one point higher (${pct(S.w+1)}): <b>${rs(hi1)}</b>`;
+      return {lo1,hi1};
+    }
+    const labConfig={format:v=>(v<0?'−₹':'₹')+Math.abs(v)};
+    function draw(){
+      SLIDERS.forEach(id=>{S[id]=+$(id).value;$(id+'-o').textContent=pct(S[id]);});
+      $('g2-o').textContent=pct(S.g2);
+      document.querySelector('[data-st="g2"][data-d="-1"]').disabled=S.g2<=G2.min;document.querySelector('[data-st="g2"][data-d="1"]').disabled=S.g2>=G2.max;
+      const m=compute(S);
+      drawForecast(m);drawDiscount(m);drawTerminal(m);const sens=drawPerShare(m);
+      const rows=[['NOPAT FY26 = EBIT 73 × (1 − 25%)','54.75'],
+        ['Reinvestment = growth ÷ return',pct(S.g1)+' ÷ '+pct(S.r)+' = '+Math.round(100*S.g1/S.r)+'% to FY31, '+Math.round(100*S.g2/S.r)+'% to FY36'],
+        ['PV of FY27–36 free cash, at '+pct(S.w),cr(m.pv)],
+        ['FY37 NOPAT = FY36 × (1 + '+pct(S.gt)+')',cr(m.n11)],
+        ['FY37 free cash = NOPAT × (1 − '+pct(S.gt)+' ÷ '+pct(S.r)+')',cr(m.f11)],
+        ['Terminal value at FY36 = '+cr(m.f11)+' ÷ ('+pct(S.w)+' − '+pct(S.gt)+')',cr(m.tv)],
+        ['× discount factor for FY36',m.df10.toFixed(3)+' → '+cr(m.ptv)],
+        ['EV = '+cr(m.pv)+' + '+cr(m.ptv),cr(m.ev)+(m.ev>0?' · terminal '+Math.round(100*m.tvShare)+'%':'')],
+        ['Equity = EV − net debt 60',cr(m.eq)],
+        ['Value a share = equity ÷ 10 crore',rs(m.ps)]];
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      $('yrs').innerHTML='<thead><tr><th>Year</th><th>Growth</th><th>NOPAT</th><th>FCFF</th><th>PV</th></tr></thead><tbody>'+m.yrs.map(y=>`<tr><td>FY${y.year%100}</td><td>${pct(y.g)}</td><td>${cr(y.nopat)}</td><td>${cr(y.fcff)}</td><td>${cr(y.pv)}</td></tr>`).join('')+'</tbody>';
+      const vals=[m.pv,m.tv,m.ptv,m.ev,m.eq,m.ps,...m.yrs.map(y=>y.fcff)];
+      window.labResults={valid:vals.every(Number.isFinite)&&S.w>S.gt,settings:{...S},pvYears:m.pv,fcff:m.yrs.map(y=>y.fcff),nopat:m.yrs.map(y=>y.nopat),
+        f37:m.f11,tv:m.tv,pvTv:m.ptv,ev:m.ev,equity:m.eq,perShare:m.ps,tvShare:m.tvShare,waccDown:sens.lo1,waccUp:sens.hi1};
+    }
+    SLIDERS.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';document.querySelectorAll('.presets button').forEach(b=>b.setAttribute('aria-pressed','false'));draw();}));
+    document.querySelectorAll('[data-st]').forEach(b=>b.addEventListener('click',()=>{
+      S.g2=Math.min(G2.max,Math.max(G2.min,Math.round((S.g2+(+b.dataset.d)*G2.step)*10)/10));$('msg').textContent='';
+      document.querySelectorAll('.presets button').forEach(x=>x.setAttribute('aria-pressed','false'));draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];Object.assign(S,p.v);SLIDERS.forEach(id=>$(id).value=p.v[id]);
+      document.querySelectorAll('.presets button').forEach(x=>x.setAttribute('aria-pressed',String(x===bt)));draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
