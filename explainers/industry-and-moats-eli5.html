@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Industry structure and moats — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, EBITDA, cash) | coral #ff8059 = money going out (tax, extra interest, shortfalls)
+       gold #f5c76a = what belongs to shareholders (profit, equity) | rose #ec6a94 = what is owed (debt, interest, leases)
+       lavender #c3b8ff = the market's view (here also the cost of capital line and the moat ring) | neutral grey = EBIT (profit before anyone is paid) */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+    .steps button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .flag{margin:10px 0 0;font:12px/1.5 var(--font-mono);letter-spacing:.04em;color:var(--faint)}
+    .lab .flag.on{color:#ec6a94}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    /* Debt lab */
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:0 0 16px}
+    .readouts div{border:1px solid var(--border);padding:10px 12px}
+    .readouts b{display:block;font:600 20px/1.2 var(--font-mono);color:var(--fg)}
+    .readouts span{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted);margin-top:2px}
+    .readouts div.hot{border-color:#ec6a94}.readouts div.hot b{color:#ec6a94}
+  
+
+    /* Part 17 additions */
+    .forces .frow{display:grid;grid-template-columns:1fr;gap:6px;margin-top:14px}
+    .forces .frow b{display:block;font-weight:500;font-size:15px}
+    .forces .frow .fsub{display:block;font:11px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em;margin-top:2px}
+    .forces .seg{display:flex}
+    .forces .seg button{padding:7px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer;margin-left:-1px}
+    .forces .seg button.on{background:var(--accent);color:#202020;border-color:var(--accent)}
+    @media (max-width:700px){.forces .seg button{padding:7px 10px}}
+
+  </style>
+</head>
+<body data-series-id="industry-and-moats-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 24 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Industry structure and moats</h1>
+      <p class="lede">A good year proves little. What matters is whether a company can keep earning well while rivals try to take its profit. This part looks at the industry around a company, five pressures on its profit, and the walls, called moats, that hold them off.</p>
+      <p class="source-note">Built from Tata Consumer Products’ (TCPL) FY2026 Integrated Annual Report, its audited consolidated statements, its AGM presentation of 10 June 2026, and the arithmetic of the ratios · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the annual report ↗</a> · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the consolidated statements ↗</a> · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf">Read the AGM presentation ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a> reads the P&amp;L, where gross profit is revenue less the cost of materials; <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a> shows gross, EBITDA and net margins and how fixed costs magnify swings; <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> warns that growth only pays when it earns more than it costs; <a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a> defines ROCE = EBIT ÷ (equity + borrowings), which is 20.9% for Ramu. This part asks <i>why</i> a return like that might last. Facts carry a tag: <span class="tag">public</span> is a figure from a company’s published filing, <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd, a small tea business, and <span class="tag">general</span> is a plain description of how an industry is built, with no figures behind it. All amounts are ₹ crore (cr). Part 16 covers the business model and unit economics, Part 18 management and capital allocation, Part 22 the wider economy, Part 23 how to estimate a cost of capital, and Parts 32–33 consumer and cyclical sectors. <b>Go deeper</b> boxes are optional.</p>
+      <p><b>Definitions used across the series.</b> <b>EBIT</b> = EBITDA − depreciation and amortisation, so before other income and exceptional items. <b>ROCE</b> = EBIT ÷ closing capital employed (equity + borrowings), as in Part 10. <b>Gross margin</b> = (revenue − cost of materials) ÷ revenue. TCPL’s real figures are frozen at FY2026 (year to 31 March 2026); this is education, not a recommendation to buy or sell anything.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales, gross profit</span>
+        <span><i style="background:#ff8059"></i>money going out: costs, rival pressure</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit above the capital charge</span>
+        <span><i style="background:#ec6a94"></i>what is owed</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: cost of capital, the moat ring</span>
+        <span><i style="background:#c9c6c0"></i>market share, EBIT</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The industry first</p>
+      <h2>Size, growth and share</h2>
+      <p>A company sells into an <b>industry</b>. Three numbers describe it. <b>Market size</b> is the total sales of everyone in it. <b>Market growth</b> is how fast that total rises. <b>Market share</b> is one company’s sales as a slice of the total. Ramu sells packaged tea in a regional market of ₹12,500 cr, growing 8% a year; its ₹300 cr of packaged tea is a 2.4% share <span class="tag">example</span>. We take Ramu to be outside the top three, a one-off assumption.</p>
+      <figure><svg viewBox="0 0 800 276" role="img" aria-label="The 12,500 crore market split into top three brands at 55 percent, Ramu at 2.4 percent and others at 42.6 percent, then the market bars at 5 and 10 years of 8 percent growth with Ramu’s steady slice marked"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">TODAY · THE ₹12,500 cr MARKET, BY WHO HOLDS IT</text><rect x="40.0" y="40.0" width="171.9" height="34" fill="#c9c6c0" opacity="0.75" stroke="#202020" stroke-width="2"/><rect x="211.9" y="40.0" width="7.5" height="34" fill="#76d5c1" opacity="0.95" stroke="#202020" stroke-width="2"/><rect x="219.4" y="40.0" width="133.1" height="34" fill="#c9c6c0" opacity="0.4" stroke="#202020" stroke-width="2"/><text x="125.9" y="63.0" text-anchor="middle" fill="#202020" font-size="16">top three 55%</text><text x="285.9" y="63.0" text-anchor="middle" fill="#f1eee8" font-size="16">others 42.6%</text><text x="366.5" y="63.0" text-anchor="start" fill="#f1eee8" font-size="16">Ramu 2.4% · ₹300 cr</text><text x="40.0" y="112.0" text-anchor="start" fill="#a5a29c" font-size="16">AT 8% A YEAR THE MARKET GROWS TO</text><rect x="40.0" y="122.0" width="459.2" height="30" fill="#c9c6c0" opacity="0.75" stroke="#202020" stroke-width="2"/><rect x="488.1" y="122.0" width="11.0" height="30" fill="#76d5c1" opacity="0.95" stroke="#202020" stroke-width="2"/><text x="50.0" y="144.0" text-anchor="start" fill="#202020" font-size="16">year 5 · ₹18,367 cr</text><rect x="40.0" y="164.0" width="674.7" height="30" fill="#c9c6c0" opacity="0.75" stroke="#202020" stroke-width="2"/><rect x="698.5" y="164.0" width="16.2" height="30" fill="#76d5c1" opacity="0.95" stroke="#202020" stroke-width="2"/><text x="50.0" y="186.0" text-anchor="start" fill="#202020" font-size="16">year 10 · ₹26,987 cr</text><text x="40.0" y="236.0" text-anchor="start" fill="#f1eee8" font-size="16">teal sliver = Ramu at a steady 2.4%: ₹300 → ₹441 → ₹648 cr</text><text x="40.0" y="264.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹40 cr on every bar · the 8% growth is the example’s</text></svg></figure>
+      <p>Growth is a tailwind, not a moat. In ten years an 8% market is 2.2 times bigger, and a company that merely keeps its 2.4% share grows to ₹648 cr. Every rival gets the same tailwind. What a company keeps of it, and whether it earns more than its capital costs (<a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a>), depends on the rest of this part.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Who holds the market</p>
+      <h2>Concentrated or fragmented</h2>
+      <p><b>Concentration</b> is how much the top few sellers hold. In Ramu’s market the top three hold 55% <span class="tag">example</span>. A <b>fragmented</b> industry has many small sellers and none sets the pace; a <b>consolidated</b> one has a few big ones. Neither is good or bad on its own. Few big sellers can keep prices steady, or fight each other hard. Many small ones usually cannot hold a price, because the customer always has a cheaper choice nearby.</p>
+      <figure><svg viewBox="0 0 800 290" role="img" aria-label="Three markets drawn as bars of equal length: twenty equal brands where the top three hold 15 percent, the Ramu market where they hold 55 percent, and a consolidated example where they hold 90 percent"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">20 EQUAL BRANDS · A FRAGMENTED MARKET</text><rect x="40.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><rect x="70.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><rect x="100.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><rect x="130.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="160.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="190.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="220.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="250.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="280.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="310.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="340.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="370.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="400.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="430.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="460.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="490.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="520.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="550.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="580.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="610.0" y="40.0" width="30.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="660.0" y="63.0" text-anchor="start" fill="#f1eee8" font-size="16">top 3 = 15%</text><text x="40.0" y="112.0" text-anchor="start" fill="#a5a29c" font-size="16">THE RAMU MARKET</text><rect x="40.0" y="122.0" width="330.0" height="34" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><rect x="370.0" y="122.0" width="270.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="660.0" y="145.0" text-anchor="start" fill="#f1eee8" font-size="16">top 3 = 55%</text><text x="40.0" y="194.0" text-anchor="start" fill="#a5a29c" font-size="16">A CONSOLIDATED MARKET · AN EXAMPLE</text><rect x="40.0" y="204.0" width="540.0" height="34" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><rect x="580.0" y="204.0" width="60.0" height="34" fill="#c9c6c0" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="660.0" y="227.0" text-anchor="start" fill="#f1eee8" font-size="16">top 3 = 90%</text><text x="40.0" y="276.0" text-anchor="start" fill="#a5a29c" font-size="16">6 px = 1% of the market · bright = the top three brands</text></svg></figure>
+      <p>Why do industries consolidate? <span class="tag">general</span> India’s mobile telecom is the textbook case: building networks and buying spectrum cost a great deal before the first customer pays, price wars thinned revenue per user, and weaker operators merged or left, so a market of many became a market of a few. Cement is another: plants are costly, the product is heavy and expensive to move, so firms grew plant by plant and by buying one another, region by region. For real shares, use a sector regulator’s data or the companies’ own filings; this series quotes none.</p>
+      <details class="trace"><summary>Go deeper: one number for concentration</summary>
+        <p>Analysts also use the Herfindahl index: square each firm’s share in percent and add them up. Twenty firms at 5% give 20 × 25 = 500. One firm at 100% gives 10,000. The higher the number, the more concentrated the industry. It needs every firm’s share, which is why “top three” is the quicker first look.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Five pressures on profit</p>
+      <h2>Porter’s five forces</h2>
+      <p>The strategist Michael Porter listed five forces that decide how much of an industry’s profit its sellers keep. Each can be weak or strong. The more of them are strong, the thinner the margin left for the company. The drawing shows all five pressing on the same profit. Next to it, each force in one line, with a tea example <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 428" role="img" aria-label="Five coral arrows from rivalry, new entrants, substitutes, suppliers and buyers all pressing on a central gold profit circle"><defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#ff8059"/></marker></defs><circle cx="400" cy="215" r="54" fill="#f5c76a" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="400.0" y="221.0" text-anchor="middle" fill="#202020" font-size="16">PROFIT</text><path d="M400.0 65.0 L400.0 157.0" stroke="#ff8059" stroke-width="3" fill="none" marker-end="url(#ah1)"/><text x="400.0" y="47.0" text-anchor="middle" fill="#f1eee8" font-size="16">RIVALRY</text><path d="M628.3 168.6 L456.8 203.5" stroke="#ff8059" stroke-width="3" fill="none" marker-end="url(#ah1)"/><text x="642.3" y="172.6" text-anchor="start" fill="#f1eee8" font-size="16">NEW ENTRANTS</text><path d="M541.1 336.4 L444.0 252.8" stroke="#ff8059" stroke-width="3" fill="none" marker-end="url(#ah1)"/><text x="551.1" y="358.4" text-anchor="start" fill="#f1eee8" font-size="16">SUBSTITUTES</text><path d="M258.9 336.4 L356.0 252.8" stroke="#ff8059" stroke-width="3" fill="none" marker-end="url(#ah1)"/><text x="248.9" y="358.4" text-anchor="end" fill="#f1eee8" font-size="16">SUPPLIERS</text><path d="M171.7 168.6 L343.2 203.5" stroke="#ff8059" stroke-width="3" fill="none" marker-end="url(#ah1)"/><text x="157.7" y="172.6" text-anchor="end" fill="#f1eee8" font-size="16">BUYERS</text><text x="40.0" y="416.0" text-anchor="start" fill="#a5a29c" font-size="16">five pressures · set in the lab below</text></svg></figure>
+      <div class="field-grid">
+        <div><b>Rivalry</b><span>How hard the sellers already there fight for each customer, by price or advertising. Another brand cuts its price 10% in every shop.</span><em>FORCE 1 · EXISTING SELLERS</em></div>
+        <div><b>New entrants</b><span>How easily newcomers can arrive and split the profit. A start-up packs tea and sells it on a delivery app, with no shop network at all.</span><em>FORCE 2 · NEWCOMERS</em></div>
+        <div><b>Substitutes</b><span>A different product that does the same job. A shopper who skips tea for coffee or a bottled drink.</span><em>FORCE 3 · OTHER PRODUCTS</em></div>
+        <div><b>Buyer power</b><span>How well customers can push the price down. Ramu’s largest distributor buys ₹60 cr, 12% of sales, and can ask for a bigger commission.</span><em>FORCE 4 · CUSTOMERS</em></div>
+        <div><b>Supplier power</b><span>How well suppliers can push your costs up. Tea and milk powder are ₹2.00 of the ₹2.75 variable cost of a cup; if their prices jump, so does Ramu’s bill.</span><em>FORCE 5 · SUPPLIERS</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The wall</p>
+      <h2>A moat keeps rivals out</h2>
+      <p>A <b>moat</b> is whatever stops rivals taking a company’s profit, the way water stops an army reaching a castle. It matters because of a plain fact: high profit attracts competitors. Without a moat, a rival copies the product or undercuts the price, and profit slides back to what the business costs to run. With one, the profit above that level can last. The ring shows six common kinds of wall. One rival arrow stops at it.</p>
+      <figure><svg viewBox="0 0 800 416" role="img" aria-label="A ring of six lavender wall segments labelled brand, switching costs, network effects, scale, distribution reach and licences around a gold excess-profit circle, with a coral rival arrow stopped at the ring"><defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#ff8059"/></marker></defs><path d="M410.5 115.5 A100 100 0 0 1 480.9 156.2" stroke="#c3b8ff" stroke-width="24" fill="none"/><path d="M491.4 174.3 A100 100 0 0 1 491.4 255.7" stroke="#c3b8ff" stroke-width="24" fill="none"/><path d="M480.9 273.8 A100 100 0 0 1 410.5 314.5" stroke="#c3b8ff" stroke-width="24" fill="none"/><path d="M389.5 314.5 A100 100 0 0 1 319.1 273.8" stroke="#c3b8ff" stroke-width="24" fill="none"/><path d="M308.6 255.7 A100 100 0 0 1 308.6 174.3" stroke="#c3b8ff" stroke-width="24" fill="none"/><path d="M319.1 156.2 A100 100 0 0 1 389.5 115.5" stroke="#c3b8ff" stroke-width="24" fill="none"/><circle cx="400" cy="215" r="46" fill="#f5c76a" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="400.0" y="213.0" text-anchor="middle" fill="#202020" font-size="16">EXCESS</text><text x="400.0" y="233.0" text-anchor="middle" fill="#202020" font-size="16">PROFIT</text><text x="472.0" y="100.0" text-anchor="start" fill="#f1eee8" font-size="16">BRAND</text><text x="528.0" y="221.0" text-anchor="start" fill="#f1eee8" font-size="16">SWITCHING COSTS</text><text x="472.0" y="334.0" text-anchor="start" fill="#f1eee8" font-size="16">NETWORK EFFECTS</text><text x="328.0" y="334.0" text-anchor="end" fill="#f1eee8" font-size="16">SCALE</text><text x="272.0" y="188.0" text-anchor="end" fill="#f1eee8" font-size="16">DISTRIBUTION REACH</text><text x="328.0" y="100.0" text-anchor="end" fill="#f1eee8" font-size="16">LICENCES</text><path d="M40 215 L284 215" stroke="#ff8059" stroke-width="3" fill="none" marker-end="url(#ah2)"/><text x="40.0" y="200.0" text-anchor="start" fill="#ff8059" font-size="16">RIVAL</text><text x="40.0" y="400.0" text-anchor="start" fill="#a5a29c" font-size="16">equal walls here · real moats differ in strength</text></svg></figure>
+      <p>Moats are not a feature of every business, and they are not permanent. The next panel explains each wall in tea terms, and says where tea is weak.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Six walls, with tea examples</h2>
+      <div class="field-grid">
+        <div><b>Brand</b><span>Shoppers pick it, or pay more, without comparing. They reach for the familiar pack even when another is 10% cheaper. Test: a price rise that does not lose customers.</span><em>THE MOST COMMON CLAIM IN CONSUMER GOODS</em></div>
+        <div><b>Switching costs</b><span>Changing supplier is costly, slow or risky. In shop tea it is almost zero: a shopper switches for free. For an office with a Ramu machine on loan and a supply contract it is real.</span><em>WEAK IN RETAIL TEA, STRONGER IN CONTRACTS</em></div>
+        <div><b>Network effects</b><span>The product gets more useful as more people use it, as with a marketplace or payments app. Tea has almost none: your neighbour drinking Ramu does nothing for you.</span><em>RARE IN TEA</em></div>
+        <div><b>Scale and cost advantage</b><span>Bigger means cheaper per unit. Ramu’s fixed cash costs are ₹140 cr; over 100 cr cups that is ₹1.40 a cup, over 200 cr cups ₹0.70 if fixed costs did not move (a one-off sum, <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a> explains why they might).</span><em>FIXED COSTS SPREAD OVER MORE CUPS</em></div>
+        <div><b>Distribution reach</b><span>Being in more shops, restocked reliably. A new brand can have a better tea and still not be on the shelf where most shoppers look.</span><em>SEE TCPL’S OWN REACH FIGURES BELOW</em></div>
+        <div><b>Licences and regulation</b><span>The law limits who may sell, or protects what you hold. A telecom spectrum licence or a mining lease is a high wall; food-safety approval for packing tea is one every packer clears, so it is a low one. Rules can also open a market.</span><em>CUTS BOTH WAYS</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How a moat shows up · 1</p>
+      <h2>Return above the cost of capital</h2>
+      <p>The first fingerprint is a <b>high, stable ROCE</b> (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>). Capital has a price: owners and lenders want a return. This part assumes <b>12% as the cost of capital</b>, an illustrative figure; Part 23 shows how to estimate one. At ROCE 20.9% on ₹350 cr of capital, Ramu’s EBIT is ₹73 cr <span class="tag">example</span>. The capital charge, what the capital must earn to break even, is 12% × 350 = ₹42 cr. The ₹31 cr left is profit above that charge, which is exactly what rivals want to compete away.</p>
+      <figure><svg viewBox="0 0 800 220" role="img" aria-label="Ramu’s 73 crore EBIT drawn as a 42 crore lavender capital charge plus a 31 crore gold excess, above a second bar where ROCE is exactly 12 percent and the excess is zero"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">EBIT ₹73 cr = ROCE 20.9% ON ₹350 cr</text><rect x="40.0" y="40.0" width="336.0" height="34" fill="#c3b8ff" opacity="0.65" stroke="#202020" stroke-width="2"/><rect x="376.0" y="40.0" width="248.0" height="34" fill="#f5c76a" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="208.0" y="63.0" text-anchor="middle" fill="#202020" font-size="16">capital charge 42</text><text x="500.0" y="63.0" text-anchor="middle" fill="#202020" font-size="16">excess 31</text><text x="40.0" y="112.0" text-anchor="start" fill="#a5a29c" font-size="16">IF ROCE WERE JUST 12%: EBIT ₹42 cr</text><rect x="40.0" y="122.0" width="336.0" height="34" fill="#c3b8ff" opacity="0.65" stroke="#202020" stroke-width="2"/><text x="208.0" y="145.0" text-anchor="middle" fill="#202020" font-size="16">capital charge 42</text><text x="390.0" y="145.0" text-anchor="start" fill="#f1eee8" font-size="16">excess 0</text><text x="40.0" y="202.0" text-anchor="start" fill="#a5a29c" font-size="16">capital charge = 12% × ₹350 cr = ₹42 cr · 8 px = ₹1 cr</text></svg></figure>
+      <span class="eq">capital charge = 12% × 350 = 42 · excess = 73 − 42 = <b>31</b></span>
+      <p>Stable matters as much as high. A company that earns 35% one year and 8% the next may not have a wall, just luck and bad luck. Both companies below average 21% <span class="tag">example</span>. Only one gives a reader much reason to expect next year.</p>
+      <figure><svg viewBox="0 0 800 376" role="img" aria-label="Two five-year sets of ROCE columns with the same 21 percent average: a steady company between 20 and 22 percent and a swingy one between 8 and 35 percent, with a dashed 12 percent line"><text x="50.0" y="48.0" text-anchor="start" fill="#a5a29c" font-size="16">STEADY · AVERAGE 21%</text><rect x="50.0" y="168.0" width="40.0" height="132" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="70.0" y="160.0" text-anchor="middle" fill="#f1eee8" font-size="16">22</text><text x="70.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y1</text><rect x="106.0" y="174.0" width="40.0" height="126" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="126.0" y="166.0" text-anchor="middle" fill="#f1eee8" font-size="16">21</text><text x="126.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y2</text><rect x="162.0" y="174.0" width="40.0" height="126" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="182.0" y="166.0" text-anchor="middle" fill="#f1eee8" font-size="16">21</text><text x="182.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y3</text><rect x="218.0" y="180.0" width="40.0" height="120" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="238.0" y="172.0" text-anchor="middle" fill="#f1eee8" font-size="16">20</text><text x="238.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y4</text><rect x="274.0" y="174.0" width="40.0" height="126" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="294.0" y="166.0" text-anchor="middle" fill="#f1eee8" font-size="16">21</text><text x="294.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y5</text><text x="440.0" y="48.0" text-anchor="start" fill="#a5a29c" font-size="16">SWINGY · AVERAGE 21%</text><rect x="440.0" y="90.0" width="40.0" height="210" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="460.0" y="82.0" text-anchor="middle" fill="#f1eee8" font-size="16">35</text><text x="460.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y1</text><rect x="496.0" y="252.0" width="40.0" height="48" fill="#ff8059" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="516.0" y="274.0" text-anchor="middle" fill="#202020" font-size="16">8</text><text x="516.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y2</text><rect x="552.0" y="120.0" width="40.0" height="180" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="572.0" y="112.0" text-anchor="middle" fill="#f1eee8" font-size="16">30</text><text x="572.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y3</text><rect x="608.0" y="240.0" width="40.0" height="60" fill="#ff8059" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="628.0" y="262.0" text-anchor="middle" fill="#202020" font-size="16">10</text><text x="628.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y4</text><rect x="664.0" y="168.0" width="40.0" height="132" fill="#c9c6c0" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="684.0" y="160.0" text-anchor="middle" fill="#f1eee8" font-size="16">22</text><text x="684.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">y5</text><path d="M40.0 228.0 L740.0 228.0" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="377.0" y="222.0" text-anchor="middle" fill="#c3b8ff" font-size="16">12%</text><text x="40.0" y="360.0" text-anchor="start" fill="#a5a29c" font-size="16">6 px = 1 point of ROCE · coral = a year below the 12% line</text></svg></figure>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How a moat shows up · 2</p>
+      <h2>Steady gross margins, sticky prices</h2>
+      <p>The second fingerprint is a <b>steady gross margin</b> (<a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a>), and the sharpest test of it is an input-cost spike. Suppose tea, ₹0.90 of Ramu’s ₹5.00 cup, costs 50% more: ₹0.45 more a cup <span class="tag">example</span>. A firm with <b>pricing power</b> raises its price to ₹5.45 and keeps ₹2.50 of gross profit a cup. A firm with weak power gets only ₹5.10. One with none absorbs it all. The same shock, three different margins. This is a one-off scenario and does not change Ramu’s accounts.</p>
+      <figure><svg viewBox="0 0 800 340" role="img" aria-label="Four bars of one cup: price split into materials and gross profit before and after tea cost rises 50 percent, for strong, weak and no pass-through, with gross margin falling from 50.0 to 45.9, 42.2 and 41.0 percent"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">BEFORE · TEA ₹0.90 A CUP · PRICE ₹5.00</text><rect x="40.0" y="40.0" width="250.0" height="30" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><rect x="290.0" y="40.0" width="250.0" height="30" fill="#76d5c1" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="165.0" y="61.0" text-anchor="middle" fill="#202020" font-size="16">materials 2.50</text><text x="415.0" y="61.0" text-anchor="middle" fill="#202020" font-size="16">gross profit 2.50</text><text x="552.0" y="61.0" text-anchor="start" fill="#f1eee8" font-size="16">GM 50.0%</text><text x="40.0" y="104.0" text-anchor="start" fill="#a5a29c" font-size="16">TEA +50% · STRONG PRICING POWER · PRICE ₹5.45</text><rect x="40.0" y="114.0" width="295.0" height="30" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><rect x="335.0" y="114.0" width="250.0" height="30" fill="#76d5c1" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="187.5" y="135.0" text-anchor="middle" fill="#202020" font-size="16">materials 2.95</text><text x="460.0" y="135.0" text-anchor="middle" fill="#202020" font-size="16">gross profit 2.50</text><text x="597.0" y="135.0" text-anchor="start" fill="#f1eee8" font-size="16">GM 45.9%</text><text x="40.0" y="178.0" text-anchor="start" fill="#a5a29c" font-size="16">TEA +50% · WEAK PRICING POWER · PRICE ₹5.10</text><rect x="40.0" y="188.0" width="295.0" height="30" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><rect x="335.0" y="188.0" width="215.0" height="30" fill="#76d5c1" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="187.5" y="209.0" text-anchor="middle" fill="#202020" font-size="16">materials 2.95</text><text x="442.5" y="209.0" text-anchor="middle" fill="#202020" font-size="16">gross profit 2.15</text><text x="562.0" y="209.0" text-anchor="start" fill="#f1eee8" font-size="16">GM 42.2%</text><text x="40.0" y="252.0" text-anchor="start" fill="#a5a29c" font-size="16">TEA +50% · NO PASS-THROUGH · PRICE ₹5.00</text><rect x="40.0" y="262.0" width="295.0" height="30" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><rect x="335.0" y="262.0" width="205.0" height="30" fill="#76d5c1" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="187.5" y="283.0" text-anchor="middle" fill="#202020" font-size="16">materials 2.95</text><text x="437.5" y="283.0" text-anchor="middle" fill="#202020" font-size="16">gross profit 2.05</text><text x="552.0" y="283.0" text-anchor="start" fill="#f1eee8" font-size="16">GM 41.0%</text><text x="40.0" y="326.0" text-anchor="start" fill="#a5a29c" font-size="16">100 px = ₹1 · a one-off scenario, not Ramu’s accounts</text></svg></figure>
+      <p>Look at the percentage too: even full pass-through lowers the gross margin from 50.0% to 45.9%, because the price rose by the same rupees as the cost. A moat shows up in rupees of gross profit per unit holding steady, more than in the percentage staying put. And a margin that does not move may also mean no cost spike happened. Read the margin through a year when costs did move.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How moats wear away</p>
+      <h2>Channels, technology, rules</h2>
+      <p>Walls erode. Three common ways, with tea examples <span class="tag">example</span>. <b>A new channel</b>: quick-commerce apps let a new brand reach homes without a distributor network, so the reach wall shrinks. <b>New technology</b>: an app that lets cafés order directly from estates cuts out the middlemen a scale advantage relied on. <b>Regulation</b>: a rule change removes a licence barrier or caps a price. The curve applies the lab’s formula (below) to Ramu’s 20.9% ROCE, with moat strength stepping down at each event.</p>
+      <figure><svg viewBox="0 0 800 380" role="img" aria-label="A teal ROCE line falling from 20.9 percent toward the dashed 12 percent cost of capital line, with three vertical markers for a new channel, new technology and a rule change as the moat weakens"><path d="M60.0 290.0 L660.0 290.0" stroke="#3b3936" stroke-width="1" fill="none"/><text x="52.0" y="295.0" text-anchor="end" fill="#a5a29c" font-size="16">0</text><path d="M60.0 242.0 L660.0 242.0" stroke="#3b3936" stroke-width="1" fill="none"/><text x="52.0" y="247.0" text-anchor="end" fill="#a5a29c" font-size="16">5</text><path d="M60.0 194.0 L660.0 194.0" stroke="#3b3936" stroke-width="1" fill="none"/><text x="52.0" y="199.0" text-anchor="end" fill="#a5a29c" font-size="16">10</text><path d="M60.0 146.0 L660.0 146.0" stroke="#3b3936" stroke-width="1" fill="none"/><text x="52.0" y="151.0" text-anchor="end" fill="#a5a29c" font-size="16">15</text><path d="M60.0 98.0 L660.0 98.0" stroke="#3b3936" stroke-width="1" fill="none"/><text x="52.0" y="103.0" text-anchor="end" fill="#a5a29c" font-size="16">20</text><path d="M60.0 50.0 L660.0 50.0" stroke="#3b3936" stroke-width="1" fill="none"/><text x="52.0" y="55.0" text-anchor="end" fill="#a5a29c" font-size="16">25</text><path d="M60.0 174.8 L660.0 174.8" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="670.0" y="179.8" text-anchor="start" fill="#c3b8ff" font-size="16">12%</text><path d="M180.0 52.0 L180.0 290.0" stroke="#a5a29c" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="180.0" y="44.0" text-anchor="middle" fill="#f1eee8" font-size="16">NEW CHANNEL</text><path d="M360.0 52.0 L360.0 290.0" stroke="#a5a29c" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="360.0" y="44.0" text-anchor="middle" fill="#f1eee8" font-size="16">NEW TECHNOLOGY</text><path d="M540.0 52.0 L540.0 290.0" stroke="#a5a29c" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="540.0" y="44.0" text-anchor="middle" fill="#f1eee8" font-size="16">RULE CHANGE</text><polyline points="60.0,89.8 120.0,96.6 180.0,106.0 240.0,114.2 300.0,121.5 360.0,130.0 420.0,137.2 480.0,143.2 540.0,149.5 600.0,154.6 660.0,158.6" fill="none" stroke="#76d5c1" stroke-width="4"/><circle cx="60.0" cy="89.8" r="4" fill="#76d5c1"/><circle cx="120.0" cy="96.6" r="4" fill="#76d5c1"/><circle cx="180.0" cy="106.0" r="4" fill="#76d5c1"/><circle cx="240.0" cy="114.2" r="4" fill="#76d5c1"/><circle cx="300.0" cy="121.5" r="4" fill="#76d5c1"/><circle cx="360.0" cy="130.0" r="4" fill="#76d5c1"/><circle cx="420.0" cy="137.2" r="4" fill="#76d5c1"/><circle cx="480.0" cy="143.2" r="4" fill="#76d5c1"/><circle cx="540.0" cy="149.5" r="4" fill="#76d5c1"/><circle cx="600.0" cy="154.6" r="4" fill="#76d5c1"/><circle cx="660.0" cy="158.6" r="4" fill="#76d5c1"/><text x="60.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="120.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">1</text><text x="180.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">2</text><text x="240.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><text x="300.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">4</text><text x="360.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><text x="420.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><text x="480.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">7</text><text x="540.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">8</text><text x="600.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><text x="660.0" y="316.0" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="60.0" y="342.0" text-anchor="start" fill="#a5a29c" font-size="16">years · ROCE % · dashed lavender = assumed 12% cost of capital</text><text x="60.0" y="366.0" text-anchor="start" fill="#a5a29c" font-size="16">illustrative: the lab’s formula, moat 60% → 40% → 20% → 0% at each event</text></svg></figure>
+      <p>Notice the shape. ROCE does not collapse at once; it slides toward the cost of capital while the walls are down. By the end, much of the extra profit has gone to customers and rivals. That is why analysts ask not only “is there a moat?” but “which wall is it, and what could take it down?”</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>A rival arrives</h2>
+      <p>Ramu earns 20.9% on ₹350 cr, against an assumed 12% cost of capital <span class="tag">example</span>. A rival cuts its price and hunts for Ramu’s customers. Set how strong Ramu’s moat is, how deep the cut is, how long the price war lasts, and how much extra Ramu spends on advertising to respond. The chart shows ROCE over ten years <i>with</i> your moat and <i>without</i> one, both fading toward the 12% line.</p>
+      <p><b>Modelling assumptions, all one-off teaching choices, not forecasts.</b> (1) Each year of the price war a share <i>e</i> of Ramu’s customers, and equally of its profit above the 12% charge, goes to the rival: <i>e</i> = (1 − moat) × min(1, 2 × price cut) × (1 − 0.15 × extra ads in %). So a 10% cut moves 20% of a no-moat firm’s customers a year. (2) Each 1% of sales spent on extra advertising removes 15% of that erosion and costs 1% × ₹500 cr of EBIT every war year. (3) Customers lost do not come back when the war ends. (4) Capital stays ₹350 cr and no other cost changes. (5) ROCE = 12% + what is left of the 8.9-point excess − ad cost. (6) The market grows 8% a year from ₹12,500 cr; share is Ramu’s 2.4% times what is left. (7) The “without a moat” line is the same model with moat strength 0. The slider defaults are my choices; the starting figures are Ramu’s canonical ones.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="moat">Moat strength <output id="moat-o"></output></label><input id="moat" type="range" min="0" max="100" step="10" value="60"></div>
+          <div class="control"><label for="cut">Rival’s price cut <output id="cut-o"></output></label><input id="cut" type="range" min="0" max="25" step="1" value="10"></div>
+          <div class="control"><label for="yrs">Years the price war lasts <output id="yrs-o"></output></label><input id="yrs" type="range" min="1" max="10" step="1" value="10"></div>
+          <div class="control"><label for="ads">Ramu’s extra ads, % of sales <output id="ads-o"></output></label><input id="ads" type="range" min="0" max="4" step="0.5" value="1"></div>
+          <p class="group-label">SITUATIONS</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="commodity">Commodity tea, 10% cut</button>
+            <button type="button" class="secondary" data-p="brand">Strong brand, 10% cut</button>
+            <button type="button" class="secondary" data-p="short">Short war: 3 years, 20% cut</button>
+            <button type="button" class="secondary" data-p="adwar">Ad war: 4% of sales</button>
+          </div>
+          <div class="steps"><button type="button" class="secondary" id="reset">Reset to defaults</button></div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+          <p class="flag" id="flag"></p>
+        </div>
+        <div class="lab-chart">
+          <div class="readouts" id="readouts"></div>
+          <svg id="labChart" viewBox="0 0 560 360" role="img" aria-label="Two lines of Ramu’s ROCE over ten years, with a moat in teal and without a moat in coral, both falling from 20.9 percent toward a dashed lavender line at the assumed 12 percent cost of capital"></svg>
+        </div>
+      </div>
+      <div class="ledger" id="ledger"></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it · five forces</p>
+      <h2>Weak or strong, force by force</h2>
+      <p>Set each force to weak, typical or strong and see what it does to Ramu’s long-run margin. <b>Assumptions, illustrative weights and not estimates:</b> from today’s EBIT margin of 14.6% (73 ÷ 500), a strong force takes margin points off and a weak one adds them: rivalry ±2.0, new entrants ±1.5, substitutes ±1.0, buyers ±2.0, suppliers ±1.5, in points of sales. Sales stay ₹500 cr and capital ₹350 cr, so ROCE = margin × 1.43. The lavender dashed line is the margin needed to earn 12%: 12% × 350 ÷ 500 = 8.4%.</p>
+      <div class="lab forces"><div class="lab-grid">
+        <div class="controls" id="fcontrols"></div>
+        <div class="lab-chart">
+          <div class="readouts" id="freadouts"></div>
+          <svg id="forcesChart" viewBox="0 0 560 220" role="img" aria-label="One bar for Ramu’s long-run EBIT margin on a 0 to 30 percent axis, with a dashed marker at today’s 14.6 percent and one at the 8.4 percent needed to earn the 12 percent cost of capital"></svg>
+        </div>
+      </div>
+      <p class="msg" id="fmsg" role="status" aria-live="polite"></p>
+      <div class="ledger" id="fledger"></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: brand claims and reach</h2>
+      <p>Tata Consumer Products (TCPL) says things about its position. Here are its own words from slide 4 of the AGM presentation of 10 June 2026, “We are Tata Consumer Products” <span class="tag">public</span>. They are <b>TCPL’s claims</b>, not checked facts: the slide does not say whether “largest” means by volume or value, which market, or whose data. The same slide gives reach: “290mn households in India” and “4.5mn retail outlets”.</p>
+      <div class="field-grid">
+        <div><b>“Largest salt brand in India”</b><span>Shown under the Tata Salt logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“2nd Largest tea brand in India”</b><span>Shown under the Tata Tea logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“3rd largest tea brand in UK &amp; largest tea brand in Canada”</b><span>Shown under the Tetley logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“#1 natural mineral water brand in India”</b><span>Shown under the Himalayan logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“#2 branded tea player globally”</b><span>In the “In a nutshell” column. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“National brand in pulses, spices, dry fruits and other staples”</b><span>Shown under the Tata Sampann logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“India’s leading Desi-Chinese brand”</b><span>Shown under the Ching’s logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“4th largest R&amp;G bags coffee brand in USA”</b><span>Shown under the Eight O’Clock logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“Leading organic F&amp;B and herbal supplements brand”</b><span>Shown under the Organic India logo. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+        <div><b>“Among the top 10 FMCG companies in India”</b><span>In the “In a nutshell” column. TCPL’s claim.</span><em>AGM PRESENTATION · SLIDE 4</em></div>
+      </div>
+      <p>The annual report adds detail on reach. The portfolio “is now distributed across 4.5 million retail outlets reaching 290 million households, with direct reach improving ~3x vs FY 2021 exit”. It lists “100+ super-stockists and 3,000+ sub-stockists” for rural depth, a pharmacy channel that “reached &gt;40,000 outlets in the first year”, and an “E-commerce channel grew 62% led by quick commerce” (p. 213). Quick commerce is the new channel of the erosion panel above, in TCPL’s own words, and it is also an opportunity: the report says TCPL “sustained leadership positions in packaged beverages online”.</p>
+      <figure><svg viewBox="0 0 800 340" role="img" aria-label="Five teal bars on a log scale from 100-plus super-stockists up to 290 million households reached, as TCPL reports its Indian distribution"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">100+ SUPER-STOCKISTS</text><rect x="40.0" y="38.0" width="80.0" height="28" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="132.0" y="59.0" text-anchor="start" fill="#f1eee8" font-size="16">100+</text><text x="40.0" y="88.0" text-anchor="start" fill="#a5a29c" font-size="16">3,000+ SUB-STOCKISTS</text><rect x="40.0" y="96.0" width="198.2" height="28" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="228.2" y="117.0" text-anchor="end" fill="#202020" font-size="16">3,000+</text><text x="40.0" y="146.0" text-anchor="start" fill="#a5a29c" font-size="16">40,000+ PHARMACY OUTLETS, FIRST YEAR</text><rect x="40.0" y="154.0" width="288.2" height="28" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="318.2" y="175.0" text-anchor="end" fill="#202020" font-size="16">40,000+</text><text x="40.0" y="204.0" text-anchor="start" fill="#a5a29c" font-size="16">4.5 MILLION RETAIL OUTLETS</text><rect x="40.0" y="212.0" width="452.3" height="28" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="482.3" y="233.0" text-anchor="end" fill="#202020" font-size="16">4.5 million</text><text x="40.0" y="262.0" text-anchor="start" fill="#a5a29c" font-size="16">290 MILLION HOUSEHOLDS REACHED</text><rect x="40.0" y="270.0" width="597.0" height="28" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="627.0" y="291.0" text-anchor="end" fill="#202020" font-size="16">290 million</text><text x="40.0" y="324.0" text-anchor="start" fill="#a5a29c" font-size="16">log scale · every 80 px is 10×</text></svg></figure>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s AGM presentation, 10 June 2026, slide 4, and Integrated Annual Report 2025-26, p. 213 (printed page numbers). Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: gross margin, FY25 to FY26</h2>
+      <p>TCPL’s P&amp;L does not print a gross profit line, so build it the series way <span class="tag">public</span>. Revenue from operations ₹20,290.43 cr (FY25 ₹17,618.30 cr). Less materials and related costs: cost of materials consumed ₹7,788.16 cr, purchase of stock in trade ₹4,108.23 cr and a change in inventories of −₹40.75 cr, ₹11,855.64 cr in all (FY25: 6,997.40 + 3,434.37 − 362.49 = ₹10,069.28 cr). <b>Gross margin: 41.57% in FY26 against 42.85% in FY25, down 1.28 points.</b> (My arithmetic from the printed lines.)</p>
+      <figure><svg viewBox="0 0 800 236" role="img" aria-label="Two bars on one scale for FY25 and FY26 revenue, each split into materials and related costs in coral and gross profit in teal, giving gross margins of 42.85 and 41.57 percent"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">FY25 · REVENUE ₹17,618.30 cr</text><rect x="40.0" y="40.0" width="302.1" height="34" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><rect x="342.1" y="40.0" width="226.5" height="34" fill="#76d5c1" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="191.0" y="63.0" text-anchor="middle" fill="#202020" font-size="16">materials etc. 10,069.28</text><text x="455.3" y="63.0" text-anchor="middle" fill="#202020" font-size="16">gross profit 7,549.02</text><text x="580.5" y="63.0" text-anchor="start" fill="#f1eee8" font-size="16">42.85%</text><text x="40.0" y="104.0" text-anchor="start" fill="#a5a29c" font-size="16">FY26 · REVENUE ₹20,290.43 cr</text><rect x="40.0" y="114.0" width="355.7" height="34" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><rect x="395.7" y="114.0" width="253.0" height="34" fill="#76d5c1" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="217.8" y="137.0" text-anchor="middle" fill="#202020" font-size="16">materials etc. 11,855.64</text><text x="522.2" y="137.0" text-anchor="middle" fill="#202020" font-size="16">gross profit 8,434.79</text><text x="660.7" y="137.0" text-anchor="start" fill="#f1eee8" font-size="16">41.57%</text><text x="40.0" y="198.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹33 cr · materials etc. = materials consumed + stock-in-trade bought</text><text x="40.0" y="222.0" text-anchor="start" fill="#a5a29c" font-size="16">plus or minus the change in inventories</text></svg></figure>
+      <span class="eq">FY26: (20,290.43 − 11,855.64) ÷ 20,290.43 = 8,434.79 ÷ 20,290.43 = <b>41.57%</b> · FY25: 7,549.02 ÷ 17,618.30 = <b>42.85%</b></span>
+      <p><b>Does the report tie the change to tea or coffee costs?</b> It does not explain this consolidated figure, and I have not inferred a cause. It does speak about tea and coffee costs, segment by segment. On India Branded profit: “improvement in profitability was led by tapering of tea cost, improved performance in the salt portfolio and growth businesses”. On International: “a decline in margins, primarily driven by an increase in coffee costs and the impact of U.S. tariffs” (p. 177). On tea: “significant inflation in tea cost carried forward from last year, which was mitigated through calibrated price increases, thereby protecting the margins and bringing the margins to normative levels in H2” (p. 179). It also says price increases of the second half of FY25 were “to offset higher input costs” (p. 176), and that the standalone tea business saw “price reductions implemented to pass on the benefits of tapering of tea cost” (p. 177). For EBITDA margin the report gives 13.9%, “a decline of 30 bps” (p. 223), its own measure that includes other income.</p>
+      <div class="field-grid">
+        <div><b>₹20,290.43 cr revenue</b><span>FY25 ₹17,618.30 cr. Materials consumed ₹7,788.16 cr (₹6,997.40 cr); stock in trade ₹4,108.23 cr (₹3,434.37 cr); change in inventories −₹40.75 cr (−₹362.49 cr)</span><em>CONSOLIDATED P&amp;L · P. 415</em></div>
+        <div><b>“calibrated price increases”</b><span>Tea inflation in H1 “mitigated through calibrated price increases”, margins back to “normative levels in H2”</span><em>BOARD’S REPORT · P. 179</em></div>
+        <div><b>“volatility in agricultural commodities such as tea and coffee, which can impact gross margins”</b><span>TCPL’s own statement of the risk</span><em>MD&amp;A · P. 212</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: advertising and sales charges</h2>
+      <p>Note 28 to the consolidated statements lists other expenses <span class="tag">public</span>. One line is “Advertisement and Sales Charges”: ₹1,225.48 cr in FY26 against ₹1,155.84 cr in FY25, up ₹69.64 cr. As a share of revenue that is 6.04% against 6.56% (my arithmetic). The label is TCPL’s; the note does not split advertising from other sales charges, so it is not a pure advertising figure. The Board’s report mentions brand investment, for example “sustained marketing investments across platforms” for Capital Foods (p. 181) and “higher brand investment” in the UK (p. 181), without totals.</p>
+      <figure><svg viewBox="0 0 800 190" role="img" aria-label="Two coral bars on one scale: advertisement and sales charges of 1,155.84 crore in FY25 and 1,225.48 crore in FY26, about 6.56 and 6.04 percent of revenue"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">FY25 · ADVERTISEMENT AND SALES CHARGES</text><rect x="40.0" y="40.0" width="289.0" height="30" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="341.0" y="61.0" text-anchor="start" fill="#f1eee8" font-size="16">₹1,155.84 cr · 6.56% of revenue</text><text x="40.0" y="90.0" text-anchor="start" fill="#a5a29c" font-size="16">FY26 · ADVERTISEMENT AND SALES CHARGES</text><rect x="40.0" y="100.0" width="306.4" height="30" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="358.4" y="121.0" text-anchor="start" fill="#f1eee8" font-size="16">₹1,225.48 cr · 6.04% of revenue</text><text x="40.0" y="176.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹4 cr · the label is TCPL’s, Note 28</text></svg></figure>
+      <div class="field-grid">
+        <div><b>₹1,225.48 cr advertisement and sales charges</b><span>FY25 ₹1,155.84 cr. Total other expenses ₹3,981.99 cr (₹3,639.57 cr); freight ₹828.90 cr (₹754.02 cr)</span><em>NOTE 28 · P. 455</em></div>
+        <div><b>6.04% of revenue</b><span>1,225.48 ÷ 20,290.43; FY25: 1,155.84 ÷ 17,618.30 = 6.56%</span><em>MY ARITHMETIC</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: two ROCEs, no verdict</h2>
+      <p>On the series definition, TCPL’s ROCE is EBIT ₹2,165.12 cr ÷ (equity ₹23,188.86 cr + borrowings ₹2,120.31 cr) = <b>8.55%</b> in FY26; FY25 is 1,878.61 ÷ 23,238.95 = 8.08% <span class="tag">public</span>. TCPL’s own table prints a very different <b>“Return on Capital Employed (RoCE) 41.87%”</b>, up from 37.54% (p. 224). Its footnote defines capital employed as “Tangible Net Worth (including Non-current Investments) + Total Debt + Deferred Tax Liabilities + Purchase commitments for Non-Controlling Interests’ shares” (p. 54). Starting from tangible net worth leaves out the goodwill and brands its acquisitions put on the balance sheet (TCPL’s own table on the same page shows goodwill of ₹11,884 cr and indefinite-life brands of ₹2,093 cr). Neither number is wrong; they answer different questions.</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="Four bars: the series ROCE of 8.08 and 8.55 percent and TCPL’s own reported RoCE of 37.54 and 41.87 percent for FY25 and FY26"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">SERIES ROCE · FY25 · EBIT ÷ (EQUITY + BORROWINGS)</text><rect x="40.0" y="40.0" width="80.8" height="30" fill="#c9c6c0" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="132.8" y="61.0" text-anchor="start" fill="#f1eee8" font-size="16">8.08%</text><text x="40.0" y="92.0" text-anchor="start" fill="#a5a29c" font-size="16">SERIES ROCE · FY26 · SAME DEFINITION</text><rect x="40.0" y="102.0" width="85.5" height="30" fill="#c9c6c0" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="137.5" y="123.0" text-anchor="start" fill="#f1eee8" font-size="16">8.55%</text><text x="40.0" y="154.0" text-anchor="start" fill="#a5a29c" font-size="16">TCPL’S OWN RoCE · FY25</text><rect x="40.0" y="164.0" width="375.4" height="30" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="427.4" y="185.0" text-anchor="start" fill="#f1eee8" font-size="16">37.54%</text><text x="40.0" y="216.0" text-anchor="start" fill="#a5a29c" font-size="16">TCPL’S OWN RoCE · FY26</text><rect x="40.0" y="226.0" width="418.7" height="30" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="470.7" y="247.0" text-anchor="start" fill="#f1eee8" font-size="16">41.87%</text><text x="40.0" y="290.0" text-anchor="start" fill="#a5a29c" font-size="16">10 px = 1 point · two definitions of capital employed, same company</text></svg></figure>
+      <figure><svg viewBox="0 0 800 316" role="img" aria-label="Five gold columns of TCPL’s own reported RoCE for FY22 to FY26: 33, 34, 43, 38 and 42 percent"><rect x="80.0" y="85.0" width="70.0" height="165" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="115.0" y="77.0" text-anchor="middle" fill="#f1eee8" font-size="16">33%</text><text x="115.0" y="276.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY22</text><rect x="200.0" y="80.0" width="70.0" height="170" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="235.0" y="72.0" text-anchor="middle" fill="#f1eee8" font-size="16">34%</text><text x="235.0" y="276.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><rect x="320.0" y="35.0" width="70.0" height="215" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="355.0" y="27.0" text-anchor="middle" fill="#f1eee8" font-size="16">43%</text><text x="355.0" y="276.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><rect x="440.0" y="60.0" width="70.0" height="190" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="475.0" y="52.0" text-anchor="middle" fill="#f1eee8" font-size="16">38%</text><text x="475.0" y="276.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><rect x="560.0" y="40.0" width="70.0" height="210" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="595.0" y="32.0" text-anchor="middle" fill="#f1eee8" font-size="16">42%</text><text x="595.0" y="276.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">TCPL’S OWN RoCE, FIVE YEARS</text><text x="40.0" y="300.0" text-anchor="start" fill="#a5a29c" font-size="16">5 px = 1 point · TCPL’s own definition, as printed (rounded)</text></svg></figure>
+      <p>TCPL’s own five-year RoCE, as printed on p. 54, was 33%, 34%, 43%, 38% and 42% from FY22 to FY26: high on its definition, with a range of ten points.</p>
+      <p><b>The question, with no verdict.</b> What in these numbers looks like a moat? The brand claims, the reach figures, and a gross margin that moved by 1.28 points in a year when the report describes tea and coffee costs moving. What would test it? Whether the 8.55% series ROCE rises as acquired businesses mature; whether gross margin holds when tea or coffee costs next spike; whether “largest” and “2nd largest” hold on a stated basis; whether advertising must rise to defend the position; and how quick commerce changes who controls the shelf.</p>
+      <div class="field-grid">
+        <div><b>RoCE 41.87% (FY25 37.54%)</b><span>TCPL’s own “Key financial ratios”, consolidated</span><em>MD&amp;A · P. 224</em></div>
+        <div><b>Capital employed, as TCPL defines it</b><span>Tangible net worth (incl. non-current investments) + total debt + deferred tax liabilities + purchase commitments for NCI shares</span><em>FINANCIAL HIGHLIGHTS FOOTNOTE · P. 54</em></div>
+        <div><b>₹2,165.12 cr EBIT, ₹25,309.17 cr capital</b><span>EBIT as EBITDA 2,791.80 less D&amp;A 626.68; equity 23,188.86 plus borrowings 2,120.31</span><em>P&amp;L · P. 415 · BALANCE SHEET · P. 414</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited consolidated statements and management discussion in its Integrated Annual Report 2025-26 (printed pages as cited). Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Five questions about any moat</h2>
+      <ol class="checks">
+        <li><b>How is the industry built?</b> Size, growth, and how much the top few hold. Fragmented rarely holds price; consolidated can.</li>
+        <li><b>Which of the five forces is strong?</b> One strong force can eat the margin of an otherwise good business.</li>
+        <li><b>Which wall is it?</b> Brand, switching costs, network, scale, reach or licence. If you cannot name it, be careful calling it a moat.</li>
+        <li><b>Does it show in the numbers?</b> ROCE above the cost of capital and steady, gross profit per unit holding through a cost spike.</li>
+        <li><b>What could take it down?</b> A new channel, new technology, a rule change. Ask before it happens, not after.</li>
+      </ol>
+      <p>A moat only helps if the people running the company protect it and spend the cash well. Part 18, “Management, capital allocation and concalls”, asks what managers do with the cash a moat produces, and whether they keep their promises.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A moat is whatever lets a company keep earning more than its cost of capital while rivals try to take it: look for high, steady returns and gross profit that holds when costs jump, name the wall, and ask what could take it down.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',TEAL='#76d5c1',COR='#ff8059',LAV='#c3b8ff',GRYC='#c9c6c0';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- Ramu canonical figures (example). All lab formulas live in model() and forceModel().
+    const B={ebit:73,sales:500,cap:350,mkt:12500,g:0.08,share:2.4,k:12};
+    const R0=100*B.ebit/B.cap, E0=R0-B.k;   // 20.857% ROCE, 8.857-point excess over the assumed 12%
+    const SENS=2, ADEFF=0.15;               // modelling assumptions: price-cut sensitivity, erosion removed per 1% of sales in ads
+    const ids=['moat','cut','yrs','ads'];
+    const labConfig={format:v=>String(v),
+      sliderFormats:[v=>(+v).toFixed(0)+'%',v=>(+v).toFixed(0)+'%',v=>(+v).toFixed(0)+(+v===1?' year':' years'),v=>(+v).toFixed(1)+'%']};
+    const X0=56,X1=530,Y0=290,YK=9.6; // plot: years 0..10 across, ROCE 0..25 up
+    function model(m,cutPct,N,ads){
+      const out={};
+      [['with',m],['without',0]].forEach(([tag,mm])=>{
+        const e=(1-mm/100)*Math.min(1,SENS*cutPct/100)*(1-ADEFF*ads);
+        let ex=E0,sh=B.share;const roce=[R0],share=[B.share];let profit=0;
+        for(let t=1;t<=10;t++){
+          const war=t<=N;
+          if(war){ex*=1-e;sh*=1-e;}
+          const r=B.k+ex-(war?ads*B.sales/B.cap:0);
+          roce.push(r);share.push(sh);profit+=(r-B.k)*B.cap/100;
+        }
+        out[tag]={e,roce,share,profit,sales10:share[10]/100*B.mkt*Math.pow(1+B.g,10)};
+      });
+      out.adcost=ads*B.sales/B.cap;
+      return out;
+    }
+    function chart(c){
+      const sx=t=>X0+t*(X1-X0)/10, sy=v=>Y0-YK*v;
+      let s='';
+      [0,5,10,15,20,25].forEach(v=>{s+=`<path d="M${X0} ${sy(v).toFixed(1)} L${X1} ${sy(v).toFixed(1)}" stroke="#3b3936" stroke-width="1" fill="none"/>`+(v===10?'':`<text class="ytick" x="${X0-8}" y="${(sy(v)+5).toFixed(1)}" text-anchor="end" fill="${MUTC}" font-size="16">${v}%</text>`);});
+      s+=`<text class="ytick" x="${X0-8}" y="${(sy(10)+9).toFixed(1)}" text-anchor="end" fill="${MUTC}" font-size="16">10%</text>`;
+      s+=`<path d="M${X0} ${sy(B.k).toFixed(1)} L${X1} ${sy(B.k).toFixed(1)}" stroke="${LAV}" stroke-width="2" stroke-dasharray="5 4" fill="none"/>`;
+      s+=T(X0,20,'— with moat','start',TEAL)+T(X0+130,20,'— no moat','start',COR)+T(X0+250,20,'- - assumed cost of capital 12%','start',LAV);
+      const line=(arr,col,w)=>`<polyline points="${arr.map((v,t)=>sx(t).toFixed(1)+','+sy(v).toFixed(1)).join(' ')}" fill="none" stroke="${col}" stroke-width="${w}"/>`+arr.map((v,t)=>`<circle cx="${sx(t).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="3.5" fill="${col}"/>`).join('');
+      s+=line(c.without.roce,COR,3)+line(c.with.roce,TEAL,4);
+      [0,2,4,6,8,10].forEach(t=>{s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${Y0+26}" text-anchor="${t==0?'start':t==10?'end':'middle'}" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;});
+      s+=T(X0,Y0+54,'years after the rival arrives','start',MUTC);
+      $('labChart').innerHTML=s;
+    }
+    const f1=v=>(Math.round(v*10)/10).toFixed(1);
+    function draw(){
+      const v=ids.map(id=>+$(id).value), c=model(v[0],v[1],v[2],v[3]);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      chart(c);
+      const w=c.with,n=c.without;
+      const tiles=[['ROCE YEAR 10 · MOAT',f1(w.roce[10])+'%',w.roce[10]<B.k],['ROCE YEAR 10 · NONE',f1(n.roce[10])+'%',n.roce[10]<B.k],
+        ['SHARE YEAR 10 · MOAT',w.share[10].toFixed(2)+'%',false],['SHARE YEAR 10 · NONE',n.share[10].toFixed(2)+'%',false],
+        ['PROFIT ABOVE CHARGE · MOAT',w.profit.toFixed(0)+' cr',w.profit<0],['PROFIT ABOVE CHARGE · NONE',n.profit.toFixed(0)+' cr',n.profit<0]];
+      $('readouts').innerHTML=tiles.map(t=>`<div class="${t[2]?'hot':''}"><b>${t[1]}</b><span>${t[0]}</span></div>`).join('');
+      const gap=w.roce[10]-n.roce[10];
+      $('flag').textContent=v[1]===0?'No price cut, so no erosion: both lines stay at 20.9% (minus any ad spend).':v[0]===0?'Moat strength 0: both lines are the same “no moat” line.':'A moat is worth '+f1(gap)+' ROCE points by year 10 and ₹'+(w.profit-n.profit).toFixed(0)+' cr of profit above the capital charge over ten years.';
+      $('flag').className='flag';
+      const rows=[
+        ['Starting ROCE = 73 ÷ 350',R0.toFixed(3)+'%'],
+        ['Excess over 12% at start',E0.toFixed(3)+' points'],
+        ['Erosion per war year, with moat: e',w.e.toFixed(4)],
+        ['Erosion per war year, no moat: e',n.e.toFixed(4)],
+        ['Ad cost = ads × 500 ÷ 350, per war year',c.adcost.toFixed(3)+' points'],
+        ['ROCE year 5, with / without',w.roce[5].toFixed(3)+'% / '+n.roce[5].toFixed(3)+'%'],
+        ['ROCE year 10, with / without',w.roce[10].toFixed(3)+'% / '+n.roce[10].toFixed(3)+'%'],
+        ['Market in year 10 = 12,500 × 1.08^10','₹'+(B.mkt*Math.pow(1+B.g,10)).toFixed(0)+' cr'],
+        ['Share in year 10, with / without',w.share[10].toFixed(3)+'% / '+n.share[10].toFixed(3)+'%'],
+        ['Packaged-tea sales year 10, with / without','₹'+w.sales10.toFixed(0)+' / ₹'+n.sales10.toFixed(0)+' cr (₹648 cr if share held)'],
+        ['Profit above 12% charge over 10 years',w.profit.toFixed(1)+' / '+n.profit.toFixed(1)+' cr']];
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:[w.roce[10],n.roce[10],w.profit,n.profit,w.share[10],n.share[10]].every(Number.isFinite),
+        withRoce:w.roce,withoutRoce:n.roce,eWith:w.e,eWithout:n.e,shareWith:w.share[10],shareWithout:n.share[10],
+        profitWith:w.profit,profitWithout:n.profit,salesWith:w.sales10,salesWithout:n.sales10,adcost:c.adcost};
+      return c;
+    }
+    const PRESETS={
+      commodity:[0,10,10,0,'Commodity tea, 10% cut'],
+      brand:[80,10,10,0,'Strong brand, 10% cut'],
+      short:[60,20,3,0,'Short war, 3 years, 20% cut'],
+      adwar:[60,10,10,4,'Ad war, 4% of sales']};
+    function setVals(p){ids.forEach((id,i)=>$(id).value=p[i]);}
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];setVals(p);const c=draw();
+      $('msg').textContent=p[4]+': year-10 ROCE '+f1(c.with.roce[10])+'% with the moat, '+f1(c.without.roce[10])+'% without; share '+c.with.share[10].toFixed(2)+'% vs '+c.without.share[10].toFixed(2)+'%.';}));
+    $('reset').addEventListener('click',()=>{setVals([60,10,10,1]);const c=draw();$('msg').textContent='Defaults: moat 60%, 10% cut for 10 years, 1% of sales on extra ads. Starting ROCE 20.9% is Ramu’s canonical figure.';});
+    draw();
+
+    // ---- Five forces lab: weak (+margin), typical (0), strong (-margin)
+    const FORCES=[['rivalry','Rivalry',2.0,'a rival cuts price or outspends'],['entrants','New entrants',1.5,'newcomers arrive easily'],['subs','Substitutes',1.0,'coffee or a bottled drink steps in'],['buyers','Buyer power',2.0,'the big distributor squeezes'],['suppliers','Supplier power',1.5,'tea and milk powder get dearer']];
+    const FS={rivalry:0,entrants:0,subs:0,buyers:0,suppliers:0};
+    const BASEM=100*B.ebit/B.sales, FLAB={'-1':'weak','0':'typical','1':'strong'};
+    function forceModel(st){
+      const delta=FORCES.reduce((a,f)=>a+f[2]*st[f[0]],0), m=BASEM-delta;
+      return {m,delta,roce:m*B.sales/B.cap,ebit:m*B.sales/100,excess:m*B.sales/100-B.k*B.cap/100,need:B.k*B.cap/B.sales};
+    }
+    function buildForces(){
+      $('fcontrols').innerHTML=FORCES.map(f=>`<div class="frow"><div><b>${f[1]}</b><span class="fsub">strong: ${f[3]} · ±${f[2].toFixed(1)} pts</span></div><div class="seg" role="group" aria-label="${f[1]}">`+[[-1,'weak'],[0,'typical'],[1,'strong']].map(o=>`<button type="button" class="secondary" data-f="${f[0]}" data-s="${o[0]}" aria-pressed="false">${o[1]}</button>`).join('')+`</div></div>`).join('')+
+        `<p class="group-label">QUICK SETTINGS</p><div class="steps"><button type="button" class="secondary" data-all="-1">All weak</button><button type="button" class="secondary" data-all="0">All typical</button><button type="button" class="secondary" data-all="1">All strong</button></div>`;
+      document.querySelectorAll('#fcontrols .seg button').forEach(b=>b.addEventListener('click',()=>{FS[b.dataset.f]=+b.dataset.s;drawForces();}));
+      document.querySelectorAll('#fcontrols [data-all]').forEach(b=>b.addEventListener('click',()=>{FORCES.forEach(f=>FS[f[0]]=+b.dataset.all);drawForces();}));
+    }
+    function drawForces(){
+      const c=forceModel(FS);
+      document.querySelectorAll('#fcontrols .seg button').forEach(b=>{const on=FS[b.dataset.f]===+b.dataset.s;b.className='secondary'+(on?' on':'');b.setAttribute('aria-pressed',on);});
+      const FX0=40,FK=16,sx=v=>FX0+v*FK;
+      let s=T(sx(BASEM),44,'Ramu today '+BASEM.toFixed(1)+'%','middle',MUTC);
+      s+=`<rect data-v="${c.m}" x="${FX0}" y="56" width="${(c.m*FK).toFixed(2)}" height="36" fill="${GRYC}" opacity="0.8" stroke="#202020" stroke-width="2"/>`;
+      s+=T(sx(c.m)+10,80,c.m.toFixed(1)+'%','start',FGC);
+      s+=`<path d="M${sx(BASEM).toFixed(1)} 50 L${sx(BASEM).toFixed(1)} 106" stroke="${FGC}" stroke-width="2" stroke-dasharray="4 4" fill="none"/>`;
+      s+=`<path d="M${sx(c.need).toFixed(1)} 50 L${sx(c.need).toFixed(1)} 106" stroke="${LAV}" stroke-width="2" stroke-dasharray="4 4" fill="none"/>`;
+      s+=T(sx(c.need),128,'8.4% earns 12%','middle',LAV);
+      [0,10,20,30].forEach((v,i)=>{s+=`<text class="ftick" x="${sx(v).toFixed(1)}" y="170" text-anchor="${i==0?'start':i==3?'end':'middle'}" fill="${MUTC}" font-size="16">${v}%</text>`;});
+      s+=T(FX0,204,'long-run EBIT margin, % of sales',  'start',MUTC);
+      $('forcesChart').innerHTML=s;
+      const tiles=[['EBIT MARGIN',c.m.toFixed(1)+'%',c.m<c.need],['ROCE',c.roce.toFixed(1)+'%',c.roce<B.k],['EBIT, ₹ cr',c.ebit.toFixed(1),false],['VS 12% CHARGE, ₹ cr',(c.excess>=0?'+':'−')+Math.abs(c.excess).toFixed(1),c.excess<0]];
+      $('freadouts').innerHTML=tiles.map(t=>`<div class="${t[2]?'hot':''}"><b>${t[1]}</b><span>${t[0]}</span></div>`).join('');
+      const strong=FORCES.filter(f=>FS[f[0]]===1).length, weak=FORCES.filter(f=>FS[f[0]]===-1).length;
+      $('fmsg').textContent=strong+' strong, '+weak+' weak: margin '+c.m.toFixed(1)+'% ('+(c.delta>0?'−':c.delta<0?'+':'')+Math.abs(c.delta).toFixed(1)+' points from today), ROCE '+c.roce.toFixed(1)+'%'+(c.roce<B.k?', below the 12% cost of capital.':'.');
+      const rows=FORCES.map(f=>[f[1]+' · '+FLAB[FS[f[0]]],(FS[f[0]]===0?'0.0':(FS[f[0]]>0?'−':'+')+f[2].toFixed(1))+' points']);
+      rows.push(['Margin = 14.6 − net force effect',c.m.toFixed(2)+'%'],['ROCE = margin × 500 ÷ 350',c.roce.toFixed(2)+'%'],['Capital charge 12% × 350','42.0 cr'],['EBIT − charge',c.excess.toFixed(1)+' cr']);
+      $('fledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.forceResults={margin:c.m,roce:c.roce,ebit:c.ebit,excess:c.excess,need:c.need,state:{...FS}};
+    }
+    buildForces();drawForces();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
