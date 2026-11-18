@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "business-model-eli5",
+    "title": "Business model and unit economics",
+    "category": "Monetary Architecture",
+    "minutes": 17,
+    "summary": "Part 16: how a company really makes money, one cup at a time",
+    "bullets": [
+      "Revenue is volume × price × mix, and one cup's contribution",
+      "A lab: price, milk, volume, fixed costs, mix and a lost customer",
+      "TCPL's segments, two classifications, and what drove each"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "ONE CUP",
+      "MIX",
+      "CUSTOMER"
+    ],
+    "file": "explainers/business-model-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"One cup drawn as a bar of coral cost slices and a teal contribution, with a second bar below showing the contribution split into fixed cost and gold EBITDA, and a lavender part label\"><rect x=\"24.0\" y=\"48\" width=\"49.0\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"73.0\" y=\"48\" width=\"59.8\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"0.72\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"132.8\" y=\"48\" width=\"10.9\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"143.7\" y=\"48\" width=\"16.3\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"0.72\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"160.0\" y=\"48\" width=\"13.6\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"173.6\" y=\"48\" width=\"122.4\" height=\"28\" fill=\"#76d5c1\"/><rect x=\"24\" y=\"92\" width=\"76.2\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"0.3\" stroke=\"#ff8059\" stroke-width=\"2\"/><rect x=\"100.2\" y=\"92\" width=\"46.2\" height=\"28\" fill=\"#f5c76a\"/><path d=\"M146.4 84 V128\" stroke=\"#a5a29c\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 16</text><text x=\"296\" y=\"140\" text-anchor=\"end\" fill=\"#76d5c1\">ONE CUP</text></g></svg>",
+    "part": 16
+  },
+  {
     "id": "ratios-together-eli5",
     "title": "Reading ratios together",
     "category": "Monetary Architecture",
