@@ -221,6 +221,48 @@ Board: 8 directors, 4 independent. Auditor: a mid-sized firm, unmodified opinion
 
 **Red flags (Part 20).** "Ramu Chai B" is a fudged twin for the spot-the-difference lab, tagged example. Keep the real Ramu's numbers unchanged; put all the differences in Ramu B.
 
+### Ramu Chai Ltd: extra canonical numbers (added for Parts 21–25; use exactly these)
+
+All tagged `example`. Start from the canonical FY26 accounts: 10 crore shares, face value ₹10, price ₹100,
+market cap ₹1,000 cr, PAT ₹50 cr, EPS ₹5.00, equity ₹250 cr, borrowings ₹100 cr, cash ₹40 cr, net debt ₹60 cr.
+
+**Corporate actions (Part 21).** Each action on its own, starting from the base case.
+
+| Action | Shares after | Price after | EPS after | Market cap | Note |
+|---|---|---|---|---|---|
+| Bonus 1:1 | 20 cr | ₹50 | ₹2.50 | ₹1,000 cr | ₹100 cr moves from reserves to share capital (200); equity unchanged at 250 |
+| Split ₹10 → ₹5 face value | 20 cr | ₹50 | ₹2.50 | ₹1,000 cr | share capital unchanged at 100 |
+| Buyback 0.5 cr shares at ₹100 (Part 18's) | 9.5 cr | ₹100 | ₹5.26 | ₹950 cr | ₹50 cr cash out; ignores lost interest income |
+| Rights issue 1 for 10 at ₹80 | 11 cr | ₹98.18 (theoretical ex-rights) | ₹4.55 before new profit | ₹1,080 cr | raises ₹80 cr |
+| QIP: 1 cr new shares at ₹95 | 11 cr | — | ₹4.55 before new profit | — | raises ₹95 cr; existing holders go from 100% to 90.9% |
+| ESOPs: 0.2 cr options at ₹60 | 10.2 cr | — | ₹4.90 | — | 2.0% dilution; company receives ₹12 cr |
+
+Demerger (example): the cafés (₹125 cr of sales, Part 16) become "Ramu Cafés Ltd", 1 new share for every 10 held.
+
+**The economy (Part 22).** Tea is ₹0.90 of each ₹5.00 cup (Part 16), ₹90 cr on 100 crore cups.
+- Tea price +20% after a weak monsoon: +₹0.18 a cup, +₹18 cr cost. Not passed on: EBITDA 85 → 67 (−21%). Passed on in full: cup price ₹5.18 (+3.6%).
+- Repo-led borrowing cost +1 point (10% → 11%): finance costs 10 → 11, PBT 67 → 66. (Part 11 already shows 10% → 12%.)
+- Ramu sells only in India; the rupee story uses TCPL's International segment (₹4,885 cr, the anchor facts).
+
+**Discount rate (Part 23).** Risk-free 7.0% (a rounded stand-in for the 10-year G-sec; show the real yield at 31 March 2026 in the real-report box) ·
+beta 1.0 · equity risk premium 5.0% → cost of equity 12.0% · cost of debt 10% pre-tax, 7.5% after 25% tax ·
+weights at market value: equity 1,000, debt 100 → WACC 11.59%, used as **11.6%**.
+Present value at 12%: ₹100 in 1 year = ₹89.29; in 10 years = ₹32.20.
+
+**DCF (Part 24).** Free cash flow to the firm (FCFF) = NOPAT × (1 − growth ÷ return on new investment).
+- NOPAT FY26 = EBIT 73 × (1 − 25%) = 54.75. Return on new investment 20% (Ramu's ROE and ROCE are about 20%).
+- Growth: 12% a year FY27–FY31, 8% FY32–FY36, 5% for ever after. So reinvestment is 60% of NOPAT, then 40%, then 25%.
+- FY27: NOPAT 61.3, FCFF 24.5 · FY28 68.7 / 27.5 · FY29 76.9 / 30.8 · … · FY36 141.8 / 85.1.
+- Discount at WACC 11.6%: PV of FY27–FY36 FCFF 262.4 · terminal value at FY36 1,691.6 (FCFF FY37 111.65 ÷ (11.6% − 5%)), PV 564.5 = 68% of EV.
+- EV 826.9 − net debt 60 = equity 766.9 → **₹76.7 a share**, against a price of ₹100.
+- Sensitivity to WACC: 10% → ₹108.7 · 11% → ₹86.6 · 11.6% → ₹76.7 · 12% → ₹71.0 · 13% → ₹59.5.
+- Reconcile with Part 13: FY26 FCF was 13 (CFO − capex); NOPAT 54.75 − reinvestment 43 (net capex 33 + working capital 10) = 11.75. The gap is interest treatment; say so.
+
+**Reverse DCF (Part 25).** Same model; solve for the growth the ₹100 price assumes (equity 1,000, EV 1,060).
+- One growth rate for FY27–FY36 (then 5%): **15.3% a year**.
+- Or keep 8% then 5% and solve FY27–FY31 only: **19.0% a year**.
+- Compare: Ramu's FY22–26 CAGR was 11.0% (sales) and 13.6% (PAT), Part 9.
+
 ### Lab layout rule (owner feedback on Part 15, 9 Nov 2026)
 
 A longer page is fine; a crowded one is not.
