@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "management-and-capital-allocation-eli5",
+    "title": "Management, capital allocation and concalls",
+    "category": "Monetary Architecture",
+    "minutes": 24,
+    "summary": "Part 18: what managers do with spare cash, and whether they keep their promises",
+    "bullets": [
+      "Five uses of cash, each with one test: return on new money against what owners could earn elsewhere",
+      "Lab: ₹50 cr, four choices, ten years; and a promise tracker",
+      "TCPL's acquisitions, rights issue and a dated margin promise, checked against the reports"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CASH",
+      "CHOICES",
+      "PROMISES"
+    ],
+    "file": "explainers/management-and-capital-allocation-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three bars of return on the same money: a long coral bar for reinvesting at 20 percent, a short pale coral bar for a rival earning 8 percent and a short rose bar for repaying debt at 7.5 percent, with a dashed lavender hurdle line at 10 percent that only the long bar crosses\"><rect x=\"40\" y=\"42\" width=\"140\" height=\"20\" fill=\"#ff8059\"/><rect x=\"40\" y=\"72\" width=\"56\" height=\"20\" fill=\"#ff8059\" fill-opacity=\"0.55\"/><rect x=\"40\" y=\"102\" width=\"52.5\" height=\"20\" fill=\"#ec6a94\" fill-opacity=\"0.75\"/><path d=\"M110 34 V130\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"26\" fill=\"#c3b8ff\">PART 18</text><text x=\"120\" y=\"142\" fill=\"#c3b8ff\">HURDLE</text><text x=\"190\" y=\"56\" fill=\"#a5a29c\">20%</text></g></svg>",
+    "part": 18
+  },
+  {
     "id": "industry-and-moats-eli5",
     "title": "Industry structure and moats",
     "category": "Monetary Architecture",
