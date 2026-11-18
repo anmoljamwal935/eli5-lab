@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Corporate actions and dilution — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (capex, costs) | gold #f5c76a = what belongs to shareholders (profit, EPS, equity, dividends)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 21: in the lab and the rights drawing, teal = cash that comes to you, coral = cash you pay. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .events button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:5.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    /* Part 21: lab and report tables */
+    .dashlab .events button[disabled]{opacity:.4;cursor:default}
+    .dashlab .dl-col .control input[type=range]:disabled{opacity:.35}
+    .dashlab .msg{margin-top:14px}
+    .dashlab .dl-chart{max-width:400px}
+    .rep th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left}
+    @media (max-width:700px){.eli5-study-container table.rep{min-width:0}.rep td,.rep th{padding:6px 5px}.rep td.wk{font-size:11px}.rep{font-size:13px}}
+    /* Part 15: dashboard tables and traffic lights */
+    .dash{min-width:0;font-size:14px}
+    .dash th,.dash td{padding:7px 8px;vertical-align:top}
+    .dash tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .dash td.line{font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .dash td.val{white-space:nowrap}
+    .dash th.ed::after{content:" ✎";color:var(--accent)}
+    .lt{display:inline-block;width:1.2em;font-weight:700}.lt.g{color:#7bd88f}.lt.a{color:#ffb04d}.lt.r{color:#ff6b6b}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .lab .picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .picks button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .picks button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    /* Part 15 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events,.dashlab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+    .dashlab .dash tr.grp td{padding:16px 10px 6px;border-bottom:0}
+    .dashlab .dash td.line{font:13px/1.4 var(--font-mono)}
+    .dashlab .lights-key{margin:12px 0 0}
+    .dashlab .dl-chart{max-width:560px;margin-top:18px}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:12px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab details.trace{margin-top:16px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab #msg:empty{display:none}
+    .dashlab .gi,.dashlab .nm-short{display:none}
+    @media (max-width:700px){.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash .line{display:none}.dashlab .gi{display:block;margin-top:2px;font:11px/1.4 var(--font-mono);color:var(--muted)}.dashlab .nm-full{display:none}.dashlab .nm-short{display:inline}.dashlab .dash td.val{font-size:14px}}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}}
+  </style>
+</head>
+<body data-series-id="corporate-actions-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 22 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Corporate actions and dilution</h1>
+      <p class="lede">Some corporate actions only cut the same company into more or bigger slices, and change nothing you own. Others add shares or take them away, and change your share of the profit. For those, the price paid decides whether you win or lose.</p>
+      <p class="source-note">Built from SEBI’s own regulations as amended (Buy-back to 6 July 2026, Issue of Capital to 21 March 2026, Listing Obligations to 15 October 2026, Employee Benefits to 4 December 2025), Tata Consumer Products’ 2024 rights-issue letter of offer and its Integrated Annual Report 2025-26 · <a href="https://www.sebi.gov.in/legal/regulations/jul-2026/securities-and-exchange-board-of-india-buy-back-of-securities-regulations-2018-last-amended-on-july-6-2026-_103042.html">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a> divides profit by the number of shares to get earnings per share (EPS), <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> reads book value and dividends, and <a href="management-and-capital-allocation-eli5.html" data-series-link="management-and-capital-allocation-eli5">Part 18</a> asks when a buyback beats the other uses of spare cash. This part shows what each corporate action does to the shares, the profit per share and your stake. Facts carry a tag: <span class="tag">public</span> is a figure from a filing or a SEBI regulation, <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd: 10 crore shares of ₹10 face value at ₹100, profit ₹50 cr, EPS ₹5.00, equity ₹250 cr. All amounts are ₹ crore (cr) unless a rupee sign says per share. Tax on buybacks and dividends is Part 38’s subject. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: cash raised, sales</span>
+        <span><i style="background:#ff8059"></i>money going out: cash paid</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, EPS, equity, your stake</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, market cap, new investors</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The question</p>
+      <h2>Re-slicing, or changing your slice?</h2>
+      <p>Picture Ramu’s ₹50 cr profit as one bar, cut into one slice per crore shares <span class="tag">example</span>. A bonus issue cuts the same bar into twenty thinner slices and gives each holder two for one: your profit is still ₹5 cr. A share sale to new investors adds an eleventh slice, so yours shrinks to ₹4.55 cr until the new money earns. A buyback removes half a slice, so yours grows to ₹5.26 cr.</p>
+      <figure><svg viewBox="0 0 800 352" role="img" aria-label="Ramu’s 50 crore profit drawn four times as one bar cut into slices: today 10 slices with yours worth 5 crore, after a 1:1 bonus 20 thinner slices of which you hold 2, still 5 crore, after a QIP 11 slices so yours is 4.55, after a buyback 9.5 slices so yours is 5.26"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">RAMU’S ₹50 cr PROFIT, CUT INTO SLICES</text><text x="40.0" y="74.0" text-anchor="start" fill="#a5a29c" font-size="16">Today</text><rect x="170.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="215.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="260.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="305.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="350.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="395.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="440.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="485.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="530.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="575.0" y="52.0" width="45.0" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><text x="634.0" y="74.0" text-anchor="start" fill="#f1eee8" font-size="16">yours ₹5.00 cr</text><text x="40.0" y="144.0" text-anchor="start" fill="#a5a29c" font-size="16">Bonus 1:1</text><rect x="170.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="192.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="215.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="237.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="260.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="282.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="305.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="327.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="350.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="372.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="395.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="417.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="440.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="462.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="485.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="507.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="530.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="552.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="575.0" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="597.5" y="122.0" width="22.5" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><text x="634.0" y="144.0" text-anchor="start" fill="#f1eee8" font-size="16">yours ₹5.00 cr</text><text x="40.0" y="214.0" text-anchor="start" fill="#a5a29c" font-size="16">QIP, 1 cr new</text><rect x="170.0" y="192.0" width="40.9" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="210.9" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="251.8" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="292.7" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="333.6" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="374.5" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="415.5" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="456.4" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="497.3" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="538.2" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="579.1" y="192.0" width="40.9" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><text x="634.0" y="214.0" text-anchor="start" fill="#f1eee8" font-size="16">yours ₹4.55 cr</text><text x="40.0" y="284.0" text-anchor="start" fill="#a5a29c" font-size="16">Buyback 0.5 cr</text><rect x="170.0" y="262.0" width="47.4" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="217.4" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="264.7" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="312.1" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="359.5" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="406.8" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="454.2" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="501.6" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="548.9" y="262.0" width="47.4" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><rect x="596.3" y="262.0" width="23.7" height="32.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="1.5"/><text x="634.0" y="284.0" text-anchor="start" fill="#f1eee8" font-size="16">yours ₹5.26 cr</text><text x="40.0" y="336.0" text-anchor="start" fill="#a5a29c" font-size="16">solid = what one crore of today’s shares owns · 9 px = ₹1 cr</text></svg></figure>
+      <p>So every action falls into one of two groups. <b>Re-slicing</b> (bonus issue, split, demerger) leaves your share of everything unchanged, however the price per share moves. <b>Changing the slices</b> (rights issue, QIP, employee options, buyback) moves money in or out at some price. Then the question is the one <a href="management-and-capital-allocation-eli5.html" data-series-link="management-and-capital-allocation-eli5">Part 18</a> asked of buybacks: is that price above or below what a share is really worth?</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Who gets it</p>
+      <h2>Record date and ex-date</h2>
+      <p>A dividend, bonus shares, rights and demerger shares all go to the holders on the company’s list on one day, the <b>record date</b>. A listed company must tell the exchanges at least three working days ahead, excluding the day it tells them and the record date itself (SEBI Listing Regulations, regulation 42(2), as amended to 15 October 2026) <span class="tag">public</span>. For a scheme of arrangement such as a demerger the notice is seven working days.</p>
+      <figure><svg viewBox="0 0 800 352" role="img" aria-label="A day line from Wednesday to Monday: a share bought on Thursday settles on Friday, the record date, so the buyer is on the list; a share bought on Friday settles on Monday, too late, so Friday is the ex-date"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#f1eee8"/></marker></defs><path d="M50 150 L750 150" stroke="#57534f" stroke-width="2" fill="none"/><circle cx="90" cy="150" r="7" fill="#f1eee8" stroke="#f1eee8" stroke-width="2"/><text x="90.0" y="132.0" text-anchor="middle" fill="#f1eee8" font-size="16">Wed</text><circle cx="214" cy="150" r="7" fill="#f1eee8" stroke="#f1eee8" stroke-width="2"/><text x="214.0" y="132.0" text-anchor="middle" fill="#f1eee8" font-size="16">Thu</text><circle cx="338" cy="150" r="7" fill="#f1eee8" stroke="#f1eee8" stroke-width="2"/><text x="338.0" y="132.0" text-anchor="middle" fill="#f1eee8" font-size="16">Fri</text><circle cx="462" cy="150" r="7" fill="none" stroke="#a5a29c" stroke-width="2"/><text x="462.0" y="132.0" text-anchor="middle" fill="#a5a29c" font-size="16">Sat</text><circle cx="586" cy="150" r="7" fill="none" stroke="#a5a29c" stroke-width="2"/><text x="586.0" y="132.0" text-anchor="middle" fill="#a5a29c" font-size="16">Sun</text><circle cx="710" cy="150" r="7" fill="#f1eee8" stroke="#f1eee8" stroke-width="2"/><text x="710.0" y="132.0" text-anchor="middle" fill="#f1eee8" font-size="16">Mon</text><circle cx="338" cy="150" r="14" fill="none" stroke="#f5c76a" stroke-width="3"/><text x="314.0" y="192.0" text-anchor="end" fill="#f5c76a" font-size="16">record date = ex-date</text><text x="200.0" y="104.0" text-anchor="end" fill="#f1eee8" font-size="16">buy Thu</text><path d="M214 110 C234 56 318 56 336 109" stroke="#f1eee8" stroke-width="2" fill="none" marker-end="url(#ah)"/><text x="276.0" y="44.0" text-anchor="middle" fill="#76d5c1" font-size="16">on the list ✓</text><path d="M350 162 C458 290 710 290 710 162" stroke="#a5a29c" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#ah)"/><text x="528.0" y="300.0" text-anchor="middle" fill="#ff8059" font-size="16">buy Fri: settles Mon, too late</text><text x="40.0" y="336.0" text-anchor="start" fill="#a5a29c" font-size="16">T+1: a trade settles the next working day</text></svg></figure>
+      <p>A purchase only puts you on the list once it settles. Indian shares settle one working day after the trade (T+1), fully in place since 27 January 2023, according to <a href="https://www.sebi.gov.in/sebi_data/attachdocs/aug-2026/1786016613321.pdf">SEBI’s August 2026 consultation paper</a> <span class="tag">public</span>. So when the record date is a trading day, it is also the <b>ex-date</b>: buy that day and you miss out. On the ex-date the price drops by what was detached, the dividend or the value of the right, and after a bonus or split it simply resets to the new number of shares.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Bonus issue</p>
+      <h2>A bonus moves reserves into share capital</h2>
+      <p>In a 1:1 bonus Ramu gives one new share for every share held <span class="tag">example</span>. No cash moves. ₹100 cr is relabelled from reserves to share capital, so 20 crore shares now exist, the price settles near ₹50, EPS halves to ₹2.50 and book value per share falls from ₹25 to ₹12.50 (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>). Market cap stays ₹1,000 cr. A holder of 100 shares worth ₹10,000 now has 200 worth ₹10,000.</p>
+      <figure><svg viewBox="0 0 800 222" role="img" aria-label="Two bars of Ramu’s equity, each 250 crore long: before, share capital 100 and reserves 150; after a 1:1 bonus, share capital 200 and reserves 50"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">RAMU’S EQUITY, ₹ cr</text><text x="40.0" y="74.0" text-anchor="start" fill="#a5a29c" font-size="16">Before</text><rect x="150.0" y="50.0" width="240.0" height="36.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="160.0" y="74.0" text-anchor="start" fill="#202020" font-size="16">share capital 100</text><rect x="390.0" y="50.0" width="360.0" height="36.0" fill="#f5c76a" opacity="0.4" stroke="#202020" stroke-width="2"/><text x="400.0" y="74.0" text-anchor="start" fill="#f1eee8" font-size="16">reserves 150</text><text x="40.0" y="154.0" text-anchor="start" fill="#a5a29c" font-size="16">After 1:1</text><rect x="150.0" y="130.0" width="480.0" height="36.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="160.0" y="154.0" text-anchor="start" fill="#202020" font-size="16">share capital 200</text><rect x="630.0" y="130.0" width="120.0" height="36.0" fill="#f5c76a" opacity="0.4" stroke="#202020" stroke-width="2"/><text x="640.0" y="154.0" text-anchor="start" fill="#f1eee8" font-size="16">50</text><path d="M750.0 40 L750.0 140" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><text x="750.0" y="30.0" text-anchor="end" fill="#f1eee8" font-size="16">equity 250 both times</text><text x="40.0" y="206.0" text-anchor="start" fill="#a5a29c" font-size="16">2.4 px = ₹1 cr · ₹100 cr moved, nothing left the company</text></svg></figure>
+      <p>SEBI’s rules for listed companies (<a href="https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html">Issue of Capital and Disclosure Requirements Regulations, 2018</a>, as amended to 21 March 2026) <span class="tag">public</span>: a bonus can only come out of free reserves, the securities premium account or the capital redemption reserve, built from genuine profits or premium collected in cash, never from revaluing assets (regulation 294(3)); it cannot be issued in place of a dividend (294(4)); and once announced it cannot be withdrawn. If shareholders must approve it, it has to be done, meaning the new shares start trading, within two months of the board’s decision; if not, within fifteen days (regulation 295).</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Stock split</p>
+      <h2>A split cuts each share smaller</h2>
+      <p>A split does the same to the share count by a different route. Ramu splits its ₹10 face value into two ₹5 shares <span class="tag">example</span>: 20 crore shares, price near ₹50, EPS ₹2.50, market cap ₹1,000 cr, exactly as with the bonus. But nothing is moved out of reserves: share capital stays ₹100 cr, now 20 crore shares of ₹5. Face value is only an accounting unit; it is not what a share is worth.</p>
+      <figure><svg viewBox="0 0 800 342" role="img" aria-label="Share capital drawn as tiles of one crore shares: today 10 tiles of 10 rupee face value, 100 crore; after a 1:1 bonus 20 tiles of 10 rupees, 200 crore; after a split to 5 rupees 20 half-width tiles, still 100 crore"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">SHARE CAPITAL, ₹ cr · one tile = 1 cr shares</text><text x="40.0" y="96.0" text-anchor="start" fill="#a5a29c" font-size="16">Today</text><text x="200.0" y="64.0" text-anchor="start" fill="#f1eee8" font-size="16">10 cr shares × ₹10 face = ₹100 cr</text><rect x="200.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="225.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="250.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="275.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="300.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="325.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="350.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="375.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="400.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="425.0" y="74.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><text x="40.0" y="182.0" text-anchor="start" fill="#a5a29c" font-size="16">Bonus 1:1</text><text x="200.0" y="150.0" text-anchor="start" fill="#f1eee8" font-size="16">20 cr shares × ₹10 face = ₹200 cr</text><rect x="200.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="225.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="250.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="275.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="300.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="325.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="350.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="375.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="400.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="425.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="450.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="475.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="500.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="525.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="550.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="575.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="600.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="625.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="650.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><rect x="675.0" y="160.0" width="25.0" height="30.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1.5"/><text x="40.0" y="268.0" text-anchor="start" fill="#a5a29c" font-size="16">Split to ₹5</text><text x="200.0" y="236.0" text-anchor="start" fill="#f1eee8" font-size="16">20 cr shares × ₹5 face = ₹100 cr</text><rect x="200.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="212.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="225.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="237.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="250.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="262.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="275.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="287.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="300.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="312.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="325.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="337.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="350.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="362.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="375.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="387.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="400.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="412.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="425.0" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><rect x="437.5" y="246.0" width="12.5" height="30.0" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="1.5"/><text x="40.0" y="326.0" text-anchor="start" fill="#a5a29c" font-size="16">2.5 px = ₹1 cr of share capital</text></svg></figure>
+      <p>Why bother? A lower price per share can make the shares easier to trade in small amounts, and a bonus signals that the board is comfortable locking reserves into capital, which cannot be paid out as a dividend. Neither creates value. If a stock rises after a split, something else changed. Every past EPS and price you compare with has to be divided by the same factor, which the common-mistake panel shows.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Buyback</p>
+      <h2>A buyback retires shares for cash</h2>
+      <p>Ramu buys back 0.5 crore shares at ₹100, Part 18’s choice <span class="tag">example</span>: ₹50 cr of cash goes to the sellers, 9.5 crore shares remain, EPS rises to ₹5.26 and market cap falls to ₹950 cr while the price stays ₹100. Equity falls by the cash paid, from ₹250 cr to ₹200 cr. This ignores the interest the cash was earning; the lab lets you add it back. (Ramu ended FY26 with ₹40 cr of cash; Part 18’s ₹50 cr is a teaching sum.)</p>
+      <figure><svg viewBox="0 0 800 252" role="img" aria-label="Ramu’s 1,000 crore market cap as 10 slices of 100 crore; after buying back 0.5 crore shares at 100 rupees, 9.5 slices worth 950 crore remain and a dashed half slice, 50 crore of cash, has gone to the sellers"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">MARKET CAP, ₹ cr · one slice = 1 cr shares at ₹100</text><text x="40.0" y="72.0" text-anchor="start" fill="#a5a29c" font-size="16">Before</text><rect x="110.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="170.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="230.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="290.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="350.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="410.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="470.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="530.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="590.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="650.0" y="50.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><text x="722.0" y="72.0" text-anchor="start" fill="#f1eee8" font-size="16">₹1,000</text><text x="40.0" y="152.0" text-anchor="start" fill="#a5a29c" font-size="16">After</text><rect x="110.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="170.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="230.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="290.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="350.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="410.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="470.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="530.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="590.0" y="130.0" width="60.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="650.0" y="130.0" width="30.0" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="680.0" y="130.0" width="30.0" height="32.0" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/><text x="722.0" y="152.0" text-anchor="start" fill="#f1eee8" font-size="16">₹950</text><text x="695.0" y="192.0" text-anchor="end" fill="#ff8059" font-size="16">₹50 cr cash to sellers</text><text x="40.0" y="236.0" text-anchor="start" fill="#a5a29c" font-size="16">0.6 px = ₹1 cr · ₹950 ÷ 9.5 cr shares = ₹100</text></svg></figure>
+      <p>EPS always rises after a buyback, because the profit is divided by fewer shares, so EPS growth alone proves nothing. Holders who stay gain only if the price paid is below what a share is worth, and sellers take the difference when it is above (<a href="management-and-capital-allocation-eli5.html" data-series-link="management-and-capital-allocation-eli5">Part 18</a> draws both).</p>
+      <figure><svg viewBox="0 0 800 238" role="img" aria-label="Ramu’s paid-up capital plus free reserves of 250 crore as a pale bar, with its 50 crore buyback as a solid gold piece: past the 10 percent mark of 25 crore that a board can approve alone, inside the 25 percent cap of 62.5 crore"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">RAMU: PAID-UP CAPITAL + FREE RESERVES ₹250 cr</text><rect x="80.0" y="96.0" width="600.0" height="30.0" fill="#f5c76a" opacity="0.3" stroke="#202020" stroke-width="2"/><rect x="80.0" y="96.0" width="120.0" height="30.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="80.0" y="182.0" text-anchor="start" fill="#f5c76a" font-size="16">buyback ₹50 cr = 20%</text><path d="M140.0 62 L140.0 132" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 4"/><path d="M170.0 62 L170.0 132" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 4"/><path d="M230.0 62 L230.0 132" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="140.0" y="54.0" text-anchor="middle" fill="#f1eee8" font-size="16">10% = ₹25 cr: board alone</text><text x="236.0" y="82.0" text-anchor="start" fill="#f1eee8" font-size="16">25% = ₹62.5 cr: the cap</text><text x="176.0" y="158.0" text-anchor="start" fill="#a5a29c" font-size="16">15%: exchange route</text><text x="40.0" y="222.0" text-anchor="start" fill="#a5a29c" font-size="16">2.4 px = ₹1 cr · SEBI Buy-back Regulations, amended to 6 Jul 2026</text></svg></figure>
+      <p>The limits, from SEBI’s <a href="https://www.sebi.gov.in/legal/regulations/jul-2026/securities-and-exchange-board-of-india-buy-back-of-securities-regulations-2018-last-amended-on-july-6-2026-_103042.html">Buy-back of Securities Regulations, 2018</a>, as amended to 6 July 2026 <span class="tag">public</span>:</p>
+      <ol class="checks">
+        <li><b>Size.</b> At most 25% of paid-up capital plus free reserves, on the standalone or consolidated accounts, whichever gives the lower amount; and at most 25% of the paid-up equity capital in shares bought in a year (regulation 4(i)). Up to 10% a board resolution is enough; above that shareholders must pass a special resolution (5(i)(b)). Ramu’s ₹50 cr is 20% of its ₹250 cr, so it needs the vote.</li>
+        <li><b>Debt.</b> Borrowings afterwards may be at most twice paid-up capital plus free reserves (4(ii)). Ramu’s ₹100 cr against ₹200 cr is 0.5 times.</li>
+        <li><b>Routes.</b> A <b>tender offer</b> buys from all holders in proportion, with 15% of the shares reserved for small shareholders, those holding no more than ₹2 lakh of shares on the record date (regulation 6). The <b>open market</b> route runs through book-building or through the stock exchange. The stock-exchange route was barred from 1 April 2025 and returns from 1 August 2026, capped below 15% of paid-up capital and free reserves (4(iv)); promoters cannot sell into it (<a href="https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1781871483886.pdf">SEBI board decision, 19 June 2026</a>).</li>
+        <li><b>Timing.</b> A buyback must finish within a year of the resolution (5(ii)), and the company may not raise fresh capital for a year after the buyback period ends, except to meet existing obligations (24(i)(f)).</li>
+      </ol>
+      <p>Tax: SEBI said it brought back the stock-exchange route “in light of the revision in taxation framework” for buybacks (same board decision). Part 38 covers the tax itself, so no rates are given here.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Rights issue</p>
+      <h2>A rights issue: buy, sell or lose</h2>
+      <p>Ramu offers 1 new share for every 10 held at ₹80, below the ₹100 price <span class="tag">example</span>. If everyone takes it up: 11 crore shares, ₹80 cr raised, market cap ₹1,080 cr, and a theoretical ex-rights price of ₹98.18. EPS falls to ₹4.55 before the new money earns anything. The discount is not a gift: you pay it to yourself. What matters is what you do with the right.</p>
+      <span class="eq">Theoretical ex-rights price = (10 × ₹100 + 1 × ₹80) ÷ 11 = <b>₹98.18</b> · a right is worth ₹98.18 − ₹80 = ₹18.18</span>
+      <figure><svg viewBox="0 0 800 332" role="img" aria-label="A holder of 100 Ramu shares worth 10,000 rupees before a 1 for 10 rights issue at 80: subscribing gives 110 shares worth 10,800, of which 800 is the cash paid; selling the rights gives shares worth 9,818 plus 182 cash; doing nothing leaves 9,818, a 182 rupee loss"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">YOUR 100 SHARES, ₹ · rights 1 for 10 at ₹80</text><text x="40.0" y="72.0" text-anchor="start" fill="#a5a29c" font-size="16">Before</text><rect x="180.0" y="50.0" width="350.0" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="540.0" y="72.0" text-anchor="start" fill="#f1eee8" font-size="16">₹10,000 · 100 shares</text><text x="40.0" y="134.0" text-anchor="start" fill="#a5a29c" font-size="16">You subscribe</text><rect x="180.0" y="112.0" width="378.0" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="530.0" y="112.0" width="28.0" height="32.0" fill="#ff8059" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="568.0" y="134.0" text-anchor="start" fill="#f1eee8" font-size="16">₹10,800 · 110 shares</text><text x="40.0" y="196.0" text-anchor="start" fill="#a5a29c" font-size="16">You sell rights</text><rect x="180.0" y="174.0" width="343.6" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="523.6" y="174.0" width="6.4" height="32.0" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="540.0" y="196.0" text-anchor="start" fill="#f1eee8" font-size="16">₹9,818 + ₹182 cash</text><text x="40.0" y="258.0" text-anchor="start" fill="#a5a29c" font-size="16">You do nothing</text><rect x="180.0" y="236.0" width="343.6" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="523.6" y="236.0" width="6.4" height="32.0" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/><text x="540.0" y="258.0" text-anchor="start" fill="#ff8059" font-size="16">₹9,818 · ₹182 lost</text><path d="M530.0 42 L530.0 290" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="40.0" y="316.0" text-anchor="start" fill="#a5a29c" font-size="16">coral = cash you paid · teal = cash you got · 3.5 px = ₹100</text></svg></figure>
+      <p>Subscribe and you keep exactly your share of the company, with ₹800 more of your money in it. Sell the right and you are made whole in cash. Do nothing and you lose ₹182, because the discount now goes to whoever did subscribe. The right arrives in your demat account as a <b>rights entitlement</b>, and it can be sold on the exchange until a cut-off date during the issue (regulation 77A and the issue’s own timetable) <span class="tag">public</span>.</p>
+      <p>SEBI’s rules (Issue of Capital Regulations, as amended to 21 March 2026) <span class="tag">public</span>: the company fixes the issue price before it fixes the record date, and the price may not be below face value (regulation 73); once the record date is announced the issue cannot be withdrawn without a twelve-month listing ban (68(2)); and if less than 90% is subscribed the money is refunded, unless the issue is not for a capital project and the promoters take up their full share (86).</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">QIP</p>
+      <h2>A QIP sells new shares to institutions</h2>
+      <p>A qualified institutions placement (QIP) sells new shares privately to qualified institutional buyers such as mutual funds and insurers. You are not asked. Ramu sells 1 crore new shares at ₹95 <span class="tag">example</span>: ₹95 cr raised, 11 crore shares, EPS ₹4.55 before the new money earns, and today’s holders go from owning 100% of Ramu to 90.9%.</p>
+      <figure><svg viewBox="0 0 800 200" role="img" aria-label="Ownership bars: before the QIP today’s holders own 100 percent; after 1 crore new shares go to institutions they own 90.9 percent and the institutions 9.1 percent"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">WHO OWNS RAMU, % · 6 px = 1%</text><text x="40.0" y="72.0" text-anchor="start" fill="#a5a29c" font-size="16">Before</text><rect x="150.0" y="50.0" width="600.0" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="160.0" y="72.0" text-anchor="start" fill="#202020" font-size="16">today’s holders 100%</text><text x="40.0" y="142.0" text-anchor="start" fill="#a5a29c" font-size="16">After QIP</text><rect x="150.0" y="120.0" width="545.5" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="160.0" y="142.0" text-anchor="start" fill="#202020" font-size="16">today’s holders 90.9%</text><rect x="695.5" y="120.0" width="54.5" height="32.0" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="746.0" y="182.0" text-anchor="end" fill="#c3b8ff" font-size="16">institutions 9.1%</text></svg></figure>
+      <p>Because you cannot join in, the price is your only protection. SEBI sets a floor: the average of the weekly high and low of the closing prices over the two weeks before the <b>relevant date</b>, the day the board or its committee decides to open the issue; shareholders can approve a discount of up to 5% on it (regulations 171(b) and 176(1), as amended to 21 March 2026) <span class="tag">public</span>. At least 10% must go to mutual funds, and nothing to the promoters (179(2)).</p>
+      <figure><svg viewBox="0 0 800 290" role="img" aria-label="Ten example closing prices over two weeks around 100 rupees: week 1 high 103 and low 98, week 2 high 102 and low 97, whose average sets a floor of 100; with shareholders’ approval the QIP may be priced up to 5 percent lower, at 95"><path d="M80 240 L698 240" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="70.0" y="210.0" text-anchor="end" fill="#a5a29c" font-size="16">₹94</text><text x="70.0" y="174.0" text-anchor="end" fill="#a5a29c" font-size="16">₹96</text><text x="70.0" y="138.0" text-anchor="end" fill="#a5a29c" font-size="16">₹98</text><text x="70.0" y="102.0" text-anchor="end" fill="#a5a29c" font-size="16">₹100</text><text x="70.0" y="66.0" text-anchor="end" fill="#a5a29c" font-size="16">₹102</text><text x="70.0" y="30.0" text-anchor="end" fill="#a5a29c" font-size="16">₹104</text><circle cx="110" cy="132.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="172" cy="78.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="234" cy="42.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="296" cy="114.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="358" cy="96.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="420" cy="150.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="482" cy="96.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="544" cy="60.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="606" cy="114.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="668" cy="78.0" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="234.0" y="272.0" text-anchor="middle" fill="#a5a29c" font-size="16">week 1</text><text x="544.0" y="272.0" text-anchor="middle" fill="#a5a29c" font-size="16">week 2</text><path d="M90 96 L688 96" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="6 4"/><path d="M90 186 L688 186" stroke="#ff8059" stroke-width="2" fill="none"/><text x="698.0" y="102.0" text-anchor="start" fill="#f1eee8" font-size="16">floor ₹100</text><text x="698.0" y="192.0" text-anchor="start" fill="#ff8059" font-size="16">−5%: ₹95</text></svg></figure>
+      <p>The ten closes are example prices <span class="tag">example</span>: week 1 runs from ₹98 to ₹103 and week 2 from ₹97 to ₹102, so the four numbers average ₹100 and the lowest allowed price, with the discount, is ₹95. Selling at ₹95 something worth ₹100 costs today’s holders 45 paise a share. If Ramu were really worth ₹130, it would cost them much more; if the ₹95 cr earns well, they gain. The lab runs both.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Employee options</p>
+      <h2>ESOPs: a small, steady dilution</h2>
+      <p>An employee stock option (ESOP) is a right to buy a share later at a fixed exercise price. Ramu’s staff hold 0.2 crore options at ₹60 <span class="tag">example</span>. When they exercise, Ramu issues 0.2 crore new shares (2.0% more), receives ₹12 cr, and EPS falls to ₹4.90. Shares worth ₹99.22 each change hands for ₹60.</p>
+      <figure><svg viewBox="0 0 800 202" role="img" aria-label="Ramu’s 0.2 crore option shares are worth 19.84 crore when exercised; employees pay 12 crore at 60 rupees a share; the dashed 7.84 crore gap is the cost to today’s holders"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">RAMU’S 0.2 cr OPTION SHARES, ₹ cr</text><text x="40.0" y="72.0" text-anchor="start" fill="#a5a29c" font-size="16">Worth on exercise</text><rect x="250.0" y="50.0" width="396.9" height="32.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="656.9" y="72.0" text-anchor="start" fill="#f1eee8" font-size="16">₹19.84 cr</text><text x="40.0" y="132.0" text-anchor="start" fill="#a5a29c" font-size="16">Employees pay</text><rect x="250.0" y="110.0" width="240.0" height="32.0" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="260.0" y="132.0" text-anchor="start" fill="#202020" font-size="16">₹12 cr at ₹60</text><rect x="490.0" y="110.0" width="156.9" height="32.0" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/><text x="656.9" y="132.0" text-anchor="start" fill="#ff8059" font-size="16">gap ₹7.84 cr</text><text x="40.0" y="186.0" text-anchor="start" fill="#a5a29c" font-size="16">20 px = ₹1 cr · the gap is what today’s holders give up</text></svg></figure>
+      <p>The ₹7.84 cr gap is real pay to employees, taken from today’s holders as 78 paise a share. Under SEBI’s <a href="https://www.sebi.gov.in/legal/regulations/dec-2025/securities-and-exchange-board-of-india-share-based-employee-benefits-and-sweat-equity-regulations-2021-last-amended-on-december-4-2025-_98638.html">Share Based Employee Benefits and Sweat Equity Regulations, 2021</a> (as amended to 4 December 2025) a company is free to set the exercise price (regulation 17), and options must wait at least one year before they vest (18(1)) <span class="tag">public</span>. Two things to check in a report: the share-based payment cost in employee expenses, and <b>diluted EPS</b>, which divides profit by the shares that would exist if options were exercised. Small each year, it compounds: 2% a year for five years is 10.4% more shares.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Demerger</p>
+      <h2>A demerger splits one company in two</h2>
+      <p>In a demerger a business moves into a new company and its shares go to the old company’s holders. Suppose Ramu’s cafés, ₹125 cr of the ₹500 cr sales (<a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a>), become Ramu Cafés Ltd, with 1 new share for every 10 Ramu shares <span class="tag">example</span>. A holder of 100 Ramu shares ends up with 100 Ramu Chai and 10 Ramu Cafés shares.</p>
+      <figure><svg viewBox="0 0 800 214" role="img" aria-label="Ramu’s 500 crore of sales as one bar, 375 from tea and offices and 125 from cafés; after the demerger the same two pieces sit in two companies, Ramu Chai with 375 and Ramu Cafés with 125, which issues one share for every ten Ramu shares"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">SALES, ₹ cr · 1.1 px = ₹1 cr</text><text x="40.0" y="72.0" text-anchor="start" fill="#a5a29c" font-size="16">Before</text><rect x="160.0" y="50.0" width="412.5" height="32.0" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="170.0" y="72.0" text-anchor="start" fill="#202020" font-size="16">tea and offices 375</text><rect x="572.5" y="50.0" width="137.5" height="32.0" fill="#76d5c1" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="582.5" y="72.0" text-anchor="start" fill="#202020" font-size="16">cafés 125</text><text x="40.0" y="152.0" text-anchor="start" fill="#a5a29c" font-size="16">After</text><rect x="160.0" y="130.0" width="412.5" height="32.0" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="170.0" y="152.0" text-anchor="start" fill="#202020" font-size="16">Ramu Chai 375</text><rect x="612.5" y="130.0" width="137.5" height="32.0" fill="#76d5c1" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="622.5" y="152.0" text-anchor="start" fill="#202020" font-size="16">Ramu Cafés</text><text x="681.2" y="196.0" text-anchor="middle" fill="#a5a29c" font-size="16">1 cr shares</text><text x="160.0" y="196.0" text-anchor="start" fill="#a5a29c" font-size="16">10 cr shares</text></svg></figure>
+      <p>That is re-slicing again: you own the same 1-in-10-crore share of both pieces, so on day one nothing you own changes, while Ramu Chai’s price drops by what left. What changes later is that each piece is priced on its own, which can close or open a gap like the holding-company discount in Part 27. A <b>merger</b> runs the other way: your company issues shares to another company’s holders, so judge it by what it gets for those shares.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Run each action on Ramu</h2>
+      <p>Pick an action to load its numbers from the series table <span class="tag">example</span>, then change the terms. You are a holder of 100 Ramu shares who does not take part: you do not sell into a buyback, and you are not offered QIP shares or options. For a rights issue the chart shows all three choices. <b>What a share is really worth</b> is your own estimate; the market price stays ₹100.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Pick an action</p>
+          <div class="events" role="group" aria-label="Corporate action">
+            <button type="button" class="secondary" data-act="bonus" aria-pressed="false">Bonus 1:1</button>
+            <button type="button" class="secondary" data-act="split" aria-pressed="false">Split ₹10 → ₹5</button>
+            <button type="button" class="secondary" data-act="buyback" aria-pressed="false">Buyback</button>
+            <button type="button" class="secondary" data-act="rights" aria-pressed="true">Rights issue</button>
+            <button type="button" class="secondary" data-act="qip" aria-pressed="false">QIP</button>
+            <button type="button" class="secondary" data-act="esop" aria-pressed="false">ESOPs</button>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Set the terms</p>
+          <div class="dl-grid">
+            <div class="dl-col"><div class="control"><label for="sh"><span id="sh-l">New shares, % of today’s 10 crore</span>: <output id="sh-o"></output></label><input id="sh" type="range" min="0" max="100" step="1" value="10"></div><div class="control"><label for="px">Price per share in the deal: <output id="px-o"></output></label><input id="px" type="range" min="1" max="200" step="1" value="80"></div></div>
+            <div class="dl-col"><div class="control"><label for="wv">What a share is really worth: <output id="wv-o"></output></label><input id="wv" type="range" min="50" max="200" step="5" value="100"></div><div class="control"><label for="rr">What the cash earns a year, after tax: <output id="rr-o"></output></label><input id="rr" type="range" min="0" max="30" step="1" value="0"></div></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Or try a situation</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="cheapbb">Buyback below value</button>
+            <button type="button" class="secondary" data-p="dearbb">Buyback above value</button>
+            <button type="button" class="secondary" data-p="earn">Rights money earns 20%</button>
+            <button type="button" class="secondary" data-p="re1">Options at ₹1</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · What your 100 shares are worth</p>
+          <div class="dl-chart"><svg id="labChart" viewBox="0 0 380 260" role="img" aria-label="Bars on one rupee scale comparing what a holder of 100 Ramu shares owns before and after the chosen action, with any cash paid or received marked"></svg></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">5 · Your share of the year’s profit</p>
+          <div class="dl-chart"><svg id="profitChart" viewBox="0 0 380 200" role="img" aria-label="Bars comparing the slice of Ramu’s yearly profit that belongs to a holder of 100 shares before and after the chosen action, with the EPS written beside each bar"></svg></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>Ramu starts at 10 crore shares, profit ₹50 cr and a market price of ₹100. The company is worth your estimate times 10 crore shares; cash raised adds to that value rupee for rupee, and cash paid out takes away from it. The profit changes only by what the cash earns, at the rate you set (for a buyback, what the cash would have earned). Valuing new cash at what it cost is a simplification: whether a project is worth more than it costs is Part 18’s question. The rights issue assumes the market prices the right at its theoretical value. The lab applies three SEBI limits and says so when it does: a buyback stops at 25% of the shares or ₹62.5 cr, 25% of Ramu’s ₹250 cr of capital and reserves, treating all reserves as free; a rights price cannot go below the ₹10 face value; a QIP cannot go below ₹95, assuming a two-week average of ₹100. Options have no SEBI floor. A real split uses a round face value (₹5, ₹2, ₹1); the lab lets the split ratio vary freely.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Cheaper after a split is not cheaper</h2>
+      <p>After a 1:2 split the printed price halves overnight, and a chart that is not adjusted shows a crash that never happened <span class="tag">example</span>. The adjusted line divides every earlier price by two, and it shows the truth: the year went up. The same goes for EPS: Ramu’s ₹5.00 becomes ₹2.50 after a 1:1 bonus, so the P/E is still 50 ÷ 2.50 = 20.</p>
+      <figure><svg viewBox="0 0 800 320" role="img" aria-label="An example share price over 12 months: the price as printed halves overnight at a 1 to 2 split, from 102 to 51 rupees, while the adjusted line, with earlier prices halved, rises smoothly the whole year"><path d="M90 270 L746 270" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="74.0" y="276.0" text-anchor="end" fill="#a5a29c" font-size="16">₹0</text><text x="74.0" y="176.0" text-anchor="end" fill="#a5a29c" font-size="16">₹50</text><text x="74.0" y="76.0" text-anchor="end" fill="#a5a29c" font-size="16">₹100</text><polyline points="110,90 166,82 222,76 278,78 334,70 390,66 446,168 502,166 558,162 614,164 670,160 726,156" fill="none" stroke="#a5a29c" stroke-width="2.5" stroke-dasharray="6 4"/><polyline points="110,180.0 166,176.0 222,173.0 278,174.0 334,170.0 390,168.0 446,168 502,166 558,162 614,164 670,160 726,156" fill="none" stroke="#c3b8ff" stroke-width="3"/><path d="M418.0 34 L418.0 266" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/><text x="418.0" y="22.0" text-anchor="middle" fill="#f5c76a" font-size="16">split 1:2</text><text x="222.0" y="54.0" text-anchor="middle" fill="#a5a29c" font-size="16">as printed</text><text x="222.0" y="202.0" text-anchor="middle" fill="#c3b8ff" font-size="16">adjusted</text><text x="726.0" y="302.0" text-anchor="end" fill="#a5a29c" font-size="16">12 months</text></svg></figure>
+      <ol class="checks">
+        <li><b>Is the history adjusted?</b> Any price or EPS series that crosses a bonus or split must be divided by the same factor. Check the dates against the company’s corporate actions.</li>
+        <li><b>Is EPS growth real?</b> EPS growth is roughly profit growth minus the growth in share count. A buyback adds to EPS growth without adding profit; issues and options take it away. Ramu’s share count stayed at 10 crore from FY22 to FY26 (<a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a>), so its EPS and profit grew alike.</li>
+        <li><b>Who got the price?</b> For every issue or buyback, compare the price paid with your estimate of value. Selling shares cheap or buying them dear moves wealth between groups of holders.</li>
+        <li><b>How often?</b> One rights issue to fund a good deal is different from shares issued every year. <a href="red-flags-eli5.html" data-series-link="red-flags-eli5">Part 20</a> lists repeated dilution as a red flag.</li>
+      </ol>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Seven actions at a glance</h2>
+      <p>Ramu’s numbers from the series table, each action on its own from the base case <span class="tag">example</span>.</p>
+      <div class="field-grid">
+        <div><b>Bonus 1:1</b><span>20 cr shares, ₹50, EPS ₹2.50. ₹100 cr moves from reserves to share capital. Nothing you own changes.</span><em>RE-SLICING</em></div>
+        <div><b>Split ₹10 → ₹5</b><span>20 cr shares, ₹50, EPS ₹2.50. Share capital stays ₹100 cr. Nothing you own changes.</span><em>RE-SLICING</em></div>
+        <div><b>Demerger</b><span>Cafés become Ramu Cafés Ltd, 1 share for every 10 held. You own the same share of both pieces.</span><em>RE-SLICING</em></div>
+        <div><b>Buyback 0.5 cr at ₹100</b><span>9.5 cr shares, EPS ₹5.26, market cap ₹950 cr. ₹50 cr out. Stayers gain only below value.</span><em>FEWER SHARES · PRICE DECIDES</em></div>
+        <div><b>Rights 1 for 10 at ₹80</b><span>11 cr shares, ex-rights price ₹98.18, EPS ₹4.55 before new profit. ₹80 cr in. Subscribe or sell the right.</span><em>MORE SHARES · OFFERED TO YOU</em></div>
+        <div><b>QIP 1 cr at ₹95</b><span>11 cr shares, EPS ₹4.55 before new profit. ₹95 cr in. You go from 100% to 90.9%.</span><em>MORE SHARES · NOT OFFERED</em></div>
+        <div><b>ESOPs 0.2 cr at ₹60</b><span>10.2 cr shares, EPS ₹4.90, 2.0% dilution. ₹12 cr in. A ₹7.84 cr gap is employee pay.</span><em>MORE SHARES · NOT OFFERED</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s 2024 rights issue, from the filings</h2>
+      <p>Tata Consumer Products (TCPL) <span class="tag">public</span>. On 19 January 2024 its board approved commercial paper of up to ₹3,500 cr as bridge funding for buying Capital Foods and Organic India, and a rights issue of up to ₹3,000 cr (<a href="https://www.bseindia.com/xml-data/corpfiling/AttachHis/2d71133c-632b-4f63-a088-ecb47a5acf4d.pdf">outcome of board meeting</a>). The <a href="https://investmentbank.kotak.com/downloads/tataconsumer-abridged-letter-of-offer.pdf">abridged letter of offer</a> names the use: up to ₹2,940 cr to repay the commercial paper that financed those purchases. The letter, dated 23 July 2024, sets the terms: up to 3,66,47,492 shares of ₹1 face value at <b>₹818</b> each (₹817 premium), up to ₹2,997.77 cr, <b>1 new share for every 26 held</b> on the record date, Saturday 27 July 2024.</p>
+      <figure><svg viewBox="0 0 800 242" role="img" aria-label="TCPL’s 2024 rights issue on a day line: last day to buy with the right 25 July, record date Saturday 27 July, issue open 5 to 19 August, last day to sell the rights on the market 12 August, new shares listing about 30 August"><path d="M40 120 L746.0 120" stroke="#57534f" stroke-width="2" fill="none"/><rect x="263.5" y="108.0" width="259.0" height="24.0" fill="#76d5c1" opacity="0.35" stroke="none" stroke-width="0"/><circle cx="60.0" cy="120" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="60.0" y="70.0" text-anchor="start" fill="#f5c76a" font-size="16">last day to buy</text><text x="60.0" y="92.0" text-anchor="start" fill="#a5a29c" font-size="16">25 Jul</text><circle cx="97.0" cy="120" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="97.0" y="154.0" text-anchor="middle" fill="#a5a29c" font-size="16">27 Jul</text><text x="97.0" y="176.0" text-anchor="middle" fill="#f5c76a" font-size="16">record date</text><circle cx="263.5" cy="120" r="7" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="263.5" y="70.0" text-anchor="middle" fill="#f1eee8" font-size="16">opens</text><text x="263.5" y="92.0" text-anchor="middle" fill="#a5a29c" font-size="16">5 Aug</text><circle cx="393.0" cy="120" r="7" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="393.0" y="154.0" text-anchor="middle" fill="#a5a29c" font-size="16">12 Aug</text><text x="393.0" y="176.0" text-anchor="middle" fill="#f1eee8" font-size="16">last rights sale</text><circle cx="522.5" cy="120" r="7" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="522.5" y="70.0" text-anchor="middle" fill="#f1eee8" font-size="16">closes</text><text x="522.5" y="92.0" text-anchor="middle" fill="#a5a29c" font-size="16">19 Aug</text><circle cx="726.0" cy="120" r="7" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="726.0" y="154.0" text-anchor="middle" fill="#a5a29c" font-size="16">30 Aug</text><text x="726.0" y="176.0" text-anchor="middle" fill="#f1eee8" font-size="16">new shares list</text><text x="40.0" y="226.0" text-anchor="start" fill="#a5a29c" font-size="16">TCPL rights issue, 2024 · 18.5 px = 1 day</text></svg></figure>
+      <p>The record date fell on a Saturday. With T+1 settlement, a buyer on Thursday 25 July settled on Friday and was on the list; a buyer on Friday 26 July settled on Monday, too late. So 25 July was the last day to buy with the right, and the shares traded ex-rights from 26 July. BSE’s own closing prices show the step (<a href="https://www.bseindia.com/download/BhavCopy/Equity/BhavCopy_BSE_CM_0_0_0_20240725_F_0000.CSV">bhavcopy, 25 July</a>; <a href="https://www.bseindia.com/download/BhavCopy/Equity/BhavCopy_BSE_CM_0_0_0_20240726_F_0000.CSV">26 July</a>):</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Item</th><th>Working</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Close, last cum-rights day</td><td class="wk">BSE, 25 Jul 2024</td><td class="val">₹1,223.65</td></tr>
+          <tr><td>Discount of the issue price</td><td class="wk">1 − 818 ÷ 1,223.65</td><td class="val">33.2%</td></tr>
+          <tr><td>Theoretical ex-rights price</td><td class="wk">(26 × 1,223.65 + 818) ÷ 27</td><td class="val">₹1,208.63</td></tr>
+          <tr><td>Theoretical value of one right</td><td class="wk">1,208.63 − 818</td><td class="val">₹390.63</td></tr>
+          <tr><td>Close, first ex-rights day</td><td class="wk">BSE, 26 Jul 2024</td><td class="val">₹1,213.15</td></tr>
+        </tbody>
+      </table></div>
+      <p>The rights alone should have taken about ₹15 off the price; the close fell ₹10.50, the rest being that day’s market. A holder of 2,600 shares received 100 rights, each worth about ₹390 on paper; letting them lapse would have cost roughly ₹39,000.</p>
+      <p>The annual report shows the result. Note 14 of the FY26 consolidated statements: 95,28,34,816 shares at 1 April 2024, plus <b>3,66,23,802</b> issued on a rights basis and 39,940 under employee share units, gives 98,94,98,558 at 31 March 2025; FY26 added 63,222 more, to 98,95,61,780. The FY25 cash flow shows rights proceeds of ₹2,980.57 cr net of issue expenses (3,66,23,802 × ₹818 = ₹2,995.83 cr gross).</p>
+      <figure><svg viewBox="0 0 800 220" role="img" aria-label="TCPL’s share count as two bars on one scale: 95.28 crore shares at 1 April 2024, and 98.96 crore at 31 March 2026 after 3.66 crore rights shares, so a holder who did nothing owns 96.3 percent of their old stake"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">TCPL SHARES, crore · 6 px = 1 crore</text><text x="40.0" y="62.0" text-anchor="start" fill="#a5a29c" font-size="16">1 Apr 2024: 95.28 crore</text><rect x="60.0" y="72.0" width="571.7" height="30.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="40.0" y="136.0" text-anchor="start" fill="#a5a29c" font-size="16">31 Mar 2026: 98.96 crore</text><rect x="60.0" y="146.0" width="571.7" height="30.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="631.7" y="146.0" width="22.0" height="30.0" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="649.7" y="202.0" text-anchor="end" fill="#c3b8ff" font-size="16">rights 3.66</text><text x="70.0" y="167.0" text-anchor="start" fill="#202020" font-size="16">holders who did nothing: 96.3%</text></svg></figure>
+      <p>A holder who did nothing owns 95.28 ÷ (95.28 + 3.66) = 96.3% of their old stake, diluted by 3.7%. A holder who subscribed kept their share. Whether the ₹2,980 cr was well spent is the acquisition question that <a href="management-and-capital-allocation-eli5.html" data-series-link="management-and-capital-allocation-eli5">Part 18</a> left open.</p>
+      <div class="field-grid">
+        <div><b>1 for 26 at ₹818</b><span>Record date Saturday 27 July 2024; issue open 5–19 August</span><em>ABRIDGED LETTER OF OFFER, 23 JUL 2024</em></div>
+        <div><b>3,66,23,802 shares</b><span>Issued on a rights basis in FY25; 95,28,34,816 before</span><em>NOTE 14(a)(i) · P. 446</em></div>
+        <div><b>₹2,980.57 cr</b><span>Proceeds from the rights issue, net of issue expenses, FY25</span><em>CASH FLOW · P. 418</em></div>
+        <div><b>₹1,223.65 → ₹1,213.15</b><span>BSE close, 25 July (last cum-rights day) and 26 July 2024</span><em>BSE BHAVCOPY</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s share units and diluted EPS</h2>
+      <p>TCPL pays some staff in performance share units: rights to shares at an exercise price of ₹1 that vest after three years, between 0.5 and 1.2 shares per unit depending on performance (FY26 consolidated statements, pp. 454–455) <span class="tag">public</span>. At 31 March 2026, 6,05,749 units were outstanding against 98,95,61,780 shares: 0.06%.</p>
+      <figure><svg viewBox="0 0 800 196" role="img" aria-label="TCPL’s 98.96 crore equity shares as a long gold bar and its 6.06 lakh outstanding performance share units as a sliver of about half a pixel, drawn 2 pixels wide: 0.06 percent"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">TCPL, 31 March 2026</text><text x="40.0" y="62.0" text-anchor="start" fill="#a5a29c" font-size="16">equity shares 98,95,61,780</text><rect x="40.0" y="72.0" width="700.0" height="30.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="40.0" y="134.0" text-anchor="start" fill="#a5a29c" font-size="16">share units outstanding 6,05,749</text><rect x="40.0" y="144.0" width="2.0" height="30.0" fill="#c3b8ff" stroke="none" stroke-width="0"/><text x="56.0" y="166.0" text-anchor="start" fill="#c3b8ff" font-size="16">0.06% · drawn 2 px wide</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Item, FY26</th><th>Working</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Basic EPS</td><td class="wk">1,542.30 cr ÷ 98,95,35,734 weighted shares</td><td class="val">₹15.59</td></tr>
+          <tr><td>Diluted EPS</td><td class="wk">1,542.30 cr ÷ (98,95,35,734 + 6,17,480)</td><td class="val">₹15.58</td></tr>
+          <tr><td>Share-based pay expense</td><td class="wk">in employee benefits expense</td><td class="val">₹16.25 cr</td></tr>
+        </tbody>
+      </table></div>
+      <p>Here the dilution is a paisa of EPS (note 30, p. 456): small enough to ignore, which is the point of checking. A company that pays heavily in options shows a wider gap between basic and diluted EPS, and a larger share-based pay line. In FY24 TCPL also issued 2,38,23,166 shares without receiving cash, under a composite scheme of arrangement with its subsidiaries Tata Coffee and TCPL Beverages &amp; Foods (note 14(a)(iii)): the merger case from the demerger panel, where shares rather than cash pay for what is acquired.</p>
+      <p class="source-note">Real figures: SEBI regulations as amended on the dates given; TCPL’s board outcome of 19 January 2024 and abridged letter of offer of 23 July 2024; BSE bhavcopies of 25 and 26 July 2024; TCPL’s audited Consolidated Financial Statements in its <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Integrated Annual Report 2025-26</a>, printed pages as cited. Frozen at FY2026. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Four questions for any corporate action</h2>
+      <ol class="checks">
+        <li><b>Re-slice or new slices?</b> A bonus, split or demerger changes the number on the screen, not what you own. Adjust the history and move on.</li>
+        <li><b>Who pays what price?</b> For a buyback, rights issue, QIP or options, set the price against your estimate of value. Below value is good for buyers of shares and bad for sellers, whoever they are.</li>
+        <li><b>What will the money earn?</b> New cash dilutes EPS until it earns; a buyback spends cash that was earning something. Ask what return management expects, and check later.</li>
+        <li><b>Can you take part?</b> In a rights issue you can protect yourself by subscribing or selling the right before the deadline. In a QIP or with options you cannot, so read the pricing and the diluted EPS.</li>
+      </ol>
+      <p>Each action here was decided inside the company. Part 22, “The economy around the company”, looks outward: interest rates, inflation, the rupee, tea prices and the monsoon, and how they move Ramu’s costs and profit.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A bonus, split or demerger only re-slices the same company. A rights issue, QIP, options or buyback changes your slice of the profit, and the price paid against what a share is really worth decides whether that helps you or hurts you.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLD='#f5c76a',TEAL='#76d5c1',CORAL='#ff8059';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- Ramu Chai base case (series table, Part 21). Everything below is computed from these.
+    const N0=10, PAT0=50, MC0=1000, FACE=10, CAPRES=250, H=100;   // crore shares, ₹ cr, ₹ cr, ₹, ₹ cr, your shares
+    const ACTS={bonus:{s:100,p:80,name:'Bonus 1:1'},split:{s:100,p:80,name:'Split ₹10 → ₹5'},buyback:{s:5,p:100,name:'Buyback'},
+      rights:{s:10,p:80,name:'Rights issue'},qip:{s:10,p:95,name:'QIP'},esop:{s:2,p:60,name:'ESOPs'}};
+    const PRESETS={
+      cheapbb:{act:'buyback',v:{sh:5,px:100,wv:130,rr:0},t:'Buyback below value: Ramu pays ₹100 for shares you think are worth ₹130. Holders who stay gain; the sellers hand them the difference.'},
+      dearbb:{act:'buyback',v:{sh:4,px:130,wv:100,rr:0},t:'Buyback above value: ₹130 for shares worth ₹100. EPS still rises, yet holders who stay are poorer. EPS cannot tell good buybacks from bad ones.'},
+      earn:{act:'rights',v:{sh:10,px:80,wv:100,rr:20},t:'Rights money earns 20%: ₹80 cr at Ramu’s own 20% return adds ₹16 cr of profit, so EPS ends above ₹5 even with 11 crore shares.'},
+      re1:{act:'esop',v:{sh:2,px:1,wv:100,rr:0},t:'Options at ₹1, the way TCPL’s performance share units are priced: almost the whole value of each new share is employee pay, paid by today’s holders.'}};
+    let act='rights';
+    const inr=(v,dp)=>'₹'+v.toLocaleString('en-IN',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0});
+    const f2=v=>v.toFixed(2);
+    function compute(act,s,p,w,r){
+      const notes=[]; let n=s/100*N0, P=p, cash=0, N1, mine=1;
+      if(act==='bonus'||act==='split'){N1=N0+n; P=0; mine=1+s/100;}
+      else if(act==='buyback'){
+        const nMax=Math.min(0.25*N0, 0.25*CAPRES/P);
+        if(n>nMax+1e-12){n=nMax; notes.push('capped by SEBI’s 25% limit at '+f2(n)+' cr shares (₹'+f2(n*P)+' cr)');}
+        N1=N0-n; cash=-n*P;}
+      else{
+        if(act==='rights'&&P<FACE){P=FACE; notes.push('rights price raised to the ₹10 face value, the SEBI floor');}
+        if(act==='qip'&&P<95){P=95; notes.push('QIP price raised to ₹95, the SEBI floor if the two-week average is ₹100');}
+        N1=N0+n; cash=n*P; if(act==='rights') mine=1+s/100;}
+      const V0=w*N0, V1=V0+cash, v1=V1/N1, price1=(MC0+cash)/N1;
+      const pat1=PAT0+r/100*cash, eps1=pat1/N1, eps0=PAT0/N0;
+      const rows=[], prof=[];
+      rows.push({k:'before',l:'Before',v:H*w,c:0});
+      prof.push({k:'before',l:'Before',v:H*eps0,e:eps0,sh:H});
+      if(act==='bonus'||act==='split'){rows.push({k:'after',l:'After',v:H*mine*v1,c:0});prof.push({k:'after',l:'After',v:H*mine*eps1,e:eps1,sh:H*mine});}
+      else if(act==='buyback'){rows.push({k:'stay',l:'You stay',v:H*v1,c:0});rows.push({k:'sell',l:'A seller',v:H*P,c:H*P,cc:TEAL});prof.push({k:'stay',l:'You stay',v:H*eps1,e:eps1,sh:H});}
+      else if(act==='rights'){const re=Math.max(v1-P,0);
+        rows.push({k:'subscribe',l:'You subscribe',v:H*mine*v1,c:H*(s/100)*P,cc:CORAL});
+        rows.push({k:'sellre',l:'You sell rights',v:H*v1+H*(s/100)*re,c:H*(s/100)*re,cc:TEAL});
+        rows.push({k:'nothing',l:'You do nothing',v:H*v1,c:0});
+        prof.push({k:'subscribe',l:'You subscribe',v:H*mine*eps1,e:eps1,sh:H*mine});prof.push({k:'nothing',l:'You do nothing',v:H*eps1,e:eps1,sh:H});}
+      else{rows.push({k:'after',l:'After',v:H*v1,c:0});prof.push({k:'after',l:'After',v:H*eps1,e:eps1,sh:H});}
+      return {act,s,n,P,w,r,N1,cash,V1,v1,price1,pat1,eps1,eps0,mine,rows,prof,notes,own:N0/N1};
+    }
+    function niceMax(m){const steps=[100,200,250,300,500,1000,2000,2500,3000,5000,10000,20000,25000];for(const st of steps){if(m/st<=4+1e-9)return [Math.max(Math.ceil(m/st-1e-9),1)*st,st];}return [Math.ceil(m/50000)*50000,50000];}
+    function bars(svgId,rows,fmtTick,lab,cap){
+      const X0=14,X1=340,top=34,rh=60;
+      const mx=Math.max(...rows.map(r=>r.v),1); const [M,st]=niceMax(mx);
+      const sx=v=>X0+(X1-X0)*v/M;
+      let s=T(X0,20,cap,'start',MUTC);
+      rows.forEach((r,i)=>{const y=top+i*rh;
+        s+=T(X0,y+16,r.l+' · '+lab(r),'start',FGC);
+        const w=Math.max(sx(r.v)-X0,0);
+        s+=`<rect data-v="${r.v.toFixed(4)}" x="${X0}" y="${y+24}" width="${w.toFixed(2)}" height="24" fill="${GOLD}" stroke="#202020" stroke-width="2"/>`;
+        if(r.c>0){const cw=sx(r.c)-X0, cx=X0+w-cw; s+=`<rect x="${cx.toFixed(2)}" y="${y+24}" width="${cw.toFixed(2)}" height="24" fill="${r.cc}" stroke="#202020" stroke-width="2"/>`;}});
+      const ya=top+rows.length*rh;
+      s+=`<path d="M${X0} ${ya} L${X1} ${ya}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      for(let t=0;t<=M+1e-9;t+=st){s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${ya+22}" text-anchor="${t===0?'start':'middle'}" fill="${MUTC}" font-size="16">${fmtTick(t)}</text>`;}
+      const el=$(svgId); el.setAttribute('viewBox',`0 0 380 ${ya+34}`); el.innerHTML=s;
+    }
+    const labConfig={format:v=>'₹'+(+v).toLocaleString('en-IN')};
+    function setAct(a){act=a;document.querySelectorAll('[data-act]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.act===a)));}
+    function draw(){
+      const s=+$('sh').value,p=+$('px').value,w=+$('wv').value,r=+$('rr').value;
+      const c=compute(act,s,p,w,r);
+      const reslice=act==='bonus'||act==='split';
+      $('px').disabled=reslice; $('rr').disabled=reslice;
+      $('sh-l').textContent=act==='buyback'?'Shares bought back, % of today’s 10 crore':'New shares, % of today’s 10 crore';
+      $('sh-o').textContent=s+'%'+(act==='bonus'||act==='split'?' ('+(s/100*N0).toFixed(1)+' cr)':' ('+(s/100*N0).toFixed(2)+' cr)');
+      $('px-o').textContent=reslice?'none, no cash moves':'₹'+p;
+      $('wv-o').textContent='₹'+w; $('rr-o').textContent=reslice?'no cash moves':r+'%';
+      bars('labChart',c.rows,labConfig.format,row=>{const base=inr(row.v);
+          if(row.k==='sell') return base+' cash';
+          if(row.k==='subscribe') return base+' · paid '+inr(row.c);
+          if(row.k==='sellre') return base+' · '+inr(row.c)+' cash';
+          return base;},'value per 100 shares you held, ₹');
+      bars('profitChart',c.prof,v=>'₹'+(+v).toLocaleString('en-IN'),row=>inr(row.v)+' · EPS ₹'+f2(row.e),'profit per 100 shares you held, ₹');
+      // message
+      const gain=(c.rows.find(x=>x.k==='stay'||x.k==='after'||x.k==='nothing').v)-c.rows[0].v;
+      let m='';
+      if(reslice) m=`${act==='bonus'?'Bonus':'Split'}: ${f2(c.N1)} cr shares, EPS ₹${f2(c.eps1)}, but you hold ${(H*c.mine).toFixed(0)} shares, so your value and your profit are unchanged. Re-slicing.`;
+      else if(act==='buyback') m=`Buyback of ${f2(c.n)} cr shares at ₹${c.P}: EPS ₹${f2(c.eps0)} → ₹${f2(c.eps1)}. If you stay you ${gain>=0.005?'gain':(gain<=-0.005?'lose':'neither gain nor lose')} ${inr(Math.abs(gain))} on 100 shares, because the price is ${c.P<c.w?'below':(c.P>c.w?'above':'equal to')} your ₹${c.w} value.`;
+      else if(act==='rights') m=`Rights ${f2(c.n)} cr shares at ₹${c.P}: value per share ₹${f2(c.v1)}. Subscribing or selling the rights keeps you whole${c.P>c.v1?' (here the right is worthless, since the price is above value)':''}; doing nothing ${gain<-0.005?'costs '+inr(-gain):(gain>0.005?'gains '+inr(gain):'costs nothing')}.`;
+      else m=`${act==='qip'?'QIP':'Options'}: ${f2(c.n)} cr new shares at ₹${c.P} against your ₹${c.w} value. Today’s holders own ${(100*c.own).toFixed(1)}%, EPS ₹${f2(c.eps1)}, and your 100 shares ${gain<-0.005?'lose '+inr(-gain):(gain>0.005?'gain '+inr(gain):'are unchanged')}.`;
+      if(c.notes.length) m+=' Lab limit: '+c.notes.join('; ')+'.';
+      $('msg').textContent=m;
+      // ledger
+      const cashTxt=c.cash>0?'+₹'+f2(c.cash)+' cr raised':(c.cash<0?'−₹'+f2(-c.cash)+' cr paid out':'none');
+      const rows=[['Action',ACTS[act].name+(c.notes.length?' · limit applied':'')],
+        ['Shares','10 → '+f2(c.N1)+' cr'],
+        ['Cash',cashTxt],
+        ['Value per share','(₹'+c.w+' × 10 '+(c.cash>=0?'+ ':'− ')+f2(Math.abs(c.cash))+') ÷ '+f2(c.N1)+' = ₹'+f2(c.v1)],
+        ['Market price after','(₹1,000 cr '+(c.cash>=0?'+ ':'− ')+f2(Math.abs(c.cash))+') ÷ '+f2(c.N1)+' = ₹'+f2(c.price1)],
+        ['Profit','50 '+(c.cash>=0?'+ ':'− ')+c.r+'% × '+f2(Math.abs(c.cash))+' = ₹'+f2(c.pat1)+' cr'],
+        ['EPS','₹'+f2(c.pat1)+' ÷ '+f2(c.N1)+' = ₹'+f2(c.eps1)+' (was ₹5.00)'],
+        ['Today’s holders own',(100*c.own).toFixed(2)+'% of the company'+(c.mine>1?' (you: '+(H*c.mine).toFixed(0)+' shares)':'')]];
+      if(act==='split') rows.push(['Face value','₹10 ÷ '+(1+s/100).toFixed(2)+' = ₹'+f2(FACE/(1+s/100))+'; share capital stays ₹100 cr']);
+      if(act==='bonus') rows.push(['Reserves to capital','₹'+f2(c.n*FACE)+' cr; equity stays ₹250 cr']);
+      if(act==='rights') rows.push(['Value of one right','max(₹'+f2(c.v1)+' − ₹'+c.P+', 0) = ₹'+f2(Math.max(c.v1-c.P,0))]);
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      const fin=[c.v1,c.eps1,c.price1,c.pat1,...c.rows.map(x=>x.v),...c.prof.map(x=>x.v)].every(Number.isFinite);
+      window.labResults={valid:fin,act,s:c.s,n:c.n,P:c.P,w:c.w,r:c.r,N1:c.N1,cash:c.cash,v1:c.v1,price1:c.price1,pat1:c.pat1,eps1:c.eps1,own:c.own,
+        rows:Object.fromEntries(c.rows.map(x=>[x.k,x.v])),cashRows:Object.fromEntries(c.rows.map(x=>[x.k,x.c])),profit:Object.fromEntries(c.prof.map(x=>[x.k,x.v])),notes:c.notes};
+    }
+    ['sh','px','wv','rr'].forEach(id=>$(id).addEventListener('input',draw));
+    document.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.act;setAct(a);
+      $('sh').value=ACTS[a].s;$('px').value=ACTS[a].p;$('wv').value=100;$('rr').value=0;draw();}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=PRESETS[b.dataset.p];setAct(p.act);
+      Object.entries(p.v).forEach(([k,v])=>$(k).value=v);draw();$('msg').textContent=p.t+' '+$('msg').textContent;}));
+    draw();
+
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
