@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "industry-and-moats-eli5",
+    "title": "Industry structure and moats",
+    "category": "Monetary Architecture",
+    "minutes": 24,
+    "summary": "Part 17: five forces, moats, and how a rival erodes returns",
+    "bullets": [
+      "Industry structure and Porter's five forces, in tea terms",
+      "Moats, how they show in ROCE and gross margin, how they erode",
+      "A rival arrives: ROCE with and without a moat"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FORCES",
+      "MOAT",
+      "RIVAL"
+    ],
+    "file": "explainers/industry-and-moats-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two ROCE lines falling from the same start toward a dashed lavender cost-of-capital line: a teal line with a moat stays high, a coral line without one sinks to it\"><path d=\"M24 104H296\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\" fill=\"none\"/><path d=\"M24 44C80 50 120 70 160 80C210 90 250 98 296 102\" stroke=\"#ff8059\" stroke-width=\"3\" fill=\"none\"/><path d=\"M24 44C90 48 160 54 230 60C260 62 280 64 296 66\" stroke=\"#76d5c1\" stroke-width=\"4\" fill=\"none\"/><circle cx=\"24\" cy=\"44\" r=\"4\" fill=\"#f1eee8\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 17</text><text x=\"296\" y=\"128\" text-anchor=\"end\" fill=\"#a5a29c\">12% LINE</text><text x=\"24\" y=\"136\" fill=\"#76d5c1\">MOAT</text></g></svg>",
+    "part": 17
+  },
+  {
     "id": "business-model-eli5",
     "title": "Business model and unit economics",
     "category": "Monetary Architecture",
