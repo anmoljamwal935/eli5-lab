@@ -1,5 +1,125 @@
 window.PUBLISHED = [
   {
+    "id": "red-flags-eli5",
+    "title": "Red flags and forensic checks",
+    "category": "Monetary Architecture",
+    "minutes": 28,
+    "summary": "Part 20: the patterns in the accounts that come before a blow-up",
+    "bullets": [
+      "A flag is a question, not a verdict",
+      "Spot six planted flags in a fudged twin of Ramu Chai",
+      "Run the checklist on TCPL FY26 and see what to ask"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PROFIT",
+      "CASH",
+      "FLAG"
+    ],
+    "file": "explainers/red-flags-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A long gold profit bar above a short teal cash bar, with a rose flag at the end of the gap between them: profit that never arrives as cash.\"><rect x=\"24\" y=\"48\" width=\"220\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"24\" y=\"82\" width=\"60\" height=\"24\" fill=\"#76d5c1\"/><rect x=\"84\" y=\"82\" width=\"160\" height=\"24\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><rect x=\"262\" y=\"52\" width=\"2\" height=\"54\" fill=\"#ec6a94\"/><path d=\"M264 52 L292 62 L264 72 Z\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 20</text><text x=\"24\" y=\"136\" fill=\"#a5a29c\">PROFIT, NO CASH</text></g></svg>",
+    "part": 20
+  },
+  {
+    "id": "governance-and-ownership-eli5",
+    "title": "Governance and who owns the company",
+    "category": "Monetary Architecture",
+    "minutes": 24,
+    "summary": "Part 19: who owns the company, who has pledged shares, and who is watching",
+    "bullets": [
+      "Shareholding pattern: promoters, FPIs, DIIs, public",
+      "Pledges, margin calls and related-party approvals",
+      "Board, audit committee, auditor's opinion and TCPL's filings"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "OWNERS",
+      "PLEDGE",
+      "WATCHERS"
+    ],
+    "file": "explainers/governance-and-ownership-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"One ownership bar with a large gold promoter block reaching past a dashed half-way line, then smaller tinted gold blocks for other holders, and a short rose strip below for the pledged shares\"><rect x=\"40\" y=\"46\" width=\"132\" height=\"30\" fill=\"#f5c76a\"/><rect x=\"172\" y=\"46\" width=\"24\" height=\"30\" fill=\"#f5c76a\" fill-opacity=\"0.8\"/><rect x=\"196\" y=\"46\" width=\"36\" height=\"30\" fill=\"#f5c76a\" fill-opacity=\"0.65\"/><rect x=\"232\" y=\"46\" width=\"48\" height=\"30\" fill=\"#f5c76a\" fill-opacity=\"0.5\"/><path d=\"M160 38 L160 84\" stroke=\"#f1eee8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\" fill=\"none\"/><rect x=\"40\" y=\"94\" width=\"13.2\" height=\"14\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 19</text><text x=\"40\" y=\"139\" fill=\"#a5a29c\">WHO OWNS IT</text></g></svg>",
+    "part": 19
+  },
+  {
+    "id": "management-and-capital-allocation-eli5",
+    "title": "Management, capital allocation and concalls",
+    "category": "Monetary Architecture",
+    "minutes": 24,
+    "summary": "Part 18: what managers do with spare cash, and whether they keep their promises",
+    "bullets": [
+      "Five uses of cash, each with one test: return on new money against what owners could earn elsewhere",
+      "Lab: ₹50 cr, four choices, ten years; and a promise tracker",
+      "TCPL's acquisitions, rights issue and a dated margin promise, checked against the reports"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CASH",
+      "CHOICES",
+      "PROMISES"
+    ],
+    "file": "explainers/management-and-capital-allocation-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three bars of return on the same money: a long coral bar for reinvesting at 20 percent, a short pale coral bar for a rival earning 8 percent and a short rose bar for repaying debt at 7.5 percent, with a dashed lavender hurdle line at 10 percent that only the long bar crosses\"><rect x=\"40\" y=\"42\" width=\"140\" height=\"20\" fill=\"#ff8059\"/><rect x=\"40\" y=\"72\" width=\"56\" height=\"20\" fill=\"#ff8059\" fill-opacity=\"0.55\"/><rect x=\"40\" y=\"102\" width=\"52.5\" height=\"20\" fill=\"#ec6a94\" fill-opacity=\"0.75\"/><path d=\"M110 34 V130\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"26\" fill=\"#c3b8ff\">PART 18</text><text x=\"120\" y=\"142\" fill=\"#c3b8ff\">HURDLE</text><text x=\"190\" y=\"56\" fill=\"#a5a29c\">20%</text></g></svg>",
+    "part": 18
+  },
+  {
+    "id": "industry-and-moats-eli5",
+    "title": "Industry structure and moats",
+    "category": "Monetary Architecture",
+    "minutes": 24,
+    "summary": "Part 17: five forces, moats, and how a rival erodes returns",
+    "bullets": [
+      "Industry structure and Porter's five forces, in tea terms",
+      "Moats, how they show in ROCE and gross margin, how they erode",
+      "A rival arrives: ROCE with and without a moat"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FORCES",
+      "MOAT",
+      "RIVAL"
+    ],
+    "file": "explainers/industry-and-moats-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two ROCE lines falling from the same start toward a dashed lavender cost-of-capital line: a teal line with a moat stays high, a coral line without one sinks to it\"><path d=\"M24 104H296\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\" fill=\"none\"/><path d=\"M24 44C80 50 120 70 160 80C210 90 250 98 296 102\" stroke=\"#ff8059\" stroke-width=\"3\" fill=\"none\"/><path d=\"M24 44C90 48 160 54 230 60C260 62 280 64 296 66\" stroke=\"#76d5c1\" stroke-width=\"4\" fill=\"none\"/><circle cx=\"24\" cy=\"44\" r=\"4\" fill=\"#f1eee8\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 17</text><text x=\"296\" y=\"128\" text-anchor=\"end\" fill=\"#a5a29c\">12% LINE</text><text x=\"24\" y=\"136\" fill=\"#76d5c1\">MOAT</text></g></svg>",
+    "part": 17
+  },
+  {
+    "id": "business-model-eli5",
+    "title": "Business model and unit economics",
+    "category": "Monetary Architecture",
+    "minutes": 17,
+    "summary": "Part 16: how a company really makes money, one cup at a time",
+    "bullets": [
+      "Revenue is volume × price × mix, and one cup's contribution",
+      "A lab: price, milk, volume, fixed costs, mix and a lost customer",
+      "TCPL's segments, two classifications, and what drove each"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "ONE CUP",
+      "MIX",
+      "CUSTOMER"
+    ],
+    "file": "explainers/business-model-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"One cup drawn as a bar of coral cost slices and a teal contribution, with a second bar below showing the contribution split into fixed cost and gold EBITDA, and a lavender part label\"><rect x=\"24.0\" y=\"48\" width=\"49.0\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"73.0\" y=\"48\" width=\"59.8\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"0.72\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"132.8\" y=\"48\" width=\"10.9\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"143.7\" y=\"48\" width=\"16.3\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"0.72\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"160.0\" y=\"48\" width=\"13.6\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"173.6\" y=\"48\" width=\"122.4\" height=\"28\" fill=\"#76d5c1\"/><rect x=\"24\" y=\"92\" width=\"76.2\" height=\"28\" fill=\"#ff8059\" fill-opacity=\"0.3\" stroke=\"#ff8059\" stroke-width=\"2\"/><rect x=\"100.2\" y=\"92\" width=\"46.2\" height=\"28\" fill=\"#f5c76a\"/><path d=\"M146.4 84 V128\" stroke=\"#a5a29c\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 16</text><text x=\"296\" y=\"140\" text-anchor=\"end\" fill=\"#76d5c1\">ONE CUP</text></g></svg>",
+    "part": 16
+  },
+  {
     "id": "ratios-together-eli5",
     "title": "Reading ratios together",
     "category": "Monetary Architecture",
