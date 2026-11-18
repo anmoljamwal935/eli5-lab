@@ -29,7 +29,7 @@
     { id: 'ratios-together-eli5', track: 'value', title: 'Reading ratios together', blurb: 'Peers, PEG, and a one-page dashboard where no ratio stands alone', file: 'ratios-together-eli5.html' },
     { id: 'business-model-eli5', track: 'business', title: 'Business model and unit economics', blurb: 'How the company really makes money, one unit at a time', file: 'business-model-eli5.html' },
     { id: 'industry-and-moats-eli5', track: 'business', title: 'Industry structure and moats', blurb: 'Competition, pricing power, and what keeps rivals out', file: 'industry-and-moats-eli5.html' },
-    { id: 'management-and-capital-allocation-eli5', track: 'business', title: 'Management, capital allocation and concalls', blurb: 'What the people in charge do with the cash, and whether they keep promises' },
+    { id: 'management-and-capital-allocation-eli5', track: 'business', title: 'Management, capital allocation and concalls', blurb: 'What the people in charge do with the cash, and whether they keep promises', file: 'management-and-capital-allocation-eli5.html' },
     { id: 'governance-and-ownership-eli5', track: 'business', title: 'Governance and who owns the company', blurb: 'Promoters, pledges, related-party deals, auditors and boards' },
     { id: 'red-flags-eli5', track: 'business', title: 'Red flags and forensic checks', blurb: 'The patterns in the accounts that come before a blow-up' },
     { id: 'corporate-actions-eli5', track: 'value', title: 'Corporate actions and dilution', blurb: 'Bonus, split, buyback, rights issue, QIP and ESOPs: what each does to you' },
