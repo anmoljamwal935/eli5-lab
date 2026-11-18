@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "governance-and-ownership-eli5",
+    "title": "Governance and who owns the company",
+    "category": "Monetary Architecture",
+    "minutes": 24,
+    "summary": "Part 19: who owns the company, who has pledged shares, and who is watching",
+    "bullets": [
+      "Shareholding pattern: promoters, FPIs, DIIs, public",
+      "Pledges, margin calls and related-party approvals",
+      "Board, audit committee, auditor's opinion and TCPL's filings"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "OWNERS",
+      "PLEDGE",
+      "WATCHERS"
+    ],
+    "file": "explainers/governance-and-ownership-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"One ownership bar with a large gold promoter block reaching past a dashed half-way line, then smaller tinted gold blocks for other holders, and a short rose strip below for the pledged shares\"><rect x=\"40\" y=\"46\" width=\"132\" height=\"30\" fill=\"#f5c76a\"/><rect x=\"172\" y=\"46\" width=\"24\" height=\"30\" fill=\"#f5c76a\" fill-opacity=\"0.8\"/><rect x=\"196\" y=\"46\" width=\"36\" height=\"30\" fill=\"#f5c76a\" fill-opacity=\"0.65\"/><rect x=\"232\" y=\"46\" width=\"48\" height=\"30\" fill=\"#f5c76a\" fill-opacity=\"0.5\"/><path d=\"M160 38 L160 84\" stroke=\"#f1eee8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\" fill=\"none\"/><rect x=\"40\" y=\"94\" width=\"13.2\" height=\"14\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 19</text><text x=\"40\" y=\"139\" fill=\"#a5a29c\">WHO OWNS IT</text></g></svg>",
+    "part": 19
+  },
+  {
     "id": "management-and-capital-allocation-eli5",
     "title": "Management, capital allocation and concalls",
     "category": "Monetary Architecture",
