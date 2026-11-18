@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Discounting and the discount rate — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out | gold #f5c76a = what belongs to shareholders (profit, equity, the owners' required return)
+       rose #ec6a94 = what is owed (debt, its cost) | lavender #c3b8ff = the market's view (price, market moves)
+       Part 23 extra: grey #a5a29c = the risk-free floor (10-year G-sec). */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eq b{color:var(--fg)}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab-chart svg+svg{margin-top:18px}
+    /* Part 23: lab result line, estimate table */
+    .lab .result{text-align:left;margin:14px 0 0;font-size:15px;line-height:1.5;color:var(--fg)}
+    .lab .result b{color:var(--gold)}
+    .est{width:100%;font-size:14px;border-collapse:collapse}
+    .est th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px;border-bottom:1px solid var(--border)}
+    .est td{padding:8px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top}
+    .est td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .est td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}
+    @media (max-width:700px){.eli5-study-container table.est{min-width:0}.est{font-size:13px}.est td,.est th{padding:6px 4px}.est .hide-sm{display:none}}
+  </style>
+</head>
+<body data-series-id="discount-rate-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 15 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Discounting and the discount rate</h1>
+      <p class="lede">A rupee you will get in ten years is worth less than a rupee in your hand today. How much less depends on one number, the discount rate. Build it from a government bond, a premium for risk and the cost of debt, and see why nobody agrees on it exactly.</p>
+      <p class="source-note">Built from the RBI’s Weekly Statistical Supplement (issue of 17 April 2026), published estimates of India’s equity risk premium and of industry betas by Grant Thornton Bharat, Aswath Damodaran (NYU Stern) and the EY–NSE Cost of Capital Survey 2024, and the arithmetic of discounting · <a href="https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28387">Read the RBI source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> grew money forward with compounding, <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> priced Ramu’s debt at 10%, or 7.5% after tax, and <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> valued the whole company at market prices. This part turns those into one rate. Facts carry a tag: <span class="tag">public</span> is a figure published by the RBI or by the named estimator, <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd, a small tea business. All amounts are ₹ crore (cr) unless a rupee sign stands alone. Part 24 uses this rate in a full DCF and Part 25 runs it in reverse. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in, and what it is worth today</span>
+        <span><i style="background:#ff8059"></i>money going out</span>
+        <span><i style="background:#a5a29c"></i>the risk-free floor: 10-year G-sec</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: their required return, value per share</span>
+        <span><i style="background:#ec6a94"></i>what is owed: debt and its cost</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, market moves</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Money now beats money later</h2>
+      <p>Offered ₹100 today or ₹100 in a year, almost everyone takes it today, for three reasons. Today’s rupee can earn interest while you wait. Prices rise, so a later rupee buys less. And a promise can break. At a safe 7% a year, ₹100 today grows to ₹107 in a year <span class="tag">example</span>. Run that backwards: ₹100 due in a year is worth ₹100 ÷ 1.07 = ₹93.46 today.</p>
+      <figure><svg viewBox="0 0 800 284" role="img" aria-label="Three teal bars on one scale: 100 rupees today; the same 100 lent at 7 percent grows to 107 in a year; and 100 rupees due in a year is worth only 93.46 today, the missing 6.54 drawn as a dashed gap"><text x="60" y="34" text-anchor="start" fill="#a5a29c" font-size="16">₹100 today</text><rect x="60" y="44" width="500" height="30" fill="#76d5c1"/><text x="60" y="114" text-anchor="start" fill="#a5a29c" font-size="16">lent at 7% for a year</text><rect x="60" y="124" width="500" height="30" fill="#76d5c1"/><rect x="560" y="124" width="35" height="30" fill="#76d5c1" opacity="0.45"/><text x="605" y="145" text-anchor="start" fill="#f1eee8" font-size="16">₹107</text><text x="60" y="194" text-anchor="start" fill="#a5a29c" font-size="16">₹100 due in a year, worth today</text><rect x="60" y="204" width="467.3" height="30" fill="#76d5c1"/><rect x="527.3" y="204" width="32.7" height="30" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/><text x="570" y="225" text-anchor="start" fill="#f1eee8" font-size="16">₹93.46</text><text x="60" y="268" text-anchor="start" fill="#a5a29c" font-size="16">5 px = ₹1 · rate 7% a year</text></svg></figure>
+      <p>That backwards step is <b>discounting</b>, and the rate it uses is the <b>discount rate</b>. A safe interest rate already covers the first two reasons, because lenders build expected inflation into it. The third, risk, is what the rest of this part adds on top.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Present value</p>
+      <h2>Compounding, run backwards</h2>
+      <p><a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> grew money forward: at 12% a year, ₹100 becomes ₹100 × 1.12 × 1.12 and so on. <b>Present value</b> runs it backwards: divide by 1.12 once for every year of waiting. At 12% <span class="tag">example</span>, ₹100 due in one year is worth ₹89.29 today; due in ten years, only ₹32.20.</p>
+      <figure><svg viewBox="0 0 800 370" role="img" aria-label="Eleven teal bars on one scale: 100 rupees received today, then the value today of 100 rupees received in each of the next ten years at 12 percent, shrinking from 89.29 after one year to 32.20 after ten"><text x="760" y="24" text-anchor="end" fill="#a5a29c" font-size="16">today’s value of ₹100, at 12%</text><path d="M66 300 L770 300" stroke="#57534f" stroke-width="1.5" fill="none"/><rect x="76" y="40" width="44" height="260" fill="#76d5c1"/><text x="98" y="32" text-anchor="middle" fill="#f1eee8" font-size="16">100</text><text x="98" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><rect x="140" y="67.9" width="44" height="232.1" fill="#76d5c1" opacity="0.95"/><text x="162" y="59.9" text-anchor="middle" fill="#f1eee8" font-size="16">89.29</text><text x="162" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">1</text><rect x="204" y="92.7" width="44" height="207.3" fill="#76d5c1" opacity="0.95"/><text x="226" y="84.7" text-anchor="middle" fill="#f1eee8" font-size="16">79.7</text><text x="226" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">2</text><rect x="268" y="114.9" width="44" height="185.1" fill="#76d5c1" opacity="0.95"/><text x="290" y="106.9" text-anchor="middle" fill="#f1eee8" font-size="16">71.2</text><text x="290" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><rect x="332" y="134.8" width="44" height="165.2" fill="#76d5c1" opacity="0.95"/><text x="354" y="126.8" text-anchor="middle" fill="#f1eee8" font-size="16">63.6</text><text x="354" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">4</text><rect x="396" y="152.5" width="44" height="147.5" fill="#76d5c1" opacity="0.95"/><text x="418" y="144.5" text-anchor="middle" fill="#f1eee8" font-size="16">56.7</text><text x="418" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><rect x="460" y="168.3" width="44" height="131.7" fill="#76d5c1" opacity="0.95"/><text x="482" y="160.3" text-anchor="middle" fill="#f1eee8" font-size="16">50.7</text><text x="482" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><rect x="524" y="182.4" width="44" height="117.6" fill="#76d5c1" opacity="0.95"/><text x="546" y="174.4" text-anchor="middle" fill="#f1eee8" font-size="16">45.2</text><text x="546" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">7</text><rect x="588" y="195" width="44" height="105" fill="#76d5c1" opacity="0.95"/><text x="610" y="187" text-anchor="middle" fill="#f1eee8" font-size="16">40.4</text><text x="610" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">8</text><rect x="652" y="206.2" width="44" height="93.8" fill="#76d5c1" opacity="0.95"/><text x="674" y="198.2" text-anchor="middle" fill="#f1eee8" font-size="16">36.1</text><text x="674" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><rect x="716" y="216.3" width="44" height="83.7" fill="#76d5c1" opacity="0.95"/><text x="738" y="208.3" text-anchor="middle" fill="#f1eee8" font-size="16">32.20</text><text x="738" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="400" y="354" text-anchor="middle" fill="#a5a29c" font-size="16">years until the ₹100 arrives · 2.6 px = ₹1</text></svg></figure>
+      <span class="eq">Present value = amount ÷ (1 + rate)<sup>years</sup> = ₹100 ÷ 1.12<sup>10</sup> = ₹100 ÷ 3.106 = <b>₹32.20</b></span>
+      <p>Each bar is the one before divided by 1.12, so the bars shrink by the same proportion every year, never by the same amount. Part 9’s rule of 72 works in reverse too: at 12%, value halves about every six years (72 ÷ 12).</p>
+      <details class="trace"><summary>Go deeper: discount factors</summary>
+        <p>1 ÷ (1 + rate)<sup>years</sup> is the <b>discount factor</b>: what ₹1 due in that year is worth today. At 12% it is 0.8929 for one year, 0.5674 for five and 0.3220 for ten. A stream of payments is valued by multiplying each payment by its year’s factor and adding up. That sum is exactly what a DCF does (Part 24).</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Time and rate</p>
+      <h2>The rate matters as much as time</h2>
+      <p>Push the wait out to 20 years and the rate starts to decide everything. At 7%, ₹100 due in 20 years is worth ₹25.8 today; at 11.6%, the rate this part builds for Ramu, ₹11.1; at 15%, ₹6.1 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 350" role="img" aria-label="Three teal curves of what 100 rupees due in up to 20 years is worth today: at 7 percent it falls to 25.8, at 11.6 percent to 11.1 and at 15 percent to 6.1; a dashed line marks half value"><path d="M90 40 L90 290 L600 290" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="90" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="217.5" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><text x="345" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="472.5" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">15</text><text x="600" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">20</text><text x="78" y="295" text-anchor="end" fill="#a5a29c" font-size="16">₹0</text><text x="78" y="175" text-anchor="end" fill="#a5a29c" font-size="16">₹50</text><text x="78" y="55" text-anchor="end" fill="#a5a29c" font-size="16">₹100</text><path d="M90 170 L600 170" stroke="#a5a29c" stroke-width="1" fill="none" stroke-dasharray="3 5"/><polyline points="90,50 96.4,54 102.8,58 109.1,61.9 115.5,65.7 121.9,69.5 128.2,73.2 134.6,76.8 141,80.4 147.4,83.9 153.8,87.3 160.1,90.7 166.5,94.1 172.9,97.4 179.2,100.6 185.6,103.8 192,106.9 198.4,110 204.8,113 211.1,116 217.5,118.9 223.9,121.8 230.2,124.6 236.6,127.3 243,130.1 249.4,132.8 255.8,135.4 262.1,138 268.5,140.5 274.9,143 281.2,145.5 287.6,147.9 294,150.3 300.4,152.7 306.8,155 313.1,157.2 319.5,159.5 325.9,161.6 332.2,163.8 338.6,165.9 345,168 351.4,170 357.8,172.1 364.1,174 370.5,176 376.9,177.9 383.2,179.8 389.6,181.6 396,183.4 402.4,185.2 408.8,187 415.1,188.7 421.5,190.4 427.9,192.1 434.2,193.7 440.6,195.3 447,196.9 453.4,198.5 459.8,200 466.1,201.5 472.5,203 478.9,204.5 485.2,205.9 491.6,207.3 498,208.7 504.4,210.1 510.8,211.4 517.1,212.7 523.5,214 529.9,215.3 536.2,216.5 542.6,217.8 549,219 555.4,220.2 561.8,221.4 568.1,222.5 574.5,223.6 580.9,224.8 587.2,225.8 593.6,226.9 600,228" fill="none" stroke="#76d5c1" stroke-width="2.5" stroke-dasharray="8 6"/><text x="612" y="223" text-anchor="start" fill="#f1eee8" font-size="16">₹25.8</text><polyline points="90,50 96.4,56.5 102.8,62.8 109.1,69 115.5,74.9 121.9,80.8 128.2,86.4 134.6,91.9 141,97.3 147.4,102.5 153.8,107.6 160.1,112.5 166.5,117.3 172.9,122 179.2,126.5 185.6,131 192,135.3 198.4,139.5 204.8,143.5 211.1,147.5 217.5,151.4 223.9,155.1 230.2,158.8 236.6,162.3 243,165.8 249.4,169.1 255.8,172.4 262.1,175.6 268.5,178.7 274.9,181.7 281.2,184.6 287.6,187.5 294,190.3 300.4,193 306.8,195.6 313.1,198.1 319.5,200.6 325.9,203 332.2,205.4 338.6,207.7 345,209.9 351.4,212.1 357.8,214.2 364.1,216.2 370.5,218.2 376.9,220.2 383.2,222.1 389.6,223.9 396,225.7 402.4,227.4 408.8,229.1 415.1,230.8 421.5,232.4 427.9,233.9 434.2,235.5 440.6,236.9 447,238.4 453.4,239.8 459.8,241.1 466.1,242.4 472.5,243.7 478.9,245 485.2,246.2 491.6,247.4 498,248.5 504.4,249.7 510.8,250.8 517.1,251.8 523.5,252.9 529.9,253.9 536.2,254.8 542.6,255.8 549,256.7 555.4,257.6 561.8,258.5 568.1,259.3 574.5,260.2 580.9,261 587.2,261.8 593.6,262.5 600,263.3" fill="none" stroke="#76d5c1" stroke-width="3.5"/><text x="612" y="251" text-anchor="start" fill="#f1eee8" font-size="16">₹11.1</text><polyline points="90,50 96.4,58.2 102.8,66.2 109.1,73.9 115.5,81.3 121.9,88.5 128.2,95.4 134.6,102.1 141,108.5 147.4,114.8 153.8,120.8 160.1,126.6 166.5,132.2 172.9,137.6 179.2,142.8 185.6,147.9 192,152.8 198.4,157.5 204.8,162 211.1,166.4 217.5,170.7 223.9,174.8 230.2,178.7 236.6,182.6 243,186.2 249.4,189.8 255.8,193.2 262.1,196.6 268.5,199.8 274.9,202.9 281.2,205.9 287.6,208.8 294,211.5 300.4,214.2 306.8,216.8 313.1,219.4 319.5,221.8 325.9,224.1 332.2,226.4 338.6,228.6 345,230.7 351.4,232.7 357.8,234.7 364.1,236.6 370.5,238.4 376.9,240.2 383.2,241.9 389.6,243.5 396,245.1 402.4,246.7 408.8,248.2 415.1,249.6 421.5,251 427.9,252.3 434.2,253.6 440.6,254.9 447,256.1 453.4,257.2 459.8,258.4 466.1,259.5 472.5,260.5 478.9,261.5 485.2,262.5 491.6,263.4 498,264.4 504.4,265.2 510.8,266.1 517.1,266.9 523.5,267.7 529.9,268.5 536.2,269.2 542.6,269.9 549,270.6 555.4,271.3 561.8,271.9 568.1,272.5 574.5,273.1 580.9,273.7 587.2,274.3 593.6,274.8 600,275.3" fill="none" stroke="#76d5c1" stroke-width="2.5" stroke-dasharray="2 5"/><text x="612" y="276" text-anchor="start" fill="#f1eee8" font-size="16">₹6.1</text><path d="M600 29 L644 29" stroke="#76d5c1" stroke-width="2.5" fill="none" stroke-dasharray="8 6"/><text x="654" y="34" text-anchor="start" fill="#f1eee8" font-size="16">7% a year</text><path d="M600 55 L644 55" stroke="#76d5c1" stroke-width="3.5" fill="none"/><text x="654" y="60" text-anchor="start" fill="#f1eee8" font-size="16">11.6% a year</text><path d="M600 81 L644 81" stroke="#76d5c1" stroke-width="2.5" fill="none" stroke-dasharray="2 5"/><text x="654" y="86" text-anchor="start" fill="#f1eee8" font-size="16">15% a year</text><text x="345" y="336" text-anchor="middle" fill="#a5a29c" font-size="16">years until the ₹100 arrives</text></svg></figure>
+      <p>Going from 7% to 11.6% cuts the value of that distant ₹100 by more than half. That is why companies whose value lies mostly in the future, such as young fast growers, swing hardest when interest rates move: their cash is the furthest away.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The floor</p>
+      <h2>The risk-free rate: the 10-year G-sec</h2>
+      <p>Every discount rate starts from the return you could earn with no risk of not being paid. In India that is a Government of India bond, a <b>G-sec</b>: the government borrows in rupees, which it can always pay. Analysts usually take the <b>10-year</b> yield, because a company’s cash arrives over many years, and it is the long-bond yield the RBI reports every week. A ₹100 bond with a 7% coupon pays ₹7 a year and returns the ₹100 at the end <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 428" role="img" aria-label="A coral bar of 100 rupees paid today below the line, then ten small teal bars of 7 rupees of interest a year above it, with 100 rupees returned in year ten: the cash flows of a 10-year government bond with a 7 percent coupon"><path d="M30 200 L736 200" stroke="#57534f" stroke-width="1.5" fill="none"/><rect x="36" y="200" width="40" height="160" fill="#ff8059"/><text x="86" y="300" text-anchor="start" fill="#f1eee8" font-size="16">you pay ₹100</text><text x="56" y="384" text-anchor="middle" fill="#a5a29c" font-size="16">today</text><rect x="100" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="120" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">1</text><rect x="164" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="184" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">2</text><rect x="228" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="248" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><rect x="292" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="312" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">4</text><rect x="356" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="376" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><rect x="420" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="440" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><rect x="484" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="504" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">7</text><rect x="548" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="568" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">8</text><rect x="612" y="188.8" width="40" height="11.2" fill="#76d5c1"/><text x="632" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><rect x="676" y="188.8" width="40" height="11.2" fill="#76d5c1"/><rect x="676" y="28.8" width="40" height="160" fill="#76d5c1" opacity="0.55"/><text x="696" y="222" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="216" y="176.8" text-anchor="start" fill="#f1eee8" font-size="16">₹7 interest a year</text><text x="666" y="56" text-anchor="end" fill="#f1eee8" font-size="16">₹100 back + ₹7</text><text x="400" y="412" text-anchor="middle" fill="#a5a29c" font-size="16">year · a 7% coupon bond · 1.6 px = ₹1</text></svg></figure>
+      <p>The <b>yield</b> is the discount rate that makes those payments worth exactly today’s price; when the price falls, the yield rises. This series uses <b>7.0%</b> as a round stand-in for it. The RBI box near the end gives the real yield near 31 March 2026: within a fifth of a point of the stand-in. Risk-free means free of default, not of change: the yield moves daily, and a bond sold before it matures can lose money.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The premium</p>
+      <h2>Equity risk premium: an estimate, not a fact</h2>
+      <p>Shareholders are paid last, after suppliers, staff, lenders and tax, and their returns swing. So they want more than a G-sec pays. The extra return expected from the share market as a whole, above the risk-free rate, is the <b>equity risk premium (ERP)</b>. It is about the future, so it cannot be looked up; it has to be estimated, and careful estimators disagree. Published estimates for India run from about 5% to 7.6% <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 398" role="img" aria-label="A dot plot of published estimates of the equity risk premium for India, from 5.1 to 7.6 percent, with this series’ 5.0 percent shown as a hollow dot at the low end of the shaded range"><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">equity risk premium for India, % a year</text><rect x="540" y="36" width="124.8" height="282" fill="#f5c76a" opacity="0.12"/><text x="40" y="61" text-anchor="start" fill="#a5a29c" font-size="16">Grant Thornton: history</text><path d="M300 56 L655.8 56" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="664.8" cy="56" r="7" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><text x="678.8" y="61" text-anchor="start" fill="#f1eee8" font-size="16">7.6%</text><text x="40" y="97" text-anchor="start" fill="#a5a29c" font-size="16">GT: history, adjusted</text><path d="M300 92 L535.8 92" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="544.8" cy="92" r="7" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><text x="558.8" y="97" text-anchor="start" fill="#f1eee8" font-size="16">5.1%</text><text x="40" y="133" text-anchor="start" fill="#a5a29c" font-size="16">GT: forward-looking</text><path d="M300 128 L628.9 128" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="637.9" cy="128" r="7" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><text x="651.9" y="133" text-anchor="start" fill="#f1eee8" font-size="16">7.04%</text><text x="40" y="169" text-anchor="start" fill="#a5a29c" font-size="16">GT: its conclusion</text><path d="M300 164 L615 164" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="624" cy="164" r="7" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><text x="638" y="169" text-anchor="start" fill="#f1eee8" font-size="16">6.75%</text><text x="40" y="205" text-anchor="start" fill="#a5a29c" font-size="16">Damodaran: rating</text><path d="M300 200 L630.8 200" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="639.8" cy="200" r="7" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><text x="653.8" y="205" text-anchor="start" fill="#f1eee8" font-size="16">7.08%</text><text x="40" y="241" text-anchor="start" fill="#a5a29c" font-size="16">Damodaran: CDS</text><path d="M300 236 L542 236" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="551" cy="236" r="7" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><text x="565" y="241" text-anchor="start" fill="#f1eee8" font-size="16">5.23%</text><text x="40" y="277" text-anchor="start" fill="#a5a29c" font-size="16">EY–NSE survey</text><path d="M300 272 L627 272" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="636" cy="272" r="7" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><text x="650" y="277" text-anchor="start" fill="#f1eee8" font-size="16">7.0%</text><text x="40" y="313" text-anchor="start" fill="#f1eee8" font-size="16">this series</text><path d="M300 308 L531 308" stroke="#57534f" stroke-width="1" fill="none" stroke-dasharray="2 4"/><circle cx="540" cy="308" r="7" fill="none" stroke="#f5c76a" stroke-width="2"/><text x="554" y="313" text-anchor="start" fill="#f1eee8" font-size="16">5.0%</text><path d="M300 334 L732 334" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="300" y="358" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="396" y="358" text-anchor="middle" fill="#a5a29c" font-size="16">2</text><text x="492" y="358" text-anchor="middle" fill="#a5a29c" font-size="16">4</text><text x="588" y="358" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><text x="684" y="358" text-anchor="middle" fill="#a5a29c" font-size="16">8</text><text x="602.4" y="384" text-anchor="middle" fill="#a5a29c" font-size="16">shaded: 5.0% to 7.6%</text></svg></figure>
+      <div class="table-wrap"><table class="est">
+        <thead><tr><th>Who</th><th>How it is estimated</th><th class="hide-sm">As of</th><th>ERP</th></tr></thead>
+        <tbody>
+          <tr><td>Grant Thornton Bharat</td><td class="wk">History: Indian shares’ average yearly return above the risk-free rate, 2001–2024</td><td class="wk hide-sm">31 Dec 2024</td><td class="val">7.6%</td></tr>
+          <tr><td>Grant Thornton Bharat</td><td class="wk">The same, with the gain from rising valuation multiples taken out</td><td class="wk hide-sm">31 Dec 2024</td><td class="val">5.1%</td></tr>
+          <tr><td>Grant Thornton Bharat</td><td class="wk">Implied: the return at which forecast Nifty 50 cash flows equal today’s index, less a 6.79% risk-free rate</td><td class="wk hide-sm">31 Dec 2024</td><td class="val">7.04%</td></tr>
+          <tr><td>Grant Thornton Bharat</td><td class="wk">Its conclusion: the average of the approaches, rounded</td><td class="wk hide-sm">31 Dec 2024</td><td class="val">6.75%</td></tr>
+          <tr><td>Aswath Damodaran</td><td class="wk">Build-up: a mature-market premium of 4.23% plus 2.85% for India’s country risk, from its Baa3 rating</td><td class="wk hide-sm">5 Jan 2026</td><td class="val">7.08%</td></tr>
+          <tr><td>Aswath Damodaran</td><td class="wk">The same, with country risk taken from India’s credit default swap price</td><td class="wk hide-sm">5 Jan 2026</td><td class="val">5.23%</td></tr>
+          <tr><td>EY and NSE survey</td><td class="wk">Ask: companies’ average cost of equity, 14.2%, less the risk-free rate, 7.2%</td><td class="wk hide-sm">2024</td><td class="val">7.0%</td></tr>
+          <tr><td>This series</td><td class="wk">A round, deliberately modest teaching number <span class="tag">example</span></td><td class="wk hide-sm">—</td><td class="val">5.0%</td></tr>
+        </tbody>
+      </table></div>
+      <p>There are three ways to estimate it, and each has a weak spot. <b>Look back</b> at history, and the answer depends on the years you pick. <b>Look across</b> at what today’s prices imply, and it depends on someone’s forecasts. <b>Ask</b> in a survey, and you learn what people use, not what is right.</p>
+      <p class="note">This series uses an ERP of 5.0%, at the low end of the published range, because it is round and easy to follow. It is a teaching assumption, not a claim about the right number. At 7%, Ramu’s cost of equity would be 14% instead of 12%; the lab shows what that does.</p>
+      <details class="trace"><summary>Go deeper: where each estimate comes from</summary>
+        <p>Grant Thornton Bharat’s Equity Risk Premium Study (March 2025, cut-off 31 December 2024) puts the average annual return of Indian shares over 2001–2024 at 15.2%, an excess of 7.6% over the risk-free rate, or 5.1% after removing the effect of rising valuation multiples; its forward-looking estimate is 7.04%, using a 6.79% risk-free rate from CCIL’s 10-year zero-coupon yield; it concludes that about 6.75% is reasonable. Damodaran’s country risk table (updated 5 January 2026) adds a country premium to his mature-market premium of 4.23%. The EY–NSE Cost of Capital Survey 2024 (about 185 companies) reports the implied premium as respondents’ cost of equity minus the risk-free rate: 7.0% in 2024, after 7.5% in 2021 and 7.7% in 2017. Each estimator’s risk-free rate and method differ, so the premiums are not strictly comparable; they show the range of serious answers.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Beta</p>
+      <h2>Beta: how much this share swings</h2>
+      <p>The ERP is for the market as a whole. <b>Beta</b> scales it for one share: how far the share tends to move when the market moves. Beta 1.0 moves with the market, 0.6 about 60% as far, 1.4 about 40% further <span class="tag">example</span>. It is measured, not declared: line up the share’s weekly or monthly returns against an index such as the Nifty 50 over two to five years, and beta is the slope of the best-fit line.</p>
+      <figure><svg viewBox="0 0 800 284" role="img" aria-label="Lavender bars either side of a zero line: when the market moves 5 percent, a share with beta 0.6 is expected to move 3 percent, beta 1.0 five percent and beta 1.4 seven percent, in the same direction"><text x="300" y="30" text-anchor="middle" fill="#a5a29c" font-size="16">market falls 5%</text><text x="560" y="30" text-anchor="middle" fill="#a5a29c" font-size="16">market rises 5%</text><path d="M430 44 L430 236" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="40" y="71" text-anchor="start" fill="#a5a29c" font-size="16">market</text><rect x="300" y="52" width="130" height="26" fill="#c3b8ff"/><rect x="430" y="52" width="130" height="26" fill="#c3b8ff"/><text x="292" y="71" text-anchor="end" fill="#f1eee8" font-size="16">−5%</text><text x="568" y="71" text-anchor="start" fill="#f1eee8" font-size="16">+5%</text><text x="40" y="117" text-anchor="start" fill="#f1eee8" font-size="16">beta 0.6</text><rect x="352" y="98" width="78" height="26" fill="#c3b8ff" opacity="0.6"/><rect x="430" y="98" width="78" height="26" fill="#c3b8ff" opacity="0.6"/><text x="344" y="117" text-anchor="end" fill="#f1eee8" font-size="16">−3%</text><text x="516" y="117" text-anchor="start" fill="#f1eee8" font-size="16">+3%</text><text x="40" y="163" text-anchor="start" fill="#f1eee8" font-size="16">beta 1.0</text><rect x="300" y="144" width="130" height="26" fill="#c3b8ff" opacity="0.6"/><rect x="430" y="144" width="130" height="26" fill="#c3b8ff" opacity="0.6"/><text x="292" y="163" text-anchor="end" fill="#f1eee8" font-size="16">−5%</text><text x="568" y="163" text-anchor="start" fill="#f1eee8" font-size="16">+5%</text><text x="40" y="209" text-anchor="start" fill="#f1eee8" font-size="16">beta 1.4</text><rect x="248" y="190" width="182" height="26" fill="#c3b8ff" opacity="0.6"/><rect x="430" y="190" width="182" height="26" fill="#c3b8ff" opacity="0.6"/><text x="240" y="209" text-anchor="end" fill="#f1eee8" font-size="16">−7%</text><text x="620" y="209" text-anchor="start" fill="#f1eee8" font-size="16">+7%</text><text x="430" y="268" text-anchor="middle" fill="#a5a29c" font-size="16">expected move, on average · 26 px = 1%</text></svg></figure>
+      <p>Like the ERP, beta is an estimate. A different window, frequency or index gives a different number, and one share’s beta is noisy, so analysts often use the average for its industry. Damodaran’s January 2026 averages for Indian companies <span class="tag">public</span>: food processing 0.80 (220 firms), soft beverages 0.59 (5 firms), household products 0.51 (43 firms), each a simple average of firm betas from two-year and five-year weekly returns. Ramu’s beta of <b>1.0</b> is a round, neutral assumption <span class="tag">example</span>; on these averages a tea company could well sit lower. Beta counts only the swings that move with the market. A risk that hits one company alone, such as losing its biggest distributor (Part 16), is not in it.</p>
+      <details class="trace"><summary>Go deeper: levered and unlevered beta</summary>
+        <p>Debt makes a share swing more, because profit after interest moves more than the business does (<a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a>). Damodaran’s sheet also gives an “unlevered” beta with the effect of debt removed: 0.77 for Indian food processing. An analyst can take an industry’s unlevered beta and relever it for one company: beta = unlevered beta × (1 + (1 − tax rate) × debt ÷ equity). Ramu’s debt is ₹100 cr against ₹1,000 cr of equity at market value, so relevering adds about 7.5%: 0.77 would become 0.83.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Cost of equity</p>
+      <h2>Cost of equity: floor plus premium</h2>
+      <p>The capital asset pricing model (CAPM) puts the pieces together: cost of equity = risk-free rate + beta × ERP. For Ramu, 7.0% + 1.0 × 5.0% = <b>12.0%</b> <span class="tag">example</span>. It is the return Ramu’s owners need for waiting and for the risk they carry. Change any input and it moves.</p>
+      <figure><svg viewBox="0 0 800 308" role="img" aria-label="Stacked bars on one scale: a grey risk-free part plus a gold premium of beta times the equity risk premium; Ramu’s 7 plus 5 makes 12 percent, beta 0.8 makes 11, an ERP of 7 makes 14, and an 8 percent G-sec makes 13"><text x="40" y="50" text-anchor="start" fill="#f1eee8" font-size="16">Ramu: β 1.0, ERP 5%</text><rect x="240" y="30" width="210" height="28" fill="#a5a29c"/><rect x="450" y="30" width="150" height="28" fill="#f5c76a"/><text x="248" y="50" text-anchor="start" fill="#202020" font-size="16">risk-free 7.0</text><text x="458" y="50" text-anchor="start" fill="#202020" font-size="16">β × ERP 5.0</text><text x="610" y="50" text-anchor="start" fill="#f1eee8" font-size="16">= 12.0%</text><text x="40" y="102" text-anchor="start" fill="#a5a29c" font-size="16">β 0.8, ERP 5%</text><rect x="240" y="82" width="210" height="28" fill="#a5a29c"/><rect x="450" y="82" width="120" height="28" fill="#f5c76a"/><text x="248" y="102" text-anchor="start" fill="#202020" font-size="16">7.0</text><text x="458" y="102" text-anchor="start" fill="#202020" font-size="16">4.0</text><text x="580" y="102" text-anchor="start" fill="#f1eee8" font-size="16">= 11.0%</text><text x="40" y="154" text-anchor="start" fill="#a5a29c" font-size="16">β 1.0, ERP 7%</text><rect x="240" y="134" width="210" height="28" fill="#a5a29c"/><rect x="450" y="134" width="210" height="28" fill="#f5c76a"/><text x="248" y="154" text-anchor="start" fill="#202020" font-size="16">7.0</text><text x="458" y="154" text-anchor="start" fill="#202020" font-size="16">7.0</text><text x="670" y="154" text-anchor="start" fill="#f1eee8" font-size="16">= 14.0%</text><text x="40" y="206" text-anchor="start" fill="#a5a29c" font-size="16">G-sec 8%, β 1.0</text><rect x="240" y="186" width="240" height="28" fill="#a5a29c"/><rect x="480" y="186" width="150" height="28" fill="#f5c76a"/><text x="248" y="206" text-anchor="start" fill="#202020" font-size="16">8.0</text><text x="488" y="206" text-anchor="start" fill="#202020" font-size="16">5.0</text><text x="640" y="206" text-anchor="start" fill="#f1eee8" font-size="16">= 13.0%</text><path d="M240 238 L690 238" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="240" y="262" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="390" y="262" text-anchor="middle" fill="#a5a29c" font-size="16">5%</text><text x="540" y="262" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="690" y="262" text-anchor="middle" fill="#a5a29c" font-size="16">15%</text><text x="40" y="292" text-anchor="start" fill="#a5a29c" font-size="16">30 px = 1 percentage point</text></svg></figure>
+      <span class="eq">Cost of equity = risk-free + β × ERP = 7.0% + 1.0 × 5.0% = <b>12.0%</b></span>
+      <p>12% is not an outlier. In the EY–NSE survey of 2024, equity research analysts said they use an average cost of equity of 12%, while companies used 14.2% <span class="tag">public</span>. CAPM is the most common method, not the only one, and many practitioners add a premium for small or unusual companies: about 2 points in that survey.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Blending</p>
+      <h2>WACC: one rate for the company</h2>
+      <p>Ramu is funded by owners and by lenders, so the cash the business throws off must pay both. <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> found Ramu’s debt costs 10%, or <b>7.5%</b> after tax, because interest is deducted before tax at 25%. The <b>weighted average cost of capital (WACC)</b> blends the two, weighted by what each is worth today: equity at its market value of ₹1,000 cr (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>), debt at ₹100 cr <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 442" role="img" aria-label="Two blocks on one baseline: a wide gold block for 1,000 crore of equity at 12 percent and a narrow rose block for 100 crore of debt at 7.5 percent after tax; a dashed line at their average height, 11.59 percent, is the WACC"><rect x="80" y="62" width="560" height="288" fill="#f5c76a"/><rect x="640" y="170" width="56" height="180" fill="#ec6a94"/><text x="94" y="96" text-anchor="start" fill="#202020" font-size="16">equity 12.0%</text><text x="94" y="120" text-anchor="start" fill="#202020" font-size="16">owners’ return</text><text x="668" y="196" text-anchor="middle" fill="#202020" font-size="16">7.5%</text><path d="M80 71.8 L640 71.8" stroke="#202020" stroke-width="2.5" fill="none" stroke-dasharray="7 5"/><path d="M640 71.8 L700 71.8" stroke="#f1eee8" stroke-width="2.5" fill="none" stroke-dasharray="7 5"/><text x="706" y="63.8" text-anchor="start" fill="#f1eee8" font-size="16">WACC</text><text x="706" y="85.8" text-anchor="start" fill="#f1eee8" font-size="16">11.59%</text><path d="M70 350 L706 350" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="360" y="376" text-anchor="middle" fill="#a5a29c" font-size="16">equity ₹1,000 cr · 90.9%</text><text x="676" y="376" text-anchor="middle" fill="#a5a29c" font-size="16">debt ₹100 cr</text><text x="676" y="398" text-anchor="middle" fill="#a5a29c" font-size="16">9.1%</text><text x="80" y="426" text-anchor="start" fill="#a5a29c" font-size="16">width = market value · height = rate</text></svg></figure>
+      <span class="eq">WACC = 12.0% × 1,000/1,100 + 7.5% × 100/1,100 = 10.91% + 0.68% = <b>11.59%</b>, used as 11.6%</span>
+      <p>Debt is cheaper, but Ramu has little of it, so WACC sits just below the cost of equity. The series rounds it to <b>11.6%</b>, and Parts 24 and 25 use exactly that. More debt would pull WACC down only up to a point: every extra loan makes the shares riskier, which raises beta, and lenders start charging more.</p>
+      <details class="trace"><summary>Go deeper: market weights, book weights and cash</summary>
+        <p>Ramu’s book equity is ₹250 cr (<a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a>). Weights at book value would give (12% × 250 + 7.5% × 100) ÷ 350 = 10.71%. But the owners’ 12% is a return on what their shares are worth now, ₹1,000 cr, so equity goes in at market value. Debt at book value is usually close enough unless rates have moved a lot. Some analysts weight net debt instead (₹60 cr after ₹40 cr of cash), which gives (12% × 1,000 + 7.5% × 60) ÷ 1,060 = 11.75%. The series uses gross borrowings; either choice is defensible if stated.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Build a discount rate</h2>
+      <p>Four inputs. Ramu’s weights stay at market value (equity ₹1,000 cr, debt ₹100 cr) and tax at 25% <span class="tag">example</span>. The top chart builds the rate; the bottom one shows what ₹100 due later is worth today at that rate.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="rf">Risk-free rate (10-year G-sec) <output id="rf-o"></output></label><input id="rf" type="range" min="5" max="9" step="0.1" value="7"></div>
+          <div class="control"><label for="beta">Beta <output id="beta-o"></output></label><input id="beta" type="range" min="0.5" max="1.5" step="0.05" value="1"></div>
+          <div class="control"><label for="erp">Equity risk premium <output id="erp-o"></output></label><input id="erp" type="range" min="3" max="9" step="0.25" value="5"></div>
+          <div class="control"><label for="kd">Ramu’s cost of debt, before tax <output id="kd-o"></output></label><input id="kd" type="range" min="7" max="14" step="0.5" value="10"></div>
+          <p class="group-label">SITUATIONS</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="base">Series base case</button>
+            <button type="button" class="secondary" data-p="erp7">ERP of 7%</button>
+            <button type="button" class="secondary" data-p="beta08">Industry beta 0.8</button>
+            <button type="button" class="secondary" data-p="rates">Rates up a point</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 270" role="img" aria-label="Bars on one axis from zero to 25 percent: the risk-free rate, the cost of equity split into risk-free and premium, the cost of debt after tax with its pre-tax cost dashed, and the WACC split into equity’s and debt’s shares"></svg>
+          <svg id="pvChart" viewBox="0 0 520 230" role="img" aria-label="Teal bars of what 100 rupees due in 1, 5, 10 and 20 years is worth today at the WACC above, on one axis from 0 to 100 rupees"></svg>
+          <p class="result" id="result" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="ledger" id="ledger"></div></div>
+      <details class="trace"><summary>Go deeper: the formulas in the lab</summary>
+        <p>Cost of equity = risk-free + beta × ERP. Cost of debt after tax = pre-tax cost × (1 − 25%). WACC = cost of equity × 1,000 ÷ 1,100 + after-tax cost of debt × 100 ÷ 1,100. Present value of ₹100 due in n years = 100 ÷ (1 + WACC)<sup>n</sup>. The weights do not move when the inputs do; in reality a higher discount rate lowers the share price and so the equity weight, which the series ignores to keep one change at a time.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why it matters</p>
+      <h2>A small change, a big value</h2>
+      <p>The discount rate is the most argued-over input in a valuation, because value is so sensitive to it. Part 24 values Ramu with a full DCF. At 11.6% it gives ₹76.7 a share; at 10%, ₹108.7; at 13%, ₹59.5, against a price of ₹100 <span class="tag">example</span>. A point and a half either way moves the answer by more than a fifth.</p>
+      <figure><svg viewBox="0 0 800 334" role="img" aria-label="Gold bars of value per share from Part 24’s model at five discount rates: 108.7 rupees at 10 percent, 86.6 at 11, 76.7 at 11.6, 71.0 at 12 and 59.5 at 13, against a dashed lavender line at the 100 rupee price"><text x="560" y="26" text-anchor="middle" fill="#c3b8ff" font-size="16">price ₹100</text><text x="40" y="63" text-anchor="start" fill="#a5a29c" font-size="16">WACC 10%</text><rect x="160" y="44" width="434.8" height="26" fill="#f5c76a" opacity="0.6"/><text x="604.8" y="63" text-anchor="start" fill="#f1eee8" font-size="16">₹108.7</text><text x="40" y="107" text-anchor="start" fill="#a5a29c" font-size="16">WACC 11%</text><rect x="160" y="88" width="346.4" height="26" fill="#f5c76a" opacity="0.6"/><text x="516.4" y="107" text-anchor="start" fill="#f1eee8" font-size="16">₹86.6</text><text x="40" y="151" text-anchor="start" fill="#f1eee8" font-size="16">WACC 11.6%</text><rect x="160" y="132" width="306.8" height="26" fill="#f5c76a"/><text x="476.8" y="151" text-anchor="start" fill="#f1eee8" font-size="16">₹76.7</text><text x="40" y="195" text-anchor="start" fill="#a5a29c" font-size="16">WACC 12%</text><rect x="160" y="176" width="284" height="26" fill="#f5c76a" opacity="0.6"/><text x="454" y="195" text-anchor="start" fill="#f1eee8" font-size="16">₹71.0</text><text x="40" y="239" text-anchor="start" fill="#a5a29c" font-size="16">WACC 13%</text><rect x="160" y="220" width="238" height="26" fill="#f5c76a" opacity="0.6"/><text x="408" y="239" text-anchor="start" fill="#f1eee8" font-size="16">₹59.5</text><path d="M560.0 34 L560.0 258" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="5 4"/><path d="M160 264 L660.0 264" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="160" y="288" text-anchor="middle" fill="#a5a29c" font-size="16">₹0</text><text x="360" y="288" text-anchor="middle" fill="#a5a29c" font-size="16">₹50</text><text x="560" y="288" text-anchor="middle" fill="#a5a29c" font-size="16">₹100</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">value per share · 4 px = ₹1 · Part 24’s model</text></svg></figure>
+      <p>Most of a company’s value sits in cash far in the future (in Part 24, about two-thirds of Ramu’s), and distant cash is exactly what the rate shrinks most. So treat a valuation as a range across sensible rates, and distrust one that only works at a single exact rate.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Six rules for using a discount rate</h2>
+      <div class="field-grid">
+        <div><b>Match the rate to the cash</b><span>Cash for the whole firm, before interest, takes WACC. Cash for owners only, after interest, takes the cost of equity. Part 24 uses firm cash.</span><em>PARTS 13 AND 24</em></div>
+        <div><b>Rupees with rupees</b><span>Forecasts that include inflation need a rate that does, like the G-sec yield. Rupee cash needs a rupee rate, not a US one.</span><em>THE FLOOR</em></div>
+        <div><b>Count risk once</b><span>If the forecast is already cut for bad outcomes, don’t add an extra premium to the rate as well.</span><em>PART 28</em></div>
+        <div><b>Market weights</b><span>Weight equity at market value, not book. State how you treat cash.</span><em>BLENDING</em></div>
+        <div><b>Precision is false</b><span>11.59% is arithmetic; the inputs are estimates good to a point or so. Round it, and test a range.</span><em>WHY IT MATTERS</em></div>
+        <div><b>Date the rate</b><span>The G-sec yield moves every day. A valuation is only as current as its floor.</span><em>THE REAL REPORT BELOW</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>The 10-year G-sec near 31 March 2026</h2>
+      <p>The RBI’s Weekly Statistical Supplement prints the <b>10-year G-sec par yield</b>, computed by Financial Benchmarks India (FBIL), in its table of ratios and rates <span class="tag">public</span>. The issue of 17 April 2026 gives <b>7.02%</b> for the week ended 27 March 2026 and <b>7.19%</b> for the week ended 3 April 2026. The weekly table has no column for 31 March itself, so FY2026’s last day falls between those two readings.</p>
+      <figure><svg viewBox="0 0 800 384" role="img" aria-label="A line of RBI’s weekly 10-year government bond par yield in 2026: 6.74 percent for the week ended 13 March, 6.85 on 20 March, 7.02 on 27 March, 7.19 on 3 April and 6.99 on 10 April, with 31 March marked between 27 March and 3 April, against the series’ 7.0 percent stand-in"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">10-year G-sec par yield, %, 2026</text><path d="M100 50 L100 300 L720 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="90" y="305" text-anchor="end" fill="#a5a29c" font-size="16">6.6</text><text x="90" y="236.4" text-anchor="end" fill="#a5a29c" font-size="16">6.8</text><text x="90" y="167.9" text-anchor="end" fill="#a5a29c" font-size="16">7.0</text><text x="90" y="99.3" text-anchor="end" fill="#a5a29c" font-size="16">7.2</text><path d="M100 162.9 L700 162.9" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="6 5"/><text x="130" y="184.9" text-anchor="start" fill="#a5a29c" font-size="16">stand-in 7.0%</text><path d="M480 50 L480 300" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="3 4"/><text x="480" y="346" text-anchor="middle" fill="#f5c76a" font-size="16">31 Mar</text><polyline points="120,252 260,214.3 400,156 540,97.7 680,166.3" fill="none" stroke="#a5a29c" stroke-width="3"/><circle cx="120" cy="252" r="6" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="120" y="238" text-anchor="middle" fill="#f1eee8" font-size="16">6.74</text><text x="120" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">13 Mar</text><circle cx="260" cy="214.3" r="6" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="260" y="200.3" text-anchor="middle" fill="#f1eee8" font-size="16">6.85</text><text x="260" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">20 Mar</text><circle cx="400" cy="156" r="6" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="400" y="142" text-anchor="middle" fill="#f1eee8" font-size="16">7.02</text><text x="400" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">27 Mar</text><circle cx="540" cy="97.7" r="6" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="540" y="83.7" text-anchor="middle" fill="#f1eee8" font-size="16">7.19</text><text x="540" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">3 Apr</text><circle cx="680" cy="166.3" r="6" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="680" y="194.3" text-anchor="middle" fill="#f1eee8" font-size="16">6.99</text><text x="680" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">10 Apr</text><text x="40" y="370" text-anchor="start" fill="#a5a29c" font-size="16">week ended · axis starts at 6.6%</text></svg></figure>
+      <div class="table-wrap"><table class="est">
+        <thead><tr><th>RBI series</th><th>Week ended</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>10-year G-sec par yield (FBIL)</td><td class="wk">27 Mar 2026</td><td class="val">7.02%</td></tr>
+          <tr><td>10-year G-sec par yield (FBIL)</td><td class="wk">3 Apr 2026</td><td class="val">7.19%</td></tr>
+          <tr><td>10-year G-sec par yield, a year earlier</td><td class="wk">11 Apr 2025</td><td class="val">6.48%</td></tr>
+          <tr><td>Policy repo rate</td><td class="wk">27 Mar 2026</td><td class="val">5.25%</td></tr>
+          <tr><td>Call money rate, weighted average</td><td class="wk">27 Mar 2026</td><td class="val">5.37%</td></tr>
+        </tbody>
+      </table></div>
+      <p>Two lessons. The series’ 7.0% stand-in is within a fifth of a point of the real yield at the year-end, so Ramu’s rate is realistic for FY2026. And the yield moved 0.17 points in a single week: a DCF done on 27 March and one done on 3 April start from different floors. The 10-year sat about 1.8 points above the repo rate, the RBI’s overnight policy rate, because lenders want more for tying money up for ten years.</p>
+      <details class="trace"><summary>Go deeper: par yield, and why sources differ</summary>
+        <p>A par yield is the coupon a 10-year government bond would need to trade at exactly its face value, worked out by FBIL from the bonds that trade. Newspapers and market trackers often quote the yield of one particular 10-year bond instead, which need not match the par yield exactly. Pick one source, say which, and give its date. To find it yourself: on rbi.org.in, open the latest Weekly Statistical Supplement and the table “Ratios and Rates”.</p>
+      </details>
+      <div class="field-grid">
+        <div><b>7.02% and 7.19%</b><span>10-year G-sec par yield (FBIL), weeks ended 27 March and 3 April 2026</span><em>RBI WSS · RATIOS AND RATES · 17 APR 2026</em></div>
+        <div><b>5.25%</b><span>Policy repo rate in every week from 13 March to 10 April 2026, down from 6.00% a year earlier</span><em>RBI WSS · RATIOS AND RATES</em></div>
+      </div>
+      <p class="source-note">Real figures: RBI Weekly Statistical Supplement, table “Ratios and Rates”, issue dated 17 April 2026; ERP estimates as dated in the table above (Grant Thornton Bharat, March 2025; Damodaran, 5 January 2026; EY–NSE, 2024); industry betas from Damodaran’s India dataset, January 2026. Ramu Chai Ltd is fictional and frozen at FY2026. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before using any discount rate</h2>
+      <ol class="checks">
+        <li><b>What is the floor, and on what date?</b> The 10-year G-sec yield, from one stated source.</li>
+        <li><b>Whose ERP, and why that one?</b> Published Indian estimates run from about 5% to 7.6%. Say which you used.</li>
+        <li><b>Whose beta?</b> The share’s own, or its industry’s, over which window.</li>
+        <li><b>Which cash flows?</b> Firm cash with WACC, owners’ cash with the cost of equity.</li>
+        <li><b>What happens a point either side?</b> If the answer flips, the rate is the whole argument.</li>
+      </ol>
+      <p>Ramu’s rate is built: 7.0% + 1.0 × 5.0% = 12% for the owners, blended with 7.5% debt into a WACC of <b>11.6%</b>. Part 24, “DCF, step by step”, uses it to discount Ramu’s forecast free cash flow year by year, adds a value for the years beyond, and arrives at a value per share.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Money later is worth money ÷ (1 + rate)<sup>years</sup> today. The rate is a floor, the G-sec, plus a premium for risk, and the premium is an estimate. Build it in the open, round it, and test a range.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLDC='#f5c76a',ROSEC='#ec6a94',GREYC='#a5a29c',TEALC='#76d5c1',DARKC='#202020';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- discount-rate lab. Weights and tax are Ramu's (example); every rate is computed here from the sliders.
+    const E=1000,D=100,TAX=25,YEARS=[1,5,10,20];
+    const ids=['rf','beta','erp','kd'];
+    const FMT={rf:v=>v.toFixed(1)+'%',beta:v=>v.toFixed(2),erp:v=>v.toFixed(2)+'%',kd:v=>v.toFixed(1)+'%'};
+    const PRESETS={
+      base:{v:{rf:7,beta:1,erp:5,kd:10},t:'Series base case: 7.0% + 1.0 × 5.0% = 12.0% for the owners, 7.5% for debt after tax, WACC 11.59%, used as 11.6% in Parts 24 and 25.'},
+      erp7:{v:{rf:7,beta:1,erp:7,kd:10},t:'An ERP of 7%, close to several published Indian estimates: the owners need 14.0%, and WACC rises to 13.41%. Same company, same cash, a higher hurdle.'},
+      beta08:{v:{rf:7,beta:0.8,erp:5,kd:10},t:'Beta 0.8, the January 2026 average for Indian food processors in Damodaran’s data: the owners need 11.0%, and WACC falls to 10.68%.'},
+      rates:{v:{rf:8,beta:1,erp:5,kd:11},t:'The G-sec up a point to 8%, and Ramu’s loans up to 11%: the owners need 13.0%, and WACC rises to 12.57%.'}};
+    function compute(v){const ke=v.rf+v.beta*v.erp, kdA=v.kd*(1-TAX/100), we=E/(E+D), wd=D/(E+D);
+      const ce=we*ke, cd=wd*kdA, w=ce+cd;
+      return {ke,kdA,we,wd,ce,cd,w,pv:YEARS.map(n=>100/Math.pow(1+w/100,n))};}
+    const labConfig={min:0,max:25,step:5,format:v=>v+'%'};
+    function draw(){
+      const v={};ids.forEach(id=>{v[id]=+$(id).value;$(id+'-o').textContent=FMT[id](v[id]);});
+      const r=compute(v);
+      // chart 1: the rate, built up. One scale for every bar.
+      const X0=150,X1=480,sx=x=>X0+(Math.min(labConfig.max,Math.max(labConfig.min,x))-labConfig.min)*(X1-X0)/(labConfig.max-labConfig.min);
+      const H=30,Y=[16,64,112,160],W=x=>(sx(x)-X0).toFixed(2);
+      let s=`<path d="M${X0} 6 L${X0} 204" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M${X0} 204 L${X1} 204" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      s+=T(14,Y[0]+21,'Risk-free','start',MUTC)+`<rect data-v="${v.rf}" x="${X0}" y="${Y[0]}" width="${W(v.rf)}" height="${H}" fill="${GREYC}"/>`+T(sx(v.rf)+6,Y[0]+21,v.rf.toFixed(1)+'%');
+      s+=T(14,Y[1]+21,'Equity','start',MUTC)+`<rect x="${X0}" y="${Y[1]}" width="${W(v.rf)}" height="${H}" fill="${GREYC}"/><rect x="${sx(v.rf).toFixed(2)}" y="${Y[1]}" width="${(sx(r.ke)-sx(v.rf)).toFixed(2)}" height="${H}" fill="${GOLDC}"/><rect data-v="${r.ke}" x="${X0}" y="${Y[1]}" width="${W(r.ke)}" height="${H}" fill="none"/>`+T(sx(r.ke)+6,Y[1]+21,r.ke.toFixed(1)+'%');
+      s+=T(14,Y[2]+21,'Debt, after tax','start',MUTC)+`<rect x="${X0}" y="${Y[2]+1}" width="${W(v.kd)}" height="${H-2}" fill="none" stroke="${ROSEC}" stroke-width="1.5" stroke-dasharray="4 3"/><rect data-v="${r.kdA}" x="${X0}" y="${Y[2]}" width="${W(r.kdA)}" height="${H}" fill="${ROSEC}"/>`+T(sx(v.kd)+6,Y[2]+21,r.kdA.toFixed(2)+'% · '+v.kd.toFixed(1)+'% pre-tax');
+      s+=T(14,Y[3]+21,'WACC','start',FGC)+`<rect x="${X0}" y="${Y[3]}" width="${W(r.ce)}" height="${H}" fill="${GOLDC}"/><rect x="${sx(r.ce).toFixed(2)}" y="${Y[3]}" width="${(sx(r.w)-sx(r.ce)).toFixed(2)}" height="${H}" fill="${ROSEC}"/><rect data-v="${r.w}" x="${X0}" y="${Y[3]}" width="${W(r.w)}" height="${H}" fill="none"/>`+T(sx(r.w)+6,Y[3]+21,r.w.toFixed(2)+'%');
+      for(let t=labConfig.min;t<=labConfig.max;t+=labConfig.step){const a=t===labConfig.min?'start':(t===labConfig.max?'end':'middle');
+        s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="228" text-anchor="${a}" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;}
+      s+=T(14,258,'% a year · tax 25% · WACC split by source','start',MUTC);
+      $('labChart').innerHTML=s;
+      // chart 2: ₹100 due later, valued today at the WACC
+      const P0=110,P1=480,px=x=>P0+x*(P1-P0)/100;
+      let p=`<path d="M${P0} 6 L${P0} 172" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M${P0} 172 L${P1} 172" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      YEARS.forEach((n,i)=>{const y=12+i*40,pv=r.pv[i];
+        p+=T(14,y+19,'in '+n+(n===1?' year':' years'),'start',MUTC)+`<rect data-v="${pv}" x="${P0}" y="${y}" width="${(px(pv)-P0).toFixed(2)}" height="26" fill="${TEALC}"/>`+T(px(pv)+6,y+19,'₹'+pv.toFixed(1));});
+      [0,50,100].forEach((t,i)=>{p+=`<text class="tick" data-v="${t}" x="${px(t).toFixed(2)}" y="196" text-anchor="${['start','middle','end'][i]}" fill="${MUTC}" font-size="16">₹${t}</text>`;});
+      p+=T(14,222,'today’s value of ₹100 due later','start',MUTC);
+      $('pvChart').innerHTML=p;
+      $('result').innerHTML=`Discount rate (WACC): <b>${r.w.toFixed(2)}%</b>, rounded ${r.w.toFixed(1)}%. The owners need ${r.ke.toFixed(1)}%; debt costs ${r.kdA.toFixed(2)}% after tax.`;
+      const rows=[['Cost of equity = risk-free + β × ERP',v.rf.toFixed(1)+' + '+v.beta.toFixed(2)+' × '+v.erp.toFixed(2)+' = '+r.ke.toFixed(2)+'%'],
+        ['Debt after tax = pre-tax × (1 − 25%)',v.kd.toFixed(1)+' × 0.75 = '+r.kdA.toFixed(2)+'%'],
+        ['Weights at market value','equity 1,000 ÷ 1,100 = '+(100*r.we).toFixed(1)+'% · debt 100 ÷ 1,100 = '+(100*r.wd).toFixed(1)+'%'],
+        ['WACC',r.ke.toFixed(2)+' × '+r.we.toFixed(4)+' + '+r.kdA.toFixed(2)+' × '+r.wd.toFixed(4)+' = '+r.ce.toFixed(2)+' + '+r.cd.toFixed(2)+' = '+r.w.toFixed(2)+'%'],
+        ['₹100 in 10 years, today','100 ÷ '+(1+r.w/100).toFixed(4)+'^10 = ₹'+r.pv[2].toFixed(2)]];
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:[r.ke,r.kdA,r.w,...r.pv].every(Number.isFinite),inputs:{...v},ke:r.ke,kdAfterTax:r.kdA,wacc:r.w,waccRounded:+r.w.toFixed(1),pv:Object.fromEntries(YEARS.map((n,i)=>[n,r.pv[i]]))};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];ids.forEach(id=>$(id).value=p.v[id]);draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
