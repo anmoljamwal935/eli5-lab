@@ -1,0 +1,652 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "TCPL Integrated Annual Report 2025-26 (428 pdf pages; consolidated statements printed pp.414-418; AOC-1 p.486; auditor report p.405), Q1/Q3/Q4 FY26 earnings-call transcripts, Q3 FY26 press release",
+    "author": "Tata Consumer Products Ltd; auditor Deloitte Haskins & Sells LLP",
+    "verified_date": "2026-11-09",
+    "duration_or_sections": "Full IAR downloaded (23.7 MB) and converted with pdftotext -layout; relevant pages read; transcripts 16, 16 and 17 pages searched and the quoted passages read in context",
+    "language": "English",
+    "caption_type": "n/a (text)",
+    "capture_mode": "curl + pdftotext",
+    "beginning_middle_end_evidence": "Cash flow pp.417-418, balance sheet p.414, auditor report p.405, AOC-1 p.486, directors report rights issue; transcripts: opening remarks, Q&A and quoted passages",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/../iar-2025-26/docs/consolidated.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2025-07/Tata_Consumer_Products_Q1FY26_Transcript.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-01/Tata_Consumer_Q3FY26_Transcript.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/TataCP_Earnings_May_2026.pdf",
+      "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-01/TCPL_Q3FY26_press_release_vf_0.pdf",
+      "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_06112026.csv (fetched: TATACONSUM close 1086.30; price not used on this page)",
+      "https://www.tataconsumer.com/investors/financial-information/call-transcripts"
+    ],
+    "limitations": "AGM presentation not re-read this session (EBITDA 2,815 and 13.9% taken from the series brief and cross-checked to the Q4 call: 2,815/20,290.43 = 13.87%). Q3 FY26 Sebi results PDF is an image scan; Q3 revenue/EBITDA taken from the press release. Who first said \"16%\" could not be verified. Transcript speaker attribution of 14.6%/13.9% is the CEO (Sunil D'Souza, opening remarks). The \"acquisitions overpay\" claim is general and uncited. Studies of takeover returns were not read. Ramu numbers are plan canonical; hurdle 10%, over-promiser and sliding-target firm are labelled one-offs. AOC-1 page: series brief says p.487, printed footer of the pdf page holding the rows is 486."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Management controls decisions (pricing, spend, borrowing, capital allocation) not commodity prices or monsoon",
+      "kind": "claim",
+      "locator": "scope",
+      "check_needed": "no",
+      "destination": "controls"
+    },
+    {
+      "id": 2,
+      "item": "Five uses of spare cash: reinvest, acquire, dividend, buyback, repay debt",
+      "kind": "definition",
+      "locator": "scope",
+      "check_needed": "no",
+      "destination": "five-uses"
+    },
+    {
+      "id": 3,
+      "item": "Each use passes if return beats what owners could earn elsewhere (cost of capital); Part 23 covers cost",
+      "kind": "mechanism",
+      "locator": "scope",
+      "check_needed": "no",
+      "destination": "five-uses"
+    },
+    {
+      "id": 4,
+      "item": "Return on incremental capital vs average ROCE (Ramu 20.9%; rough 12.9% on FY23-26 capex 155, profit +20)",
+      "kind": "mechanism+number",
+      "locator": "plan canonical, own arithmetic",
+      "check_needed": "no",
+      "destination": "incremental"
+    },
+    {
+      "id": 5,
+      "item": "Acquisition at 8% on price paid vs 10% hurdle: worth 40 for 50, overpaid 10 (25%)",
+      "kind": "example",
+      "locator": "arithmetic",
+      "check_needed": "no",
+      "destination": "acquisitions"
+    },
+    {
+      "id": 6,
+      "item": "Acquirers often overpay; studies often find little gain for buyer shareholders",
+      "kind": "claim",
+      "locator": "general",
+      "check_needed": "yes",
+      "destination": "acquisitions"
+    },
+    {
+      "id": 7,
+      "item": "Buyback: stayers gain if price < ₹105 (value 100 + cash 5), lose above; zero-sum with sellers; pro-rata sell equals dividend",
+      "kind": "mechanism",
+      "locator": "arithmetic",
+      "check_needed": "no",
+      "destination": "buybacks"
+    },
+    {
+      "id": 8,
+      "item": "Buyback lifts EPS by shrinking share count",
+      "kind": "mechanism",
+      "locator": "arithmetic",
+      "check_needed": "no",
+      "destination": "buybacks"
+    },
+    {
+      "id": 9,
+      "item": "Dividends suit firms that cannot reinvest above the hurdle; ₹5 at 10% over 10 yrs = 12.97",
+      "kind": "mechanism+number",
+      "locator": "arithmetic",
+      "check_needed": "no",
+      "destination": "dividends"
+    },
+    {
+      "id": 10,
+      "item": "Repay debt: saves 10%, 7.5% after 25% tax; cover 7.3x to 14.6x",
+      "kind": "mechanism+number",
+      "locator": "plan canonical",
+      "check_needed": "no",
+      "destination": "debt"
+    },
+    {
+      "id": 11,
+      "item": "Lab: ₹50 cr, four choices, ten years, sliders for reinvestment return, acquisition return, buyback price, years",
+      "kind": "lab",
+      "locator": "plan Part 18",
+      "check_needed": "no",
+      "destination": "lab-four-choices"
+    },
+    {
+      "id": 12,
+      "item": "Track record: what cash went into and what it earned; tenure; treatment of minorities (Part 19); candour",
+      "kind": "mechanism",
+      "locator": "scope",
+      "check_needed": "no",
+      "destination": "track-record"
+    },
+    {
+      "id": 13,
+      "item": "Ramu FY22-26 CFO 231, capex 175, FCF 56, 76% reinvested; ROE 20.2% FY25, 20.0% FY26",
+      "kind": "number",
+      "locator": "plan canonical",
+      "check_needed": "no",
+      "destination": "track-record"
+    },
+    {
+      "id": 14,
+      "item": "Guidance vs delivery: promise tracker; Ramu guided 10%, delivered 11.0/11.1/11.1",
+      "kind": "example",
+      "locator": "plan canonical",
+      "check_needed": "no",
+      "destination": "guidance"
+    },
+    {
+      "id": 15,
+      "item": "Over-promiser one-off: guided 20/18/15 delivered same",
+      "kind": "example",
+      "locator": "one-off, labelled",
+      "check_needed": "no",
+      "destination": "guidance"
+    },
+    {
+      "id": 16,
+      "item": "Concall: prepared remarks vs Q&A; TCPL Q4 FY26 24%/76% by words",
+      "kind": "number",
+      "locator": "Q4 FY26 transcript, my count",
+      "check_needed": "yes",
+      "destination": "concall"
+    },
+    {
+      "id": 17,
+      "item": "What to listen for: volume vs price, margins, capex plans, working capital, dodged questions",
+      "kind": "mechanism",
+      "locator": "scope",
+      "check_needed": "no",
+      "destination": "concall"
+    },
+    {
+      "id": 18,
+      "item": "TCPL Q3 FY26: India Foods revenue +19% on volume +16%; packaged tea +3% revenue, +3% volume",
+      "kind": "number",
+      "locator": "Q3 FY26 transcript p.4",
+      "check_needed": "yes",
+      "destination": "concall"
+    },
+    {
+      "id": 19,
+      "item": "Q4 FY26 margin question answered without a level; follow-up: 50 to 75, 80 bps \"a given\"",
+      "kind": "quote",
+      "locator": "Q4 FY26 transcript pp.6-7",
+      "check_needed": "yes",
+      "destination": "concall"
+    },
+    {
+      "id": 20,
+      "item": "Management claims vs audited facts: EBITDA 2,815 vs 2,791.80; adjusted EPS 17.30 vs basic 15.59",
+      "kind": "number",
+      "locator": "AGM presentation; consolidated P&L",
+      "check_needed": "yes",
+      "destination": "claims-facts"
+    },
+    {
+      "id": 21,
+      "item": "Warning signs: always next year, changing metrics, adjusted-only, blame, serial raises, silence; Parts 19/20 named",
+      "kind": "claim",
+      "locator": "scope",
+      "check_needed": "no",
+      "destination": "warning-signs"
+    },
+    {
+      "id": 22,
+      "item": "TCPL acquisitions: Capital Foods 1 Feb 2024 (75%), Organic India 16 Apr 2024 (100%)",
+      "kind": "number",
+      "locator": "Form AOC-1 p.486",
+      "check_needed": "yes",
+      "destination": "real-cash"
+    },
+    {
+      "id": 23,
+      "item": "FY25 acquisition outflow 1,809.00; FY26 nil; JV 125.00; CP repaid 1,164.49",
+      "kind": "number",
+      "locator": "consolidated cash flow p.417-418",
+      "check_needed": "yes",
+      "destination": "real-cash"
+    },
+    {
+      "id": 24,
+      "item": "Rights issue: 1 for 26 at ₹818, gross 2,995.83, net 2,980.57",
+      "kind": "number",
+      "locator": "directors report; cash flow p.418",
+      "check_needed": "yes",
+      "destination": "real-cash"
+    },
+    {
+      "id": 25,
+      "item": "Dividends paid 738.45 (₹7.75), 816.34 (₹8.25); recommended ₹10 = 989.56",
+      "kind": "number",
+      "locator": "note 14; Part 14",
+      "check_needed": "yes",
+      "destination": "real-cash"
+    },
+    {
+      "id": 26,
+      "item": "Goodwill 11,883.90 + intangibles 7,111.76 = 18,995.66 = 55% of assets 34,452.96; Part 10 ROCE 8.6/16.1/34.3",
+      "kind": "number",
+      "locator": "balance sheet p.414",
+      "check_needed": "yes",
+      "destination": "real-cash"
+    },
+    {
+      "id": 27,
+      "item": "Auditor key audit matter: UK & Europe CGU goodwill 2,184.50; impairment 16.02 in FY26",
+      "kind": "number",
+      "locator": "auditor report p.405; cash flow p.417",
+      "check_needed": "yes",
+      "destination": "real-cash"
+    },
+    {
+      "id": 28,
+      "item": "Dated promise: CEO 23 Jul 2025 \"by Q3, we should definitely be able to get to it\" (16% EBITDA margin)",
+      "kind": "quote",
+      "locator": "Q1 FY26 transcript p.12",
+      "check_needed": "yes",
+      "destination": "real-promise"
+    },
+    {
+      "id": 29,
+      "item": "Delivery: Q3 FY26 14.2% (728/5,112), Q4 14.6%, FY26 13.9%",
+      "kind": "number",
+      "locator": "Q3 press release p.1; Q4 transcript pp.2-3",
+      "check_needed": "yes",
+      "destination": "real-promise"
+    },
+    {
+      "id": 30,
+      "item": "Q3 call: \"double digit topline and bottomline ahead of the topline… roughly delivered\"; FY26 revenue +15.2%, PBT +22.3%, profit +20.2%, EBITDA +12%",
+      "kind": "quote+number",
+      "locator": "Q3 transcript p.7; statements",
+      "check_needed": "yes",
+      "destination": "real-promise"
+    },
+    {
+      "id": 31,
+      "item": "Finance costs 290.20 to 137.03 (−153.17) = 39% of PBT rise 396.23; EPS +19.4%",
+      "kind": "number",
+      "locator": "cash flow p.417; P&L",
+      "check_needed": "yes",
+      "destination": "real-promise"
+    },
+    {
+      "id": 32,
+      "item": "Hand-off to Part 19: ownership, pledges, board, auditor",
+      "kind": "context",
+      "locator": "plan",
+      "check_needed": "no",
+      "destination": "so-what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 6,
+      "claim": "Acquirers often overpay / studies find little gain for buyer shareholders",
+      "verdict": "Opinion / unverified general claim; no study cited",
+      "as_of": "2026-11-09",
+      "evidence_url": "none read",
+      "supporting_passage_and_locator": "n/a",
+      "page_treatment": "stated as general, page says no study is cited; arithmetic is what carries the point"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "TCPL Q4 FY26 call: ~24% prepared remarks, 76% Q&A by words",
+      "verdict": "Supported (my count)",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/TataCP_Earnings_May_2026.pdf",
+      "supporting_passage_and_locator": "Q&A begins at Nidhi Verma \"you can go to the Q&A queue now\"; words counted before/after: 2,009 / 6,366 (incl. speaker labels, page headers removed)",
+      "page_treatment": "\"by my word count\""
+    },
+    {
+      "inventory_id": 18,
+      "claim": "India Foods revenue +19%, volume +16%; tea revenue 3% = volume 3%",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-01/Tata_Consumer_Q3FY26_Transcript.pdf",
+      "supporting_passage_and_locator": "p.4: \"India Foods, 19% net revenue growth, 16% volume… 3% volume translated to 3% net revenue for Tea\"",
+      "page_treatment": "quoted figures; price/mix ≈3 labelled my subtraction"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "Q4 margin question: first answer no level; follow-up gave 50-75/80 bps",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/TataCP_Earnings_May_2026.pdf",
+      "supporting_passage_and_locator": "pp.5-7: \"I wouldn't lose sleep on trying to figure out margins at least in the next 2, 3 months. Longer term, your guess is as good as mine.\" then \"50 to 75, 80 bps is a given… We will deliver it\"",
+      "page_treatment": "quoted; framed as sidestep then dated promise, not a verdict"
+    },
+    {
+      "inventory_id": 20,
+      "claim": "TCPL EBITDA 2,815 (company) vs 2,791.80 (series, built from audited lines); adjusted EPS 17.30 vs basic 15.59",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "P&L (Part 14 audit) lines; Q4 call p.3 \"adjusted EPS of INR17.3 reported EPS of INR15.6\"; AGM presentation EBITDA 2,815 (from series brief, not re-read)",
+      "page_treatment": "tagged public; neither called false"
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Capital Foods 1.02.2024 75%; Organic India 16.04.2024 100%",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Form AOC-1 Part A rows 3-4, printed p.486 (pdf page 400); series brief said p.487, the next page continues the same table (Organic India USA)",
+      "page_treatment": "cited P. 486"
+    },
+    {
+      "inventory_id": 23,
+      "claim": "Acquisition of subsidiaries 1,809.00 (FY25), nil FY26; JV 125.00; CP repaid 1,164.49",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Consolidated cash flow printed pp.417-418 (pdf 331-332)",
+      "page_treatment": "tied only by closeness (2,973.49 vs 2,980.57), explicitly not claimed to tie"
+    },
+    {
+      "inventory_id": 24,
+      "claim": "Rights issue 1 for 26 at ₹818; 3,66,23,802 shares = ₹2,995.83 cr in FY25; net 2,980.57",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Directors report \"RIGHTS ISSUE\"; cash flow p.418 \"Proceeds from Rights Issue (Net of share issue expenses) 2980.57\"; 36,623,802 × 818 = ₹2,995.83 cr checked",
+      "page_treatment": "quoted"
+    },
+    {
+      "inventory_id": 26,
+      "claim": "Goodwill 11,883.90 + other intangibles 7,111.76 = 18,995.66; total assets 34,452.96",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Consolidated balance sheet printed p.414",
+      "page_treatment": "tagged public"
+    },
+    {
+      "inventory_id": 27,
+      "claim": "KAM: UK and Europe CGU goodwill carrying value ₹2,184.50 cr; impairment of goodwill 16.02 in FY26",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Auditor report printed p.405 (Deloitte Haskins & Sells LLP); cash flow p.417 \"Impairment of Goodwill 16.02\"",
+      "page_treatment": "quoted phrase \"competitive pressures and decline in black tea demand\""
+    },
+    {
+      "inventory_id": 28,
+      "claim": "CEO 23 July 2025: \"So I do think by Q3, we should definitely be able to get to it.\" (analyst: 16% EBITDA margin)",
+      "verdict": "Supported as a quote; 16% is analyst wording",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2025-07/Tata_Consumer_Products_Q1FY26_Transcript.pdf",
+      "supporting_passage_and_locator": "transcript p.12 of 16, Tejash Shah question and Sunil D'Souza answer",
+      "page_treatment": "quote exact; page says who first said 16% could not be verified"
+    },
+    {
+      "inventory_id": 29,
+      "claim": "Q3 FY26 EBITDA 728 on revenue 5,112 (14.2%); Q4 14.6%; FY26 13.9% (CEO on call)",
+      "verdict": "Supported",
+      "as_of": "2026-11-09",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-01/TCPL_Q3FY26_press_release_vf_0.pdf ; https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-05/TataCP_Earnings_May_2026.pdf",
+      "supporting_passage_and_locator": "press release 27 Jan 2026 p.1 \"Revenue from Operations for the quarter at Rs 5112 Crores\"; \"EBITDA for the quarter at Rs 728 Crores\"; Q4 transcript p.2-3 (CEO Sunil D'Souza) \"margin expanded 100 bps to 14.6%… 13.9%\"",
+      "page_treatment": "page says quarters unaudited, year is TCPL own figure; series-definition FY26 13.76% (2,791.80/20,290.43) not shown to avoid mixing"
+    },
+    {
+      "inventory_id": 30,
+      "claim": "Q3 call 27 Jan 2026 double-digit topline, bottomline ahead; FY26 revenue 15.17%, PBT 22.30%, profit 20.18%, EBITDA +12% on call",
+      "verdict": "Supported; EBITDA half not met",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-01/Tata_Consumer_Q3FY26_Transcript.pdf ; https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "Q3 transcript p.7; Q4 transcript p.3 \"12% EBITDA growth\"; cash flow p.417 PBT 2,172.78 / 1,776.55",
+      "page_treatment": "shown with arithmetic"
+    },
+    {
+      "inventory_id": 31,
+      "claim": "Finance costs 290.20→137.03; 153.17 = 39% of PBT rise 396.23; EPS +19.4% (15.59/13.06)",
+      "verdict": "Supported (arithmetic)",
+      "as_of": "FY2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "supporting_passage_and_locator": "cash flow p.417",
+      "page_treatment": "interest saving attributed to repaid debt: statements show the fall, causation described as \"the interest saved after the rights issue repaid debt\" — CP repayment of 1,164.49 visible in FY25 cash flow"
+    }
+  ],
+  "panels": [
+    {
+      "id": "controls",
+      "heading": "What management really controls",
+      "inventory_ids": [
+        1
+      ],
+      "visual": "D1 stacked bar of Ramu income 504, 1.4 px/cr"
+    },
+    {
+      "id": "five-uses",
+      "heading": "Five things to do with spare cash",
+      "inventory_ids": [
+        2,
+        3
+      ],
+      "visual": "five equal ₹50 cr bars, 4.8 px/cr"
+    },
+    {
+      "id": "incremental",
+      "heading": "Return on the next rupee, not the average",
+      "inventory_ids": [
+        4
+      ],
+      "visual": "ROCE 20.9 vs rough 12.9 vs 10% hurdle, 30 px/pt"
+    },
+    {
+      "id": "acquisitions",
+      "heading": "Acquisitions often overpay",
+      "inventory_ids": [
+        5,
+        6
+      ],
+      "visual": "price 50 = worth 40 + 10 over, 6 px/cr; yearly profit 10/5/4, 30 px/cr"
+    },
+    {
+      "id": "buybacks",
+      "heading": "Buybacks help only below value",
+      "inventory_ids": [
+        7,
+        8
+      ],
+      "visual": "diverging bars +2.69/+0.26/0/−1.00 vs ₹105, 60 px/₹"
+    },
+    {
+      "id": "dividends",
+      "heading": "Dividends suit firms that can’t reinvest well",
+      "inventory_ids": [
+        9
+      ],
+      "visual": "12.97 vs 8.98/12.97/20.94, 18 px/₹"
+    },
+    {
+      "id": "debt",
+      "heading": "Repaying debt is a return too",
+      "inventory_ids": [
+        10
+      ],
+      "visual": "borrowings 100→50 (3 px/cr), finance costs 10→5 (20 px/cr)"
+    },
+    {
+      "id": "lab-four-choices",
+      "heading": "₹50 crore, four choices, ten years",
+      "inventory_ids": [
+        11
+      ],
+      "visual": "lab: 4 sliders + hurdle stepper + 4 presets; value per share bars"
+    },
+    {
+      "id": "track-record",
+      "heading": "Track record: what the past cash shows",
+      "inventory_ids": [
+        12,
+        13
+      ],
+      "visual": "Ramu CFO vs capex FY22-26, 4 px/cr"
+    },
+    {
+      "id": "guidance",
+      "heading": "Guidance versus delivery",
+      "inventory_ids": [
+        14,
+        15
+      ],
+      "visual": "lab: promise tracker, toggle + tolerance stepper"
+    },
+    {
+      "id": "concall",
+      "heading": "How to read an earnings call",
+      "inventory_ids": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "visual": "words bar 24/76, 0.085 px/word; volume vs price 30 px/pt"
+    },
+    {
+      "id": "claims-facts",
+      "heading": "Management’s number versus the audited one",
+      "inventory_ids": [
+        20
+      ],
+      "visual": "EBITDA 2,815 vs 2,791.80 (0.15 px/cr); EPS 17.30 vs 15.59 (30 px/₹)"
+    },
+    {
+      "id": "warning-signs",
+      "heading": "Warning signs in management talk",
+      "inventory_ids": [
+        21
+      ],
+      "visual": "target sliding two years away, 72 px/year (one-off)"
+    },
+    {
+      "id": "real-cash",
+      "heading": "TCPL: where the cash went, FY24–FY26",
+      "inventory_ids": [
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "visual": "rights 2,980.57 vs acquisitions 1,809.00 + CP 1,164.49 (0.22 px/cr); dividends 0.6 px/cr; assets split 0.02 px/cr"
+    },
+    {
+      "id": "real-promise",
+      "heading": "One dated promise, checked against the numbers",
+      "inventory_ids": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "visual": "margin bars 30 px/pt vs 16% line; growth bars 22 px/pt"
+    },
+    {
+      "id": "so-what",
+      "heading": "Three questions for any management",
+      "inventory_ids": [
+        32
+      ],
+      "visual": "text"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Per share, 10 cr shares: business ₹100 (P/E 20 × EPS ₹5) held flat; spare ₹50 cr = ₹5 a share (example)",
+      "Hurdle s (stepper 0/5/10/12/15%, default 10%) = what owners earn elsewhere; cash received compounds at s",
+      "Dividend: 100 + 5(1+s)^N; Reinvest/Acquire at r: 105 + 5·r·AF, AF=((1+s)^N−1)/s (N if s=0); project valued at cost at end; profit paid out yearly",
+      "Buyback at price p for a non-tendering holder: 1000/(10−50/p); sellers get p; gains vs ₹105 net to zero; pro-rata tender equals the dividend",
+      "Sliders: reinvestment return 0-30 (20), acquisition return 0-30 (8), buyback price 60-160 step 5 (100), years 1-20 (10)",
+      "Tracker: Ramu delivery = sales growth 365→405→450→500; over-promiser guidance 20/18/15 (one-off); tolerance 0/1/2 points"
+    ],
+    "units": {
+      "value": "₹ per share",
+      "returns": "% a year",
+      "guidance": "% sales growth"
+    },
+    "independent_calculation_method": "labtest.py: exact Fraction oracle written separately from page compute(); driven through Playwright Chromium; compares window.labResults and bar geometry (rect data-v vs tick scale) and window.trackResults",
+    "cases": [
+      {
+        "case": "defaults + documented values",
+        "count": 1,
+        "detail": "div 112.9687, reinvest 120.9373, acquire 111.3749, buyback 105.2632",
+        "passed": true
+      },
+      {
+        "case": "presets",
+        "count": 4,
+        "detail": "plan, fade (reinvest == dividend to 1e-9), rival 14%, buyback 130",
+        "passed": true
+      },
+      {
+        "case": "breakeven",
+        "count": 1,
+        "detail": "buyback at 105: stayer gain 0 within 1e-9",
+        "passed": true
+      },
+      {
+        "case": "slider corners x hurdle min/max",
+        "count": 32,
+        "detail": "r,ra in {0,30}; p in {60,160}; N in {1,20}; s in {0,15%}",
+        "passed": true
+      },
+      {
+        "case": "random points",
+        "count": 300,
+        "detail": "seeded; all inputs and all 5 hurdles",
+        "passed": true
+      },
+      {
+        "case": "invariants",
+        "count": 337,
+        "detail": "gains net to zero (|total|<1e-9), pro-rata tender == dividend, bars start at 0 and end at value, axis from 0",
+        "passed": true
+      },
+      {
+        "case": "tracker",
+        "count": 6,
+        "detail": "2 series x tolerance 0/1/2; gaps and met/beat/missed vs Fraction oracle; delivery rounds 11.0/11.1/11.1",
+        "passed": true
+      }
+    ],
+    "tolerance": "1e-9 relative on values; bar geometry 0.2 px",
+    "axis_and_clipping_policy": "labChart zero at left, axis max = nice(max value), ticks 0/m/2/m; no clipping; buyChart symmetrical around zero; tracker axis fixed 0-25%. Phone: charts scroll sideways inside the figure (swipe hint), page itself does not overflow"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render.py: 0 errors (defaults, 4 presets, 16 slider corners, 390px)",
+      "labtest.py: 337 lab cases + 6 tracker cases, 0 failures, 0 JS errors",
+      "static drawings generated from computed coordinates by a build script with a text-width guard (labels 16px, ≤10 words each)"
+    ],
+    "browser_check_render": "0 errors",
+    "screenshots": "desktop-00..16 and phone-00..16 saved in the session scratchpad; desktop 01-16 viewed, phone lab panels viewed. Fixed after viewing: 12.9% label contrast, clipped +55.00 label in buyback chart, awkward slider label wrapping, tracker label crossing the axis, negative-zero display",
+    "coverage_review": "all 32 inventory rows located on the page (see panels)",
+    "semantic_review": "Corrected during build: 14.6%/13.9% attributed to the CEO not the CFO; the Q4 margin \"dodge\" re-framed because the follow-up gave a number; unsupported claims about repeated promises and \"nobody promised the full year\" removed; acquisition ROI not computed because the statements do not isolate it (explained on page)",
+    "card": "plans/handoff/management-and-capital-allocation-eli5.card.svg: check_card 0 errors / 0 warnings, rendered at 640 px and viewed",
+    "dry_run": "not run; no shared files touched",
+    "artifact_sha256": "6d360e328ef5ab8d111b9778c923a78c731b8aa52229c4a49c8a0f21650ccf98",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 20,
+        "panels": 16,
+        "notes": 0
+      },
+      "artifact_sha256": "6d360e328ef5ab8d111b9778c923a78c731b8aa52229c4a49c8a0f21650ccf98",
+      "artifact_path": "/home/user/eli5-lab/explainers/management-and-capital-allocation-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published (build only, per instructions)",
+    "commit": null,
+    "live_url": null
+  }
+}
