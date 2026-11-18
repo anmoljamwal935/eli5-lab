@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Governance and who owns the company — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in | coral #ff8059 = money going out | gold #f5c76a = what belongs to shareholders
+       rose #ec6a94 = what is owed | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 19: gold = shares and owners (all holder boxes, in four tints), rose = the pledge loan, lavender = the share price,
+       coral = money paid out or forced sales, teal = Ramu's sales; grey = neutral (excluded votes, auditor's "except for"). */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
+    .lab .steps output{min-width:9ch;text-align:center}
+    .lab .steps .lbl{flex:1 0 100%;font-size:14px;color:var(--muted)}
+    .steps button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .flag{margin:10px 0 0;font:12px/1.5 var(--font-mono);letter-spacing:.04em;color:var(--faint)}
+    .lab .flag.on{color:#ec6a94}
+    .lab .readouts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+    .lab .readouts div{border:1px solid var(--border);padding:8px 10px}
+    .lab .readouts small{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted)}
+    .lab .readouts output{display:block;font-size:20px}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+  </style>
+</head>
+<body data-series-id="governance-and-ownership-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 24 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Governance and who owns the company</h1>
+      <p class="lede">Accounts only mean something if the people behind them are watched and are not quietly taking value out. This part asks who owns the shares, who has borrowed against them, who deals with the company on the side, and who checks the books.</p>
+      <p class="source-note">Built from Tata Consumer Products’ FY2026 Integrated Annual Report, its NSE shareholding-pattern filing for 31 March 2026, SEBI’s LODR Regulations (as amended up to 22 January 2026) and ICAI’s auditing standards · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a> · <a href="https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml">NSE filing ↗</a> · <a href="https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1780915347745.pdf">SEBI LODR ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">Part 2</a> shows where filings sit and that the shareholding pattern is filed every quarter; <a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a> shows goodwill, borrowings and equity; <a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a> shows how much judgement sits inside profit; <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a> gives price and market cap; <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> shows what a loan costs and what happens when a borrower cannot cover it. Facts carry a tag: <span class="tag">public</span> is a figure from TCPL’s filings or annual report, or text from SEBI’s regulations; <span class="tag">example</span> is a made-up number for our teaching company, Ramu Chai Ltd, a small tea business with 10 crore shares at ₹100; <span class="tag np">one-off</span> is a number I invented for a single drawing, which does not change Ramu’s accounts. Amounts are ₹ crore (cr). Part 18 covers management and capital allocation, Part 20 covers red flags in full, and Part 21 covers rights issues, QIPs and buybacks. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: the shares and their owners</span>
+        <span><i style="background:#ec6a94"></i>what is owed: the pledge loan</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: share price</span>
+        <span><i style="background:#ff8059"></i>money going out: purchases, forced sales</span>
+        <span><i style="background:#76d5c1"></i>money coming in: sales</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Whoever holds the votes holds the company</h2>
+      <p>Ramu Chai has 10 crore shares. The founding family, the <b>promoters</b>, hold 5.5 crore of them, 55% <span class="tag">example</span>. A simple majority is more than half the votes, so they can pass most resolutions alone and choose the board. Outside investors own the other 4.5 crore shares, and their votes together fall short of half.</p>
+      <figure><svg viewBox="0 0 800 190" role="img" aria-label="Ramu Chai's 10 crore shares as one bar: promoters 5.5 crore, foreign portfolio investors 1 crore, domestic institutions 1.5 crore and the public 2 crore, with the promoters' block reaching past the half-of-the-votes line"><rect x="40" y="42" width="385" height="44" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="232.5" y="30" text-anchor="middle" fill="#a5a29c" font-size="16">Promoters</text><text x="232.5" y="70" text-anchor="middle" fill="#202020" font-size="16">55% · 5.5 cr</text><rect x="425" y="42" width="70" height="44" fill="#f5c76a" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="460" y="30" text-anchor="middle" fill="#a5a29c" font-size="16">FPIs</text><text x="460" y="70" text-anchor="middle" fill="#202020" font-size="16">10%</text><rect x="495" y="42" width="105" height="44" fill="#f5c76a" opacity="0.65" stroke="#202020" stroke-width="2"/><text x="547.5" y="30" text-anchor="middle" fill="#a5a29c" font-size="16">DIIs</text><text x="547.5" y="70" text-anchor="middle" fill="#202020" font-size="16">15%</text><rect x="600" y="42" width="140" height="44" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="670" y="30" text-anchor="middle" fill="#a5a29c" font-size="16">Public</text><text x="670" y="70" text-anchor="middle" fill="#202020" font-size="16">20%</text><path d="M390 34 L390 96" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5" fill="none"/><text x="390" y="120" text-anchor="middle" fill="#f1eee8" font-size="16">half the votes</text><text x="40" y="170" text-anchor="start" fill="#a5a29c" font-size="16">70 px = 1 crore shares · 10 crore shares in all</text></svg></figure>
+      <p>Control is not bad in itself: a promoter with money in the company has a reason to care. The risk is that the people with the votes can also borrow against their shares, deal with the company on the side, or pick the people who watch them. The panels below take those in turn, then check each against TCPL’s own filings.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The shareholding pattern, box by box</h2>
+      <p>Every listed company files a shareholding pattern with the exchanges within 21 days of each quarter end (SEBI LODR regulation 31(1)(b)). It sorts every share into promoters and promoter group, or public. “Public” simply means everyone else, and the filing then splits it, so FPIs and DIIs sit inside it.</p>
+      <div class="field-grid">
+        <div><b>Promoter and promoter group</b><span>The founders or controlling family, plus companies and people tied to them. SEBI deems any person or entity in the promoter group a related party (regulation 2(1)(zb)).</span><em>RAMU · 55% · EXAMPLE</em></div>
+        <div><b>Foreign portfolio investors (FPIs)</b><span>Overseas funds that buy listed shares. Their holding moves with global conditions as well as Indian ones.</span><em>RAMU · 10% · EXAMPLE</em></div>
+        <div><b>Domestic institutions (DIIs)</b><span>Indian mutual funds, insurers, pension funds and banks. Mutual funds invest other people’s savings, insurers invest policyholders’ premiums.</span><em>RAMU · 15% · EXAMPLE</em></div>
+        <div><b>Public: individuals and others</b><span>Retail investors, companies, trusts and the rest. Usually many holders, each with a small stake.</span><em>RAMU · 20% · EXAMPLE</em></div>
+      </div>
+      <p>Ramu’s boxes add to 100: 55 + 10 + 15 + 20. Watch the promoter box most closely, because it is the one that holds the votes. A change in it, or a claim on it, is the first thing the next two panels and the first lab explore.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Borrowing against shares</p>
+      <h2>Why promoters pledge shares</h2>
+      <p>Promoters often want cash without selling, because selling lowers their stake and can look like doubt. So they <b>pledge</b>: they hand shares to a lender as security for a loan and keep the votes. Ramu’s promoters pledged 0.55 crore shares, a tenth of their holding, against a ₹22 cr loan <span class="tag">example</span>. At ₹100 those shares are worth ₹55 cr, 2.5 times the loan. The lender requires cover of at least 2.0 times, so ₹44 cr of shares for ₹22 cr borrowed <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 296" role="img" aria-label="Pledged shares worth 55 crore in lavender above a 22 crore loan in rose; a dashed outline marks the 44 crore of shares that 2.0 times cover needs, leaving 11 crore of headroom"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Pledged shares at ₹100 · 0.55 cr × ₹100</text><rect x="40" y="40" width="550" height="34" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="315" y="64" text-anchor="middle" fill="#202020" font-size="16">₹55 cr</text><text x="40" y="108" text-anchor="start" fill="#a5a29c" font-size="16">Loan · ₹22 cr</text><rect x="40" y="118" width="220" height="34" fill="#ec6a94" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="150" y="142" text-anchor="middle" fill="#202020" font-size="16">₹22 cr</text><rect x="40" y="118" width="440" height="34" fill="none" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5"/><text x="490" y="142" text-anchor="start" fill="#f1eee8" font-size="16">2.0× cover needs ₹44 cr</text><text x="40" y="190" text-anchor="start" fill="#a5a29c" font-size="16">Headroom before the call</text><rect x="480" y="200" width="110" height="34" fill="#c3b8ff" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="470" y="224" text-anchor="end" fill="#f1eee8" font-size="16">₹11 cr</text><text x="40" y="276" text-anchor="start" fill="#a5a29c" font-size="16">10 px = ₹1 cr · headroom is 20% of the shares' value</text></svg></figure>
+      <span class="eq">cover = shares pledged × price ÷ loan = 0.55 × 100 ÷ 22 = <b>2.5×</b></span>
+      <span class="eq">margin-call price = cover required × loan ÷ shares pledged = 2.0 × 22 ÷ 0.55 = <b>₹80</b></span>
+      <p>The ₹11 cr gap between ₹55 cr and ₹44 cr is the headroom: a 20% fall in the price. Below ₹80 the cover drops under 2.0×, and the lender calls for more security. That call is a <b>margin call</b>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The spiral</p>
+      <h2>A margin call can feed itself</h2>
+      <p>Below the line, the promoters must add cash or shares. If they cannot, the lender sells pledged shares on the market. Those sales push the price down, which cuts the cover again and forces more sales. Take Ramu if the price falls from ₹100 to ₹75 and each ₹1 cr of forced sales knocks 2% off the price <span class="tag np">one-off</span>. Real market depth differs by stock and day; 2% is only for the drawing.</p>
+      <figure><svg viewBox="0 0 800 396" role="img" aria-label="One bar per round of forced selling after Ramu's price falls to 75 rupees: each bar is shorter than the last, all well left of the dashed 80 rupee margin-call line"><text x="408" y="26" text-anchor="middle" fill="#f1eee8" font-size="16">margin-call price ₹80</text><path d="M408 34 L408 344" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5" fill="none"/><rect x="40" y="40" width="345" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="59" text-anchor="start" fill="#202020" font-size="16">start ₹75.0</text><rect x="40" y="74" width="326.02" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="93" text-anchor="start" fill="#202020" font-size="16">1 · ₹70.9 · sold 0.037 cr</text><rect x="40" y="108" width="312.22" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="127" text-anchor="start" fill="#202020" font-size="16">2 · ₹67.9 · sold 0.030 cr</text><rect x="40" y="142" width="303.16" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="161" text-anchor="start" fill="#202020" font-size="16">3 · ₹65.9 · sold 0.021 cr</text><rect x="40" y="176" width="297.64" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="195" text-anchor="start" fill="#202020" font-size="16">4 · ₹64.7 · sold 0.014 cr</text><rect x="40" y="210" width="294.44" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="229" text-anchor="start" fill="#202020" font-size="16">5 · ₹64.0 · sold 0.008 cr</text><rect x="40" y="244" width="292.63" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="263" text-anchor="start" fill="#202020" font-size="16">6 · ₹63.6 · sold 0.005 cr</text><rect x="40" y="278" width="291.63" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="297" text-anchor="start" fill="#202020" font-size="16">7 · ₹63.4 · sold 0.003 cr</text><rect x="40" y="312" width="291.09" height="26" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="48" y="331" text-anchor="start" fill="#202020" font-size="16">8 · ₹63.3 · sold 0.001 cr</text><text x="40" y="380" text-anchor="start" fill="#a5a29c" font-size="16">4.6 px = ₹1 per share</text></svg></figure>
+      <p>From ₹75 the price slides to about ₹63.3 over eight rounds, 15.6% lower again and 36.7% below ₹100. The lender sells about 0.119 crore shares, a fifth of the pledged block, and the loan shrinks from ₹22 cr to ₹13.7 cr <span class="tag np">one-off</span>. Each round’s sale is smaller than the last, because each one closes most of the remaining shortfall. A thinner market, a higher impact figure, drives the price much lower before it settles: at 4% per ₹1 cr the same fall ends near ₹33 in this model <span class="tag np">one-off</span>.</p>
+      <p>This is why investors watch rising pledges. The pledge is invisible while the price rises. After a fall, selling comes from a holder who is not choosing to sell. A pledge does not predict a fall; it raises the damage if one comes.</p>
+      <details class="trace"><summary>Go deeper: how many shares must be sold</summary>
+        <p>To restore cover <i>c</i> by selling <i>x</i> crore shares at price <i>P</i>, with <i>S</i> crore pledged and a loan <i>L</i>, the sale proceeds <i>xP</i> repay loan: (<i>S</i> − <i>x</i>) × <i>P</i> ÷ (<i>L</i> − <i>xP</i>) = <i>c</i>. Solving gives <i>x</i> = (<i>cL</i> − <i>SP</i>) ÷ (<i>P</i>(<i>c</i> − 1)). At ₹75: (44 − 41.25) ÷ 75 = 0.0367 crore shares, the first round above. The lab uses the same rule, and stops once cover is back within 0.005 of the requirement.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Drive the margin call</h2>
+      <p>The defaults are Ramu’s pledge <span class="tag">example</span>: 0.55 crore shares, a ₹22 cr loan, 2.0× required, ₹100 a share. The sliders change the pledge. Then pick a <b>fall</b> from the slider price and a <b>price impact</b> per ₹1 cr of forced sales (the one-off assumption from the last panel) to watch the selling rounds below the call price. Coral bars sit under the margin-call price.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="price">Share price <output id="price-o"></output></label><input id="price" type="range" min="40" max="150" step="5" value="100"></div>
+          <div class="control"><label for="pledged">Pledged shares <output id="pledged-o"></output></label><input id="pledged" type="range" min="0.1" max="1.1" step="0.05" value="0.55"></div>
+          <div class="control"><label for="loan">Loan size <output id="loan-o"></output></label><input id="loan" type="range" min="5" max="50" step="1" value="22"></div>
+          <div class="control"><label for="cover">Cover required <output id="cover-o"></output></label><input id="cover" type="range" min="1.2" max="3" step="0.1" value="2"></div>
+          <p class="group-label">SCENARIOS</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="ramu">Ramu Chai · canonical</button>
+            <button type="button" class="secondary" data-p="line">Price at the line</button>
+            <button type="button" class="secondary" data-p="deep">Deep fall</button>
+            <button type="button" class="secondary" data-p="thin">Thin cover</button>
+          </div>
+          <p class="group-label">THEN THE PRICE FALLS BY</p>
+          <div class="steps" id="shockGroup" role="group" aria-label="Price fall after the slider price">
+            <button type="button" class="secondary" data-v="0" aria-pressed="false">0%</button><button type="button" class="secondary" data-v="10" aria-pressed="false">10%</button><button type="button" class="secondary" data-v="25" aria-pressed="true">25%</button><button type="button" class="secondary" data-v="40" aria-pressed="false">40%</button>
+          </div>
+          <p class="group-label">PRICE FALL PER ₹1 CR OF FORCED SALES (ONE-OFF)</p>
+          <div class="steps" id="impactGroup" role="group" aria-label="Price impact of forced selling">
+            <button type="button" class="secondary" data-v="0.5" aria-pressed="false">0.5%</button><button type="button" class="secondary" data-v="1" aria-pressed="false">1%</button><button type="button" class="secondary" data-v="2" aria-pressed="true">2%</button><button type="button" class="secondary" data-v="4" aria-pressed="false">4%</button>
+          </div>
+          <div class="readouts" aria-live="polite">
+            <div><small>COVER NOW</small><output id="r-cover"></output></div>
+            <div><small>MARGIN-CALL PRICE</small><output id="r-mcp"></output></div>
+            <div><small>% FALL TO MARGIN CALL</small><output id="r-fall"></output></div>
+            <div><small>PLEDGED ÷ PROMOTER HOLDING</small><output id="r-share"></output></div>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 440" role="img" aria-label="Bars in rupees per share on one axis: the share price now and the margin-call price, then one bar for each round of forced selling after the chosen fall"></svg>
+        </div>
+      </div>
+      <div class="ledger" id="ledger"></div></div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Promoter sells, or promoter pledges</h2>
+      <p>Two changes in the promoter box look alike at a glance and mean different things. Start from Ramu as filed (55 / 10 / 15 / 20, with the 0.55 crore pledge), then pick one. <b>Sells 5%</b> means the promoters sell shares worth 5% of the company, 0.5 crore shares, so their stake drops from 55% to 50%; pick who buys. <b>Pledges more</b> raises the pledged block from 10% to 25% of their holding <span class="tag np">one-off</span>, 1.375 crore shares. The pledged part is drawn in rose, to scale.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <p class="group-label">WHAT HAPPENS</p>
+          <div class="steps" id="scGroup" role="group" aria-label="Scenario">
+            <button type="button" class="secondary" data-v="base" aria-pressed="true">As filed</button><button type="button" class="secondary" data-v="sell" aria-pressed="false">Promoter sells 5%</button><button type="button" class="secondary" data-v="pledge" aria-pressed="false">Promoter pledges more</button>
+          </div>
+          <p class="group-label">IF IT SELLS, WHO BUYS</p>
+          <div class="steps" id="buyGroup" role="group" aria-label="Buyer of the shares sold">
+            <button type="button" class="secondary" data-v="fpi" aria-pressed="false">FPIs</button><button type="button" class="secondary" data-v="dii" aria-pressed="false">DIIs</button><button type="button" class="secondary" data-v="pub" aria-pressed="true">Public</button>
+          </div>
+          <p class="msg" id="shMsg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="lab-chart">
+          <svg id="shareChart" viewBox="0 0 520 250" role="img" aria-label="Ramu's shareholding as one bar on a 0 to 100 percent axis, with a half-way line and a second bar below showing the pledged part of the promoters' shares"></svg>
+        </div>
+      </div>
+      <div class="ledger" id="shLedger"></div></div>
+      <p>Neither pattern proves anything alone. A sale can fund a project, diversify the family’s wealth, bring in a partner, or reflect doubt. A pledge can fund the business without diluting control, or paper over a cash squeeze. The pattern is also a snapshot: a quarter can pass between a trade and its filing. Ask who bought, at what price, what the loan is for, and what the company said. Part 20 returns to these as red flags.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Dealing on the side</p>
+      <h2>Related-party deals need extra eyes</h2>
+      <p>A <b>related-party transaction</b> (RPT) is a deal between the company and someone close to its controllers: a promoter, a promoter-group company, a director or their relatives. It can be perfectly fair. It deserves scrutiny because one person may be on both sides of the table, and value can leak from all shareholders to the insider through a price that is a little too high or too low. Ramu buys ₹15 cr a year of cups and packaging from a company owned by the promoter’s brother, 3% of sales <span class="tag">example</span>. The next lab treats it as a related party.</p>
+      <figure><svg viewBox="0 0 800 240" role="img" aria-label="A scale from 0 to 80 crore rupees: the first 50 crore needs only audit-committee approval, above 50 crore a shareholder vote is added, and Ramu's 15 crore purchase sits well inside the first zone"><rect x="40" y="50" width="450" height="60" fill="#f5c76a" opacity="0.25"/><rect x="490" y="50" width="270" height="60" fill="#c3b8ff" opacity="0.25"/><text x="265" y="86" text-anchor="middle" fill="#f1eee8" font-size="16">audit committee approves</text><text x="625" y="86" text-anchor="middle" fill="#f1eee8" font-size="16">+ shareholder vote</text><path d="M490 40 L490 112" stroke="#f1eee8" stroke-width="2" fill="none"/><text x="490" y="32" text-anchor="middle" fill="#f1eee8" font-size="16">₹50 cr = 10% of sales</text><text x="40" y="126" text-anchor="start" fill="#a5a29c" font-size="16">Ramu's purchase</text><rect x="40" y="134" width="135" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="107.5" y="155" text-anchor="middle" fill="#202020" font-size="16">₹15 cr</text><text x="40" y="222" text-anchor="start" fill="#a5a29c" font-size="16">9 px = ₹1 cr · the line is 10% of Ramu's ₹500 cr sales</text></svg></figure>
+      <p>SEBI’s rules (LODR regulation 23): every RPT needs the <b>prior approval of the audit committee</b>, and only its independent members vote on it. A <b>material</b> RPT also needs <b>shareholders’ approval by resolution</b>, and no related party may vote to approve it, whether or not it is a party to that deal. Material means above the line in Schedule XII: for a company with consolidated turnover up to ₹20,000 cr, <b>10% of that turnover</b>, in force since 19 December 2025. Before then the line was the lower of ₹1,000 cr or 10% of turnover. Ramu: 10% of ₹500 cr is ₹50 cr, so ₹15 cr is not material <span class="tag">example</span>.</p>
+      <details class="trace"><summary>Go deeper: the bigger-company tiers and the royalty rule</summary>
+        <p>Schedule XII sets three bands, by last audited consolidated turnover. Up to ₹20,000 cr: 10% of turnover. Over ₹20,000 cr up to ₹40,000 cr: ₹2,000 cr plus 5% of turnover above ₹20,000 cr (SEBI’s own illustration: turnover ₹30,000 cr gives ₹2,500 cr). Over ₹40,000 cr: ₹3,000 cr plus 2.5% of turnover above ₹40,000 cr, or ₹5,000 cr, whichever is lower. Payments to a related party for brand use or royalty are material above 5% of turnover (regulation 23(1A)).</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Check Ramu’s packaging deal</h2>
+      <p>Ramu buys 50 crore cups a year from the promoter’s brother’s firm at ₹0.30 a cup, ₹15 cr in all <span class="tag">example</span>. Two other makers have quoted ₹0.27 and ₹0.29, so a fair market price is about ₹0.28 <span class="tag np">one-off</span>. This one-off quote does not change Ramu’s accounts. Change the cups or the price and see whether the deal becomes material, who must approve it, and how far the price sits above market. Sales are ₹500 cr and EBITDA ₹85 cr <span class="tag">example</span>. On the top bar, the bright tip is the premium over market.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <p class="group-label">WHO SELLS THE CUPS</p>
+          <div class="steps" id="whoGroup" role="group" aria-label="Seller">
+            <button type="button" class="secondary" data-v="rel" aria-pressed="true">Promoter’s brother’s firm</button><button type="button" class="secondary" data-v="unrel" aria-pressed="false">An unrelated firm</button>
+          </div>
+          <div class="steps" role="group" aria-label="Cups bought"><span class="lbl">Cups bought, crore</span><button type="button" class="secondary" id="cups-dn" aria-label="Fewer cups">−</button><output id="cups-o"></output><button type="button" class="secondary" id="cups-up" aria-label="More cups">+</button></div>
+          <div class="steps" role="group" aria-label="Price per cup"><span class="lbl">Price per cup</span><button type="button" class="secondary" id="pc-dn" aria-label="Lower price">−</button><output id="pc-o"></output><button type="button" class="secondary" id="pc-up" aria-label="Higher price">+</button></div>
+          <div class="readouts" aria-live="polite">
+            <div><small>PURCHASE</small><output id="q-amt"></output></div>
+            <div><small>MATERIALITY LINE</small><output id="q-thr"></output></div>
+            <div><small>MATERIAL?</small><output id="q-mat"></output></div>
+            <div><small>PRICE VS MARKET</small><output id="q-prem"></output></div>
+          </div>
+          <p class="msg" id="rptMsg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="lab-chart">
+          <svg id="rptChart" viewBox="0 0 520 250" role="img" aria-label="Bars in rupees crore: what Ramu pays for the cups split into the market-price part and any premium, and the materiality line at 10 percent of sales"></svg>
+        </div>
+      </div>
+      <div class="ledger" id="rptLedger"></div></div>
+      <p>Approval is only the first test. The check that matters is price: get quotes, compare quality and delivery terms, and ask whether Ramu was free to walk away. A related seller charging above market moves profit from every shareholder to the promoter’s family without breaking any approval rule.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The watchers</p>
+      <h2>Independent directors and the audit committee</h2>
+      <p>The board hires management and answers to shareholders. SEBI requires at least half of it to be non-executive and one director to be a woman (regulation 17(1)(a)). It also sets a floor for <b>independent directors</b>, people with no material tie to the promoters or management: at least one-third of the board where the chair is non-executive, and at least half where there is no regular non-executive chair, or where that chair is a promoter or related to one (regulation 17(1)(b)). Ramu has 8 directors, 4 independent, exactly half <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 270" role="img" aria-label="Eight board seats in a row for Ramu with the first four filled gold as independent; brackets mark one-third of eight, which needs 3 seats, and half of eight, which needs 4"><rect x="40" y="22" width="14" height="14" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="62" y="35" text-anchor="start" fill="#f1eee8" font-size="16">independent</text><rect x="190" y="22" width="14" height="14" fill="#202020" stroke="#a5a29c" stroke-width="2"/><text x="212" y="35" text-anchor="start" fill="#f1eee8" font-size="16">not independent</text><rect x="40" y="52" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="108" y="52" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="176" y="52" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="244" y="52" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="312" y="52" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><rect x="380" y="52" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><rect x="448" y="52" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><rect x="516" y="52" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><path d="M40 132 L232 132" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M40 126 L40 138" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M232 126 L232 138" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="136" y="158" text-anchor="middle" fill="#f1eee8" font-size="16">one-third: 3 of 8</text><path d="M40 184 L300 184" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M40 178 L40 190" stroke="#a5a29c" stroke-width="2" fill="none"/><path d="M300 178 L300 190" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="170" y="210" text-anchor="middle" fill="#f1eee8" font-size="16">half: 4 of 8</text><text x="40" y="252" text-anchor="start" fill="#a5a29c" font-size="16">Ramu: 8 directors, 4 independent · 56 px per seat</text></svg></figure>
+      <p>The <b>audit committee</b> is the board’s sub-group that checks the numbers. It has at least three directors, at least two-thirds of them independent, all financially literate, and one with accounting or financial-management expertise (regulation 18(1)). It approves RPTs, as above, and oversees the audit and the internal financial controls.</p>
+      <p class="note">Independent on paper is not independent in practice. A director can meet every formal test and still be chosen by, and loyal to, the promoters. The rules set a floor on structure; they cannot measure courage.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The checker</p>
+      <h2>What the auditor’s opinion says</h2>
+      <p>An independent firm of chartered accountants audits the statements and signs a report, under the Standards on Auditing (SA) issued by ICAI. Four things to look for in it. Ramu’s auditor, a mid-sized firm, gave an <b>unmodified opinion</b> <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 380" role="img" aria-label="Four versions of an audit report as equal-length bars: unmodified is all gold; qualified has a grey except-for section; emphasis of matter adds a separate extra paragraph below an unchanged opinion; key audit matters add short numbered items below it"><text x="40" y="20" text-anchor="start" fill="#a5a29c" font-size="16">Unmodified</text><rect x="40" y="28" width="500" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="290" y="49" text-anchor="middle" fill="#202020" font-size="16">true and fair view</text><text x="560" y="49" text-anchor="start" fill="#f1eee8" font-size="16">the normal result</text><text x="40" y="110" text-anchor="start" fill="#a5a29c" font-size="16">Qualified</text><rect x="40" y="118" width="380" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="230" y="139" text-anchor="middle" fill="#202020" font-size="16">true and fair view</text><rect x="420" y="118" width="120" height="30" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="480" y="139" text-anchor="middle" fill="#202020" font-size="16">except for</text><text x="560" y="139" text-anchor="start" fill="#f1eee8" font-size="16">one flawed part</text><text x="40" y="200" text-anchor="start" fill="#a5a29c" font-size="16">Emphasis of matter</text><rect x="40" y="208" width="500" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="290" y="229" text-anchor="middle" fill="#202020" font-size="16">true and fair view</text><rect x="40" y="244" width="200" height="14" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="560" y="229" text-anchor="start" fill="#f1eee8" font-size="16">opinion unchanged</text><text x="260" y="257" text-anchor="start" fill="#f1eee8" font-size="16">extra paragraph</text><text x="40" y="290" text-anchor="start" fill="#a5a29c" font-size="16">Key audit matters</text><rect x="40" y="298" width="500" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="290" y="319" text-anchor="middle" fill="#202020" font-size="16">true and fair view</text><rect x="40" y="334" width="90" height="14" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><rect x="136" y="334" width="90" height="14" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="560" y="319" text-anchor="start" fill="#f1eee8" font-size="16">where the work went</text><text x="240" y="347" text-anchor="start" fill="#f1eee8" font-size="16">KAM 1 and KAM 2</text></svg></figure>
+      <p><b>Unmodified opinion</b> (SA 700): the statements give a true and fair view. It is the normal result. <b>Qualified opinion</b> (SA 705): “except for” a specific misstatement, or a part the auditor could not verify; the rest is accepted. Worse versions are adverse (the statements mislead) and disclaimer (no opinion). <b>Emphasis of matter</b> (SA 706): an extra paragraph pointing readers to something already disclosed, such as a large lawsuit, with the opinion unchanged. <b>Key audit matters</b> (SA 701), required for listed companies: the areas that took most of the auditor’s attention and judgement, each with how it was tested.</p>
+      <p>A key audit matter is not an accusation. It shows where the numbers rest on the most judgement, which is where <a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a>’s choices bite. Who the auditor is, how long they have served, and whether they resign early also matter; Part 20 covers auditor exits.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Small shareholders</p>
+      <h2>How minority holders still have a say</h2>
+      <p>A holder with a few shares cannot outvote the promoters on an ordinary resolution, which passes if more votes are cast for it than against. Four protections still apply. Listed companies must offer <b>remote e-voting</b> on every shareholder resolution (regulation 44(1)) and publish the voting results within two working days of the meeting (44(3)). <b>Related parties cannot vote</b> to approve a material RPT (regulation 23(4)). Bigger decisions, such as a special resolution, need a larger majority than a simple one under the Companies Act. And the independent directors and audit committee exist to represent holders who have no board seat.</p>
+      <figure><svg viewBox="0 0 800 280" role="img" aria-label="Two bars of Ramu's 10 crore shares: in an ordinary vote the promoters' 5.5 crore alone pass the half-way line; in a material related-party vote the promoters' block is dashed and cannot vote, so only the public's 4.5 crore decide"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Ordinary resolution · all 10 crore shares vote</text><rect x="40" y="40" width="385" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="232.5" y="64" text-anchor="middle" fill="#202020" font-size="16">Promoters 5.5 cr</text><rect x="425" y="40" width="315" height="36" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="582.5" y="64" text-anchor="middle" fill="#202020" font-size="16">Public 4.5 cr</text><path d="M390 34 L390 82" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5" fill="none"/><text x="390" y="104" text-anchor="middle" fill="#f1eee8" font-size="16">more than half</text><text x="40" y="148" text-anchor="start" fill="#a5a29c" font-size="16">Material related-party resolution · promoters may not vote</text><rect x="40" y="160" width="385.0" height="36" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="6 5"/><text x="232.5" y="184" text-anchor="middle" fill="#a5a29c" font-size="16">may not vote</text><rect x="425" y="160" width="315" height="36" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="435" y="184" text-anchor="start" fill="#202020" font-size="16">Public 4.5 cr</text><path d="M582.5 154 L582.5 202" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5" fill="none"/><text x="582.5" y="224" text-anchor="middle" fill="#f1eee8" font-size="16">more than half of these</text><text x="40" y="262" text-anchor="start" fill="#a5a29c" font-size="16">70 px = 1 crore shares</text></svg></figure>
+      <p>Ramu’s promoters pass an ordinary vote alone. A material RPT is different: their 5.5 crore shares are excluded, and the public’s 4.5 crore decide, so a majority of those votes is what counts. Turnout is never total in practice, but the arithmetic shows why the rule matters: it hands the deciding vote to the people the deal does not benefit.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: who owns it</h2>
+      <p>Tata Consumer Products’ shareholding pattern for 31 March 2026, filed with the NSE on 20 April 2026 <span class="tag">public</span>. Promoters and the promoter group hold <b>33.83%</b> (33,48,13,834 shares) and the public <b>66.17%</b> (65,47,47,946), out of 98,95,61,780 shares. Inside the public: FPIs <b>20.79%</b>, domestic institutions <b>24.19%</b> and everyone else <b>21.19%</b> (non-institutions 21.18%, governments 0.01%).</p>
+      <figure><svg viewBox="0 0 800 386" role="img" aria-label="TCPL's 31 March 2026 shareholding pattern as a bar to scale: promoters 33.83 percent, foreign portfolio investors 20.79, domestic institutions 24.19 and other public 21.19, above Ramu's 55, 10, 15 and 20; below it TCPL's domestic institutions split into mutual funds, insurers, pension funds and others"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">TCPL · 31 March 2026 · NSE filing</text><text x="141.49" y="52" text-anchor="middle" fill="#a5a29c" font-size="16">Promoters</text><rect x="40" y="60" width="202.98" height="40" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="141.49" y="86" text-anchor="middle" fill="#202020" font-size="16">33.83%</text><text x="305.35" y="52" text-anchor="middle" fill="#a5a29c" font-size="16">FPIs</text><rect x="242.98" y="60" width="124.74" height="40" fill="#f5c76a" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="305.35" y="86" text-anchor="middle" fill="#202020" font-size="16">20.79%</text><text x="440.29" y="52" text-anchor="middle" fill="#a5a29c" font-size="16">DIIs</text><rect x="367.72" y="60" width="145.14" height="40" fill="#f5c76a" opacity="0.65" stroke="#202020" stroke-width="2"/><text x="440.29" y="86" text-anchor="middle" fill="#202020" font-size="16">24.19%</text><text x="576.43" y="52" text-anchor="middle" fill="#a5a29c" font-size="16">Other public</text><rect x="512.86" y="60" width="127.14" height="40" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="576.43" y="86" text-anchor="middle" fill="#202020" font-size="16">21.19%</text><text x="40" y="134" text-anchor="start" fill="#a5a29c" font-size="16">Ramu Chai · 31 March 2026 · example</text><text x="205" y="162" text-anchor="middle" fill="#a5a29c" font-size="16">Promoters</text><rect x="40" y="170" width="330" height="40" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="205" y="196" text-anchor="middle" fill="#202020" font-size="16">55%</text><text x="400" y="162" text-anchor="middle" fill="#a5a29c" font-size="16">FPIs</text><rect x="370" y="170" width="60" height="40" fill="#f5c76a" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="400" y="196" text-anchor="middle" fill="#202020" font-size="16">10%</text><text x="475" y="162" text-anchor="middle" fill="#a5a29c" font-size="16">DIIs</text><rect x="430" y="170" width="90" height="40" fill="#f5c76a" opacity="0.65" stroke="#202020" stroke-width="2"/><text x="475" y="196" text-anchor="middle" fill="#202020" font-size="16">15%</text><text x="580" y="162" text-anchor="middle" fill="#a5a29c" font-size="16">Public</text><rect x="520" y="170" width="120" height="40" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="580" y="196" text-anchor="middle" fill="#202020" font-size="16">20%</text><text x="40" y="258" text-anchor="start" fill="#a5a29c" font-size="16">Inside TCPL's DIIs</text><rect x="40" y="266" width="54" height="26" fill="#f5c76a" opacity="0.9" stroke="#202020" stroke-width="2"/><rect x="94" y="266" width="75.66" height="26" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="2"/><rect x="169.66" y="266" width="14.1" height="26" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><rect x="183.76" y="266" width="3" height="26" fill="#f5c76a" opacity="0.4" stroke="#202020" stroke-width="2"/><rect x="40" y="312" width="14" height="14" fill="#f5c76a" opacity="0.9"/><text x="62" y="325" text-anchor="start" fill="#f1eee8" font-size="16">mutual funds 9.00%</text><rect x="243.4" y="312" width="14" height="14" fill="#f5c76a" opacity="0.7"/><text x="265.4" y="325" text-anchor="start" fill="#f1eee8" font-size="16">insurers 12.61%</text><rect x="412.4" y="312" width="14" height="14" fill="#f5c76a" opacity="0.55"/><text x="434.4" y="325" text-anchor="start" fill="#f1eee8" font-size="16">pension 2.35%</text><rect x="572.8" y="312" width="14" height="14" fill="#f5c76a" opacity="0.4"/><text x="594.8" y="325" text-anchor="start" fill="#f1eee8" font-size="16">other 0.23%</text><text x="40" y="366" text-anchor="start" fill="#a5a29c" font-size="16">6 px = 1% of shares</text></svg></figure>
+      <p>The domestic institutions split into mutual funds 9.00%, insurance companies 12.61%, provident and pension funds 2.35%, and banks, AIFs, NBFCs and other institutions 0.23% (my subtraction from the filed 24.19%). The annual report’s own table (page 254) groups holders differently, with “Foreign Institutional Investors / Foreign Companies / Foreign Bodies DR” at 21.54%: the filing’s 20.79% of foreign institutions plus 0.75% of foreign companies. The promoter figure, 33.83%, is the same in both.</p>
+      <span class="eq">largest holder: Tata Sons Private Limited · 28,38,54,264 shares · <b>28.68%</b>  ·  next: Life Insurance Corporation of India <b>9.02%</b></span>
+      <p><b>Pledges.</b> The filing’s flags for promoter shares encumbered by pledge, by non-disposal undertaking, and in any other way are all “false”: no promoter shares were pledged or encumbered at 31 March 2026. NSE’s list of TCPL’s shareholding filings shows 33.84% for each quarter from March to December 2025, then 33.83% in March 2026. Unlike Ramu’s promoters at 55%, a promoter below 50% would need other holders’ votes to pass an ordinary resolution if the rest voted against it.</p>
+      <div class="field-grid">
+        <div><b>33.83% promoters and group</b><span>33,48,13,834 shares; Tata Sons alone 28.68% (annual report, top-ten table)</span><em>NSE FILING 31 MAR 2026 · AR P. 254</em></div>
+        <div><b>20.79% FPIs · 24.19% DIIs</b><span>Mutual funds 9.00%, insurers 12.61%, provident and pension funds 2.35%, others 0.23%</span><em>NSE FILING · INSTITUTIONS TABLE</em></div>
+        <div><b>No pledge or encumbrance</b><span>All three promoter-encumbrance flags read false in the filing</span><em>NSE FILING · PLEDGE DECLARATION</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: the board and its audit committee</h2>
+      <p>The corporate governance report (pages 231–233) lists seven directors on 31 March 2026 <span class="tag">public</span>: <b>four independent</b> (Dr K. P. Krishnan, Ms Shikha Sharma, Mr Bharat Puri, Mr David Crean), one non-executive non-independent director who chairs the board (Mr N. Chandrasekaran), and two executive directors (Mr Sunil D’Souza, MD and CEO, and Mr Ajit Krishnakumar, Executive Director and COO). Four of seven is 57%, which clears both the one-third and the one-half line in regulation 17(1)(b). Mr P. B. Balaji, a non-executive non-independent director, resigned on 3 November 2025. The board met six times in the year.</p>
+      <figure><svg viewBox="0 0 800 280" role="img" aria-label="Two rows of board seats at the same size: Ramu's eight with four independent, and TCPL's seven with four independent, one non-executive non-independent and two executive"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Ramu Chai · example</text><rect x="40" y="38" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="108" y="38" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="176" y="38" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="244" y="38" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="312" y="38" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><rect x="380" y="38" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><rect x="448" y="38" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><rect x="516" y="38" width="56" height="56" fill="#202020" stroke="#a5a29c" stroke-width="2"/><text x="600" y="72" text-anchor="start" fill="#f1eee8" font-size="16">4 of 8 = 50%</text><text x="40" y="138" text-anchor="start" fill="#a5a29c" font-size="16">TCPL · 31 March 2026</text><rect x="40" y="148" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="108" y="148" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="176" y="148" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="244" y="148" width="56" height="56" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="312" y="148" width="56" height="56" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="2"/><rect x="380" y="148" width="56" height="56" fill="#8a8680" stroke="#202020" stroke-width="2"/><rect x="448" y="148" width="56" height="56" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="600" y="182" text-anchor="start" fill="#f1eee8" font-size="16">4 of 7 = 57%</text><rect x="40" y="236" width="14" height="14" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="62" y="249" text-anchor="start" fill="#f1eee8" font-size="16">independent</text><rect x="200" y="236" width="14" height="14" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="222" y="249" text-anchor="start" fill="#f1eee8" font-size="16">non-executive, not independent</text><rect x="520" y="236" width="14" height="14" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="542" y="249" text-anchor="start" fill="#f1eee8" font-size="16">executive</text></svg></figure>
+      <p>The audit committee (page 243) has four members, all independent directors: Dr Krishnan (chairman), Ms Sharma, Mr Puri and Mr Crean. It met five times in FY26, and all members attended all five meetings. Its terms of reference include approving RPTs and material modifications to them, overseeing the statutory audit, and reviewing internal financial controls.</p>
+      <div class="field-grid">
+        <div><b>7 directors, 4 independent</b><span>57% independent; 2 executive, 1 non-executive non-independent chair</span><em>CORPORATE GOVERNANCE · PP. 231–233</em></div>
+        <div><b>4 of 4 independent</b><span>Audit committee: Krishnan (chair), Sharma, Puri, Crean; 5 meetings, all attended</span><em>AUDIT COMMITTEE · P. 243</em></div>
+        <div><b>Chair not related to the CEO</b><span>The report states the Chairman is a non-executive director not related to the MD and CEO</span><em>CORPORATE GOVERNANCE · P. 231</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: a material related-party vote</h2>
+      <p>In FY26 TCPL put an ordinary resolution, “Approval for Material Related Party Transactions with Capital Foods Private Limited”, to a postal ballot <span class="tag">public</span>. Capital Foods is a 75%-owned subsidiary, acquired on 1 February 2024 (Form AOC-1, page 487). E-voting ran from 24 September to 23 October 2025, and the results were announced on 28 October 2025. Votes for: <b>37,97,87,311, or 99.9884%</b>. Votes against: 43,967, or 0.0116% (annual report page 249).</p>
+      <figure><svg viewBox="0 0 800 136" role="img" aria-label="One bar of all votes cast on the Capital Foods related-party resolution: 99.9884 percent in favour in gold and a sliver of 0.0116 percent against in rose, drawn 3 pixels wide so it can be seen"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Votes cast · 37.98 crore</text><rect x="40" y="40" width="599.93" height="40" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="339.97" y="66" text-anchor="middle" fill="#202020" font-size="16">for 99.9884%</text><rect x="639.93" y="40" width="3" height="40" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="653.93" y="66" text-anchor="start" fill="#f1eee8" font-size="16">against 0.0116%</text><text x="40" y="116" text-anchor="start" fill="#a5a29c" font-size="16">6 px = 1% of votes cast</text></svg></figure>
+      <p>The directors’ report (pages 188–189) says the audit committee approved the transaction on 22 July 2025 after confirming it was in the ordinary course of business and on an arm’s-length basis; the proposal was then voluntarily placed before the board, which approved it, and the members passed the ordinary resolution. The report does not print the transaction’s combined value on those pages. The standalone related-party note (pages 387–388) shows three FY26 lines with Capital Foods: purchases of goods and services ₹832.56 cr (FY25: ₹713.99 cr), inter-corporate loans and deposits taken ₹388.00 cr (FY25: ₹100.00 cr) and repaid ₹281.00 cr (FY25: nil). The three lines add to ₹1,501.56 cr, my sum; other lines in the note, such as reimbursements, are not included.</p>
+      <figure><svg viewBox="0 0 800 226" role="img" aria-label="A stacked bar of three FY26 standalone lines between TCPL and Capital Foods, 832.56 crore of purchases, 388 crore of loans taken and 281 crore repaid, with dashed lines at the old 1,000 crore line and today's 2,014.5 crore line"><text x="40" y="24" text-anchor="start" fill="#a5a29c" font-size="16">Standalone lines with Capital Foods · FY26 · ₹ cr</text><text x="340" y="52" text-anchor="middle" fill="#f1eee8" font-size="16">₹1,000 cr · old line</text><text x="644.36" y="52" text-anchor="middle" fill="#f1eee8" font-size="16">₹2,014.5 cr · line today</text><path d="M340 60 L340 130" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5" fill="none"/><path d="M644.36 60 L644.36 130" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 5" fill="none"/><rect x="40" y="70" width="249.77" height="44" fill="#ff8059" stroke="#202020" stroke-width="2"/><rect x="289.77" y="70" width="116.4" height="44" fill="#ec6a94" opacity="0.85" stroke="#202020" stroke-width="2"/><rect x="406.17" y="70" width="84.3" height="44" fill="#ff8059" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="40" y="150" width="14" height="14" fill="#ff8059"/><text x="62" y="163" text-anchor="start" fill="#f1eee8" font-size="16">purchases 832.56</text><rect x="223.6" y="150" width="14" height="14" fill="#ec6a94" opacity="0.85"/><text x="245.6" y="163" text-anchor="start" fill="#f1eee8" font-size="16">loans taken 388.00</text><rect x="424.4" y="150" width="14" height="14" fill="#ff8059" opacity="0.5"/><text x="446.4" y="163" text-anchor="start" fill="#f1eee8" font-size="16">loans repaid 281.00</text><text x="40" y="206" text-anchor="start" fill="#a5a29c" font-size="16">0.3 px = ₹1 cr</text></svg></figure>
+      <p>The vote was held under the rule then in force, the lower of ₹1,000 cr or 10% of turnover. Under Schedule XII today, TCPL’s consolidated turnover of ₹20,290.43 cr (taking revenue from operations as turnover) falls in the ₹20,000–40,000 cr band, so the line is 2,000 + 5% × (20,290.43 − 20,000) = <b>₹2,014.52 cr</b>, my arithmetic. Whether the same dealings would need a vote today depends on their combined value, which the pages I read do not give.</p>
+      <details class="trace"><summary>Go deeper: who voted</summary>
+        <p>The percentages are of votes cast, not of all shares, and the report does not split them by holder. Regulation 23(4) bars related parties from voting to approve a material RPT, and promoter-group entities are deemed related parties, so the promoter group’s votes cannot count towards approval under the rule. The votes for total 37.98 crore, against 65.47 crore shares held by the public.</p>
+      </details>
+      <div class="field-grid">
+        <div><b>99.9884% in favour</b><span>37,97,87,311 votes for; 43,967 against; ordinary resolution; results 28 Oct 2025</span><em>ANNUAL REPORT · P. 249</em></div>
+        <div><b>Audit committee first</b><span>Approved 22 Jul 2025, then the board, then members by postal ballot closing 23 Oct 2025</span><em>DIRECTORS’ REPORT · PP. 188–189</em></div>
+        <div><b>₹832.56 cr purchases</b><span>Standalone note, goods and services bought from Capital Foods; loans taken ₹388.00 cr, repaid ₹281.00 cr</span><em>STANDALONE RPT NOTE · PP. 387–388</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: the auditor’s report</h2>
+      <p>TCPL’s auditor is Deloitte Haskins &amp; Sells LLP <span class="tag">public</span>. Its report on the consolidated statements opines that they give a true and fair view; the governance report states that the FY26 financial statements contain no modified audit opinion (page 257). I found no Emphasis of Matter paragraph in the printed report. It lists two key audit matters on the consolidated statements (pages 404–405): <b>impairment of goodwill pertaining to UK and Europe</b>, carrying value ₹2,184.50 cr, and the carrying value of an investment in an associate, ₹53.19 cr of preference shares. The standalone report (page 333) has one: the associate investments, ₹223.21 cr.</p>
+      <figure><svg viewBox="0 0 800 350" role="img" aria-label="Four bars on one scale: TCPL's owners' equity of 21,788 crore in gold, all goodwill of 11,884 crore, the 2,184 crore of UK and Europe goodwill that is a key audit matter, and a thin sliver for the 53 crore associate investment"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Owners' equity · ₹21,787.53 cr</text><rect x="40" y="38" width="544.69" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="40" y="104" text-anchor="start" fill="#a5a29c" font-size="16">All goodwill · ₹11,883.90 cr</text><rect x="40" y="114" width="297.1" height="30" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="40" y="180" text-anchor="start" fill="#a5a29c" font-size="16">UK and Europe goodwill · ₹2,184.50 cr</text><rect x="40" y="190" width="54.61" height="30" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="40" y="256" text-anchor="start" fill="#a5a29c" font-size="16">Associate preference shares · ₹53.19 cr</text><rect x="40" y="266" width="3" height="30" fill="#c9c6c0" stroke="#202020" stroke-width="2"/><text x="40" y="330" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹40 cr</text></svg></figure>
+      <p>The auditor ties the goodwill matter to “competitive pressures and decline in black tea demand” in that market, and to the judgement inside a value-in-use model: forecast cash flows, growth and discount rates. Note 6 (pages 438–439) shows no impairment of the UK and Europe unit: its goodwill rose from ₹1,929.82 cr to ₹2,184.50 cr only through currency translation (+₹254.68 cr). The group did book a ₹16.02 cr impairment on its Bangladesh branded business. The note uses a 10.15% pre-tax discount rate and 1.44% long-term growth for UK and Europe, and states that no reasonably possible change in key assumptions would push the recoverable amount below the carrying value.</p>
+      <span class="eq">UK and Europe goodwill ÷ owners’ equity = 2,184.50 ÷ 21,787.53 = <b>10.0%</b></span>
+      <div class="field-grid">
+        <div><b>No modified opinion</b><span>“True and fair view”; the governance report says no modified opinion for FY26. No Emphasis of Matter found</span><em>AUDITOR’S REPORT · P. 404 · CG REPORT · P. 257</em></div>
+        <div><b>KAM: UK goodwill ₹2,184.50 cr</b><span>Value-in-use test; the auditor’s response is listed beside it. Second KAM: associate, ₹53.19 cr</span><em>AUDITOR’S REPORT · PP. 404–405</em></div>
+        <div><b>No UK impairment in FY26</b><span>Goodwill by unit: UK and Europe 1,929.82 → 2,184.50; ₹16.02 cr impairment in Bangladesh</span><em>NOTE 6 · PP. 438–439</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s Integrated Annual Report 2025-26 (printed pages as cited), its NSE shareholding-pattern filing for 31 March 2026, and SEBI’s LODR Regulations as amended up to 22 January 2026 (regulations 17, 18, 23, 31, 44 and Schedule XII). The pages show what the documents say, and this part makes no judgement on TCPL’s governance beyond them. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Three questions before you trust the numbers</h2>
+      <ol class="checks">
+        <li><b>Who holds the votes, and has anyone borrowed against them?</b> Read the promoter box and the pledge declaration every quarter.</li>
+        <li><b>Who does the company deal with on the side?</b> Find the related-party note, see what was material, and check the price against the market.</li>
+        <li><b>Who is watching?</b> Count the independent directors, read the audit committee, and read what the auditor flagged.</li>
+      </ol>
+      <p>Part 20, “Red flags and forensic checks”, puts these governance warnings beside the accounting ones: receivables outrunning sales, cash well below profit, contingent liabilities, auditor exits and dilution.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>The shareholding pattern shows who holds the votes, a pledge shows who has borrowed against them, and related-party deals show who trades with the company on the side. The board, the audit committee and the auditor’s report show who is watching.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',DKC='#202020',GOLD='#f5c76a',TEAL='#76d5c1',ROSE='#ec6a94',COR='#ff8059',LAV='#c3b8ff',GRC='#c9c6c0',DGR='#8a8680';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const R=(x,y,w,h,fill,op,dv)=>`<rect${dv===undefined?'':` data-v="${dv}"`} x="${(+x).toFixed(2)}" y="${(+y).toFixed(1)}" width="${(+w).toFixed(2)}" height="${h}" fill="${fill}"${op?` opacity="${op}"`:''}/>`;
+    const Ln=(x1,y1,x2,y2,col,dash)=>`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}" stroke="${col}" stroke-width="2"${dash?' stroke-dasharray="6 5"':''} fill="none"/>`;
+    const fx=(v,d)=>(v<0?'−':'')+Math.abs(v).toFixed(d===undefined?1:d);
+    const rs=(v,d)=>'₹'+fx(v,d);
+    // ================= Lab 1: the pledge (Ramu Chai canonical, tagged example) =================
+    const PROMO_SHARES=5.5, TOL=0.005, MAXR=8;
+    const labConfig={format:v=>'₹'+v,sliderFormats:[v=>'₹'+(+v),v=>(+v).toFixed(2)+' cr shares',v=>'₹'+(+v)+' cr',v=>(+v).toFixed(1)+'×']};
+    const ids=['price','pledged','loan','cover'];
+    let shock=25, impact=2;
+    // compute() is the only formula. cover = S*P/L; call price = c*L/S; forced sales follow x = (cL - SP)/(P(c-1)).
+    function compute(P,S,L,c,shockPct,impactPct){
+      const cover=S*P/L, mcp=c*L/S, fall=Math.max(0,1-mcp/P), called=cover<c-1e-9;
+      const k=impactPct/100, p0=P*(1-shockPct/100);
+      let p=p0,s=S,l=L; const rows=[{r:0,price:p0,shares:S,loan:L,sold:0,proceeds:0,cover:S*p0/L}];
+      for(let r=1;r<=MAXR;r++){
+        if(!(s*p/l<c-TOL && s>1e-12 && l>1e-12)) break;
+        let x=(c*l-s*p)/(p*(c-1)); if(x*p>l) x=l/p; x=Math.min(x,s);
+        const s2=s-x,l2=l-x*p,p2=Math.max(p*(1-k*x*p),0.01);
+        rows.push({r,price:p2,shares:s2,loan:l2,sold:x,proceeds:x*p,cover:l2>1e-12?s2*p2/l2:Infinity});
+        p=p2;s=s2;l=l2;
+      }
+      const last=rows[rows.length-1];
+      return {cover,mcp,fall,called,p0,rows,last,soldTotal:S-last.shares,loanLeft:last.loan,priceEnd:last.price,share:100*S/PROMO_SHARES,
+        stillShort:last.loan>1e-9 && last.shares>1e-9 && last.cover<c-TOL};
+    }
+    const PRESETS={ramu:[100,0.55,22,2,'Ramu Chai canonical: cover 2.50×, margin-call price ₹80, a 20% fall away. At a 25% fall to ₹75 the lender starts selling.'],
+      line:[80,0.55,22,2,'Price at the line: cover is exactly 2.00×, so no call yet. Any fall after this one triggers selling.'],
+      deep:[60,0.55,22,2,'Deep fall: ₹60 is already below the call price, cover 1.50×. The next fall starts from here.'],
+      thin:[100,0.55,30,2,'Thin cover: a ₹30 cr loan against the same shares. Cover is 1.83× at ₹100, so the call is already due.']};
+    function drawLab(){
+      const v=ids.map(id=>+$(id).value), c=compute(v[0],v[1],v[2],v[3],shock,impact);
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      $('r-cover').textContent=fx(c.cover,2)+'×';
+      $('r-mcp').textContent=rs(c.mcp,1);
+      $('r-fall').textContent=c.called?'call already due':fx(c.fall*100,1)+'%';
+      $('r-share').textContent=fx(c.share,1)+'%';
+      // chart: price axis fixed at 0..200 (ticks by the one scale function); a longer bar is clipped at 200 and says so
+      const lo=0,hi=200,XL=60,XR=470,k=(XR-XL)/(hi-lo),sx=val=>XL+(Math.min(Math.max(val,lo),hi)-lo)*k;
+      let s='';
+      s+=T(10,20,'Share price now','start',MUTC)+R(XL,26,sx(v[0])-XL,18,LAV,null,v[0])+T(sx(v[0])+8,41,rs(v[0],1));
+      const clip=c.mcp>hi;
+      s+=T(10,74,'Margin-call price','start',MUTC)+R(XL,80,sx(c.mcp)-XL,18,ROSE,null,Math.min(c.mcp,hi).toFixed(4));
+      s+=clip?T(XL+8,95,rs(c.mcp,0)+' · off the scale','start',DKC):T(sx(c.mcp)+8,95,rs(c.mcp,1));
+      s+=T(10,140,'After a fall to '+rs(c.p0,1)+' ('+(shock?'−'+shock+'%':'no fall')+'), forced sales:','start',MUTC);
+      c.rows.forEach((row,i)=>{
+        const y=152+i*28,under=row.price<c.mcp-1e-9;
+        s+=T(10,y+15,row.r===0?'start':String(row.r),'start',MUTC);
+        s+=R(XL,y,sx(row.price)-XL,18,under?COR:LAV,null,row.price.toFixed(4));
+        s+=T(sx(row.price)+8,y+15,row.r===0?rs(row.price,1):rs(row.price,1)+' · sold '+row.sold.toFixed(3));
+      });
+      const ay=152+c.rows.length*28+14;
+      for(let t=lo;t<=hi+1e-9;t+=50) s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${ay}" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;
+      s+=T(10,ay+30,'₹ per share · sold = crore shares','start',MUTC);
+      $('labChart').setAttribute('viewBox',`0 0 520 ${ay+44}`);
+      $('labChart').innerHTML=s;
+      // ledger
+      const L=[['Cover now = S × P ÷ L',v[1].toFixed(2)+' × '+v[0]+' ÷ '+v[2]+' = '+fx(c.cover,2)+'×'],
+        ['Margin-call price = c × L ÷ S',v[3].toFixed(1)+' × '+v[2]+' ÷ '+v[1].toFixed(2)+' = '+rs(c.mcp,2)],
+        ['Fall to the call',c.called?'price is already below the call price':'1 − '+fx(c.mcp,2)+' ÷ '+v[0]+' = '+fx(c.fall*100,1)+'%'],
+        ['Pledged ÷ promoter holding',v[1].toFixed(2)+' ÷ 5.5 cr = '+fx(c.share,1)+'%'],
+        ['Price after the fall',v[0]+' × (1 − '+shock+'%) = '+rs(c.p0,2)],
+        ['Cover after the fall',v[1].toFixed(2)+' × '+fx(c.p0,2)+' ÷ '+v[2]+' = '+fx(c.rows[0].cover,2)+'×']];
+      if(c.rows.length>1){
+        L.push(['Rounds of forced selling',String(c.rows.length-1)+(c.stillShort?' (stopped at '+MAXR+'; still short)':'')]);
+        L.push(['Shares sold in all',c.soldTotal.toFixed(3)+' cr = '+fx(100*c.soldTotal/v[1],1)+'% of the pledged block']);
+        L.push(['Loan left',rs(c.loanLeft,2)+' of '+rs(v[2],0)]);
+        L.push(['Price at the end',rs(c.priceEnd,2)+', '+fx(100*(c.priceEnd/v[0]-1),1)+'% from the slider price']);
+      } else L.push(['Rounds of forced selling','none: cover is already at or above '+v[3].toFixed(1)+'×']);
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:[c.cover,c.mcp,c.fall,c.p0,c.priceEnd,c.soldTotal,c.loanLeft].every(Number.isFinite),cover:c.cover,mcp:c.mcp,fall:c.fall,called:c.called,p0:c.p0,
+        rows:c.rows,rounds:c.rows.length-1,priceEnd:c.priceEnd,soldTotal:c.soldTotal,loanLeft:c.loanLeft,share:c.share,stillShort:c.stillShort,axis:[lo,hi,50]};
+    }
+    function pick(group,val){document.querySelectorAll('#'+group+' button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===String(val))));}
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';drawLab();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];ids.forEach((id,i)=>$(id).value=p[i]);drawLab();$('msg').textContent=p[4];}));
+    document.querySelectorAll('#shockGroup button').forEach(b=>b.addEventListener('click',()=>{shock=+b.dataset.v;pick('shockGroup',shock);drawLab();}));
+    document.querySelectorAll('#impactGroup button').forEach(b=>b.addEventListener('click',()=>{impact=+b.dataset.v;pick('impactGroup',impact);drawLab();}));
+    // ================= Lab 2: shareholding pattern, promoter sells vs pledges more =================
+    let sc='base',buyer='pub';
+    const BASE_PCT={promo:55,fpi:10,dii:15,pub:20}, SHARES_CR=10, PLEDGE_BASE=0.55, PLEDGE_MORE=0.25*5.5;
+    const NAMES={promo:'Promoters',fpi:'FPIs',dii:'DIIs',pub:'Public'}, OPS={promo:1,fpi:.8,dii:.65,pub:.5};
+    function shareState(sc,buyer){
+      const pct={...BASE_PCT}; let pledged=PLEDGE_BASE;
+      if(sc==='sell'){pct.promo-=5;pct[buyer]+=5;}
+      if(sc==='pledge'){pledged=PLEDGE_MORE;}
+      const promoCr=pct.promo/100*SHARES_CR;
+      return {pct,pledged,promoCr,pledgedPctOfPromo:100*pledged/promoCr,pledgedPctOfCo:100*pledged/SHARES_CR,majority:pct.promo>50};
+    }
+    const SH_MSG={base:'As filed: promoters 55% (5.5 crore shares), 0.55 crore of them pledged. This is the starting point.',
+      sell:'Might signal: the family is funding something, diversifying, bringing in a partner, or losing confidence. Cannot tell you which. Check who bought, at what price, and what the company said. At 50% the promoters no longer hold more than half the votes on their own.',
+      pledge:'Might signal: the family needs cash and chose to borrow against its shares rather than sell, which keeps the votes. Cannot tell you what the loan is for or how close the call price is: use the first lab. The stake itself has not changed.'};
+    function drawShare(){
+      const st=shareState(sc,buyer);
+      const XL=30,XR=490,k=(XR-XL)/100,sx=val=>XL+val*k;
+      let s='',x=0;
+      ['promo','fpi','dii','pub'].forEach(key=>{
+        const p=st.pct[key],w=p*k,op=OPS[key];
+        s+=T(XL+(x+p/2)*k,28,NAMES[key],'middle',MUTC)+R(XL+x*k,38,w,44,GOLD,op<1?op:null)+T(XL+(x+p/2)*k,66,fx(p,0)+'%','middle',DKC);x+=p;
+      });
+      s+=Ln(sx(50),32,sx(50),90,FGC,true)+T(sx(50),112,'half the votes','middle',FGC);
+      s+=T(30,150,'Of the promoters’ shares, pledged','start',MUTC);
+      s+=R(XL,160,st.pledgedPctOfCo*k,30,ROSE,.85)+T(XL+st.pledgedPctOfCo*k+8,182,fx(st.pledgedPctOfCo,2)+'% of the company');
+      const ay=224;
+      for(let t=0;t<=100;t+=25) s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${ay}" text-anchor="middle" fill="${MUTC}" font-size="16">${t}%</text>`;
+      $('shareChart').innerHTML=s;
+      const L=[['Promoter stake',fx(st.pct.promo,0)+'% = '+st.promoCr.toFixed(2)+' cr of 10 cr shares'],
+        ['FPIs · DIIs · public',fx(st.pct.fpi,0)+'% · '+fx(st.pct.dii,0)+'% · '+fx(st.pct.pub,0)+'%'],
+        ['Total',fx(st.pct.promo+st.pct.fpi+st.pct.dii+st.pct.pub,0)+'%'],
+        ['Pledged shares',st.pledged.toFixed(3)+' cr'],
+        ['Pledged ÷ promoter holding',st.pledged.toFixed(3)+' ÷ '+st.promoCr.toFixed(2)+' = '+fx(st.pledgedPctOfPromo,1)+'%'],
+        ['Pledged ÷ all shares',st.pledged.toFixed(3)+' ÷ 10 = '+fx(st.pledgedPctOfCo,2)+'%'],
+        ['More than half the votes?',st.majority?'yes, promoters can pass an ordinary vote alone':'no: exactly half or less']];
+      $('shLedger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      $('shMsg').textContent=SH_MSG[sc];
+      window.shareResults={...st,sc,buyer,total:st.pct.promo+st.pct.fpi+st.pct.dii+st.pct.pub};
+    }
+    document.querySelectorAll('#scGroup button').forEach(b=>b.addEventListener('click',()=>{sc=b.dataset.v;pick('scGroup',sc);drawShare();}));
+    document.querySelectorAll('#buyGroup button').forEach(b=>b.addEventListener('click',()=>{buyer=b.dataset.v;pick('buyGroup',buyer);drawShare();}));
+    // ================= Lab 3: Ramu's related-party packaging purchase =================
+    const SALES=500, EBITDA=85, TAXR=0.25, MARKET=0.28, THR_PCT=0.10;
+    let cups=50, ppc=30, who='rel'; // price in paise, to keep every step exact
+    function rptState(cups,ppc,who){
+      const price=ppc/100, amount=cups*price, thr=SALES*THR_PCT, related=who==='rel';
+      const material=related && amount>thr+1e-9, marketVal=cups*MARKET, over=amount-marketVal;
+      return {price,amount,thr,related,material,marketVal,over,prem:price/MARKET-1,pctSales:100*amount/SALES,ebitdaHit:100*over/EBITDA,patHit:over*(1-TAXR)};
+    }
+    function drawRpt(){
+      const st=rptState(cups,ppc,who);
+      $('cups-o').textContent=cups+' cr'; $('pc-o').textContent='₹'+st.price.toFixed(2);
+      $('q-amt').textContent=rs(st.amount,2)+' cr'; $('q-thr').textContent=rs(st.thr,0)+' cr';
+      $('q-mat').textContent=!st.related?'not an RPT':(st.material?'yes':'no');
+      $('q-prem').textContent=(st.prem>=0?'+':'−')+Math.abs(st.prem*100).toFixed(1)+'%';
+      const lo=0,hi=70,XL=20,XR=490,k=(XR-XL)/(hi-lo),sx=val=>XL+(val-lo)*k;
+      let s=T(20,28,'What Ramu pays','start',MUTC);
+      const base=Math.min(st.amount,st.marketVal), prem=Math.max(st.amount-st.marketVal,0);
+      s+=R(XL,36,sx(base)-XL,26,COR,.5)+(prem>0?R(sx(base),36,prem*k,26,COR):'');
+      s+=T(sx(st.amount)+8,56,rs(st.amount,2));
+      s+=T(20,100,'Same cups at ₹0.28 market','start',MUTC)+R(XL,108,sx(st.marketVal)-XL,26,COR,.5)+T(sx(st.marketVal)+8,128,rs(st.marketVal,2));
+      s+=T(20,172,'Materiality line · 10% of sales','start',MUTC)+R(XL,180,sx(st.thr)-XL,26,GRC,null,st.thr)+T(sx(st.thr)+8,200,rs(st.thr,0));
+      const ay=236;
+      for(let t=0;t<=70;t+=10) s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${ay}" text-anchor="middle" fill="${MUTC}" font-size="16">₹${t}</text>`;
+      $('rptChart').innerHTML=s;
+      const appr=!st.related?'No RPT: ordinary purchasing rules apply; compare quotes as usual.':
+        (st.material?'Audit committee approval (independent members only) AND a shareholder resolution; the promoter group may not vote.':'Audit committee approval, independent members only. Not material, so no shareholder vote.');
+      const price=st.over>1e-9?('The price is '+fx(st.prem*100,1)+'% above market: about '+rs(st.over,2)+' cr a year of extra cost, '+fx(st.ebitdaHit,1)+'% of EBITDA and about '+rs(st.patHit,2)+' cr of profit after tax.'):
+        (st.over<-1e-9?('The price is below market by '+fx(-st.prem*100,1)+'%: ask why, since quality, delivery or credit terms may differ.'):'The price matches the market quote.');
+      $('rptMsg').textContent=appr+' '+price;
+      const L=[['Purchase = cups × price',cups+' × '+st.price.toFixed(2)+' = '+rs(st.amount,2)+' cr'],
+        ['Share of sales',rs(st.amount,2)+' ÷ 500 = '+fx(st.pctSales,1)+'%'],
+        ['Materiality line',rs(SALES,0)+' × 10% = '+rs(st.thr,0)+' cr (material only if the purchase is above it)'],
+        ['Related party?',st.related?'yes: the teaching case treats the brother’s firm as one':'no: the seller is unrelated'],
+        ['At market',cups+' × 0.28 = '+rs(st.marketVal,2)+' cr'],
+        ['Premium paid',rs(st.amount,2)+' − '+rs(st.marketVal,2)+' = '+rs(st.over,2)+' cr'],
+        ['As % of EBITDA 85',fx(st.ebitdaHit,1)+'%'],['After tax at 25%',rs(st.patHit,2)+' cr']];
+      $('rptLedger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.rptResults={...st,cups,ppc,who};
+    }
+    const step=(id,fn)=>$(id).addEventListener('click',()=>{fn();drawRpt();});
+    step('cups-dn',()=>{cups=Math.max(10,cups-10);}); step('cups-up',()=>{cups=Math.min(160,cups+10);});
+    step('pc-dn',()=>{ppc=Math.max(24,ppc-1);}); step('pc-up',()=>{ppc=Math.min(36,ppc+1);});
+    document.querySelectorAll('#whoGroup button').forEach(b=>b.addEventListener('click',()=>{who=b.dataset.v;pick('whoGroup',who);drawRpt();}));
+    drawLab();drawShare();drawRpt();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
