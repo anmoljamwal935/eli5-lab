@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "red-flags-eli5",
+    "title": "Red flags and forensic checks",
+    "category": "Monetary Architecture",
+    "minutes": 28,
+    "summary": "Part 20: the patterns in the accounts that come before a blow-up",
+    "bullets": [
+      "A flag is a question, not a verdict",
+      "Spot six planted flags in a fudged twin of Ramu Chai",
+      "Run the checklist on TCPL FY26 and see what to ask"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PROFIT",
+      "CASH",
+      "FLAG"
+    ],
+    "file": "explainers/red-flags-eli5.html",
+    "date": "2026-11-18",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A long gold profit bar above a short teal cash bar, with a rose flag at the end of the gap between them: profit that never arrives as cash.\"><rect x=\"24\" y=\"48\" width=\"220\" height=\"24\" fill=\"#f5c76a\"/><rect x=\"24\" y=\"82\" width=\"60\" height=\"24\" fill=\"#76d5c1\"/><rect x=\"84\" y=\"82\" width=\"160\" height=\"24\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><rect x=\"262\" y=\"52\" width=\"2\" height=\"54\" fill=\"#ec6a94\"/><path d=\"M264 52 L292 62 L264 72 Z\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#c3b8ff\">PART 20</text><text x=\"24\" y=\"136\" fill=\"#a5a29c\">PROFIT, NO CASH</text></g></svg>",
+    "part": 20
+  },
+  {
     "id": "governance-and-ownership-eli5",
     "title": "Governance and who owns the company",
     "category": "Monetary Architecture",
