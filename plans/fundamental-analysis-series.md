@@ -260,7 +260,7 @@ Present value at 12%: ₹100 in 1 year = ₹89.29; in 10 years = ₹32.20.
 
 **Reverse DCF (Part 25).** Same model; solve for the growth the ₹100 price assumes (equity 1,000, EV 1,060).
 - One growth rate for FY27–FY36 (then 5%): **15.3% a year**.
-- Or keep 8% then 5% and solve FY27–FY31 only: **19.0% a year**.
+- Or keep 8% then 5% and solve FY27–FY31 only: **21.9% a year**. That is above the 20% return on new money, so FCFF is negative in FY27–FY31 (reinvestment above 100% of NOPAT).
 - Compare: Ramu's FY22–26 CAGR was 11.0% (sales) and 13.6% (PAT), Part 9.
 
 ### Lab layout rule (owner feedback on Part 15, 9 Nov 2026)
