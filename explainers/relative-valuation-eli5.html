@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Relative valuation and P/E bands — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (capex, costs) | gold #f5c76a = what belongs to shareholders (profit, EPS, equity, dividends)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 26 uses gold (EPS, earnings growth) and lavender (price, P/E, band lines, re-rating). Dashed = an estimate (FY27E). */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .events button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:5.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    /* Part 15: dashboard tables and traffic lights */
+    .dash{min-width:0;font-size:14px}
+    .dash th,.dash td{padding:7px 8px;vertical-align:top}
+    .dash tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .dash td.line{font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .dash td.val{white-space:nowrap}
+    .dash th.ed::after{content:" ✎";color:var(--accent)}
+    .lt{display:inline-block;width:1.2em;font-weight:700}.lt.g{color:#7bd88f}.lt.a{color:#ffb04d}.lt.r{color:#ff6b6b}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .lab .picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .picks button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .picks button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    /* Part 15 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events,.dashlab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+    .dashlab .dash tr.grp td{padding:16px 10px 6px;border-bottom:0}
+    .dashlab .dash td.line{font:13px/1.4 var(--font-mono)}
+    .dashlab .lights-key{margin:12px 0 0}
+    .dashlab .dl-chart{max-width:560px;margin-top:18px}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:12px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab details.trace{margin-top:16px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab #msg:empty{display:none}
+    .dashlab .gi,.dashlab .nm-short{display:none}
+    @media (max-width:700px){.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash .line{display:none}.dashlab .gi{display:block;margin-top:2px;font:11px/1.4 var(--font-mono);color:var(--muted)}.dashlab .nm-full{display:none}.dashlab .nm-short{display:inline}.dashlab .dash td.val{font-size:14px}}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}}
+  
+    /* Part 26 additions */
+    .dashlab .lab-chart{margin-top:16px}
+    .dashlab .bandkey{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 0;font:12px/1.5 var(--font-mono);color:var(--muted)}
+    .dashlab .bandkey i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .dashlab .bandkey i.ring{border:3px solid #f5c76a;border-radius:50%;background:#202020;width:8px;height:8px}
+    .dashlab .bandkey i.dot{border-radius:50%;background:#f5c76a}
+    .dashlab .read{margin:12px 0 0;font-size:15px;line-height:1.5;color:var(--fg)}
+    .rep td.pg a{color:var(--accent)}
+    @media (max-width:700px){.dashlab .lab-chart svg{min-width:640px}.eli5-study-container table.rep{min-width:0;font-size:13px}.rep th,.rep td{padding:6px 4px}.rep td.pg{white-space:normal}}
+  </style>
+</head>
+<body data-series-id="relative-valuation-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 15 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Relative valuation and P/E bands</h1>
+      <p class="lede">Most prices are judged by comparison: against similar companies today, and against the company’s own past multiples. Both are quick, both hide a DCF’s assumptions, and a change in the multiple can move a share as much as a change in its profit.</p>
+      <p class="source-note">Built from this series’ example accounts for Ramu Chai Ltd and its peers, Part 24’s DCF model, Tata Consumer Products’ audited consolidated EPS in its integrated annual reports for FY2022 to FY2026, and NSE’s closing prices at each year end · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a> defines EPS and P/E, trailing and forward, and estimates Ramu’s FY27 EPS at ₹5.75. <a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a> compares Ramu with two fictional peers, Pahadi Leaf and Masala Brew, and adds PEG. <a href="dcf-step-by-step-eli5.html" data-series-link="dcf-step-by-step-eli5">Part 24</a>, “DCF, step by step”, values Ramu at ₹76.7 a share, and <a href="reverse-dcf-eli5.html" data-series-link="reverse-dcf-eli5">Part 25</a>, “Reverse DCF”, finds that the ₹100 price assumes 15.3% growth a year. Facts carry a tag: <span class="tag">public</span> is a figure from a filing or the exchange, <span class="tag">example</span> is a made-up but consistent number for our fictional companies. Amounts are ₹ crore (cr) unless they are per share. <b>Go deeper</b> boxes are optional. Part 28 turns values into scenarios and a margin of safety.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: EPS, earnings growth</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, P/E, band, re-rating</span>
+        <span>dashed: an estimate (FY27E) or an average</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The idea</p>
+      <h2>Two yardsticks: peers and history</h2>
+      <p>Relative valuation asks a simpler question than a DCF: is this price high or low <b>compared with something</b>? There are two usual yardsticks. Similar companies today, and the same company in earlier years. Ramu trades at 20 times its earnings; its peers trade at 15 and 35, and its own year-end P/E has moved between 16 and 24 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 292" role="img" aria-label="One P/E axis with two yardsticks: three peers at 15, 20 and 35 with Ramu in the middle, and Ramu’s own five year-end P/Es between 16 and 24 with an average of 20, Ramu today at 20"><text x="20" y="86" text-anchor="start" fill="#a5a29c" font-size="16">Peers</text><path d="M120 80 L760 80" stroke="#57534f" stroke-width="1" fill="none"/><circle cx="360" cy="80" r="9" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="360" y="60" text-anchor="middle" fill="#f1eee8" font-size="16">Pahadi 15</text><circle cx="440" cy="80" r="9" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="440" y="60" text-anchor="middle" fill="#f1eee8" font-size="16">Ramu 20</text><circle cx="680" cy="80" r="9" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="680" y="60" text-anchor="middle" fill="#f1eee8" font-size="16">Masala 35</text><text x="20" y="186" text-anchor="start" fill="#a5a29c" font-size="16">Own history</text><rect x="376" y="160" width="128" height="40" fill="#c3b8ff" opacity="0.25"/><path d="M440 154 L440 206" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><circle cx="408" cy="180" r="6" fill="#c3b8ff"/><circle cx="376" cy="180" r="6" fill="#c3b8ff"/><circle cx="472" cy="180" r="6" fill="#c3b8ff"/><circle cx="504" cy="180" r="6" fill="#c3b8ff"/><circle cx="440" cy="180" r="9" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="440" y="148" text-anchor="middle" fill="#f1eee8" font-size="16">band 16–24</text><text x="440" y="228" text-anchor="middle" fill="#a5a29c" font-size="16">five-year average 20</text><path d="M120 250 L760 250" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="120" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="280" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="440" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">20</text><text x="600" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">30</text><text x="760" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">40</text><text x="20" y="274" text-anchor="start" fill="#a5a29c" font-size="16">P/E, times</text></svg></figure>
+      <p>On both yardsticks Ramu sits in the middle: the median peer is at 20, and so is its own five-year average. That sounds like an answer. The rest of this part shows why it is only the start of one.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Peer multiples</p>
+      <h2>Borrow a peer’s multiple, get a price</h2>
+      <p>The shortcut: take Ramu’s earnings per share, ₹5.00 for FY26, and multiply by a P/E that similar companies trade at. A P/E is how many years of today’s EPS a buyer pays for (<a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a>). Using each fictional peer from <a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a> in turn, the same ₹5 of earnings becomes ₹75, ₹100 or ₹175 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 262" role="img" aria-label="Ramu’s EPS of 5 rupees stacked 15, 20 and 35 times, once for each peer’s P/E: the same earnings priced at 75, 100 or 175 rupees"><text x="20" y="51" text-anchor="start" fill="#a5a29c" font-size="16">Pahadi’s 15×</text><rect x="200" y="30" width="15" height="30" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="215" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="230" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="245" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="260" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="275" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="290" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="305" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="320" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="335" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="350" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="365" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="380" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="395" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="410" y="30" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><text x="435" y="51" text-anchor="start" fill="#f1eee8" font-size="16">₹75</text><text x="20" y="121" text-anchor="start" fill="#a5a29c" font-size="16">Ramu’s 20×</text><rect x="200" y="100" width="15" height="30" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="215" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="230" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="245" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="260" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="275" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="290" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="305" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="320" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="335" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="350" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="365" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="380" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="395" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="410" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="425" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="440" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="455" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="470" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="485" y="100" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><text x="510" y="121" text-anchor="start" fill="#f1eee8" font-size="16">₹100 · median</text><text x="20" y="191" text-anchor="start" fill="#a5a29c" font-size="16">Masala’s 35×</text><rect x="200" y="170" width="15" height="30" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><rect x="215" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="230" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="245" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="260" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="275" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="290" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="305" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="320" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="335" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="350" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="365" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="380" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="395" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="410" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="425" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="440" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="455" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="470" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="485" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="500" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="515" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="530" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="545" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="560" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="575" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="590" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="605" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="620" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="635" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="650" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="665" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="680" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="695" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><rect x="710" y="170" width="15" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><text x="735" y="191" text-anchor="start" fill="#f1eee8" font-size="16">₹175</text><text x="200" y="248" text-anchor="start" fill="#a5a29c" font-size="16">one block = one year of EPS, ₹5</text></svg></figure>
+      <span class="eq">Price from peers = EPS × peer P/E = ₹5.00 × 20 (the median) = ₹100</span>
+      <p>The median, the middle value, is usually preferred to the average because one extreme peer, like Masala at 35, pulls an average far more. Here the median is Ramu’s own 20, so the peer price is ₹100. Which peer you pick changes the answer from ₹75 to ₹175, so the choice of peers is most of the work.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Comparable?</p>
+      <h2>A peer must match on growth, returns, debt</h2>
+      <p>Same industry and similar size are not enough (<a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a>). A fair peer also grows at a similar pace, earns similar returns on its capital, and carries similar debt, because those are what a P/E pays for. Plot the three tea companies and the multiples line up with growth <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 322" role="img" aria-label="Three fictional peers plotted as P/E against EPS growth: Pahadi at 8 percent growth and P/E 15, Ramu at 13.6 and 20, Masala at 22 and 35; the higher multiples go with faster growth, higher ROE and less debt"><path d="M100 20 L100 260 L700 260" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="100" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="300" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">8</text><text x="500" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">16</text><text x="700" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">24</text><text x="88" y="265" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="88" y="205" text-anchor="end" fill="#a5a29c" font-size="16">10</text><text x="88" y="145" text-anchor="end" fill="#a5a29c" font-size="16">20</text><text x="88" y="85" text-anchor="end" fill="#a5a29c" font-size="16">30</text><text x="88" y="25" text-anchor="end" fill="#a5a29c" font-size="16">40</text><text x="700" y="310" text-anchor="end" fill="#a5a29c" font-size="16">EPS growth, % a year</text><text x="112" y="26" text-anchor="start" fill="#a5a29c" font-size="16">P/E</text><circle cx="300" cy="170" r="9" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="316" y="166" text-anchor="start" fill="#f1eee8" font-size="16">Pahadi · P/E 15</text><text x="316" y="188" text-anchor="start" fill="#a5a29c" font-size="16">ROE 14% · D/E 0.9</text><circle cx="440" cy="140" r="9" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="456" y="136" text-anchor="start" fill="#f1eee8" font-size="16">Ramu · P/E 20</text><text x="456" y="158" text-anchor="start" fill="#a5a29c" font-size="16">ROE 20% · D/E 0.4</text><circle cx="650" cy="50" r="9" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="634" y="46" text-anchor="end" fill="#f1eee8" font-size="16">Masala · P/E 35</text><text x="634" y="68" text-anchor="end" fill="#a5a29c" font-size="16">ROE 26% · D/E 0</text></svg></figure>
+      <p>Masala’s 35 is not a price Ramu has earned: Masala grows 22% a year against Ramu’s 13.6%, earns 26% on its equity against 20%, and has no debt. Pahadi’s 15 comes with 8% growth, a 14% ROE and borrowings of 0.9 times its equity. Pricing Ramu at Masala’s multiple would pay for growth and returns Ramu does not have; at Pahadi’s, it would ignore growth and returns that Ramu does have.</p>
+      <details class="trace"><summary>Go deeper: when no peer is truly alike</summary><p>Real peer sets are rarely clean. Adjust for the differences you can measure, such as growth (PEG, <a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a>), debt (compare EV/EBITDA as well as P/E, Part 14) and accounting basis (consolidated, reported or adjusted EPS, <a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">Part 2</a> and <a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a>), and write down the ones you cannot. A small, close set beats a long list from a screening site’s industry tag.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">A DCF in disguise</p>
+      <h2>A multiple hides a DCF’s assumptions</h2>
+      <p>A P/E looks like a fact, but it is a DCF compressed into one number. Divide <a href="dcf-step-by-step-eli5.html" data-series-link="dcf-step-by-step-eli5">Part 24</a>’s value of ₹76.7 by FY26 EPS of ₹5.00: that is 15.3 times. Run Part 24’s model with one steady growth rate for FY27–FY36, then 5% for ever, and every rate gives its own P/E <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 352" role="img" aria-label="The P/E that Part 24’s DCF gives Ramu for each steady growth rate from 0 to 20 percent: a rising curve that passes 15.3 times at 10.2 percent growth, the 76.7 rupee value, and 20 times at 15.3 percent, today’s price; the 16 to 24 band covers growth of about 11 to 19 percent"><rect x="100" y="74" width="600" height="72" fill="#c3b8ff" opacity="0.2"/><text x="712" y="79" text-anchor="start" fill="#a5a29c" font-size="16">24×</text><text x="712" y="151" text-anchor="start" fill="#a5a29c" font-size="16">16×</text><path d="M100 30 L100 290 L700 290" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="100" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="250" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><text x="400" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="550" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">15</text><text x="700" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">20</text><text x="88" y="295" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="88" y="223" text-anchor="end" fill="#a5a29c" font-size="16">8</text><text x="88" y="151" text-anchor="end" fill="#a5a29c" font-size="16">16</text><text x="88" y="79" text-anchor="end" fill="#a5a29c" font-size="16">24</text><polyline points="100,205 115,203.1 130,201.1 145,199.1 160,197.1 175,194.9 190,192.7 205,190.5 220,188.1 235,185.7 250,183.2 265,180.6 280,178 295,175.2 310,172.4 325,169.5 340,166.5 355,163.4 370,160.2 385,156.9 400,153.5 415,150 430,146.3 445,142.6 460,138.7 475,134.7 490,130.6 505,126.4 520,122 535,117.5 550,112.9 565,108.1 580,103.2 595,98.1 610,92.8 625,87.4 640,81.9 655,76.1 670,70.2 685,64.1 700,57.8" fill="none" stroke="#c3b8ff" stroke-width="3"/><path d="M406.5 161 L406.5 290" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><path d="M559.1 119 L559.1 290" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><circle cx="406.5" cy="152" r="8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="392.5" y="138" text-anchor="end" fill="#f1eee8" font-size="16">Part 24: ₹76.7 = 15.3×</text><circle cx="559.1" cy="110" r="8" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="545.1" y="96" text-anchor="end" fill="#f1eee8" font-size="16">price ₹100 = 20×</text><text x="700" y="340" text-anchor="end" fill="#a5a29c" font-size="16">one growth rate FY27–36, % a year</text><text x="112" y="22" text-anchor="start" fill="#a5a29c" font-size="16">P/E on FY26 EPS of ₹5</text></svg></figure>
+      <span class="eq">P/E = value a share ÷ EPS = ₹76.7 ÷ ₹5.00 = 15.3×  ·  price ₹100 ÷ ₹5.00 = 20×</span>
+      <p>The market’s 20 times is the same claim as <a href="reverse-dcf-eli5.html" data-series-link="reverse-dcf-eli5">Part 25</a>’s: about 15.3% growth a year for ten years, with new money earning 20% and a discount rate of 11.6%. (The two 15.3s are a coincidence: one is a P/E, the other a growth rate.) On this model Ramu’s band of 16 to 24 spans growth beliefs of about 11.0% to 18.7% a year, and Masala’s 35 would need about 25%. So “the peers trade at 20” quietly assumes the peers’ growth, returns and risk are Ramu’s too.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Own history</p>
+      <h2>Ramu’s P/E band, FY22 to FY26</h2>
+      <p>The second yardstick is the company’s own past. Take the P/E at each year end: price at 31 March divided by that year’s EPS. Ramu’s EPS rose every year, from ₹3.00 to ₹5.00 (<a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a>), while its P/E wandered: 18, 16, 22, 24, 20 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 330" role="img" aria-label="Ramu’s P/E at each year end as columns: 18, 16, 22, 24 and 20, inside a shaded band from 16 to 24 with a dashed average line at 20"><rect x="90" y="78" width="540" height="64" fill="#c3b8ff" opacity="0.2"/><rect x="108" y="126" width="64" height="144" fill="#c3b8ff"/><text x="140" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY22</text><text x="140" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">18×</text><rect x="218" y="142" width="64" height="128" fill="#c3b8ff"/><text x="250" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><text x="250" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">16×</text><rect x="328" y="94" width="64" height="176" fill="#c3b8ff"/><text x="360" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><text x="360" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">22×</text><rect x="438" y="78" width="64" height="192" fill="#c3b8ff"/><text x="470" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><text x="470" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">24×</text><rect x="548" y="110" width="64" height="160" fill="#c3b8ff"/><text x="580" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><text x="580" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">20×</text><path d="M90 110 L630 110" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="6 4"/><path d="M90 270 L630 270" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="642" y="83" text-anchor="start" fill="#a5a29c" font-size="16">24× high</text><text x="642" y="115" text-anchor="start" fill="#f1eee8" font-size="16">average 20×</text><text x="642" y="147" text-anchor="start" fill="#a5a29c" font-size="16">16× low</text><text x="78" y="275" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="78" y="211" text-anchor="end" fill="#a5a29c" font-size="16">8</text><text x="78" y="147" text-anchor="end" fill="#a5a29c" font-size="16">16</text><text x="78" y="83" text-anchor="end" fill="#a5a29c" font-size="16">24</text><text x="20" y="24" text-anchor="start" fill="#a5a29c" font-size="16">P/E at each 31 March</text></svg></figure>
+      <p>The range, 16 to 24, is the <b>P/E band</b>; the five-year average is 20. The band turns into prices once you multiply it by EPS. On FY27E EPS of ₹5.75 (<a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a>’s estimate) it gives ₹92 at 16 times, ₹115 at 20 and ₹138 at 24. Today’s ₹100 is a forward P/E of 17.4.</p>
+      <details class="trace"><summary>Go deeper: the year-by-year numbers</summary><p>FY22: ₹54.00 ÷ ₹3.00 = 18 · FY23: ₹54.40 ÷ ₹3.40 = 16 · FY24: ₹85.80 ÷ ₹3.90 = 22 · FY25: ₹105.60 ÷ ₹4.40 = 24 · FY26: ₹100.00 ÷ ₹5.00 = 20. Average (18 + 16 + 22 + 24 + 20) ÷ 5 = 20. Five points make a thin band; analysts often use daily or monthly prices over five to ten years, against trailing or forward EPS, and say which.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Draw the band, then price FY27</h2>
+      <p>The lab draws Ramu’s price against three lines, EPS × the low, middle and high of a band, for FY22–FY26 and FY27E <span class="tag">example</span>. Then it prices FY27 and splits the change from ₹100 into earnings growth and re-rating.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Choose a scenario</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="base">Back to the average</button>
+            <button type="button" class="secondary" data-p="derate">Earnings up, P/E down</button>
+            <button type="button" class="secondary" data-p="rerate">Flat earnings, re-rated</button>
+            <button type="button" class="secondary" data-p="both">Both together</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Draw the band</p>
+          <div class="dl-grid">
+            <div class="dl-col"><div class="control"><label for="c">Middle of the band: <output id="c-o"></output></label><input id="c" type="range" min="10" max="40" step="1" value="20"></div></div>
+            <div class="dl-col"><div class="control"><label for="w">Width either side: <output id="w-o"></output></label><input id="w" type="range" min="0" max="8" step="1" value="4"></div></div>
+          </div>
+          <div class="lab-chart"><svg id="bandChart" viewBox="0 0 800 330" role="img" aria-label="Ramu’s year-end price from FY22 to FY26 as gold dots, against three lavender lines of EPS times the low, middle and high P/E of the band, extended dashed to FY27E, where a hollow dot marks the price you set"></svg></div>
+          <p class="bandkey"><span><i class="dot"></i>year-end price</span><span><i class="ring"></i>your FY27E price</span><span><i style="background:#c3b8ff"></i>EPS × band P/E</span><span>dashed: estimate</span></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Price FY27</p>
+          <div class="dl-grid">
+            <div class="dl-col"><div class="control"><label for="g">EPS growth in FY27: <output id="g-o"></output></label><input id="g" type="range" min="-20" max="40" step="1" value="15"></div></div>
+            <div class="dl-col"><div class="control"><label for="pe">P/E at the end of FY27: <output id="pe-o"></output></label><input id="pe" type="range" min="8" max="40" step="1" value="20"></div></div>
+          </div>
+          <p class="read" id="read27" role="status"></p>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 800 252" role="img" aria-label="Three bars from a zero line: FY27 EPS growth in gold, the change in P/E from 20 in pale lavender, and the resulting change in price from 100 rupees in lavender"></svg></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>Ramu’s FY22–FY26 prices and EPS are fixed, as in the plan’s accounts. FY27E EPS is ₹5.00 × (1 + growth); 15% gives Part 7’s ₹5.75. The FY27 price is that EPS times the P/E you choose, and the change is measured from the FY26 close of ₹100, so dividends are left out. Price change = (1 + EPS growth) × (1 + P/E change) − 1; the small cross term is the two moving together. The band lines are the middle P/E minus and plus the width.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Re-rating</p>
+      <h2>When the multiple moves, it can swamp earnings</h2>
+      <p>A share’s price is EPS times P/E, so its change has two parts: earnings growth and a change in the multiple. A rising P/E is a <b>re-rating</b>; a falling one, a <b>de-rating</b>. Ramu’s EPS grew 13% to 15% every year, yet its price moved anywhere from −5.3% to +57.7% <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 410" role="img" aria-label="For each year from FY23 to FY26, Ramu’s EPS growth, change in P/E and change in price as bars from a zero line: EPS grows 13 to 15 percent every year, but the price changes by +0.7, +57.7, +23.1 and −5.3 percent because the P/E moves"><rect x="260" y="14" width="16" height="16" fill="#f5c76a"/><text x="284" y="28" text-anchor="start" fill="#f1eee8" font-size="16">EPS</text><rect x="400" y="14" width="16" height="16" fill="#c3b8ff" opacity="0.5"/><text x="424" y="28" text-anchor="start" fill="#f1eee8" font-size="16">P/E</text><rect x="540" y="14" width="16" height="16" fill="#c3b8ff"/><text x="564" y="28" text-anchor="start" fill="#f1eee8" font-size="16">price</text><text x="20" y="88" text-anchor="start" fill="#a5a29c" font-size="16">FY23</text><rect x="260" y="56" width="80" height="18" fill="#f5c76a"/><text x="348" y="71" text-anchor="start" fill="#f1eee8" font-size="16">+13.3%</text><rect x="193.3" y="78" width="66.7" height="18" fill="#c3b8ff" opacity="0.5"/><text x="185.3" y="93" text-anchor="end" fill="#f1eee8" font-size="16">−11.1%</text><rect x="260" y="100" width="4.4" height="18" fill="#c3b8ff"/><text x="272.4" y="115" text-anchor="start" fill="#f1eee8" font-size="16">+0.7%</text><text x="20" y="172" text-anchor="start" fill="#a5a29c" font-size="16">FY24</text><rect x="260" y="140" width="88.2" height="18" fill="#f5c76a"/><text x="356.2" y="155" text-anchor="start" fill="#f1eee8" font-size="16">+14.7%</text><rect x="260" y="162" width="225" height="18" fill="#c3b8ff" opacity="0.5"/><text x="493" y="177" text-anchor="start" fill="#f1eee8" font-size="16">+37.5%</text><rect x="260" y="184" width="346.3" height="18" fill="#c3b8ff"/><text x="614.3" y="199" text-anchor="start" fill="#f1eee8" font-size="16">+57.7%</text><text x="20" y="256" text-anchor="start" fill="#a5a29c" font-size="16">FY25</text><rect x="260" y="224" width="76.9" height="18" fill="#f5c76a"/><text x="344.9" y="239" text-anchor="start" fill="#f1eee8" font-size="16">+12.8%</text><rect x="260" y="246" width="54.5" height="18" fill="#c3b8ff" opacity="0.5"/><text x="322.5" y="261" text-anchor="start" fill="#f1eee8" font-size="16">+9.1%</text><rect x="260" y="268" width="138.5" height="18" fill="#c3b8ff"/><text x="406.5" y="283" text-anchor="start" fill="#f1eee8" font-size="16">+23.1%</text><text x="20" y="340" text-anchor="start" fill="#a5a29c" font-size="16">FY26</text><rect x="260" y="308" width="81.8" height="18" fill="#f5c76a"/><text x="349.8" y="323" text-anchor="start" fill="#f1eee8" font-size="16">+13.6%</text><rect x="160" y="330" width="100" height="18" fill="#c3b8ff" opacity="0.5"/><text x="152" y="345" text-anchor="end" fill="#f1eee8" font-size="16">−16.7%</text><rect x="228.2" y="352" width="31.8" height="18" fill="#c3b8ff"/><text x="220.2" y="367" text-anchor="end" fill="#f1eee8" font-size="16">−5.3%</text><rect x="259.2" y="46" width="1.5" height="334" fill="#f1eee8"/><text x="260" y="398" text-anchor="middle" fill="#a5a29c" font-size="16">6 px = 1% · zero line</text></svg></figure>
+      <span class="eq">1 + price change = (1 + EPS growth) × (1 + P/E change)  ·  FY24: 1.147 × 1.375 = 1.577</span>
+      <p>In FY24 the re-rating from 16 to 22 added more than twice what earnings did. In FY26 a de-rating from 24 to 20 turned 13.6% more profit into a 5.3% lower price. Over the four years EPS rose 66.7% and the P/E 11.1%, so the price rose 85.2%, from ₹54 to ₹100. A buyer in FY25 at 24 times needs either faster earnings or another re-rating just to stand still.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Below the average is not automatically cheap</h2>
+      <p>The tempting rule: buy below the band’s average, sell above it. It assumes the business and the world are the same as in the years that made the band. They change. Interest rates are the clearest case. Put <a href="dcf-step-by-step-eli5.html" data-series-link="dcf-step-by-step-eli5">Part 24</a>’s value at each discount rate on Ramu’s ₹5 of EPS, and the P/E the same forecast deserves moves from 11.9 to 21.7 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="Part 24’s value for Ramu at five discount rates, turned into P/Es on EPS of 5 rupees: 21.7 times at 10 percent, 17.3 at 11, 15.3 at 11.6, 14.2 at 12 and 11.9 at 13, drawn against the 16 to 24 band"><rect x="520" y="20" width="160" height="226" fill="#c3b8ff" opacity="0.2"/><text x="600" y="290" text-anchor="middle" fill="#a5a29c" font-size="16">Ramu’s band 16–24</text><text x="20" y="48" text-anchor="start" fill="#a5a29c" font-size="16">WACC 10%</text><rect x="200" y="28" width="434.7" height="28" fill="#c3b8ff"/><text x="644.7" y="48" text-anchor="start" fill="#f1eee8" font-size="16">21.7× · ₹108.7</text><text x="20" y="92" text-anchor="start" fill="#a5a29c" font-size="16">WACC 11%</text><rect x="200" y="72" width="346.5" height="28" fill="#c3b8ff"/><text x="556.5" y="92" text-anchor="start" fill="#f1eee8" font-size="16">17.3× · ₹86.6</text><text x="20" y="136" text-anchor="start" fill="#f1eee8" font-size="16">WACC 11.6%</text><rect x="200" y="116" width="306.8" height="28" fill="#f5c76a"/><text x="516.8" y="136" text-anchor="start" fill="#f1eee8" font-size="16">15.3× · ₹76.7</text><text x="20" y="180" text-anchor="start" fill="#a5a29c" font-size="16">WACC 12%</text><rect x="200" y="160" width="284.2" height="28" fill="#c3b8ff"/><text x="494.2" y="180" text-anchor="start" fill="#f1eee8" font-size="16">14.2× · ₹71.0</text><text x="20" y="224" text-anchor="start" fill="#a5a29c" font-size="16">WACC 13%</text><rect x="200" y="204" width="238.1" height="28" fill="#c3b8ff"/><text x="448.1" y="224" text-anchor="start" fill="#f1eee8" font-size="16">11.9× · ₹59.5</text><path d="M200 20 L200 252" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="20" y="290" text-anchor="start" fill="#a5a29c" font-size="16">20 px = 1 × EPS</text></svg></figure>
+      <p>A band formed when rates were low can sit above what a higher discount rate justifies (<a href="discount-rate-eli5.html" data-series-link="discount-rate-eli5">Part 23</a>), and a P/E that slips below its old band may be a correct de-rating, not a bargain. The same goes for growth: if Ramu’s 13% pace slowed to 8%, the old 20 times would be too high. Before calling a share cheap against its history, ask what has changed since the band was drawn.</p>
+      <p class="note">A band is a record of past moods, not a law. Shares can trade outside their band for years, in either direction.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s own P/E band, FY22–FY26</h2>
+      <p>Tata Consumer Products, consolidated basic EPS as printed in each year’s audited statements, and the NSE closing price on the last trading day of each financial year <span class="tag">public</span>. P/E is the close divided by that year’s EPS, so it uses an EPS that was only published weeks later (FY26’s statements were approved on 8 May 2026).</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Year</th><th>Close on</th><th>Close</th><th>EPS</th><th>P/E</th><th>Source</th></tr></thead>
+        <tbody><tr><td>FY22</td><td class="wk">31 Mar 2022</td><td class="val">₹777.40</td><td class="val">₹10.15</td><td class="val">76.6×</td><td class="pg"><a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2022-06/tcpl_integrated_annual_report_fy2021-22_0.pdf">IAR 2021-22</a> · <a href="https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_31032022.csv">NSE</a></td></tr><tr><td>FY23</td><td class="wk">31 Mar 2023</td><td class="val">₹708.85</td><td class="val">₹13.02</td><td class="val">54.4×</td><td class="pg"><a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2023-08/TCPL_IR-22-23.pdf">IAR 2022-23</a> · <a href="https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_31032023.csv">NSE</a></td></tr><tr><td>FY24</td><td class="wk">28 Mar 2024</td><td class="val">₹1,096.20</td><td class="val">₹12.32</td><td class="val">89.0×</td><td class="pg"><a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2025-05/tata-consumer-ar-2023-24.pdf">IAR 2023-24</a> · <a href="https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_28032024.csv">NSE</a></td></tr><tr><td>FY25</td><td class="wk">28 Mar 2025</td><td class="val">₹1,001.90</td><td class="val">₹13.06</td><td class="val">76.7×</td><td class="pg"><a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2025-06/Tata_Consumer_IAR_2024_25.pdf">IAR 2024-25</a> · <a href="https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_28032025.csv">NSE</a></td></tr><tr><td>FY26</td><td class="wk">30 Mar 2026</td><td class="val">₹1,014.80</td><td class="val">₹15.59</td><td class="val">65.1×</td><td class="pg"><a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">IAR 2025-26</a> · <a href="https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_30032026.csv">NSE</a></td></tr></tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 330" role="img" aria-label="Tata Consumer Products’ P/E at each financial year end from FY22 to FY26 as columns: 76.6, 54.4, 89.0, 76.7 and 65.1, with a dashed average of 72.4"><rect x="108" y="78.5" width="64" height="191.5" fill="#c3b8ff"/><text x="140" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY22</text><text x="140" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">76.6×</text><rect x="218" y="133.9" width="64" height="136.1" fill="#c3b8ff"/><text x="250" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><text x="250" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">54.4×</text><rect x="328" y="47.6" width="64" height="222.4" fill="#c3b8ff"/><text x="360" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><text x="360" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">89.0×</text><rect x="438" y="78.2" width="64" height="191.8" fill="#c3b8ff"/><text x="470" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><text x="470" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">76.7×</text><rect x="548" y="107.3" width="64" height="162.7" fill="#c3b8ff"/><text x="580" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><text x="580" y="318" text-anchor="middle" fill="#f1eee8" font-size="16">65.1×</text><path d="M90 89.1 L630 89.1" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="6 4"/><path d="M90 270 L630 270" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="642" y="94.1" text-anchor="start" fill="#f1eee8" font-size="16">average 72.4×</text><text x="78" y="275" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="78" y="175" text-anchor="end" fill="#a5a29c" font-size="16">40</text><text x="78" y="75" text-anchor="end" fill="#a5a29c" font-size="16">80</text><text x="20" y="24" text-anchor="start" fill="#a5a29c" font-size="16">TCPL P/E at each year-end close</text></svg></figure>
+      <p>TCPL’s band runs from 54.4 to 89.0 times, average 72.4. The swings are re-ratings at work. In FY23 EPS rose 28.3% but the P/E fell from 76.6 to 54.4, and the price fell 8.8%. In FY24 EPS fell 5.4% while the P/E jumped to 89.0, and the price rose 54.6%. Then from the FY24 close to the FY26 close:</p>
+      <figure><svg viewBox="0 0 800 210" role="img" aria-label="From the FY24 year-end to the FY26 year-end, TCPL’s basic EPS rose 26.5 percent while its P/E fell 26.8 percent, so the share price fell 7.4 percent"><text x="20" y="50" text-anchor="start" fill="#a5a29c" font-size="16">EPS</text><rect x="300" y="30" width="159.3" height="28" fill="#f5c76a"/><text x="469.3" y="50" text-anchor="start" fill="#f1eee8" font-size="16">+26.5%</text><text x="20" y="96" text-anchor="start" fill="#a5a29c" font-size="16">P/E</text><rect x="138.9" y="76" width="161.1" height="28" fill="#c3b8ff" opacity="0.5"/><text x="128.9" y="96" text-anchor="end" fill="#f1eee8" font-size="16">−26.8%</text><text x="20" y="142" text-anchor="start" fill="#a5a29c" font-size="16">price</text><rect x="255.4" y="122" width="44.6" height="28" fill="#c3b8ff"/><text x="245.4" y="142" text-anchor="end" fill="#f1eee8" font-size="16">−7.4%</text><rect x="299.2" y="20" width="1.5" height="150" fill="#f1eee8"/><text x="20" y="196" text-anchor="start" fill="#a5a29c" font-size="16">TCPL, FY24 close to FY26 close · 6 px = 1%</text></svg></figure>
+      <p>Two years of 26.5% earnings growth, and holders at the FY24 close were down 7.4%: the de-rating took all of it. TCPL’s band is also no guide to Ramu’s. At 65 times FY26 earnings, <a href="reverse-dcf-eli5.html" data-series-link="reverse-dcf-eli5">Part 25</a> estimated that TCPL’s price needs about 29% a year of growth for ten years, at a 12% discount rate with new money earning 40%; Ramu’s 20 times needs 15.3%. Different growth, returns and risk, different multiples.</p>
+      <details class="trace"><summary>Go deeper: choices behind these numbers</summary>
+        <p><b>Dates.</b> NSE’s full bhavcopy files for 31 March 2022 and 31 March 2023 carry those dates. For FY24, FY25 and FY26 the last session was 28 March 2024, 28 March 2025 and 30 March 2026: the bhavcopy for 1 April of each year gives TCPL’s previous close as exactly those closes (₹1,096.20, ₹1,001.90, ₹1,014.80), so there was no session in between. <b>Rights issue.</b> TCPL made a rights issue in FY25, and the FY25 report restates FY24 basic EPS from ₹12.32 to ₹12.20 for its bonus element (Note 30, p. 541); on ₹12.20 the FY24 P/E is 89.9. FY22 and FY23 were not restated in a report read here; the same adjustment, about 1%, would apply (<a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a> explains why rights issues do this). <b>Which EPS.</b> Basic EPS includes exceptional items; TCPL’s FY26 adjusted EPS of ₹17.30 (AGM presentation, 10 June 2026) gives 58.7 times. A band must use one definition for every year, so this one uses basic EPS throughout.</p>
+      </details>
+      <div class="field-grid">
+        <div><b>₹15.59 basic EPS, FY26</b><span>Group net profit to owners ₹1,542.30 cr ÷ 98,95,35,734 weighted shares</span><em>IAR 2025-26 · NOTE 30 · P. 456</em></div>
+        <div><b>₹1,014.80 close</b><span>30 March 2026; 1 April’s previous close confirms no later session in FY26</span><em>NSE BHAVCOPY, 30 MAR AND 1 APR 2026</em></div>
+        <div><b>₹12.32 → ₹12.20, FY24</b><span>As printed in the FY24 report, then restated for the FY25 rights issue</span><em>IAR 2023-24 P. 490 · IAR 2024-25 P. 541</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited consolidated statements in its integrated annual reports for 2021-22 to 2025-26 (notes and printed pages as cited), and NSE’s full bhavcopy files for each year-end session. Ramu Chai Ltd and its peers are examples. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before calling a price cheap</h2>
+      <ol class="checks">
+        <li><b>Cheap against whom?</b> Name the peers, and check they match on growth, returns and debt, not just industry.</li>
+        <li><b>What does the multiple assume?</b> Turn it back into growth with a DCF or reverse DCF (<a href="dcf-step-by-step-eli5.html" data-series-link="dcf-step-by-step-eli5">Part 24</a>, <a href="reverse-dcf-eli5.html" data-series-link="reverse-dcf-eli5">Part 25</a>). A P/E of 20 and “15% growth for ten years” are the same claim.</li>
+        <li><b>Has anything changed since the band?</b> Interest rates, growth, returns or the business mix can move the band itself.</li>
+        <li><b>How much of the return is re-rating?</b> Split past and expected returns into earnings growth and P/E change, and ask whether the P/E part can repeat.</li>
+      </ol>
+      <p>All of this assumes one company, one business, one multiple. A group that runs a tea brand, a café chain and a stake in a listed company needs a different multiple for each piece. Part 27, “Conglomerates and special cases”, values the parts separately, and covers holding-company discounts and dividend models.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A multiple is a DCF in shorthand: compare only with peers that grow, earn and borrow alike, read a P/E band as past moods rather than a law, and remember that price = EPS × P/E, so a re-rating can add or take away as much as a year of earnings growth.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLDC='#f5c76a',LAVC='#c3b8ff',DARKC='#202020';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const sgn=v=>(v<0?'−':'+')+Math.abs(v).toFixed(1)+'%';
+    // ---- P/E band lab. Ramu's canonical history (example); FY27E EPS = FY26 EPS × (1 + growth).
+    const YRS=['FY22','FY23','FY24','FY25','FY26','FY27E'];
+    const EPS=[3.00,3.40,3.90,4.40,5.00], PRICE=[54.00,54.40,85.80,105.60,100.00];
+    const P0=100, PE0=20;   // FY26 close and P/E
+    const PRESETS={
+      base:{v:{c:20,w:4,g:15,pe:20},t:'Base: FY27E EPS ₹5.75 (Part 7) at the five-year average of 20×. The price rises with earnings, 15%.'},
+      derate:{v:{c:20,w:4,g:15,pe:16},t:'De-rated: the same 15% earnings growth, but the P/E slips to the bottom of the band. ₹92: the shares fall 8% in a year the profit grew 15%.'},
+      rerate:{v:{c:20,w:4,g:0,pe:24},t:'Re-rated: no earnings growth at all, yet the P/E climbs to the top of the band. ₹120: a 20% gain that is all mood.'},
+      both:{v:{c:20,w:4,g:15,pe:24},t:'Both together: 15% more earnings and a P/E at the top of the band. ₹138, a 38% gain, of which earnings explain less than half.'}};
+    const IDS=['c','w','g','pe'];
+    const FMT={c:v=>v+'×',w:v=>'± '+v,g:v=>(v>0?'+':v<0?'−':'')+Math.abs(v)+'%',pe:v=>v+'×'};
+    function nice(m){const e=Math.pow(10,Math.floor(Math.log10(m))),r=m/e;return (r<=1?1:r<=2?2:r<=2.5?2.5:r<=5?5:10)*e;}
+    function compute(c,w,g,pe){
+      const lo=c-w, hi=c+w, eps27=EPS[4]*(1+g/100), all=[...EPS,eps27];
+      const p27=eps27*pe, ret=p27/P0-1, ePart=g/100, rPart=pe/PE0-1, cross=ret-ePart-rPart;
+      const histPE=EPS.map((e,i)=>PRICE[i]/e);
+      return {lo,mid:c,hi,eps27,p27,ret,ePart,rPart,cross,histPE,
+        lines:{lo:all.map(e=>e*lo),mid:all.map(e=>e*c),hi:all.map(e=>e*hi)},fwdPE:P0/eps27};
+    }
+    const labConfig={format:v=>v+'%'};
+    function draw(){
+      const v={};IDS.forEach(id=>{v[id]=+$(id).value;$(id+'-o').textContent=FMT[id](v[id]);});
+      const r=compute(v.c,v.w,v.g,v.pe);
+      // band chart: price (₹) against year, one y scale
+      const X=i=>110+i*110, top=Math.max(...r.lines.hi,...PRICE,r.p27), step=nice(top/4), ymax=Math.ceil(top/step)*step;
+      const Y=p=>290-250*p/ymax;
+      let s='';
+      const poly=(arr,from,to)=>arr.slice(from,to+1).map((p,i)=>`${X(from+i).toFixed(1)},${Y(p).toFixed(1)}`).join(' ');
+      s+=`<path d="M${poly(r.lines.hi,0,5).split(' ').join(' L')} L${poly(r.lines.lo,0,5).split(' ').reverse().join(' L')} Z" fill="${LAVC}" opacity="0.14"/>`;
+      ['hi','mid','lo'].forEach(k=>{
+        const wdt=k==='mid'?3:2, op=k==='mid'?1:0.7;
+        s+=`<polyline points="${poly(r.lines[k],0,4)}" fill="none" stroke="${LAVC}" stroke-width="${wdt}" opacity="${op}"/>`;
+        s+=`<polyline points="${poly(r.lines[k],4,5)}" fill="none" stroke="${LAVC}" stroke-width="${wdt}" opacity="${op}" stroke-dasharray="6 5"/>`;});
+      s+=`<path d="M100 290 L670 290" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      for(let t=0;t<=ymax+1e-9;t+=step) s+=T(92,Y(t)+5,'₹'+(+t.toFixed(1)),'end',MUTC);
+      YRS.forEach((y,i)=>{s+=T(X(i),316,y,'middle',MUTC);});
+      PRICE.forEach((p,i)=>{s+=`<circle cx="${X(i).toFixed(1)}" cy="${Y(p).toFixed(1)}" r="7" fill="${GOLDC}" stroke="${DARKC}" stroke-width="2"/>`;});
+      s+=`<circle cx="${X(5).toFixed(1)}" cy="${Y(r.p27).toFixed(1)}" r="7" fill="${DARKC}" stroke="${GOLDC}" stroke-width="3"/>`;
+      // right-hand line labels, pushed apart so they never overlap
+      const labs=[['hi',r.hi],['mid',r.mid],['lo',r.lo]].filter((d,i,a)=>v.w>0||d[0]==='mid').map(([k,m])=>({y:Y(r.lines[k][5])+5,t:m+'×'}));
+      for(let i=1;i<labs.length;i++) if(labs[i].y-labs[i-1].y<20) labs[i].y=labs[i-1].y+20;
+      if(labs.length&&labs[labs.length-1].y>300){labs[labs.length-1].y=300;for(let i=labs.length-2;i>=0;i--) if(labs[i+1].y-labs[i].y<20) labs[i].y=labs[i+1].y-20;}
+      labs.forEach(l=>{s+=T(684,l.y,l.t,'start',FGC);});
+      $('bandChart').innerHTML=s;
+      // decomposition chart (#labChart): EPS growth, P/E change, price change, % from ₹100
+      const vals=[r.ePart*100,r.rPart*100,r.ret*100], lo=Math.min(0,...vals), hi=Math.max(0,...vals);
+      const st=nice(Math.max(hi-lo,10)/5), a=Math.floor(lo/st+1e-9)*st, b=Math.ceil(hi/st-1e-9)*st;
+      const X0=60,X1=740, sx=x=>X0+(x-a)*(X1-X0)/(b-a);
+      let d='';
+      const rows=[['EPS growth',vals[0],GOLDC,1],['P/E change',vals[1],LAVC,0.5],['price change',vals[2],LAVC,1]];
+      rows.forEach(([nm,val,col,op],i)=>{const y=14+i*66;
+        d+=T(20,y+16,nm+' '+sgn(val),'start',i===2?FGC:MUTC);
+        const x0=sx(0),x1=sx(val),w=Math.max(Math.abs(x1-x0),0);
+        d+=`<rect x="${(x0-0.75).toFixed(2)}" y="${y+21}" width="1.5" height="34" fill="${FGC}"/>`;
+        d+=`<rect data-v="${val.toFixed(4)}" x="${Math.min(x0,x1).toFixed(2)}" y="${y+26}" width="${w.toFixed(2)}" height="24" fill="${col}" opacity="${op}"/>`;});
+      d+=`<path d="M${X0} 216 L${X1} 216" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      for(let t=a;t<=b+1e-9;t+=st){const tv=+t.toFixed(6);d+=`<text class="tick" data-v="${tv}" x="${sx(tv).toFixed(2)}" y="240" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(tv)}</text>`;}
+      $('labChart').innerHTML=d;
+      // readouts
+      const where=r.p27<r.lines.lo[5]-1e-9?'below the band':r.p27>r.lines.hi[5]+1e-9?'above the band':'inside the band';
+      $('read27').textContent=`FY27E: EPS ₹${r.eps27.toFixed(2)} × ${v.pe} = ₹${r.p27.toFixed(2)}, ${where} (₹${r.lines.lo[5].toFixed(2)} to ₹${r.lines.hi[5].toFixed(2)}). From ₹100 that is ${sgn(r.ret*100)}.`;
+      const L=[['FY26 close','₹100 = EPS ₹5.00 × 20'],
+        ['Band lines, FY27E','₹'+r.eps27.toFixed(2)+' × '+r.lo+', '+r.mid+', '+r.hi+' = ₹'+r.lines.lo[5].toFixed(2)+', ₹'+r.lines.mid[5].toFixed(2)+', ₹'+r.lines.hi[5].toFixed(2)],
+        ['FY27E EPS','5.00 × (1 '+(v.g<0?'−':'+')+' '+Math.abs(v.g)+'%) = ₹'+r.eps27.toFixed(2)],
+        ['Forward P/E at ₹100','100 ÷ '+r.eps27.toFixed(2)+' = '+r.fwdPE.toFixed(1)+'×'],
+        ['FY27E price','₹'+r.eps27.toFixed(2)+' × '+v.pe+' = ₹'+r.p27.toFixed(2)],
+        ['Price change',r.p27.toFixed(2)+' ÷ 100 − 1 = '+sgn(r.ret*100)],
+        ['Split','(1 '+sgn(r.ePart*100)+') × (1 '+sgn(r.rPart*100)+') − 1; the cross term is '+sgn(r.cross*100)],
+        ['History P/E',r.histPE.map((p,i)=>YRS[i]+' '+p.toFixed(0)).join(' · ')]];
+      $('ledger').innerHTML=L.map(([x,y])=>`<span>${x}</span><span>${y}</span>`).join('');
+      window.labResults={valid:[r.p27,r.ret,r.eps27,...r.lines.lo,...r.lines.hi].every(Number.isFinite)&&r.lo>0,
+        inputs:{...v},lo:r.lo,mid:r.mid,hi:r.hi,eps27:r.eps27,p27:r.p27,ret:r.ret,ePart:r.ePart,rPart:r.rPart,cross:r.cross,
+        band27:{lo:r.lines.lo[5],mid:r.lines.mid[5],hi:r.lines.hi[5]},band26:{lo:r.lines.lo[4],mid:r.lines.mid[4],hi:r.lines.hi[4]},
+        fwdPE:r.fwdPE,histPE:r.histPE,where,ymax};
+    }
+    IDS.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];IDS.forEach(id=>$(id).value=p.v[id]);draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
