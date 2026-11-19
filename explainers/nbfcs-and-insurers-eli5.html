@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NBFCs and insurers — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (loan repayments, premiums, new borrowing) | coral #ff8059 = money going out (costs, claims, bad loans)
+       gold #f5c76a = what belongs to shareholders (profit, equity, VNB, embedded value) | rose #ec6a94 = what is owed (borrowings, interest, maturities)
+       lavender #c3b8ff = the market's view (price, P/EV, P/B) */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eq b{color:var(--fg)}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    @media (max-width:700px){.eli5-study-container table.rep{min-width:0}.rep td.pg{display:none}.rep th.pg{display:none}.rep td,.rep th{padding:8px 6px}}
+    /* Part 30 lab: one column of numbered steps (layout as in Part 15) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:4px}
+    .dashlab .control{margin:0 0 14px}
+    .dashlab .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .control input[type=range]{display:block;width:100%}
+    .dashlab details.trace{margin-top:16px}
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:0 0 16px}
+    .readouts div{border:1px solid var(--border);padding:10px 12px}
+    .readouts b{display:block;font:600 20px/1.2 var(--font-mono);color:var(--fg)}
+    .readouts b.bad{color:#ec6a94}.readouts b.ok{color:#76d5c1}
+    .readouts span{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted);margin-top:2px}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}}
+  </style>
+</head>
+<body data-series-id="nbfcs-and-insurers-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 18 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>NBFCs and insurers</h1>
+      <p class="lede">A non-bank lender lives on borrowed money, so what matters is what that money costs and when it falls due. An insurer is paid first and pays out later, so what matters is what its promises will earn. Each needs its own yardsticks.</p>
+      <p class="source-note">Built from Bajaj Finance’s Q4 FY26 investor presentation (filed with NSE on 29 April 2026), HDFC Life’s FY26 press release and investor presentation (filed 16 April 2026), and RBI and IRDAI documents as cited in each panel · <a href="https://nsearchives.nseindia.com/corporate/BAJFINANCE_29042026172519_InvestorPresentation.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: Part 29, “Banks”, reads a bank’s accounts: net interest margin, cheap current and savings deposits (CASA), bad loans and capital. <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> shows what a rate rise does to a borrower, and <a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">Part 12</a> follows cash that is stuck waiting. This part applies both ideas to companies whose whole business is other people’s money. Facts carry a tag: <span class="tag">public</span> is a figure from a company filing or a regulator’s document, <span class="tag">example</span> is a made-up number for three fictional companies: Sahyadri Finance Ltd (a lender), Kaveri Life (a life insurer) and Godavari General (a general insurer). All amounts are ₹ crore (cr). Real figures are frozen at FY2026. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: repayments, premiums, new borrowing</span>
+        <span><i style="background:#ff8059"></i>money going out: costs, claims, bad loans</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, equity, VNB, EV</span>
+        <span><i style="background:#ec6a94"></i>what is owed: borrowings, interest, what falls due</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, P/EV</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>A lender that cannot take deposits</h2>
+      <p>A non-banking financial company (NBFC) lends like a bank: car loans, consumer loans, loans to small firms. The difference is where its money comes from. In RBI’s words, “NBFCs cannot accept demand deposits”: no savings or current accounts. The few allowed to take deposits take only fixed deposits of 12 to 60 months, without deposit insurance <span class="tag">public</span>. So an NBFC borrows from banks and from the bond and money markets. Sahyadri Finance lends ₹10,000 cr, funded by ₹8,000 cr of borrowings and ₹2,000 cr of its owners’ money <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 248" role="img" aria-label="Sahyadri Finance’s balance sheet on one scale: loans of 10,000 crore on top, and below them the same width split into 3,200 crore of short-term paper, 4,800 crore of long-term borrowing and 2,000 crore of equity"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore · 6 px = ₹100 cr</text><text x="40" y="74" text-anchor="start" fill="#a5a29c" font-size="16">Owns</text><rect x="150" y="52" width="600" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="160" y="75" text-anchor="start" fill="#202020" font-size="16">loans to customers 10,000</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">Owes</text><rect x="150" y="118" width="192" height="34" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="160" y="141" text-anchor="start" fill="#202020" font-size="16">short-term 3,200</text><rect x="342" y="118" width="288" height="34" fill="#ec6a94" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="352" y="141" text-anchor="start" fill="#202020" font-size="16">long-term 4,800</text><rect x="630" y="118" width="120" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="640" y="141" text-anchor="start" fill="#202020" font-size="16">equity 2,000</text><text x="150" y="186" text-anchor="start" fill="#ec6a94" font-size="16">3-month paper</text><text x="342" y="186" text-anchor="start" fill="#a5a29c" font-size="16">1–3 year bonds and bank loans</text><text x="40" y="228" text-anchor="start" fill="#f1eee8" font-size="16">borrowings 8,000 = 4× equity</text></svg></figure>
+      <p>Two numbers follow from that picture: what the borrowed money costs, and when it has to be paid back. The rest of the NBFC half of this part is about those two. Source: <a href="https://www.rbi.org.in/Scripts/FAQView.aspx?Id=92">RBI, FAQs on NBFCs</a>, question 3 and the section on public deposits (read 19 November 2026).</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Earn 15%, pay 8%: the spread</h2>
+      <p>Sahyadri charges its borrowers 15% a year and pays 8% on what it borrows, its <b>cost of funds</b>. The difference, 7 percentage points, is the <b>spread</b>. Because ₹20 of every ₹100 lent is the owners’ money and costs no interest, interest paid is only ₹6.40 per ₹100 of loans, so <b>net interest income</b> is ₹8.60: a net interest margin (NIM) of 8.6% <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 330" role="img" aria-label="Two bars on one scale: 15 rupees of interest earned on 100 rupees of loans, and below it the same 15 split into 6.40 of interest paid, 3 of costs, 2 of bad loans, 0.90 of tax and 2.70 of profit"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">per ₹100 of loans, one year · 40 px = ₹1</text><text x="40" y="94" text-anchor="start" fill="#a5a29c" font-size="16">Earns</text><rect x="100" y="70" width="600" height="36" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="110" y="94" text-anchor="start" fill="#202020" font-size="16">interest earned 15.00</text><text x="40" y="154" text-anchor="start" fill="#a5a29c" font-size="16">Goes</text><rect x="100" y="130" width="256" height="36" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="108" y="154" text-anchor="start" fill="#202020" font-size="16">interest paid 6.40</text><rect x="356" y="130" width="120" height="36" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="364" y="154" text-anchor="start" fill="#202020" font-size="16">costs 3</text><rect x="476" y="130" width="80" height="36" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="484" y="154" text-anchor="start" fill="#202020" font-size="16">losses 2</text><rect x="556" y="130" width="36" height="36" fill="#ff8059" opacity="0.55" stroke="#202020" stroke-width="2"/><rect x="592" y="130" width="108" height="36" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="600" y="154" text-anchor="start" fill="#202020" font-size="16">profit 2.70</text><path d="M574 170 L574 188" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="574" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">tax 0.90</text><path d="M100 226 L356 226" stroke="#ec6a94" stroke-width="2" fill="none"/><text x="100" y="250" text-anchor="start" fill="#ec6a94" font-size="16">cost of funds: 8% on ₹80 borrowed</text><text x="40" y="292" text-anchor="start" fill="#f1eee8" font-size="16">spread 15% − 8% = 7 points · NIM 8.6% · ROA 2.7%</text></svg></figure>
+      <p>For the whole book: interest earned ₹1,500 cr, interest paid ₹640 cr, net interest income ₹860 cr, operating costs ₹300 cr, bad loans (credit cost, 2% of loans) ₹200 cr, profit before tax ₹360 cr, tax ₹90 cr, profit ₹270 cr. That is a 2.7% return on assets, and with assets five times equity, a 13.5% return on equity (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>’s equity multiplier at work).</p>
+      <span class="eq">NIM = (interest earned − interest paid) ÷ loans = (1,500 − 640) ÷ 10,000 = 8.6%</span>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The first risk</p>
+      <h2>When borrowing costs one point more</h2>
+      <p>The spread is thin compared with the loans it sits on. If Sahyadri’s cost of funds rises from 8% to 9% and it cannot raise its own rates, interest paid rises by ₹80 cr and profit before tax falls from ₹360 cr to ₹280 cr, 22% less <span class="tag">example</span>. A one-point move in the cost of funds is a 22% move in profit: <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a>’s rate shock, with five times the leverage.</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="Interest paid and profit before tax for Sahyadri at an 8 percent and a 9 percent cost of funds, on one scale: interest rises from 640 to 720 crore and profit before tax falls from 360 to 280 crore, 22 percent less"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore a year · 0.8 px = ₹1 cr</text><text x="40" y="78" text-anchor="start" fill="#a5a29c" font-size="16">cost 8%</text><rect x="150" y="56" width="512" height="30" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="160" y="77" text-anchor="start" fill="#202020" font-size="16">interest 640</text><rect x="150" y="94" width="288" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="160" y="115" text-anchor="start" fill="#202020" font-size="16">profit before tax 360</text><text x="40" y="188" text-anchor="start" fill="#a5a29c" font-size="16">cost 9%</text><rect x="150" y="166" width="576" height="30" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="160" y="187" text-anchor="start" fill="#202020" font-size="16">interest 720</text><rect x="150" y="204" width="224" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="160" y="225" text-anchor="start" fill="#202020" font-size="16">profit before tax 280</text><path d="M662 48 L662 240" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/><text x="738" y="192" text-anchor="start" fill="#ec6a94" font-size="16">+80</text><text x="386" y="225" text-anchor="start" fill="#f5c76a" font-size="16">−22%</text><text x="40" y="284" text-anchor="start" fill="#a5a29c" font-size="16">same loans, same yield, one point dearer</text></svg></figure>
+      <p>Not all borrowing reprices at once. Short-term paper is replaced at the new rate within months; a three-year bond keeps its old rate until it matures. So the cost of funds follows the market with a lag, and the more short-term borrowing a lender has, the faster a rate rise reaches its profit. That brings in the second risk, which is about timing rather than price.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The second risk</p>
+      <h2>Loans repay slowly; paper falls due fast</h2>
+      <p>Sahyadri’s loans run for three years and are repaid in monthly instalments, about ₹400 cr a month including interest. But ₹3,200 cr of its borrowing is <b>commercial paper</b>: short-term IOUs to the money market that fall due within three months <span class="tag">example</span>. Normally each paper is paid off with a new one, a <b>rollover</b>. If the market stops buying, ₹3,200 cr is due in three months while the loans have repaid only about ₹833 cr of principal.</p>
+      <figure><svg viewBox="0 0 800 360" role="img" aria-label="Two areas over 36 months: loans outstanding fall in a straight line from 10,000 crore to zero, while borrowings fall from 8,000 crore, dropping 3,200 crore in the first three months as the short-term paper falls due"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">outstanding, ₹ crore · if nothing is refinanced</text><path d="M110 290 L110 50 L686 290 Z" stroke="#76d5c1" stroke-width="2" fill="rgba(118,213,193,0.25)"/><path d="M110 290 L110 98 L126 126.8 L142 155.6 L158 184.4 L686 290 Z" stroke="#ec6a94" stroke-width="2" fill="rgba(236,106,148,0.45)"/><path d="M110 290 L686 290" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M110 290 L110 50" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="110" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="158" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><text x="302" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">12</text><text x="494" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">24</text><text x="686" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">36</text><text x="686" y="340" text-anchor="end" fill="#a5a29c" font-size="16">months from today</text><text x="98" y="295" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="98" y="175" text-anchor="end" fill="#a5a29c" font-size="16">5,000</text><text x="98" y="55" text-anchor="end" fill="#a5a29c" font-size="16">10,000</text><text x="182" y="107.6" text-anchor="start" fill="#ec6a94" font-size="16">3,200 due in 3 months</text><text x="414" y="146" text-anchor="start" fill="#76d5c1" font-size="16">loans still out</text><text x="254" y="234.8" text-anchor="start" fill="#f1eee8" font-size="16">still owed</text></svg></figure>
+      <p>This is an <b>asset–liability mismatch</b>: what the company is owed (its assets) comes in more slowly than what it owes (its liabilities) goes out. Borrowing short and lending long is cheap while markets are calm, because short-term rates are usually lower. It is also how a lender with good loans can still miss a payment. <a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">Part 12</a> asked how long a rupee stays stuck; for a lender, the question is whether it comes back before the lender’s own bills fall due.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How regulators measure it</p>
+      <h2>The maturity ladder RBI asks for</h2>
+      <p>RBI makes NBFCs sort every rupee in and out by when it is due: the <b>structural liquidity statement</b>. Since its November 2019 circular, the first month is split into 1–7, 8–14 and 15–30 day buckets, and “the net cumulative negative mismatches … shall not exceed 10%, 10% and 20% of the cumulative cash outflows” in those buckets <span class="tag">public</span>. Here is Sahyadri’s first month, counting its ₹500 cr of cash and spreading each month’s flows evenly over its days <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 322" role="img" aria-label="Sahyadri’s cumulative cash gap as a percentage of cumulative outflows in RBI’s three short buckets: plus 103 percent in 1 to 7 days, plus 17 percent by 14 days, and minus 28 percent by 30 days, beyond the minus 20 percent limit drawn as a dashed line"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">cumulative gap ÷ cumulative outflows · 4 px = 1 point</text><text x="40" y="82" text-anchor="start" fill="#a5a29c" font-size="16">1–7 days</text><rect x="300" y="60" width="411.6" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="721.6" y="81" text-anchor="start" fill="#f1eee8" font-size="16">+103%</text><path d="M260 54 L260 96" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="40" y="146" text-anchor="start" fill="#a5a29c" font-size="16">8–14 days</text><rect x="300" y="124" width="69.6" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="379.6" y="145" text-anchor="start" fill="#f1eee8" font-size="16">+17%</text><path d="M260 118 L260 160" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="40" y="210" text-anchor="start" fill="#a5a29c" font-size="16">15–30 days</text><rect x="187.2" y="188" width="112.8" height="30" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="177.2" y="209" text-anchor="end" fill="#f1eee8" font-size="16">−28%</text><path d="M220 182 L220 224" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><path d="M300 48 L300 252" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="300" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="220" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">−20%</text><text x="700" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">+100%</text><path d="M300 296 L330 296" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="340" y="302" text-anchor="start" fill="#f1eee8" font-size="16">RBI limit on the shortfall</text></svg></figure>
+      <p>By day 30, ₹1,253 cr is due (paper ₹1,067 cr, a long-term instalment ₹133 cr and interest ₹53 cr) against ₹900 cr in hand (cash ₹500 cr and repayments ₹400 cr). The shortfall of ₹353 cr is 28% of outflows: Sahyadri breaks RBI’s 20% limit. The same circular added a <b>liquidity coverage ratio</b> (LCR) for NBFCs with assets of ₹10,000 cr or more and all deposit-taking NBFCs: liquid assets of at least 100% of the net cash that could leave in 30 days of stress, phased in from 50% in December 2020 to 100% by December 2024 <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: the working and the rule</summary>
+        <p>Month 1 owed = 3,200 ÷ 3 + 4,800 ÷ 36 + 8,000 × 8% ÷ 12 = 1,066.7 + 133.3 + 53.3 = 1,253.3. Days 1–7: in 500 + 400 × 7/30 = 593.3, out 1,253.3 × 7/30 = 292.4, gap +103%. Days 8–14 (cumulative): in 686.7, out 584.9, gap +17%. Days 15–30: in 900, out 1,253.3, gap −353.3 = −28%. A real statement counts each loan and borrowing on its own dates; spreading evenly is this page’s simplification. Source: <a href="https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11719">RBI, “Liquidity Risk Management Framework for Non-Banking Financial Companies and Core Investment Companies”, RBI/2019-20/88, 4 November 2019</a>, paragraphs 2(i) and 4.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">It has happened</p>
+      <h2>2018: when the rollover stopped</h2>
+      <p>In September 2018 the IL&amp;FS group, which finances and builds infrastructure, defaulted on its debt. RBI’s December 2018 Financial Stability Report put the group’s total debt at around ₹90,000 cr, with mutual funds holding about ₹6,500 cr of it, and noted that NBFC and housing-finance borrowing had been shifting to short-term commercial paper and certificates of deposit “at the cost of long-term instruments” <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 376" role="img" aria-label="A timeline from 2018 to 2026: IL&FS defaults in September 2018, RBI’s tighter liquidity rules for NBFCs in November 2019, and the minimum liquidity coverage ratio stepping up from 50 percent in December 2020 to 100 percent in December 2024"><rect x="293.6" y="225" width="80" height="75" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="333.6" y="217" text-anchor="middle" fill="#f1eee8" font-size="16">50%</text><rect x="373.6" y="210" width="80" height="90" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="413.6" y="202" text-anchor="middle" fill="#f1eee8" font-size="16">60%</text><rect x="453.6" y="195" width="80" height="105" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="493.6" y="187" text-anchor="middle" fill="#f1eee8" font-size="16">70%</text><rect x="533.6" y="172.5" width="80" height="127.5" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="573.6" y="164.5" text-anchor="middle" fill="#f1eee8" font-size="16">85%</text><rect x="613.6" y="150" width="86.4" height="150" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="656.8" y="142" text-anchor="middle" fill="#f1eee8" font-size="16">100%</text><path d="M60 300 L700 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="60" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">2018</text><text x="220" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">2020</text><text x="380" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">2022</text><text x="540" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">2024</text><text x="700" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">2026</text><path d="M113.6 40 L113.6 300" stroke="#ec6a94" stroke-width="2" fill="none" stroke-dasharray="5 4"/><text x="121.6" y="34" text-anchor="start" fill="#ec6a94" font-size="16">IL&FS defaults, Sep 2018</text><path d="M207.2 72 L207.2 300" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><text x="215.2" y="66" text-anchor="start" fill="#f1eee8" font-size="16">RBI ALM rules, Nov 2019</text><text x="293.6" y="112" text-anchor="start" fill="#76d5c1" font-size="16">minimum LCR</text><text x="40" y="356" text-anchor="start" fill="#a5a29c" font-size="16">80 px = 1 year · bar height = minimum LCR</text></svg></figure>
+      <p>RBI’s own account a year later: “In the aftermath of the IL&amp;FS episode in September 2018 sudden changes in sentiment, risk perceptions and asset liability mismatches surfaced” across NBFCs. Lenders turned to bank loans and term borrowing “for better asset-liability management”, and RBI tightened the rules shown in the previous panel <span class="tag">public</span>. The lesson is the one in Sahyadri’s ladder: funding that must be renewed every few weeks can vanish exactly when it is needed.</p>
+      <details class="trace"><summary>Go deeper: the sources, and what this page does not claim</summary>
+        <p>RBI, <a href="https://rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=912">Financial Stability Report, December 2018, Chapter I</a>, paragraph 1.20 (“about ₹ 65 billion of IL&amp;FS group exposure out of a total debt of around ₹ 900 billion”), and <a href="https://rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=913">Chapter II</a> (the shift to short-term CPs and CDs); RBI, <a href="https://www.rbi.org.in/scripts/PublicationsView.aspx?Id=19367">Report on Trend and Progress of Banking in India 2018-19, Chapter VI</a>, 24 December 2019, paragraph VI.14 and Box VI.1. These describe the sector’s funding and the aftermath. This page does not reconstruct IL&amp;FS’s own maturity ladder, which these sources do not give.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Run Sahyadri through a funding freeze</h2>
+      <p>Sahyadri’s existing loans and borrowings only, for 12 months, with no new lending <span class="tag">example</span>: the same view a maturity ladder takes. Choose how much is short-term paper, how much of it the market renews during a freeze, how long the freeze lasts, and how much cash Sahyadri holds. In each month’s upper bar, bright teal is Sahyadri’s own money (its cash plus repayments) and the dim extension is new borrowing; the rose bar below is everything owed. All are running totals.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Pick a situation</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="calm">Calm markets</button>
+            <button type="button" class="secondary" data-p="freeze">IL&amp;FS-style freeze</button>
+            <button type="button" class="secondary" data-p="longterm">Funded long</button>
+            <button type="button" class="secondary" data-p="buffer">Big cash buffer</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Set the funding</p>
+          <div class="dl-grid">
+            <div><div class="control"><label for="st">Short-term paper: <output id="st-o"></output></label><input id="st" type="range" min="0" max="60" step="5" value="40"></div>
+            <div class="control"><label for="roll">Renewed during the freeze: <output id="roll-o"></output></label><input id="roll" type="range" min="0" max="100" step="5" value="25"></div></div>
+            <div><div class="control"><label for="len">Freeze lasts: <output id="len-o"></output></label><input id="len" type="range" min="0" max="6" step="1" value="3"></div>
+            <div class="control"><label for="buf">Cash buffer today: <output id="buf-o"></output></label><input id="buf" type="range" min="0" max="3000" step="100" value="500"></div></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Watch the months</p>
+          <div class="readouts" id="readouts"></div>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 760 562" role="img" aria-label="For each of the next 12 months, a teal bar of the running total of money coming in, with Sahyadri’s own part darker, above a rose bar of the running total owed; where rose is longer than teal the month is marked short"></svg></div>
+          <p class="lights-key">upper bar: bright = own cash and repayments, dim = new borrowing · lower bar: owed · rose month label = cash has run out</p>
+          <details class="trace"><summary>Show the working, month by month</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions</summary><p>Loans ₹10,000 cr repay about ₹400 cr a month (one 36th of the book plus a month’s interest at 15%). Borrowings ₹8,000 cr at 8%. Short-term paper runs three months, one third falling due each month; paper renewed in month m falls due again in month m + 3. Long-term borrowing is repaid evenly over 36 months and is not refinanced. The freeze starts in month 1; after it, all maturing paper is renewed. Interest is paid monthly on the debt outstanding at the start of each month. The buffer earns nothing here. A real lender would also stop or slow new lending, sell assets, or draw bank lines; none of that is modelled.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Good loans, and still out of cash</h2>
+      <p>Run the freeze preset and look at the twelfth month: Sahyadri’s cash is back above zero, because its borrowers kept paying. Nothing was wrong with its loans. It was <b>illiquid</b> (short of cash this month), not <b>insolvent</b> (owing more than it owns) <span class="tag">example</span>. But a missed payment in month 1 is a default all the same, and lenders who see a default stop lending.</p>
+      <figure><svg viewBox="0 0 800 396" role="img" aria-label="Sahyadri’s cash in hand month by month: in calm markets it climbs from 500 to about 3,100 crore; with a three-month funding freeze it falls to minus 2,036 crore by month 3, then recovers above zero by month 12 as loan repayments keep arriving"><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">cash in hand, ₹ crore · 0.05 px = ₹1 cr</text><path d="M110 200 L710 200" stroke="#57534f" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><polyline points="110,175 160,164.3 210,153.6 260,142.9 310,132.1 360,121.2 410,110.3 460,99.4 510,88.4 560,77.4 610,66.3 660,55.2 710,44.1" fill="none" stroke="#76d5c1" stroke-width="3"/><polyline points="110,175 160,217.7 210,259.9 260,301.8 310,289.9 360,278 410,266.1 460,254.1 510,242 560,229.9 610,217.8 660,205.6 710,193.4" fill="none" stroke="#ec6a94" stroke-width="3"/><circle cx="260" cy="301.8" r="6" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="274" y="323.8" text-anchor="start" fill="#ec6a94" font-size="16">short 2,036 in month 3</text><text x="710" y="30.1" text-anchor="end" fill="#76d5c1" font-size="16">calm markets</text><text x="710" y="179.4" text-anchor="end" fill="#ec6a94" font-size="16">freeze</text><text x="98" y="205" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="110" y="352" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="260" y="352" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><text x="410" y="352" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><text x="560" y="352" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><text x="710" y="352" text-anchor="middle" fill="#a5a29c" font-size="16">12</text><text x="710" y="380" text-anchor="end" fill="#a5a29c" font-size="16">months from today</text></svg></figure>
+      <p>This is why ratings agencies, regulators and careful investors read a lender’s maturity ladder, its cash buffer and its funding mix, not just its profit. Profit tells you whether the loans are good; the ladder tells you whether the lender survives long enough to collect them.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Insurers: life</p>
+      <h2>Life insurers: profit arrives over decades</h2>
+      <p>A life insurer is the lender turned around: customers pay first, and the insurer pays out years later. When it sells a policy it pays commission and set-up costs at once, then earns a small profit each year the policy stays in force. Kaveri Life’s new policies this year lose ₹120 cr in year one and then make ₹57 cr a year for 14 years <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 524" role="img" aria-label="Fifteen yearly bars for one year of new policies at Kaveri Life: a loss of 120 crore in year one, then a profit of 57 crore a year; discounted, they are worth 250 crore, drawn under a 1,000 crore premium bar as a 25 percent margin"><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">profit to shareholders, ₹ crore a year · 1.4 px = ₹1 cr</text><rect x="120" y="170" width="30" height="168" fill="#ff8059" opacity="0.9" stroke="#202020" stroke-width="2"/><rect x="160" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="200" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="240" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="280" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="320" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="360" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="400" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="440" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="480" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="520" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="560" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="600" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="640" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="680" y="90.2" width="30" height="79.8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M110 170 L720 170" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="135" y="360" text-anchor="middle" fill="#a5a29c" font-size="16">yr 1</text><text x="295" y="360" text-anchor="middle" fill="#a5a29c" font-size="16">yr 5</text><text x="495" y="360" text-anchor="middle" fill="#a5a29c" font-size="16">yr 10</text><text x="695" y="360" text-anchor="middle" fill="#a5a29c" font-size="16">yr 15</text><text x="180" y="300" text-anchor="start" fill="#ff8059" font-size="16">year 1: −120 (commissions, set-up)</text><text x="200" y="60" text-anchor="start" fill="#f5c76a" font-size="16">+57 a year for 14 years</text><text x="40" y="416" text-anchor="start" fill="#a5a29c" font-size="16">APE</text><rect x="120" y="396" width="500" height="28" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="130" y="416" text-anchor="start" fill="#202020" font-size="16">new premium (APE) 1,000</text><text x="40" y="458" text-anchor="start" fill="#a5a29c" font-size="16">VNB</text><rect x="120" y="438" width="125" height="28" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="257" y="458" text-anchor="start" fill="#f1eee8" font-size="16">₹250 cr = 25% margin</text><text x="40" y="506" text-anchor="start" fill="#a5a29c" font-size="16">lower bars: 0.5 px = ₹1 cr</text></svg></figure>
+      <p>Discounted at 11% a year <span class="tag">example</span>, that stream is worth about ₹250 cr today: the <b>value of new business</b> (VNB). Divide it by the year’s new premium, measured as <b>annualised premium equivalent</b> (APE: first-year regular premiums plus 10% of single premiums), and you get the <b>VNB margin</b>: ₹250 cr ÷ ₹1,000 cr = 25%. Growth in APE says how much was sold; the margin says how profitable it was.</p>
+      <details class="trace"><summary>Go deeper: the working, and what the toy leaves out</summary>
+        <p>PV = −120 ÷ 1.11 + 57 × (1 ÷ 1.11² + … + 1 ÷ 1.11¹⁵) = −108.1 + 57 × 6.290 = 250.4. Real VNB is computed by actuaries policy by policy, under rules set by the Institute of Actuaries of India, and also deducts the cost of the capital the insurer must hold against the policies. The APE definition is HDFC Life’s, from its FY26 press release.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Insurers: life</p>
+      <h2>Embedded value: the insurer’s own book value</h2>
+      <p>Because profits arrive over decades, a year’s accounting profit says little. Life insurers publish an <b>embedded value</b> (EV) instead: <b>adjusted net worth</b> (ANW, the shareholders’ money already in hand) plus the <b>value of in-force business</b> (VIF, today’s value of profits from policies already sold). Each year EV grows by the <b>unwind</b> (one year’s discount released), the new business sold (VNB) and how experience compared with assumptions <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 350" role="img" aria-label="Kaveri Life’s embedded value on one scale: 5,300 crore at the start, split into adjusted net worth 1,900 and in-force value 3,400, then plus 424 unwind, 250 new business and 26 experience, ending at 6,000 crore"><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore · 0.09 px = ₹1 cr</text><text x="40" y="68" text-anchor="start" fill="#a5a29c" font-size="16">opening EV</text><rect x="150" y="46" width="171" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="158" y="67" text-anchor="start" fill="#202020" font-size="16">ANW 1,900</text><rect x="321" y="46" width="306" height="30" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="329" y="67" text-anchor="start" fill="#202020" font-size="16">VIF 3,400</text><text x="637" y="67" text-anchor="start" fill="#f1eee8" font-size="16">5,300</text><text x="40" y="122" text-anchor="start" fill="#a5a29c" font-size="16">unwind</text><rect x="627" y="100" width="38.2" height="30" fill="#f5c76a" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="675.2" y="121" text-anchor="start" fill="#f1eee8" font-size="16">+424</text><path d="M627 86 L627 100" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/><text x="40" y="168" text-anchor="start" fill="#a5a29c" font-size="16">new business (VNB)</text><rect x="665.2" y="146" width="22.5" height="30" fill="#f5c76a" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="697.7" y="167" text-anchor="start" fill="#f1eee8" font-size="16">+250</text><path d="M665.2 132 L665.2 146" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/><text x="40" y="214" text-anchor="start" fill="#a5a29c" font-size="16">experience</text><rect x="687.7" y="192" width="2.3" height="30" fill="#f5c76a" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="700" y="213" text-anchor="start" fill="#f1eee8" font-size="16">+26</text><path d="M687.7 178 L687.7 192" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/><text x="40" y="274" text-anchor="start" fill="#a5a29c" font-size="16">closing EV</text><rect x="150" y="252" width="180" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="158" y="273" text-anchor="start" fill="#202020" font-size="16">ANW 2,000</text><rect x="330" y="252" width="360" height="30" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="338" y="273" text-anchor="start" fill="#202020" font-size="16">VIF 4,000</text><text x="700" y="273" text-anchor="start" fill="#f1eee8" font-size="16">6,000</text><text x="40" y="330" text-anchor="start" fill="#f1eee8" font-size="16">operating profit 700 ÷ opening 5,300 = 13.2% RoEV</text></svg></figure>
+      <p>That growth, the <b>EV operating profit</b>, divided by opening EV is the <b>operating return on EV</b>: Kaveri’s 700 ÷ 5,300 = 13.2%. It plays the part ROE plays elsewhere (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>). The market’s view is <b>price to EV</b> (P/EV): if Kaveri’s shares were worth ₹12,000 cr in all, P/EV would be 2.0 <span class="tag">example</span>, a premium paid for the business it has not sold yet. Like P/B (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>), it is only as good as the assumptions behind the book.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Insurers: general</p>
+      <h2>Combined ratio and the float</h2>
+      <p>A general insurer (motor, health, fire) sells mostly one-year cover. Its test is the <b>combined ratio</b>: claims plus costs, divided by premium. Godavari General earns ₹1,000 cr of premium, pays ₹730 cr of claims (a 73% loss ratio) and ₹300 cr of commission and expenses (30%), so its combined ratio is 103%: it loses ₹30 cr on the insurance itself <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 276" role="img" aria-label="Godavari General on one scale: 1,000 crore of earned premium against 730 crore of claims and 300 crore of costs, a combined ratio of 103 percent, yet 150 crore of income on its float leaves 120 crore of profit before tax"><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore a year · 0.5 px = ₹1 cr</text><text x="40" y="68" text-anchor="start" fill="#a5a29c" font-size="16">premium earned</text><rect x="170" y="46" width="500" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="180" y="68" text-anchor="start" fill="#202020" font-size="16">1,000</text><text x="40" y="124" text-anchor="start" fill="#a5a29c" font-size="16">claims + costs</text><rect x="170" y="102" width="365" height="32" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="180" y="124" text-anchor="start" fill="#202020" font-size="16">claims 730</text><rect x="535" y="102" width="150" height="32" fill="#ff8059" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="545" y="124" text-anchor="start" fill="#202020" font-size="16">costs 300</text><path d="M670.0 40 L670.0 144" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/><text x="697" y="124" text-anchor="start" fill="#ff8059" font-size="16">103%</text><text x="40" y="190" text-anchor="start" fill="#a5a29c" font-size="16">float income</text><rect x="170" y="168" width="75" height="32" fill="#76d5c1" opacity="0.7" stroke="#202020" stroke-width="2"/><text x="257" y="190" text-anchor="start" fill="#f1eee8" font-size="16">+150 on ₹2,000 cr float</text><text x="40" y="246" text-anchor="start" fill="#a5a29c" font-size="16">profit before tax</text><rect x="170" y="224" width="60" height="32" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="242" y="246" text-anchor="start" fill="#f1eee8" font-size="16">120 = 150 − 30</text></svg></figure>
+      <p>It is still profitable, because premiums arrive before claims are paid. The money held in between, the <b>float</b>, here ₹2,000 cr, is invested; at 7.5% it earns ₹150 cr <span class="tag">example</span>. A combined ratio above 100% is survivable while investment income covers it, and dangerous when claims run long or yields fall. Below 100%, the insurer is in effect paid to hold its float.</p>
+      <details class="trace"><summary>Go deeper: definitions differ</summary><p>Companies divide claims by earned premium and expenses by earned or written premium, and some exclude certain items. Before comparing two insurers’ combined ratios, check that both use the same definition, and read several years: one bad catastrophe year can move it a lot.</p></details>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Which numbers to read, by business</h2>
+      <div class="field-grid">
+        <div><b>NBFC: what it earns</b><span>Loan book (AUM) growth, yield, cost of funds, NIM, cost to income</span><em>THIS PART · PART 29</em></div>
+        <div><b>NBFC: what can go wrong</b><span>Credit cost, gross and net NPA, capital adequacy, funding mix, maturity ladder, LCR</span><em>THIS PART · PART 29</em></div>
+        <div><b>Life insurer</b><span>APE growth, VNB margin, embedded value, operating return on EV, persistency, solvency ratio, P/EV</span><em>THIS PART</em></div>
+        <div><b>General insurer</b><span>Loss ratio, expense ratio, combined ratio, float and investment yield, solvency ratio, P/B</span><em>THIS PART</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Bajaj Finance’s maturity ladder</h2>
+      <p>Bajaj Finance, an NBFC, year to 31 March 2026, from its Q4 FY26 investor presentation filed with the exchanges on 29 April 2026 <span class="tag">public</span>. Page 54 of the PDF prints its own structural liquidity statement (standalone, “behaviouralised”: the company models how flows such as deposit renewals actually behave). Its cumulative gap is positive in every bucket up to a year, against RBI’s limits for the first month.</p>
+      <figure><svg viewBox="0 0 800 386" role="img" aria-label="Bajaj Finance’s standalone cumulative cash gap at 31 March 2026 as a percentage of cumulative outflows, positive in every bucket up to one year: 24, 8, 36, 36, 28, 47 and 49 percent, against RBI’s limits of minus 10, minus 10 and minus 20 percent for the first three"><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">cumulative gap ÷ cumulative outflows · 6 px = 1 point</text><text x="40" y="64" text-anchor="start" fill="#a5a29c" font-size="16">1–7 D</text><rect x="260" y="46" width="144" height="24" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="414" y="64" text-anchor="start" fill="#f1eee8" font-size="16">+24%</text><path d="M200 42 L200 74" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="40" y="102" text-anchor="start" fill="#a5a29c" font-size="16">8–14 D</text><rect x="260" y="84" width="48" height="24" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="318" y="102" text-anchor="start" fill="#f1eee8" font-size="16">+8%</text><path d="M200 80 L200 112" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">15–30 D</text><rect x="260" y="122" width="216" height="24" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="486" y="140" text-anchor="start" fill="#f1eee8" font-size="16">+36%</text><path d="M140 118 L140 150" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="40" y="178" text-anchor="start" fill="#a5a29c" font-size="16">1–2 M</text><rect x="260" y="160" width="216" height="24" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="486" y="178" text-anchor="start" fill="#f1eee8" font-size="16">+36%</text><text x="40" y="216" text-anchor="start" fill="#a5a29c" font-size="16">2–3 M</text><rect x="260" y="198" width="168" height="24" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="438" y="216" text-anchor="start" fill="#f1eee8" font-size="16">+28%</text><text x="40" y="254" text-anchor="start" fill="#a5a29c" font-size="16">3–6 M</text><rect x="260" y="236" width="282" height="24" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="552" y="254" text-anchor="start" fill="#f1eee8" font-size="16">+47%</text><text x="40" y="292" text-anchor="start" fill="#a5a29c" font-size="16">6 M–1 Y</text><rect x="260" y="274" width="294" height="24" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="564" y="292" text-anchor="start" fill="#f1eee8" font-size="16">+49%</text><path d="M260 38 L260 312" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="260" y="334" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="140" y="334" text-anchor="middle" fill="#a5a29c" font-size="16">−20%</text><text x="560" y="334" text-anchor="middle" fill="#a5a29c" font-size="16">+50%</text><path d="M260 360 L290 360" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="300" y="366" text-anchor="start" fill="#f1eee8" font-size="16">RBI limit on the shortfall</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th>Working or note</th><th>Value</th><th class="pg">PDF page</th></tr></thead>
+        <tbody>
+          <tr><td>Loan book (AUM)</td><td class="wk">consolidated, 31 Mar 2026; ₹416,661 cr a year earlier</td><td class="val">₹509,975 cr</td><td class="pg">23</td></tr>
+          <tr><td>Profit after tax</td><td class="wk">consolidated, FY26, after one-time items</td><td class="val">₹19,332 cr</td><td class="pg">24</td></tr>
+          <tr><td>Net interest income</td><td class="wk">consolidated, FY26; ₹36,394 cr in FY25</td><td class="val">₹44,110 cr</td><td class="pg">23</td></tr>
+          <tr><td>Cost of funds</td><td class="wk">FY26; 7.97% in FY25; Q4 FY26 7.41%</td><td class="val">7.54%</td><td class="pg">7, 23</td></tr>
+          <tr><td>Funding mix</td><td class="wk">money markets : banks : deposits : foreign loans (ECB)</td><td class="val">48 : 31 : 16 : 5</td><td class="pg">34</td></tr>
+          <tr><td>Liquidity buffer</td><td class="wk">consolidated, 31 Mar 2026</td><td class="val">₹15,020 cr</td><td class="pg">7</td></tr>
+          <tr><td>LCR</td><td class="wk">standalone, Q4 daily average; requirement 100%</td><td class="val">228%</td><td class="pg">54</td></tr>
+          <tr><td>Gap to 30 days</td><td class="wk">₹14,636 cr ÷ cumulative outflows ₹41,071 cr</td><td class="val">+36%</td><td class="pg">54</td></tr>
+          <tr><td>Gross / net NPA</td><td class="wk">consolidated, 31 Mar 2026</td><td class="val">1.01% / 0.41%</td><td class="pg">9</td></tr>
+          <tr><td>Capital adequacy</td><td class="wk">standalone; Tier 1 20.67%</td><td class="val">21.55%</td><td class="pg">9</td></tr>
+        </tbody>
+      </table></div>
+      <p>Read it as Sahyadri’s opposite: only about a tenth of its funding is short-term paper, the presentation states a strategy “with a focus on long term borrowings”, and the ladder has more coming in than going out in every bucket. A cost of funds that fell 0.43 points in FY26 also widened the spread. Part 29, “Banks”, covers the NPA and capital lines.</p>
+      <details class="trace"><summary>Go deeper: reading the ladder</summary><p>Up to 30 days: total inflows ₹55,708 cr (cumulative) against outflows ₹41,071 cr, a cumulative mismatch of ₹14,636 cr. The 1–7 day bucket shows +24% and the 8–14 day bucket +8%, the smallest cushion, because ₹4,704 cr of borrowings fall due in that week against ₹2,955 cr of inflows. The “money markets” share of 48% (PDF page 34) includes long-term bonds (NCDs) as well as commercial paper; the presentation’s liability-mix chart (PDF page 57) shows short-term borrowings (CP and short-term loans) at 11% at March 2026 and NCDs at 37%.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>HDFC Life’s value of new business</h2>
+      <p>HDFC Life, year to 31 March 2026, from its FY26 press release and investor presentation, filed with the exchanges on 16 April 2026 <span class="tag">public</span>. Its embedded value is reported as Indian Embedded Value (IEV) and was reviewed by Milliman Advisors, per the presentation.</p>
+      <figure><svg viewBox="0 0 800 288" role="img" aria-label="HDFC Life’s Indian embedded value on one scale: 554 billion rupees at 31 March 2025, of which 162.8 adjusted net worth and 391.4 in-force value; operating profit of 83.3 billion; and 621 billion at 31 March 2026, of which 173.3 net worth and 448.1 in-force value"><text x="40" y="26" text-anchor="start" fill="#a5a29c" font-size="16">₹ billion (100 bn = ₹10,000 cr) · 0.85 px = ₹1 bn</text><text x="40" y="68" text-anchor="start" fill="#a5a29c" font-size="16">31 Mar 2025</text><rect x="150" y="46" width="138.4" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="158" y="67" text-anchor="start" fill="#202020" font-size="16">ANW 162.8</text><rect x="288.4" y="46" width="332.7" height="30" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="296.4" y="67" text-anchor="start" fill="#202020" font-size="16">VIF 391.4</text><text x="631.1" y="67" text-anchor="start" fill="#f1eee8" font-size="16">554</text><text x="40" y="126" text-anchor="start" fill="#a5a29c" font-size="16">EVOP</text><rect x="150" y="104" width="70.8" height="30" fill="#f5c76a" opacity="0.85" stroke="#202020" stroke-width="2"/><text x="230.8" y="125" text-anchor="start" fill="#f1eee8" font-size="16">+83.3 operating profit</text><text x="40" y="184" text-anchor="start" fill="#a5a29c" font-size="16">31 Mar 2026</text><rect x="150" y="162" width="147.3" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="158" y="183" text-anchor="start" fill="#202020" font-size="16">ANW 173.3</text><rect x="297.3" y="162" width="380.9" height="30" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="305.3" y="183" text-anchor="start" fill="#202020" font-size="16">VIF 448.1</text><text x="688.2" y="183" text-anchor="start" fill="#f1eee8" font-size="16">621</text><text x="40" y="236" text-anchor="start" fill="#f1eee8" font-size="16">EVOP 83.3 ÷ opening 554 = 15.0% operating RoEV</text><text x="40" y="268" text-anchor="start" fill="#a5a29c" font-size="16">other changes, net: 621.4 − 554.2 − 83.3 = −16.1</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th>Working or note</th><th>Value</th><th class="pg">PDF page</th></tr></thead>
+        <tbody>
+          <tr><td>New business (APE)</td><td class="wk">total APE FY26; ₹15,479 cr in FY25</td><td class="val">₹16,641 cr</td><td class="pg">3</td></tr>
+          <tr><td>Value of new business</td><td class="wk">FY26; ₹3,962 cr in FY25</td><td class="val">₹4,034 cr</td><td class="pg">3</td></tr>
+          <tr><td>VNB margin</td><td class="wk">4,034 ÷ 16,641; 25.6% in FY25</td><td class="val">24.2%</td><td class="pg">3</td></tr>
+          <tr><td>Embedded value</td><td class="wk">IEV, 31 Mar 2026; ₹55,423 cr a year earlier</td><td class="val">₹62,139 cr</td><td class="pg">3</td></tr>
+          <tr><td>Operating RoEV</td><td class="wk">EVOP ÷ opening EV; 16.7% in FY25</td><td class="val">15.0%</td><td class="pg">3, 17</td></tr>
+          <tr><td>Profit after tax</td><td class="wk">FY26; ₹1,802 cr in FY25</td><td class="val">₹1,910 cr</td><td class="pg">3</td></tr>
+          <tr><td>Solvency ratio</td><td class="wk">IRDAI control level 150%; 194% a year earlier</td><td class="val">177%</td><td class="pg">3</td></tr>
+          <tr><td>Persistency</td><td class="wk">13th month / 61st month</td><td class="val">85% / 64%</td><td class="pg">3</td></tr>
+        </tbody>
+      </table></div>
+      <p>Two things stand out. Profit after tax, ₹1,910 cr, is less than half the year’s VNB of ₹4,034 cr: accounting profit is held down by the up-front cost of each year’s new policies and mostly reflects business sold in earlier years, which is why EV and VNB are read instead. And the margin slipped from 25.6% to 24.2%; the company says that, excluding the effects of GST and new surrender rules, it would have been flat at 25.5%. The solvency ratio is available capital divided by required capital; IRDAI requires every insurer to stay at or above a “control level” of 150% <span class="tag">public</span>, and HDFC Life has approved raising up to ₹1,000 cr from its parent, HDFC Bank, to lift it.</p>
+      <details class="trace"><summary>Go deeper: sources and definitions</summary><p>Press release, “Key Financial Summary”, and investor presentation, “Analysis of change in IEV” (PDF pages 3 and 17 of the <a href="https://nsearchives.nseindia.com/corporate/PRASAD_16042026164619_Press_release.pdf">exchange filing</a>). The drawing uses the presentation’s ₹ billion figures, so its parts add to ₹621.4 bn against the press release’s ₹62,139 cr. The control level is in the <a href="https://irdai.gov.in/web/guest/document-detail?documentId=4589093">IRDAI (Actuarial, Finance and Investment Functions of Insurers) Regulations, 2024</a>: “The control level of solvency margin shall be one hundred and fifty percent of Required Solvency Margin”, for life insurers and, separately, for general and health insurers. The presentation’s sensitivity table shows a 1-point rise in interest rates would lower EV by 2.3% and the VNB margin by 1.2%.</p></details>
+      <p class="source-note">Real figures are frozen at FY2026: Bajaj Finance’s Q4 FY26 investor presentation (29 April 2026) and HDFC Life’s FY26 press release and investor presentation (16 April 2026), both exchange filings; RBI and IRDAI documents as linked. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before any verdict</h2>
+      <ol class="checks">
+        <li><b>Lender: what does its money cost, and how fast does that cost move?</b> Cost of funds, its trend, and how much of the funding is short-term.</li>
+        <li><b>Lender: what falls due before the money comes back?</b> Read the maturity ladder, the cash buffer and the LCR, not just profit.</li>
+        <li><b>Life insurer: how much was sold, how profitably, and how fast does EV grow?</b> APE, VNB margin, operating return on EV, and P/EV for the price.</li>
+        <li><b>General insurer: does the insurance itself make money?</b> Combined ratio over several years, and how much of profit is float income.</li>
+      </ol>
+      <p>Lenders and insurers live on rates and timing at home. The next sector part turns to companies that live on the exchange rate: Part 31, “Exporters: IT services and pharma”, covers constant-currency growth, the rupee, deal wins and USFDA inspections.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A lender lives on the gap between what its money costs and what it earns, and dies on the gap between when its money falls due and when it comes back; an insurer is judged by what its promises will be worth, not this year’s profit.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',TEALC='#76d5c1',ROSEC='#ec6a94';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const inr=v=>{const n=Math.round(v);return (n<0?'−':'')+Math.abs(n).toLocaleString('en-IN');};
+    // ---- ALM lab: Sahyadri Finance (fictional). Run-off view: existing loans and borrowings only, no new lending.
+    const LOANS=10000, DEBT=8000, EMI=400, COST=0.08, MONTHS=12;
+    const ids=['st','roll','len','buf'];
+    const FMT={st:v=>v+'% of borrowings',roll:v=>v+'% of maturing paper',len:v=>v==0?'no freeze':v+(v==1?' month':' months'),buf:v=>'₹'+inr(v)+' cr'};
+    const PRESETS={
+      calm:{v:{st:40,roll:100,len:0,buf:500},t:'Calm markets: every maturing paper is refinanced. Cash builds up month after month, because loan repayments exceed interest and long-term instalments.'},
+      freeze:{v:{st:40,roll:0,len:3,buf:500},t:'IL&FS-style freeze: for three months nobody buys new paper. ₹1,067 cr falls due each month against ₹400 cr of repayments, and the buffer is gone in the first month.'},
+      longterm:{v:{st:10,roll:0,len:3,buf:500},t:'Funded long: the same freeze, but only 10% of borrowings is short-term paper. Repayments cover what falls due and cash never goes below zero.'},
+      buffer:{v:{st:40,roll:0,len:3,buf:2600},t:'Pay for a buffer: keep ₹2,600 cr in cash and liquid bonds. It survives the freeze, but that cash earns far less than a 15% loan, which is the price of safety.'}};
+    const labConfig={format:v=>Math.round(v).toLocaleString('en-IN')};
+    function simulate(st,roll,len,buf){
+      const short=DEBT*st/100, long=DEBT-short, inst=long/36;
+      const due={1:short/3,2:short/3,3:short/3};
+      let longLeft=long, cash=buf, cin=buf, cown=buf, cout=0, first=0, worst=0;
+      const rows=[];
+      for(let m=1;m<=MONTHS;m++){
+        let open=longLeft; for(const k in due){ if(+k>=m) open+=due[k]; }
+        const interest=open*COST/12, mat=due[m]||0;
+        const renew=(m<=len?roll/100:1)*mat;
+        if(renew>0) due[m+3]=(due[m+3]||0)+renew;
+        const repay=Math.min(inst,longLeft); longLeft-=repay;
+        const inflow=EMI+renew, outflow=mat+repay+interest;
+        cin+=inflow; cown+=EMI; cout+=outflow; cash+=inflow-outflow;
+        if(cash<-1e-9&&!first) first=m;
+        worst=Math.min(worst,cash);
+        rows.push({m,inflow,outflow,mat,renew,repay,interest,cin,cown,cout,cash});
+      }
+      return {rows,first,worst,end:cash,short,long};
+    }
+    function niceMax(v){return Math.max(4000,Math.ceil(v*1.18/4000)*4000);}
+    function draw(){
+      const v={}; ids.forEach(id=>{v[id]=+$(id).value;$(id+'-o').textContent=FMT[id](v[id]);});
+      const r=simulate(v.st,v.roll,v.len,v.buf);
+      // chart: cumulative money coming in vs cumulative money owed, month by month, one scale
+      const X0=96,XEND=720,maxV=niceMax(Math.max(...r.rows.map(q=>Math.max(q.cin,q.cout)))),k=(XEND-X0)/maxV,sx=x=>X0+x*k;
+      const pitch=40,top=16;
+      let s='';
+      r.rows.forEach((q,i)=>{const y=top+i*pitch,short=q.cash<-1e-9;
+        s+=T(20,y+20,'M'+q.m,'start',short?ROSEC:MUTC);
+        s+=`<rect data-v="${q.cin.toFixed(2)}" x="${X0}" y="${y}" width="${(q.cin*k).toFixed(2)}" height="12" fill="${TEALC}" opacity="0.35"/>`;
+        s+=`<rect data-v="${q.cown.toFixed(2)}" x="${X0}" y="${y}" width="${(q.cown*k).toFixed(2)}" height="12" fill="${TEALC}"/>`;
+        s+=`<rect data-v="${q.cout.toFixed(2)}" x="${X0}" y="${y+14}" width="${(q.cout*k).toFixed(2)}" height="12" fill="${ROSEC}"/>`;
+        if(short) s+=T(sx(Math.max(q.cin,q.cout))+10,y+22,'short '+inr(-q.cash),'start',ROSEC);});
+      const yAx=top+MONTHS*pitch;
+      s+=`<path d="M${X0} ${top-6} L${X0} ${yAx}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      for(let t=0;t<=4;t++){const val=maxV*t/4;s+=`<text class="tick" data-v="${val}" x="${sx(val).toFixed(2)}" y="${yAx+22}" text-anchor="${t==0?'start':(t==4?'end':'middle')}" fill="${MUTC}" font-size="16">${labConfig.format(val)}</text>`;}
+      s+=T(20,yAx+50,'₹ crore, running total from today','start',MUTC);
+      $('labChart').setAttribute('viewBox',`0 0 760 ${yAx+66}`);
+      $('labChart').innerHTML=s;
+      // readouts
+      const ro=[[r.first?'month '+r.first:'never',r.first?'bad':'ok','cash first runs short'],
+        [r.worst<0?'₹'+inr(-r.worst)+' cr':'none',r.worst<0?'bad':'ok','deepest shortfall'],
+        ['₹'+inr(r.end)+' cr',r.end<0?'bad':'ok','cash after 12 months'],
+        ['₹'+inr(r.short/3)+' cr','','paper due each month']];
+      $('readouts').innerHTML=ro.map(([a,c,b])=>`<div><b class="${c}">${a}</b><span>${b}</span></div>`).join('');
+      // ledger
+      const q1=r.rows[0];
+      const rows=[['Borrowings','₹'+inr(DEBT)+' cr: short-term paper ₹'+inr(r.short)+' cr (3-month, ⅓ due each month) + long-term ₹'+inr(r.long)+' cr (repaid over 36 months)'],
+        ['Month 1 in','repayments '+inr(EMI)+' + new paper '+inr(q1.renew)+' = '+inr(q1.inflow)],
+        ['Month 1 owed','paper due '+inr(q1.mat)+' + instalment '+inr(q1.repay)+' + interest '+inr(q1.interest)+' = '+inr(q1.outflow)],
+        ['Month 1 cash','buffer '+inr(v.buf)+' + '+inr(q1.inflow)+' − '+inr(q1.outflow)+' = '+inr(q1.cash)]];
+      r.rows.forEach(q=>rows.push(['M'+q.m+' cash',inr(q.cash)+' (in '+inr(q.inflow)+', owed '+inr(q.outflow)+')']));
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:r.rows.every(q=>Number.isFinite(q.cash)),inputs:v,first:r.first,worst:r.worst,end:r.end,cash:r.rows.map(q=>q.cash),cin:r.rows.map(q=>q.cin),cout:r.rows.map(q=>q.cout)};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];ids.forEach(id=>$(id).value=p.v[id]);draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
