@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The economy around the company — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (costs) | gold #f5c76a = what belongs to shareholders (profit, EBITDA, EPS)
+       rose #ec6a94 = what is owed (debt, interest) | lavender #c3b8ff = the market's view (price, multiples)
+       Part 22 extras: dark brown #6b3a2e with a coral edge = a fixed cost (as Part 16); stone #d9d4cc = an economy-wide reading (inflation, the rupee). */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    /* Part 22: lab readouts (as Part 16) */
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;margin-bottom:14px;background:var(--border);border:1px solid var(--border)}
+    .readouts div{background:var(--surface);padding:10px 12px}
+    .readouts b{display:block;color:var(--fg);font:600 22px/1.2 var(--font-sans)}
+    .readouts span{display:block;color:var(--muted);font:11px/1.5 var(--font-mono);letter-spacing:.04em}
+    .readouts em{display:block;font-style:normal;color:var(--gold);font:11px/1.5 var(--font-mono)}
+    .lab-chart svg+svg{margin-top:10px}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .lab .presets button{padding:8px 12px}
+    blockquote.q{margin:14px 0;padding:6px 0 6px 14px;border-left:2px solid var(--accent);color:var(--fg);font-size:16px;line-height:1.55}
+    blockquote.q cite{display:block;margin-top:4px;font:11px/1.5 var(--font-mono);font-style:normal;letter-spacing:.04em;color:var(--muted)}
+    .lab #msg:empty{min-height:0;margin:0}
+    @media (max-width:700px){.readouts b{font-size:19px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 22: tea prices, the monsoon, rates and the rupee in a company&#x27;s accounts">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/the-economy-around-the-company-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="The economy around the company">
+<meta property="og:description" content="Part 22: tea prices, the monsoon, rates and the rupee in a company&#x27;s accounts">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/the-economy-around-the-company-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/the-economy-around-the-company-eli5.png?v=855867fa">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The economy around the company">
+<meta property="article:published_time" content="2026-11-22">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="the-economy-around-the-company-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 18 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>The economy around the company</h1>
+      <p class="lede">A company’s profit depends on forces it does not control: the price of its raw materials, the monsoon, inflation, interest rates and the rupee. Measure how much each one moves the accounts, and whether the company can pass it on, and you know what kind of business you own.</p>
+      <p class="source-note">Built from Ramu Chai Ltd’s example accounts, RBI and MoSPI releases for March 2026, and Tata Consumer Products’ Integrated Annual Report 2025-26 and AGM presentation, facts checked against them · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a> showed how fixed costs magnify a change in sales, <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> what a rate rise from 10% to 12% does to a borrower, and <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a> what one ₹5.00 cup is made of. <a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a> looked at what a company does to its own shares; this part looks outside the company’s gate. Facts carry a tag: <span class="tag">public</span> is a figure from TCPL’s filings or an official release, <span class="tag">example</span> is a made-up number for our fictional tea company, Ramu Chai Ltd. All amounts are ₹ crore (cr) unless shown. Real figures are frozen at FY2026, the year to 31 March 2026. Educational, not a recommendation. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales</span>
+        <span><i style="background:#ff8059"></i>money going out: costs</span>
+        <span><i style="background:#6b3a2e;border:1px solid #ff8059"></i>a fixed cost</span>
+        <span><i style="background:#f5c76a"></i>profit: the shareholders’</span>
+        <span><i style="background:#ec6a94"></i>what is owed: interest, rates</span>
+        <span><i style="background:#d9d4cc"></i>an economy-wide reading</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Same company, different weather</h2>
+      <p>Ramu Chai does not set the price of tea, the RBI’s policy rate, the rupee or the rain. Each of them still lands on a line of its accounts. Take the FY26 P&amp;L <span class="tag">example</span> and ask, slice by slice, what outside force could move it. Tea follows the crop, and the crop follows the weather. Wages and rent follow general inflation. The interest bill follows the rates banks charge, which follow the repo rate. Tax follows policy. And demand, how many cups are sold at all, moves the whole bar.</p>
+      <figure><svg viewBox="0 0 800 290" role="img" aria-label="Ramu’s 500 crore of sales as one bar split into tea 90, other variable costs 185, fixed costs 140 and EBITDA 85, with the outside force that moves each slice written under it; the EBITDA slice is enlarged below into depreciation 12, net interest 6 moved by the repo rate, tax 17 moved by policy, and profit 50"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Sales ₹500 cr · 1.4 px = ₹1 cr</text><text x="760" y="30" text-anchor="end" fill="#a5a29c" font-size="16">demand moves the whole bar</text><rect x="50" y="44" width="126" height="34" fill="#ff8059"/><text x="58" y="67" text-anchor="start" fill="#202020" font-size="16">tea 90</text><text x="113" y="104" text-anchor="middle" fill="#a5a29c" font-size="16">tea, monsoon</text><rect x="176" y="44" width="259" height="34" fill="#ff8059" opacity="0.7"/><text x="184" y="67" text-anchor="start" fill="#202020" font-size="16">other variable 185</text><text x="305.5" y="104" text-anchor="middle" fill="#a5a29c" font-size="16">milk, sugar, freight</text><rect x="435" y="44" width="196" height="34" fill="#6b3a2e" stroke="#ff8059" stroke-width="1.5"/><text x="443" y="67" text-anchor="start" fill="#f1eee8" font-size="16">fixed 140</text><text x="533" y="104" text-anchor="middle" fill="#a5a29c" font-size="16">wages, rent</text><rect x="631" y="44" width="119" height="34" fill="#f5c76a"/><text x="639" y="67" text-anchor="start" fill="#202020" font-size="16">EBITDA 85</text><path d="M631 80 V118 L60 168" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M750 80 V118 L740 168" stroke="#57534f" stroke-width="1.5" fill="none"/><rect x="60" y="170" width="96" height="34" fill="#6b3a2e" stroke="#ff8059" stroke-width="1.5"/><text x="68" y="193" text-anchor="start" fill="#f1eee8" font-size="16">D&amp;A 12</text><rect x="156" y="170" width="48" height="34" fill="#ec6a94"/><text x="164" y="193" text-anchor="start" fill="#202020" font-size="16">6</text><text x="180" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">repo rate</text><rect x="204" y="170" width="136" height="34" fill="#ff8059" opacity="0.7"/><text x="212" y="193" text-anchor="start" fill="#202020" font-size="16">tax 17</text><text x="272" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">tax policy</text><rect x="340" y="170" width="400" height="34" fill="#f5c76a"/><text x="348" y="193" text-anchor="start" fill="#202020" font-size="16">PAT 50</text><text x="540" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">owners’ profit</text><text x="40" y="270" text-anchor="start" fill="#a5a29c" font-size="16">EBITDA ₹85 cr, zoomed: 8 px = ₹1 cr · 6 = interest less other income</text></svg></figure>
+      <p>A company’s own decisions (Parts 16 to 21) matter, but so does this list. Reading a business means knowing which of these forces it is exposed to, how much, and whether it can pass the cost on.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">Where things stood</p>
+      <h2>The economy at the end of FY26</h2>
+      <p>The three readings most often quoted, as close to 31 March 2026 as the official tables allow <span class="tag">public</span>. The <b>policy repo rate</b>, the rate at which the RBI lends to banks overnight, was <b>5.25%</b>: the Monetary Policy Committee held it there on <a href="https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=62169">6 February 2026</a>, and the RBI’s <a href="https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28372">weekly statistical table</a> shows 5.25% on 27 March and 3 April, against 6.25% a year earlier. <b>CPI inflation</b> for March 2026 was <b>3.40%</b> (food 3.87%), in <a href="https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/apr/doc2026413845701.pdf">MoSPI’s release of 13 April</a>, confirmed as final in its <a href="https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/may/doc2026512869001.pdf">12 May release</a>.</p>
+      <figure><svg viewBox="0 0 800 362" role="img" aria-label="Three readings near 31 March 2026 drawn to scale: the repo rate fell from 6.25 to 5.25 percent over the year; CPI inflation for March 2026 was 3.40 percent, inside the 2 to 6 percent band around the 4 percent target; and a US dollar cost 94.60 rupees against 85.58 a year earlier"><path d="M200 40 V104" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M200 148 V184" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M200 248 V312" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Policy repo rate, % · 60 px = 1 point</text><text x="40" y="62" text-anchor="start" fill="#a5a29c" font-size="16">28 Mar 2025</text><rect x="200" y="44" width="375" height="24" fill="#ec6a94" opacity="0.5"/><text x="585" y="62" text-anchor="start" fill="#f1eee8" font-size="16">6.25%</text><text x="40" y="94" text-anchor="start" fill="#a5a29c" font-size="16">27 Mar 2026</text><rect x="200" y="76" width="315" height="24" fill="#ec6a94"/><text x="525" y="94" text-anchor="start" fill="#f1eee8" font-size="16">5.25%</text><text x="40" y="136" text-anchor="start" fill="#a5a29c" font-size="16">CPI inflation, % a year · same scale</text><rect x="320" y="146" width="240" height="40" fill="#57534f" opacity="0.45"/><path d="M440 146 V186" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><rect x="200" y="154" width="204" height="24" fill="#d9d4cc"/><text x="208" y="172" text-anchor="start" fill="#202020" font-size="16">3.40%</text><text x="40" y="172" text-anchor="start" fill="#a5a29c" font-size="16">March 2026</text><text x="572" y="172" text-anchor="start" fill="#a5a29c" font-size="16">2–6% band</text><text x="440" y="206" text-anchor="middle" fill="#f1eee8" font-size="16">target 4%</text><text x="40" y="240" text-anchor="start" fill="#a5a29c" font-size="16">Rupees per US dollar · 5 px = ₹1</text><text x="40" y="270" text-anchor="start" fill="#a5a29c" font-size="16">28 Mar 2025</text><rect x="200" y="252" width="427.9" height="24" fill="#d9d4cc" opacity="0.6"/><text x="637.9" y="270" text-anchor="start" fill="#f1eee8" font-size="16">₹85.58</text><text x="40" y="302" text-anchor="start" fill="#a5a29c" font-size="16">27 Mar 2026</text><rect x="200" y="284" width="473" height="24" fill="#d9d4cc"/><text x="683" y="302" text-anchor="start" fill="#f1eee8" font-size="16">₹94.60</text><text x="40" y="342" text-anchor="start" fill="#a5a29c" font-size="16">RBI weekly tables, FBIL rates · MoSPI CPI, base 2024</text></svg></figure>
+      <p>The <b>rupee</b>: a US dollar cost <b>₹94.60</b> on 27 March 2026, against ₹85.58 on 28 March 2025, on FBIL reference rates in the same RBI table. That is 10.5% more rupees for a dollar, a weaker rupee. We could not find a reference rate dated 31 March 2026 in the RBI’s weekly tables; the next reading is ₹93.21 on 3 April. Inflation is measured on a new CPI series (base 2024 = 100) from January 2026. The government kept the RBI’s target at 4%, with a band of 2% to 6%, for April 2026 to March 2031 (<a href="https://www.rbi.org.in/Scripts/FS_Overview.aspx?fn=2752">RBI</a>).</p>
+      <details class="trace"><summary>Go deeper: how the repo rate and inflation fit together</summary><p>The RBI raises the repo rate to cool spending when inflation runs high, and cuts it when inflation is low and growth needs help. Banks’ lending and deposit rates follow, with a lag. The site’s explainer <a href="how-money-actually-works-in-india.html" data-series-link="how-money-actually-works-in-india">How money actually works</a> covers how the RBI and banks create and price money. The figures here are frozen at FY2026: the repo rate and the rupee have moved since, so check the RBI before using them.</p></details>
+    </section>
+    <section class="panel">
+      <p class="kicker">Commodities</p>
+      <h2>Tea up 20%: absorb or pass on?</h2>
+      <p>Tea is ₹0.90 of each ₹5.00 cup (<a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a>), ₹90 cr on 100 crore cups <span class="tag">example</span>. Suppose a weak monsoon pushes the tea Ramu buys up 20%. Each cup now costs ₹0.18 more, ₹18 cr a year. Ramu has two choices, and the cup shows both.</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="One cup drawn three times on one scale: today tea 0.90, other variable costs 1.85, fixed cost 1.40 and EBITDA 0.85 make 5.00 rupees; with tea up 20 percent and the price unchanged tea takes 1.08 and EBITDA shrinks to 0.67; passing the rise on lifts the price to 5.18 and keeps EBITDA at 0.85"><text x="640" y="24" text-anchor="middle" fill="#a5a29c" font-size="16">old price ₹5.00</text><text x="40" y="40" text-anchor="start" fill="#a5a29c" font-size="16">Today</text><rect x="40" y="48" width="108" height="34" fill="#ff8059"/><text x="48" y="71" text-anchor="start" fill="#202020" font-size="16">tea 0.90</text><rect x="148" y="48" width="222" height="34" fill="#ff8059" opacity="0.7"/><text x="156" y="71" text-anchor="start" fill="#202020" font-size="16">other 1.85</text><rect x="370" y="48" width="168" height="34" fill="#6b3a2e" stroke="#ff8059" stroke-width="1.5"/><text x="378" y="71" text-anchor="start" fill="#f1eee8" font-size="16">fixed 1.40</text><rect x="538" y="48" width="102" height="34" fill="#f5c76a"/><text x="546" y="71" text-anchor="start" fill="#202020" font-size="16">0.85</text><text x="650" y="71" text-anchor="start" fill="#f1eee8" font-size="16">₹5.00</text><text x="40" y="124" text-anchor="start" fill="#a5a29c" font-size="16">Absorb the rise</text><rect x="40" y="132" width="129.6" height="34" fill="#ff8059"/><text x="48" y="155" text-anchor="start" fill="#202020" font-size="16">tea 1.08</text><rect x="169.6" y="132" width="222" height="34" fill="#ff8059" opacity="0.7"/><text x="177.6" y="155" text-anchor="start" fill="#202020" font-size="16">other 1.85</text><rect x="391.6" y="132" width="168" height="34" fill="#6b3a2e" stroke="#ff8059" stroke-width="1.5"/><text x="399.6" y="155" text-anchor="start" fill="#f1eee8" font-size="16">fixed 1.40</text><rect x="559.6" y="132" width="80.4" height="34" fill="#f5c76a"/><text x="567.6" y="155" text-anchor="start" fill="#202020" font-size="16">0.67</text><text x="650" y="155" text-anchor="start" fill="#f1eee8" font-size="16">₹5.00</text><text x="40" y="208" text-anchor="start" fill="#a5a29c" font-size="16">Pass it on</text><rect x="40" y="216" width="129.6" height="34" fill="#ff8059"/><text x="48" y="239" text-anchor="start" fill="#202020" font-size="16">tea 1.08</text><rect x="169.6" y="216" width="222" height="34" fill="#ff8059" opacity="0.7"/><text x="177.6" y="239" text-anchor="start" fill="#202020" font-size="16">other 1.85</text><rect x="391.6" y="216" width="168" height="34" fill="#6b3a2e" stroke="#ff8059" stroke-width="1.5"/><text x="399.6" y="239" text-anchor="start" fill="#f1eee8" font-size="16">fixed 1.40</text><rect x="559.6" y="216" width="102" height="34" fill="#f5c76a"/><text x="567.6" y="239" text-anchor="start" fill="#202020" font-size="16">0.85</text><text x="671.6" y="239" text-anchor="start" fill="#f1eee8" font-size="16">₹5.18</text><path d="M640 32 V256" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/><text x="40" y="292" text-anchor="start" fill="#a5a29c" font-size="16">120 px = ₹1 · fixed cost per cup at 100 crore cups · gold = EBITDA</text></svg></figure>
+      <p><b>Absorb it</b>: keep the price at ₹5.00. Every rupee of extra cost comes out of EBITDA, because the fixed costs are already paid: EBITDA falls from ₹85 cr to ₹67 cr, −21%. A 20% rise in one input, 3.6% of the price, takes a fifth of EBITDA. That is <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a>’s operating leverage working on costs. <b>Pass it on</b>: raise the cup to ₹5.18, +3.6%, and EBITDA stays at ₹85 cr, if customers keep buying.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">The monsoon</p>
+      <h2>A weak monsoon can hit twice</h2>
+      <p>Most of India’s farm output still depends on the June-to-September rains. A poor season can reach a consumer company twice. On the <b>cost</b> side, crops such as tea, sugar and milk fodder cost more. On the <b>demand</b> side, farm households earn less and buy less. TCPL’s own report says of tea that “as an agricultural crop, the supply/demand balance may change quickly based on the changes in weather conditions” (<a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Integrated Annual Report 2025-26</a>, page 255) <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 330" role="img" aria-label="A waterfall on one scale: Ramu’s FY26 EBITDA of 85 crore loses 18 crore to a 20 percent rise in tea that is not passed on, then 10.35 crore to 5 percent fewer cups, leaving 56.65 crore"><text x="60" y="30" text-anchor="start" fill="#a5a29c" font-size="16">FY26 EBITDA</text><rect x="60" y="38" width="510" height="30" fill="#f5c76a"/><text x="580" y="59" text-anchor="start" fill="#f1eee8" font-size="16">₹85 cr</text><text x="60" y="100" text-anchor="start" fill="#a5a29c" font-size="16">tea +20%, not passed on</text><rect x="462" y="108" width="108" height="30" fill="#ff8059"/><text x="580" y="129" text-anchor="start" fill="#f1eee8" font-size="16">−₹18 cr</text><text x="60" y="170" text-anchor="start" fill="#a5a29c" font-size="16">5% fewer cups</text><rect x="399.9" y="178" width="62.1" height="30" fill="#ff8059"/><text x="472" y="199" text-anchor="start" fill="#f1eee8" font-size="16">−₹10.35 cr</text><text x="60" y="240" text-anchor="start" fill="#a5a29c" font-size="16">after both</text><rect x="60" y="248" width="339.9" height="30" fill="#f5c76a"/><text x="409.9" y="269" text-anchor="start" fill="#f1eee8" font-size="16">₹56.65 cr</text><path d="M570 68 V108" stroke="#57534f" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><path d="M462 138 V178" stroke="#57534f" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><path d="M399.9 208 V248" stroke="#57534f" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="60" y="312" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 cr · cups lost at the new ₹2.07 contribution</text></svg></figure>
+      <p>Put both on Ramu <span class="tag">example</span>: tea +20%, not passed on, and 5% fewer cups. Each lost cup now gives up ₹2.07 of contribution, not ₹2.25, because tea already squeezed it. EBITDA falls from ₹85 cr to ₹56.65 cr, −33%. The 5% fall in cups is our assumption; we have not tied it to a real rainfall figure.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">Pricing power</p>
+      <h2>Passing it on needs pricing power</h2>
+      <p>Raising the price works only if customers stay. How many leave depends on <b>pricing power</b>: a strong brand, a daily habit, few close substitutes (<a href="industry-and-moats-eli5.html" data-series-link="industry-and-moats-eli5">Part 17</a>’s moats). The chart passes on more and more of the ₹0.18 under three assumptions <span class="tag">example</span>: cups hold; each 1% rise in price loses 1% of cups; each 1% loses 2%.</p>
+      <figure><svg viewBox="0 0 800 350" role="img" aria-label="EBITDA against the share of a 20 percent tea rise passed on to customers: if cups hold it climbs from 67 to 85 crore; if each 1 percent of price loses 1 percent of cups it reaches 76.9; if each 1 percent loses 2 percent it barely moves, to 68.8"><path d="M90 34 V280 H596" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="78" y="285" text-anchor="end" fill="#a5a29c" font-size="16">60</text><text x="78" y="205" text-anchor="end" fill="#a5a29c" font-size="16">70</text><text x="78" y="125" text-anchor="end" fill="#a5a29c" font-size="16">80</text><text x="78" y="45" text-anchor="end" fill="#a5a29c" font-size="16">90</text><text x="90" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="215" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">25%</text><text x="340" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">50%</text><text x="465" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">75%</text><text x="590" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">100%</text><text x="90" y="24" text-anchor="start" fill="#a5a29c" font-size="16">EBITDA, ₹ cr</text><text x="340" y="334" text-anchor="middle" fill="#a5a29c" font-size="16">share of the tea rise passed on</text><polyline points="90,224 100,221.1 110,218.2 120,215.4 130,212.5 140,209.6 150,206.7 160,203.8 170,201 180,198.1 190,195.2 200,192.3 210,189.4 220,186.6 230,183.7 240,180.8 250,177.9 260,175 270,172.2 280,169.3 290,166.4 300,163.5 310,160.6 320,157.8 330,154.9 340,152 350,149.1 360,146.2 370,143.4 380,140.5 390,137.6 400,134.7 410,131.8 420,129 430,126.1 440,123.2 450,120.3 460,117.4 470,114.6 480,111.7 490,108.8 500,105.9 510,103 520,100.2 530,97.3 540,94.4 550,91.5 560,88.6 570,85.8 580,82.9 590,80" fill="none" stroke="#f5c76a" stroke-width="3" opacity="1"/><text x="602" y="85" text-anchor="start" fill="#f1eee8" font-size="16">85.0, cups hold</text><polyline points="90,224 100,222.3 110,220.6 120,219 130,217.3 140,215.6 150,213.9 160,212.3 170,210.6 180,209 190,207.3 200,205.7 210,204 220,202.4 230,200.8 240,199.2 250,197.5 260,195.9 270,194.3 280,192.7 290,191.1 300,189.5 310,187.9 320,186.3 330,184.7 340,183.1 350,181.5 360,179.9 370,178.4 380,176.8 390,175.2 400,173.7 410,172.1 420,170.6 430,169 440,167.5 450,165.9 460,164.4 470,162.9 480,161.3 490,159.8 500,158.3 510,156.8 520,155.3 530,153.8 540,152.3 550,150.8 560,149.3 570,147.8 580,146.3 590,144.8" fill="none" stroke="#f5c76a" stroke-width="3" opacity="0.75"/><text x="602" y="149.8" text-anchor="start" fill="#f1eee8" font-size="16">76.9, some cups lost</text><polyline points="90,224 100,223.5 110,223 120,222.6 130,222.1 140,221.6 150,221.2 160,220.7 170,220.3 180,219.9 190,219.5 200,219.1 210,218.7 220,218.3 230,217.9 240,217.5 250,217.1 260,216.8 270,216.4 280,216.1 290,215.8 300,215.4 310,215.1 320,214.8 330,214.5 340,214.2 350,213.9 360,213.6 370,213.4 380,213.1 390,212.9 400,212.6 410,212.4 420,212.2 430,212 440,211.7 450,211.5 460,211.3 470,211.2 480,211 490,210.8 500,210.7 510,210.5 520,210.4 530,210.2 540,210.1 550,210 560,209.9 570,209.8 580,209.7 590,209.6" fill="none" stroke="#f5c76a" stroke-width="3" opacity="0.5"/><text x="602" y="214.6" text-anchor="start" fill="#f1eee8" font-size="16">68.8, price-sensitive</text><circle cx="90" cy="224" r="6" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="102" y="250" text-anchor="start" fill="#a5a29c" font-size="16">67 if nothing is passed on</text></svg></figure>
+      <p>With loyal customers, passing on all of it restores EBITDA to ₹85 cr. With price-sensitive ones, the cups lost cancel most of the gain: ₹68.8 cr, barely above absorbing it. A company that can pass costs on protects its margin through a commodity cycle; one that cannot, takes the hit. Prices also tend to follow costs with a lag, so even a strong brand can lose margin for a few quarters.</p>
+      <details class="trace"><summary>Go deeper: the working</summary><p>Passing on a share s of ₹0.18 sets the price at 5 + 0.18s, a rise of 3.6s%. Cups are 100 × (1 − e × 3.6s%), where e is the cups lost per 1% of price (0, 1 or 2). EBITDA = cups × (price − ₹1.85 − ₹1.08) − 140. At s = 100%: e = 1 gives 96.4 × 2.25 − 140 = 76.9; e = 2 gives 92.8 × 2.25 − 140 = 68.8.</p></details>
+    </section>
+    <section class="panel">
+      <p class="kicker">Inflation</p>
+      <h2>Inflation lifts the numbers, not the business</h2>
+      <p>Inflation is the rise in prices in general, measured by the change in the consumer price index (CPI). It was 3.40% in March 2026 <span class="tag">public</span>. Suppose every price and cost Ramu faces rises 4% <span class="tag">example</span>: the cup, tea, milk, wages, rent. Sales become ₹520 cr and EBITDA ₹88.4 cr, +4%. Nothing real has changed: the same cups, bought with rupees that each buy 4% less. That is the difference between <b>nominal</b> and <b>real</b> growth, which <a href="real-gdp-eli5.html" data-series-link="real-gdp-eli5">How India turns rupees into real GDP</a> explains for the whole economy.</p>
+      <figure><svg viewBox="0 0 800 270" role="img" aria-label="Three EBITDA bars on one scale: FY26 85 crore; if every price and cost rises 4 percent it becomes 88.4, and the extra 3.4 is only inflation; if prices rise 4 percent but costs rise 6 percent it falls to 80.1"><text x="60" y="30" text-anchor="start" fill="#a5a29c" font-size="16">FY26</text><rect x="60" y="38" width="510" height="30" fill="#f5c76a"/><text x="68" y="59" text-anchor="start" fill="#202020" font-size="16">₹85 cr</text><text x="60" y="100" text-anchor="start" fill="#a5a29c" font-size="16">all prices and costs +4%</text><rect x="60" y="108" width="510" height="30" fill="#f5c76a"/><rect x="570" y="108" width="20.4" height="30" fill="#f5c76a" opacity="0.4"/><text x="68" y="129" text-anchor="start" fill="#202020" font-size="16">₹88.4 cr</text><text x="600.4" y="129" text-anchor="start" fill="#a5a29c" font-size="16">+3.4: only inflation</text><text x="60" y="170" text-anchor="start" fill="#a5a29c" font-size="16">prices +4%, costs +6%</text><rect x="60" y="178" width="480.6" height="30" fill="#f5c76a"/><text x="68" y="199" text-anchor="start" fill="#202020" font-size="16">₹80.1 cr</text><path d="M570 30 V216" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/><text x="580" y="30" text-anchor="start" fill="#f1eee8" font-size="16">FY26 level</text><text x="60" y="252" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 cr · rupees of each year, not adjusted</text></svg></figure>
+      <p>What hurts is a <b>relative</b> move: costs rising faster than the price. If the cup rises 4% but every cost rises 6%, EBITDA falls to ₹80.1 cr, and in today’s money to ₹77.0 cr. The tea shock is the extreme case: one cost up 20% while general inflation is near 3%. When a company reports sales growth, ask how much is price and how much is volume (Part 32 covers this for consumer companies).</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">Interest rates</p>
+      <h2>For Ramu, rates bite less than tea</h2>
+      <p>When the RBI raises the repo rate, banks’ lending rates follow, and a borrower on a floating rate pays more (<a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> showed 10% → 12%). Here, a one-point repo-led rise <span class="tag">example</span>: Ramu’s ₹100 cr of borrowings move from 10% to 11%, finance costs from ₹10 cr to ₹11 cr, and profit before tax from ₹67 cr to ₹66 cr. Profit after tax goes from ₹50 cr to ₹49.25 cr.</p>
+      <figure><svg viewBox="0 0 800 244" role="img" aria-label="Three bars on one scale for the fall in Ramu’s profit before tax: a 1 point rise in its borrowing rate costs 1 crore, 5 percent fewer cups 11.25 crore, and a 20 percent tea rise that is absorbed 18 crore"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Fall in profit before tax, ₹ cr · 20 px = ₹1 cr</text><text x="40" y="68" text-anchor="start" fill="#a5a29c" font-size="16">rate +1 point</text><rect x="270" y="48" width="20" height="28" fill="#ec6a94"/><text x="300" y="68" text-anchor="start" fill="#f1eee8" font-size="16">−₹1 cr</text><text x="40" y="118" text-anchor="start" fill="#a5a29c" font-size="16">5% fewer cups</text><rect x="270" y="98" width="225" height="28" fill="#ff8059"/><text x="505" y="118" text-anchor="start" fill="#f1eee8" font-size="16">−₹11.25 cr</text><text x="40" y="168" text-anchor="start" fill="#a5a29c" font-size="16">tea +20%, absorbed</text><rect x="270" y="148" width="360" height="28" fill="#ff8059"/><text x="640" y="168" text-anchor="start" fill="#f1eee8" font-size="16">−₹18 cr</text><path d="M270 40 V196" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40" y="226" text-anchor="start" fill="#a5a29c" font-size="16">each shock on its own, from PBT ₹67 cr</text></svg></figure>
+      <p>Drawn next to the other shocks, the direct hit is small, because Ramu borrows only ₹100 cr against ₹85 cr of EBITDA. Rates matter more in two other ways. They move <b>demand</b>: dearer loans slow purchases of cars, homes and machines, much more than of tea. And they move <b>what future profit is worth today</b>, for every company, borrower or not. That is the next part. A heavily indebted company feels all three at once.</p>
+      <details class="trace"><summary>Go deeper: assumptions</summary><p>All ₹100 cr is assumed to reprice at once; in reality only floating-rate debt does, and with a lag. Interest earned on Ramu’s ₹40 cr of cash (₹4 cr) is held unchanged; if it also earned one point more, profit before tax would recover ₹0.4 cr. Tax is Ramu’s 17 ÷ 67 of profit before tax.</p></details>
+    </section>
+    <section class="panel">
+      <p class="kicker">The rupee</p>
+      <h2>Same dollars, more rupees</h2>
+      <p>Ramu sells only in India and, in this series, buys in rupees, so the rupee does not touch its accounts directly <span class="tag">example</span>. A company with sales abroad is different. Take US sales of $10 cr. At ₹85.58 a dollar they are ₹855.8 cr in the rupee accounts; at ₹94.60 they are ₹946.0 cr, 10.5% more, with no extra cup sold. Those two rates are the RBI’s readings near the end of FY25 and FY26 <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 186" role="img" aria-label="The same 10 crore dollars of sales drawn twice in rupees on one scale: 855.8 crore at 85.58 rupees a dollar and 946.0 crore at 94.60, an extra 90.2 crore with no extra cup sold"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">US sales of $10 cr, in rupees · 0.55 px = ₹1 cr</text><text x="40" y="69" text-anchor="start" fill="#a5a29c" font-size="16">at ₹85.58 a $</text><rect x="200" y="48" width="470.7" height="30" fill="#76d5c1"/><text x="208" y="69" text-anchor="start" fill="#202020" font-size="16">₹855.8 cr</text><text x="40" y="129" text-anchor="start" fill="#a5a29c" font-size="16">at ₹94.60 a $</text><rect x="200" y="108" width="470.7" height="30" fill="#76d5c1"/><rect x="670.7" y="108" width="49.6" height="30" fill="#76d5c1" opacity="0.45"/><text x="208" y="129" text-anchor="start" fill="#202020" font-size="16">₹946.0 cr</text><text x="720.3" y="166" text-anchor="end" fill="#a5a29c" font-size="16">+₹90.2 cr, no extra cup</text></svg></figure>
+      <p>This is why companies report <b>constant-currency</b> growth: the growth at last year’s exchange rates, which strips the rupee out. A weaker rupee lifts the reported sales and profit of exporters and overseas subsidiaries, and raises the cost of anything imported. Some of the effect sits outside profit: overseas assets are re-valued in rupees through other comprehensive income. Part 31 covers exporters, where this matters most.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">Cyclical or defensive</p>
+      <h2>How far demand swings in a slowdown</h2>
+      <p>The economy also moves how much people buy. People keep drinking tea, using salt and taking medicines in a bad year: those businesses are <b>defensive</b>. A car, a flat, a steel beam or a machine can be put off: those are <b>cyclical</b>, and their volumes swing with the economy and with interest rates. Give two businesses Ramu’s exact cost structure <span class="tag">example</span>: ₹2.25 of contribution a unit and ₹140 cr of fixed costs. In a slowdown the defensive one sells 3% fewer cups; its cyclical twin 20% fewer units.</p>
+      <figure><svg viewBox="0 0 800 208" role="img" aria-label="Two businesses with Ramu’s cost structure in a slowdown, on one scale: a defensive one sells 3 percent fewer cups and EBITDA falls from 85 to 78.25 crore; a cyclical twin sells 20 percent fewer units and EBITDA falls to 40 crore"><text x="60" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Defensive: cups −3%</text><rect x="60" y="38" width="469.5" height="30" fill="#f5c76a"/><rect x="529.5" y="38" width="40.5" height="30" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="4 3"/><text x="580" y="59" text-anchor="start" fill="#f1eee8" font-size="16">₹78.25 cr, −8%</text><text x="60" y="110" text-anchor="start" fill="#a5a29c" font-size="16">Cyclical twin: units −20%</text><rect x="60" y="118" width="240" height="30" fill="#f5c76a"/><rect x="300" y="118" width="270" height="30" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="4 3"/><text x="580" y="139" text-anchor="start" fill="#f1eee8" font-size="16">₹40 cr, −53%</text><text x="60" y="190" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 cr · dashed = EBITDA lost from ₹85 cr</text></svg></figure>
+      <p>Same costs, same operating leverage: the difference is only the demand. The defensive business loses 8% of EBITDA; the cyclical twin loses 53%. That is why cyclical earnings are judged across a whole cycle, not at the peak, and why their P/E misleads at the top and the bottom (<a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a>’s trap). Part 33 covers cyclicals.</p>
+    </section>
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Six outside forces, and where they show</h2>
+      <p>For any company, ask which of these it is exposed to, in which line, and whether it can pass the cost on.</p>
+      <div class="field-grid">
+        <div><b>The repo rate</b><span>Finance costs on floating debt; demand bought on credit; and the rate used to value future profit.</span><em>PARTS 11 AND 23</em></div>
+        <div><b>Inflation</b><span>Price, wages, rent and inputs. Watch costs that rise faster than the company’s own price, and split growth into volume and price.</span><em>PARTS 8 AND 32</em></div>
+        <div><b>The rupee</b><span>Sales and profit of exporters and overseas businesses, the cost of imports, and translation through other comprehensive income.</span><em>PART 31</em></div>
+        <div><b>Commodities</b><span>Gross margin: tea, coffee, milk, crude oil, steel. Look for hedges, inventory and price increases, and the lag between them.</span><em>PARTS 16 AND 17</em></div>
+        <div><b>The monsoon</b><span>Crop prices and farm incomes, so both costs and rural demand. The RBI itself cited “healthy rabi prospects” in February 2026.</span><em>THIS PART</em></div>
+        <div><b>Policy</b><span>Taxes such as GST, import duties, export curbs and regulation. The RBI listed “GST rationalisation” among the supports for consumption.</span><em>PARTS 29 AND 34</em></div>
+      </div>
+    </section>
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Shock Ramu’s year yourself</h2>
+      <p>Start from Ramu’s FY26 accounts <span class="tag">example</span> and move four dials. Assumptions: only tea moves among the costs; the price rises by the share of the tea change you pass on (a tea fall is passed on as a price cut); cups sold is your own setting, so price and volume are not linked here; fixed cash costs (₹140 cr), D&amp;A (₹12 cr) and interest on cash (₹4 cr) stay put; the borrowing rate applies to all ₹100 cr of debt; tax is 17 ÷ 67 of profit before tax, and none on a loss. The dashed marks are FY26 as reported.</p>
+      
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="tea">Tea price change <output id="tea-o"></output></label><input id="tea" type="range" min="-20" max="50" step="5" value="20"></div>
+          <div class="control"><label for="pass">Share of the tea change passed on <output id="pass-o"></output></label><input id="pass" type="range" min="0" max="100" step="10" value="0"></div>
+          <div class="control"><label for="vol">Cups sold <output id="vol-o"></output></label><input id="vol" type="range" min="-15" max="10" step="1" value="0"></div>
+          <div class="control"><label for="rate">Borrowing rate <output id="rate-o"></output></label><input id="rate" type="range" min="8" max="14" step="0.5" value="10"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="20,0,0,10">Weak monsoon, absorbed</button>
+            <button type="button" class="secondary" data-p="20,100,0,10">Weak monsoon, passed on</button>
+            <button type="button" class="secondary" data-p="0,0,0,11">Rate +1 point</button>
+            <button type="button" class="secondary" data-p="20,50,-5,11">Bad year, all at once</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="lab-chart">
+          <div class="readouts" id="readouts"></div>
+          <svg id="labChart" viewBox="0 0 640 262" role="img" aria-label="Ramu’s EBITDA, profit before tax and profit after tax for the year on one fixed axis from minus 20 to 140 crore, each with a dashed mark at its FY26 value"></svg>
+          <svg id="labCup" viewBox="0 0 640 132" role="img" aria-label="One cup at the current settings on a fixed scale of 100 pixels per rupee: tea, other variable costs, fixed cost per cup and EBITDA per cup, with a dashed line at the old 5 rupee price"></svg>
+        </div>
+      </div></div>
+      <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+      <p>Try, in order: the two monsoon presets, then “Weak monsoon, passed on” and lower the cups: at −8% EBITDA is back at ₹67 cr and the price rise has bought nothing. Compare “Rate +1 point” with a 5% tea move. Finally set tea to +50%, pass none of it on, cups to −15% and the rate to 14%: profit before tax turns negative.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL: tea costs and the rupee</h2>
+      <p>Tata Consumer Products, FY2026, year to 31 March 2026 <span class="tag">public</span>. Its AGM presentation (10 June 2026, slide 7) puts the <b>International</b> business, international tea and US coffee, at <b>₹4,885 cr</b>: up 16% in rupees, but only 9% in constant currency. The difference is the rupee. Our reading of what that means in rupees, using TCPL’s rounded percentages:</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="TCPL’s International business grew from about 4,211 crore in FY25 to 4,885 crore in FY26: about 379 crore of that is growth at constant exchange rates and about 295 crore is the effect of a weaker rupee"><text x="60" y="30" text-anchor="start" fill="#a5a29c" font-size="16">FY25, implied by +16%</text><rect x="60" y="38" width="505.3" height="30" fill="#76d5c1" opacity="0.6"/><text x="575.3" y="59" text-anchor="start" fill="#f1eee8" font-size="16">about ₹4,211 cr</text><text x="60" y="100" text-anchor="start" fill="#a5a29c" font-size="16">FY26 International</text><rect x="60" y="108" width="505.3" height="30" fill="#76d5c1" opacity="0.6"/><rect x="565.3" y="108" width="45.5" height="30" fill="#76d5c1"/><rect x="610.8" y="108" width="35.4" height="30" fill="#76d5c1" opacity="0.3" stroke="#76d5c1" stroke-width="1.5" stroke-dasharray="4 3"/><text x="656.2" y="129" text-anchor="start" fill="#f1eee8" font-size="16">₹4,885 cr</text><text x="610.8" y="166" text-anchor="end" fill="#f1eee8" font-size="16">constant currency +₹379 cr</text><text x="646.2" y="192" text-anchor="end" fill="#a5a29c" font-size="16">rupee effect +₹295 cr</text><text x="60" y="232" text-anchor="start" fill="#a5a29c" font-size="16">0.12 px = ₹1 cr · our arithmetic on TCPL’s rounded growth</text></svg></figure>
+      <p>Across the whole group the same effect is smaller: revenue of ₹20,290 cr grew 15%, or 13% in constant currency (IAR page 223). The weaker rupee also lifted the rupee value of TCPL’s overseas businesses: “exchange differences on translation of foreign operations” added ₹908.17 cr to other comprehensive income in FY26, against ₹246.25 cr in FY25 (page 415). That is outside the ₹1,546.80 cr profit for the year.</p>
+      <p><b>Tea costs, in TCPL’s words.</b> The same choice as in our lab, absorb or pass on, made in real life:</p>
+      <blockquote class="q">“The tea business was impacted in H1 with significant inflation in tea cost carried forward from last year, which was mitigated through calibrated price increases, thereby protecting the margins and bringing the margins to normative levels in H2 aided by tapering of tea cost inflation.”<cite>BOARD’S REPORT · IAR PAGE 179</cite></blockquote>
+      <blockquote class="q">“The tea business recorded growth driven by a favourable mix and higher volumes, despite softer demand conditions and price reductions implemented to pass on the benefits of tapering of tea cost.”<cite>BOARD’S REPORT · IAR PAGE 177</cite></blockquote>
+      <p>So TCPL first passed a tea rise on, in steps, and then passed part of the fall back. Its standalone EBITDA margin rose 140 basis points to 12.5% “on account of tapering of tea cost inflation in India” (page 223). Abroad, International margins fell, “primarily driven by an increase in coffee costs and the impact of U.S. tariffs” (page 177): a different commodity, and a policy shock.</p>
+      <details class="trace"><summary>Go deeper: how much does a 5% currency move change TCPL’s profit?</summary><p>The risk note (Note 36, page 467) gives one sensitivity: a 5% rise in the foreign currencies TCPL is exposed to would change profit before tax by +₹5.46 cr and pre-tax equity by −₹20.79 cr (the hedges lose value). That covers only foreign-currency financial assets, liabilities and hedge contracts on the books at year-end. It does not include the much larger effect of translating the overseas subsidiaries’ sales and profit into rupees, which shows up in the International growth above. The same note says commodity prices for “tea, salt, pulses and coffee” are managed through “active sourcing, distribution of source of supply, private purchases and alternate blending strategies” (page 468), with futures and options used only for US coffee. FY25 International revenue of about ₹4,211 cr is our estimate from the 16%; TCPL’s slide gives only the growth rate.</p></details>
+      <div class="field-grid">
+        <div><b>₹4,885 cr International</b><span>+16% reported, +9% constant currency; international tea and US coffee</span><em>AGM PRESENTATION · SLIDE 7</em></div>
+        <div><b>+15%, or +13% constant currency</b><span>Consolidated revenue ₹20,290 cr</span><em>MANAGEMENT DISCUSSION 4.1 · IAR P. 223</em></div>
+        <div><b>₹908.17 cr translation gain</b><span>In other comprehensive income, not profit; FY25 ₹246.25 cr</span><em>CONSOLIDATED P&amp;L · IAR P. 415</em></div>
+        <div><b>±₹5.46 cr per 5% currency move</b><span>Profit before tax, on financial instruments only</span><em>NOTE 36 · IAR P. 467</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Integrated Annual Report 2025-26</a> (printed pages as cited) and <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf">AGM presentation</a> of 10 June 2026; RBI and MoSPI releases as linked above. Educational, not a recommendation.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions about the world outside</h2>
+      <ol class="checks">
+        <li><b>Which forces touch which lines?</b> Inputs, borrowing, currency, demand, policy. A tea company and a steel company answer differently.</li>
+        <li><b>How big is each exposure?</b> Tea is 18% of Ramu’s cup price. A 20% rise in it adds only 3.6% to the cost of a cup, yet takes a fifth of EBITDA.</li>
+        <li><b>Can it pass costs on, and how fast?</b> Read the management discussion for price increases, lags and what happened to volumes.</li>
+        <li><b>Defensive or cyclical?</b> If demand can be postponed, judge profit over a whole cycle, not one year.</li>
+        <li><b>Reported or constant currency?</b> Separate what the business did from what the rupee did.</li>
+      </ol>
+      <p>One force reaches every company, borrower or not: interest rates change what a rupee of profit in ten years is worth today. Part 23, “Discounting and the discount rate”, starts Stage 5 with exactly that.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Every company sits in an economy it does not control. Find the lines each outside force moves, size the hit, and ask whether the company can pass it on: that, more than the forecast, tells you how its profit will behave.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ---- Part 22 lab: shocks to Ramu Chai's year. Inputs are the plan's canonical FY26 accounts (example).
+    const $=id=>document.getElementById(id);
+    const FG='#f1eee8',MUT='#a5a29c',DK='#202020',GOLD='#f5c76a',CORAL='#ff8059',FIX='#6b3a2e';
+    const B={cups:100,price:5,tea:0.9,otherVar:1.85,fixed:140,da:12,oi:4,debt:100,rate:10,taxRate:17/67,shares:10};
+    const BASE={ebitda:85,pbt:67,pat:50};
+    const ids=['tea','pass','vol','rate'];
+    const PMSG={'20,0,0,10':'Tea up 20% after a weak monsoon and the price held at ₹5.00: ₹18 cr of extra cost comes straight off EBITDA, 85 → 67.',
+      '20,100,0,10':'The same rise passed on in full: the cup goes to ₹5.18 (+3.6%) and EBITDA is back at 85, but only if customers keep buying as many cups.',
+      '0,0,0,11':'Borrowing cost up one point, 10% → 11%: finance costs 10 → 11 and profit before tax 67 → 66. Small, because Ramu borrows little.',
+      '20,50,-5,11':'Everything at once: tea +20%, half passed on (₹5.09 a cup), 5% fewer cups and a one-point rate rise. EBITDA 65.2, profit after tax 34.5.'};
+    const T=(x,y,s,a,fill,cls,dv)=>`<text${cls?` class="${cls}"`:''}${dv!==undefined?` data-v="${dv}"`:''} x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FG}" font-size="16">${s}</text>`;
+    const r1=v=>(Math.round(v*10)/10).toFixed(1), r2=v=>(Math.round(v*100)/100).toFixed(2);
+    const sg=v=>(v>0?'+':v<0?'−':'')+Math.abs(v);
+    const pct=(v,b)=>{const p=Math.round(1000*(v/b-1))/10;return (p>0?'+':p<0?'−':'±')+Math.abs(p).toFixed(1)+'%';};
+    function compute(teaPct,passPct,volPct,rate){
+      const cups=B.cups*(1+volPct/100), tea=B.tea*(1+teaPct/100), price=B.price+(passPct/100)*(tea-B.tea);
+      const varCost=B.otherVar+tea, contrib=price-varCost;
+      const sales=cups*price, ebitda=cups*contrib-B.fixed, ebit=ebitda-B.da, fin=B.debt*rate/100;
+      const pbt=ebit+B.oi-fin, tax=pbt>0?pbt*B.taxRate:0, pat=pbt-tax;
+      return {cups,tea,price,varCost,contrib,sales,ebitda,ebit,fin,pbt,tax,pat,eps:pat/B.shares};
+    }
+    const labConfig={format:v=>String(v),minSpan:-20,maxSpan:140,step:20};
+    function update(){
+      const v=ids.map(id=>+$(id).value);
+      $('tea-o').textContent=sg(v[0])+'%'; $('pass-o').textContent=v[1]+'%'; $('vol-o').textContent=sg(v[2])+'%'; $('rate-o').textContent=v[3].toFixed(1)+'%';
+      const c=compute(...v);
+      // readouts
+      $('readouts').innerHTML=[['EBITDA','₹'+r1(c.ebitda)+' cr',pct(c.ebitda,BASE.ebitda)],['Profit before tax','₹'+r1(c.pbt)+' cr',pct(c.pbt,BASE.pbt)],['Profit after tax','₹'+r1(c.pat)+' cr',pct(c.pat,BASE.pat)],['Price a cup','₹'+r2(c.price),pct(c.price,B.price)]]
+        .map(([a,b,e])=>`<div><span>${a}</span><b>${b}</b><em>${e} on FY26</em></div>`).join('');
+      // chart: one fixed axis, one scale function
+      const X0=60,X1=600,lo=labConfig.minSpan,hi=labConfig.maxSpan,sx=x=>X0+(x-lo)*(X1-X0)/(hi-lo),z=sx(0);
+      let s='';
+      [['EBITDA',c.ebitda,BASE.ebitda],['Profit before tax',c.pbt,BASE.pbt],['Profit after tax',c.pat,BASE.pat]].forEach(([lab,val,base],i)=>{
+        const y=34+i*66, xv=sx(Math.max(lo,Math.min(hi,val)));
+        s+=T(X0,y-10,lab,'start',MUT)+T(X1+30,y-10,'₹'+r1(val)+' cr · FY26 '+base,'end',FG);
+        s+=`<rect data-v="${val.toFixed(4)}" x="${Math.min(z,xv).toFixed(2)}" y="${y}" width="${Math.abs(xv-z).toFixed(2)}" height="26" fill="${val<0?CORAL:GOLD}"/>`;
+        s+=`<path d="M${sx(base).toFixed(2)} ${y-1} V${y+27}" stroke="${FG}" stroke-width="2" stroke-dasharray="4 3" fill="none"/>`;
+      });
+      [34,100,166].forEach(y=>{s+=`<path d="M${z.toFixed(2)} ${y-2} V${y+28}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;});
+      s+=`<path d="M${X0} 216 H${X1}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      for(let t=lo;t<=hi;t+=labConfig.step) s+=T(sx(t),238,labConfig.format(t),'middle',MUT,'tick',t);
+      s+=T(X0,258,'₹ crore · dashed = FY26 as reported','start',MUT);
+      $('labChart').innerHTML=s;
+      // cup: 100 px per rupee
+      const k=100,x0=20; let x=x0, u='';
+      const fixedCup=B.fixed/c.cups, ebCup=c.contrib-fixedCup;
+      [[c.tea,CORAL,'','tea ',DK,84],[B.otherVar,CORAL,' opacity="0.7"','other ',DK,0],[fixedCup,FIX,` stroke="${CORAL}" stroke-width="1.5"`,'fixed ',FG,0],[ebCup,ebCup<0?CORAL:GOLD,'','',DK,52]].forEach(([val,col,ex,lab,tc,min])=>{
+        const w=Math.max(0,val)*k; u+=`<rect x="${x.toFixed(2)}" y="34" width="${w.toFixed(2)}" height="34" fill="${col}"${ex}/>`;
+        if(w>=Math.max(min,48)) u+=T(x+8,57,(w>=min&&lab?lab:'')+'₹'+r2(val),'start',tc); x+=w;});
+      u+=`<path d="M${x0+5*k} 28 V74" stroke="${FG}" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>`;
+      u+=T(x0,22,'One cup: ₹'+r2(c.price)+' · EBITDA ₹'+r2(ebCup)+' a cup','start',FG)+T(x0,104,'100 px = ₹1 · dashed = ₹5.00 · fixed cost spread over '+r1(c.cups)+' crore cups','start',MUT);
+      $('labCup').innerHTML=u;
+      // ledger
+      const rows=[['Cups sold','100 × (1 '+(v[2]<0?'−':'+')+' '+Math.abs(v[2])+'%) = '+r2(c.cups)+' crore'],
+        ['Tea a cup','₹0.90 × (1 '+(v[0]<0?'−':'+')+' '+Math.abs(v[0])+'%) = ₹'+r2(c.tea)],
+        ['Price a cup','₹5.00 + '+v[1]+'% × (₹'+r2(c.tea)+' − ₹0.90) = ₹'+r2(c.price)],
+        ['Contribution a cup','₹'+r2(c.price)+' − ₹1.85 − ₹'+r2(c.tea)+' = ₹'+r2(c.contrib)],
+        ['EBITDA',r2(c.cups)+' × ₹'+r2(c.contrib)+' − 140 fixed = ₹'+r2(c.ebitda)+' cr'],
+        ['EBIT','EBITDA − D&A 12 = ₹'+r2(c.ebit)+' cr'],
+        ['Finance costs','100 borrowings × '+v[3].toFixed(1)+'% = ₹'+r2(c.fin)+' cr'],
+        ['Profit before tax','EBIT + other income 4 − finance costs = ₹'+r2(c.pbt)+' cr'],
+        ['Tax',c.pbt>0?'17 ÷ 67 of PBT (25.4%) = ₹'+r2(c.tax)+' cr':'none on a loss'],
+        ['Profit after tax','₹'+r2(c.pat)+' cr · EPS ₹'+r2(c.eps)+' on 10 crore shares'],
+        ['Sales',r2(c.cups)+' × ₹'+r2(c.price)+' = ₹'+r2(c.sales)+' cr']];
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:Object.values(c).every(Number.isFinite),inputs:{tea:v[0],pass:v[1],vol:v[2],rate:v[3]},...c};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';update();}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{
+      b.dataset.p.split(',').forEach((v,i)=>$(ids[i]).value=v);update();$('msg').textContent=PMSG[b.dataset.p];}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

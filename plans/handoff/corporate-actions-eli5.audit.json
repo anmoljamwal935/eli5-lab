@@ -1,0 +1,526 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": null,
+    "title": "Part 21: Corporate actions and dilution (topic-only series part)",
+    "verified_date": "2026-11-18",
+    "language": "en",
+    "capture_mode": "topic; primary sources downloaded and read (src/)",
+    "limitations": "Ex-date 26 Jul 2024 derived from the T+1 rule, not read from an exchange notice. Ind AS 33 not cited (no primary text read). Buyback tax rates left to Part 38."
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Re-slicing (bonus, split, demerger) vs changing slices (rights, QIP, ESOP, buyback); price decides",
+      "kind": "mechanism",
+      "locator": "plan",
+      "check_needed": false,
+      "destination": "p1-question"
+    },
+    {
+      "id": "I2",
+      "item": "Record date; LODR Reg 42(2): 3 working days notice, 7 for schemes",
+      "kind": "claim",
+      "locator": "LODR",
+      "check_needed": true,
+      "destination": "p2-record"
+    },
+    {
+      "id": "I3",
+      "item": "T+1 fully implemented 27 Jan 2023; ex-date = record date",
+      "kind": "claim",
+      "locator": "SEBI CP Aug 2026",
+      "check_needed": true,
+      "destination": "p2-record"
+    },
+    {
+      "id": "I4",
+      "item": "Bonus 1:1: 20 cr shares, Rs50, EPS 2.50, Rs100 cr reserves to capital, equity 250",
+      "kind": "example",
+      "locator": "numbers file",
+      "check_needed": false,
+      "destination": "p3-bonus, lab"
+    },
+    {
+      "id": "I5",
+      "item": "ICDR 294(3),(4), 295 bonus rules",
+      "kind": "claim",
+      "locator": "ICDR",
+      "check_needed": true,
+      "destination": "p3-bonus"
+    },
+    {
+      "id": "I6",
+      "item": "Split Rs10 to Rs5: 20 cr, Rs50, EPS 2.50, capital 100",
+      "kind": "example",
+      "locator": "numbers file",
+      "check_needed": false,
+      "destination": "p4-split, lab"
+    },
+    {
+      "id": "I7",
+      "item": "Buyback 0.5 cr at Rs100: 9.5 cr, EPS 5.26, mcap 950, Rs50 cr out, ignores interest",
+      "kind": "example",
+      "locator": "numbers file",
+      "check_needed": false,
+      "destination": "p5-buyback, lab"
+    },
+    {
+      "id": "I8",
+      "item": "Buy-back Regs: 25% cap, 10% board, 2:1 debt, tender 15% small, exchange route barred 1 Apr 2025-31 Jul 2026 and back from 1 Aug 2026 below 15%, 1-year completion, 1-year no fresh capital",
+      "kind": "claim",
+      "locator": "Buy-back Regs",
+      "check_needed": true,
+      "destination": "p5-buyback"
+    },
+    {
+      "id": "I9",
+      "item": "Promoters cannot sell into open market buyback; tax framework revised (no rates; Part 38)",
+      "kind": "claim",
+      "locator": "SEBI PR 33/2026",
+      "check_needed": true,
+      "destination": "p5-buyback"
+    },
+    {
+      "id": "I10",
+      "item": "Rights 1 for 10 at Rs80: 11 cr, TERP 98.18, EPS 4.55, Rs80 cr, mcap 1,080; subscribe/sell/do nothing",
+      "kind": "example",
+      "locator": "numbers file",
+      "check_needed": false,
+      "destination": "p6-rights, lab"
+    },
+    {
+      "id": "I11",
+      "item": "ICDR 68(2), 73, 77A, 86 rights mechanics",
+      "kind": "claim",
+      "locator": "ICDR",
+      "check_needed": true,
+      "destination": "p6-rights"
+    },
+    {
+      "id": "I12",
+      "item": "QIP 1 cr at Rs95: 11 cr, EPS 4.55, 100% to 90.9%",
+      "kind": "example",
+      "locator": "numbers file",
+      "check_needed": false,
+      "destination": "p7-qip, lab"
+    },
+    {
+      "id": "I13",
+      "item": "QIP: 2(1)(tt), 171(b), 176(1) floor and 5% discount; 179(2) MF 10%, no promoters",
+      "kind": "claim",
+      "locator": "ICDR",
+      "check_needed": true,
+      "destination": "p7-qip"
+    },
+    {
+      "id": "I14",
+      "item": "ESOP 0.2 cr at Rs60: 10.2 cr, EPS 4.90, 2.0%, Rs12 cr",
+      "kind": "example",
+      "locator": "numbers file",
+      "check_needed": false,
+      "destination": "p8-esop, lab"
+    },
+    {
+      "id": "I15",
+      "item": "SBEB Reg 17 free exercise price, 18(1) one-year vesting",
+      "kind": "claim",
+      "locator": "SBEB",
+      "check_needed": true,
+      "destination": "p8-esop"
+    },
+    {
+      "id": "I16",
+      "item": "Demerger: cafes to Ramu Cafes Ltd, 1 for 10",
+      "kind": "example",
+      "locator": "numbers file",
+      "check_needed": false,
+      "destination": "p9-demerger, field guide"
+    },
+    {
+      "id": "I17",
+      "item": "Adjusted history; EPS growth vs share count; 'cheaper after a split'",
+      "kind": "misconception",
+      "locator": "topic",
+      "check_needed": false,
+      "destination": "p11-mistake"
+    },
+    {
+      "id": "I18",
+      "item": "TCPL rights 2024: 1:26 at Rs818, record date 27 Jul 2024, up to Rs2,997.77 cr, timetable, objects Rs2,940 cr CP repayment",
+      "kind": "number",
+      "locator": "ALoF 23 Jul 2024; board outcome 19 Jan 2024",
+      "check_needed": true,
+      "destination": "p12-real"
+    },
+    {
+      "id": "I19",
+      "item": "TCPL shares 95,28,34,816 + 3,66,23,802 rights + 39,940 PSU = 98,94,98,558; +63,222 = 98,95,61,780; net proceeds 2,980.57",
+      "kind": "number",
+      "locator": "IAR FY26 note 14 p.446, cash flow p.418",
+      "check_needed": true,
+      "destination": "p12-real"
+    },
+    {
+      "id": "I20",
+      "item": "BSE close 25 Jul 2024 Rs1,223.65, 26 Jul Rs1,213.15; TERP 1,208.63; right 390.63; discount 33.2%",
+      "kind": "number",
+      "locator": "BSE bhavcopy",
+      "check_needed": true,
+      "destination": "p12-real"
+    },
+    {
+      "id": "I21",
+      "item": "TCPL PSUs 6,05,749, Re 1 exercise, basic 15.59 / diluted 15.58, share-based pay Rs16.25 cr; FY24 scheme 2,38,23,166 shares",
+      "kind": "number",
+      "locator": "IAR FY26 notes 14, 27, 30",
+      "check_needed": true,
+      "destination": "p13-real"
+    },
+    {
+      "id": "I22",
+      "item": "Hand-off to Part 22",
+      "kind": "context",
+      "locator": "series",
+      "check_needed": false,
+      "destination": "p15-sowhat"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I2",
+      "verdict": "Supported",
+      "as_of": "2026-10-15",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1792664915776.pdf",
+      "passage": "Reg 42(2) at least three working days; proviso seven for schemes"
+    },
+    {
+      "inventory_id": "I3",
+      "verdict": "Supported",
+      "as_of": "2026-08",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/aug-2026/1786016613321.pdf",
+      "passage": "T+1 fully implemented w.e.f. January 27, 2023; T+2 discontinued"
+    },
+    {
+      "inventory_id": "I5",
+      "verdict": "Supported",
+      "as_of": "2026-03-21",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf",
+      "passage": "Reg 294(3),(4); 295(1),(2)"
+    },
+    {
+      "inventory_id": "I8",
+      "verdict": "Supported",
+      "as_of": "2026-07-06",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jul-2026/1784895062551.pdf",
+      "passage": "Reg 2(n), 4(i), 4(ii), 4(iv) provisos, 5(i)(b), 5(ii), 6, 24(i)(f)"
+    },
+    {
+      "inventory_id": "I9",
+      "verdict": "Supported",
+      "as_of": "2026-06-19",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jun-2026/1781871483886.pdf",
+      "passage": "PR 33/2026 paras 2.1, 2.2.1, 2.2.4"
+    },
+    {
+      "inventory_id": "I11",
+      "verdict": "Supported",
+      "as_of": "2026-03-21",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf",
+      "passage": "Reg 68(2), 73, 77A(1), 86"
+    },
+    {
+      "inventory_id": "I13",
+      "verdict": "Supported",
+      "as_of": "2026-03-21",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf",
+      "passage": "Reg 2(1)(tt), 171(b), 176(1), 179(2)"
+    },
+    {
+      "inventory_id": "I15",
+      "verdict": "Supported",
+      "as_of": "2025-12-04",
+      "evidence_url": "https://www.sebi.gov.in/sebi_data/attachdocs/aug-2026/1785911420093.pdf",
+      "passage": "Reg 17; Reg 18(1)"
+    },
+    {
+      "inventory_id": "I18",
+      "verdict": "Supported",
+      "as_of": "2024-07-23",
+      "evidence_url": "https://investmentbank.kotak.com/downloads/tataconsumer-abridged-letter-of-offer.pdf",
+      "passage": "Issue details, timetable, objects; board outcome https://www.bseindia.com/xml-data/corpfiling/AttachHis/2d71133c-632b-4f63-a088-ecb47a5acf4d.pdf"
+    },
+    {
+      "inventory_id": "I19",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Note 14(a)(i) p.446; cash flow p.418"
+    },
+    {
+      "inventory_id": "I20",
+      "verdict": "Supported (BSE data plus arithmetic; ex-date derived from T+1)",
+      "as_of": "2024-07-26",
+      "evidence_url": "https://www.bseindia.com/download/BhavCopy/Equity/BhavCopy_BSE_CM_0_0_0_20240725_F_0000.CSV and _20240726_",
+      "passage": "TATACONSUM close 1223.65 (25 Jul), 1213.15 (26 Jul)"
+    },
+    {
+      "inventory_id": "I21",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Note 30 p.456; PSU note pp.454-455; Note 14(a)(iii)"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1-question"
+    },
+    {
+      "id": "p2-record"
+    },
+    {
+      "id": "p3-bonus"
+    },
+    {
+      "id": "p4-split"
+    },
+    {
+      "id": "p5-buyback"
+    },
+    {
+      "id": "p6-rights"
+    },
+    {
+      "id": "p7-qip"
+    },
+    {
+      "id": "p8-esop"
+    },
+    {
+      "id": "p9-demerger"
+    },
+    {
+      "id": "p10-lab"
+    },
+    {
+      "id": "p11-mistake"
+    },
+    {
+      "id": "p12-fieldguide"
+    },
+    {
+      "id": "p12-real"
+    },
+    {
+      "id": "p13-real"
+    },
+    {
+      "id": "p15-sowhat"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "value = estimate x 10 cr +/- cash at face value",
+      "profit changes by r x cash",
+      "SEBI caps applied: buyback <=25% of shares and <= Rs62.5 cr; rights >= Rs10; QIP >= Rs95"
+    ],
+    "independent_calculation_method": "verify_lab.py: separate formulas plus hand-typed plan table vs window.labResults",
+    "cases": [
+      [
+        "defaults (rights 1 for 10 at ₹80)",
+        98.1818,
+        98.1818,
+        true
+      ],
+      [
+        "button bonus: EPS / plan",
+        2.5,
+        2.5,
+        true
+      ],
+      [
+        "button split: EPS / plan",
+        2.5,
+        2.5,
+        true
+      ],
+      [
+        "button buyback: EPS / plan",
+        5.26,
+        5.2632,
+        true
+      ],
+      [
+        "button rights: EPS / plan",
+        4.55,
+        4.5455,
+        true
+      ],
+      [
+        "button qip: EPS / plan",
+        4.55,
+        4.5455,
+        true
+      ],
+      [
+        "button esop: EPS / plan",
+        4.9,
+        4.902,
+        true
+      ],
+      [
+        "preset cheapbb: stay value",
+        13157.8947,
+        13157.8947,
+        true
+      ],
+      [
+        "preset dearbb: stay value",
+        9875.0,
+        9875,
+        true
+      ],
+      [
+        "preset earn: nothing value",
+        9818.1818,
+        9818.1818,
+        true
+      ],
+      [
+        "preset re1: after value",
+        9805.8824,
+        9805.8824,
+        true
+      ],
+      [
+        "extreme bonus s=0 p=1 w=50 r=0: EPS",
+        5.0,
+        5,
+        true
+      ],
+      [
+        "extreme bonus s=100 p=200 w=200 r=30: EPS",
+        2.5,
+        2.5,
+        true
+      ],
+      [
+        "extreme split s=0 p=1 w=50 r=0: EPS",
+        5.0,
+        5,
+        true
+      ],
+      [
+        "extreme split s=100 p=200 w=200 r=30: EPS",
+        2.5,
+        2.5,
+        true
+      ],
+      [
+        "extreme buyback s=0 p=1 w=50 r=0: EPS",
+        5.0,
+        5,
+        true
+      ],
+      [
+        "extreme buyback s=100 p=200 w=200 r=30: EPS",
+        3.2258,
+        3.2258,
+        true
+      ],
+      [
+        "extreme rights s=0 p=1 w=50 r=0: EPS",
+        5.0,
+        5,
+        true
+      ],
+      [
+        "extreme rights s=100 p=200 w=200 r=30: EPS",
+        32.5,
+        32.5,
+        true
+      ],
+      [
+        "extreme qip s=0 p=1 w=50 r=0: EPS",
+        5.0,
+        5,
+        true
+      ],
+      [
+        "extreme qip s=100 p=200 w=200 r=30: EPS",
+        32.5,
+        32.5,
+        true
+      ],
+      [
+        "extreme esop s=0 p=1 w=50 r=0: EPS",
+        5.0,
+        5,
+        true
+      ],
+      [
+        "extreme esop s=100 p=200 w=200 r=30: EPS",
+        32.5,
+        32.5,
+        true
+      ]
+    ],
+    "invariants": [
+      [
+        "bonus wealth unchanged",
+        true
+      ],
+      [
+        "split wealth unchanged",
+        true
+      ],
+      [
+        "rights: subscribe − cash paid = before",
+        true
+      ],
+      [
+        "rights: sell right = before",
+        true
+      ]
+    ],
+    "tolerance": 1e-06,
+    "axis_and_clipping": "zero-based axis, nice max from the largest row; no clipping"
+  },
+  "verification": {
+    "artifact_sha256": "ec43918baaf059cf175881af08bbe35f569b623c38aeee8c0e5052aaecf93451",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 17,
+        "panels": 15,
+        "notes": 0
+      },
+      "artifact_sha256": "ec43918baaf059cf175881af08bbe35f569b623c38aeee8c0e5052aaecf93451",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/agent-ab5f920d383949af7/explainers/corporate-actions-eli5.html"
+    },
+    "supplementary_checks": [
+      "check_render: 0 errors",
+      "verify_lab: 0 failures (defaults, 6 buttons, 4 presets, 96 extreme combos, 4 invariants)",
+      "screenshots inspected desktop and 390px"
+    ],
+    "screenshots": [
+      "shots/",
+      "lab-desktop-default.png",
+      "lab-phone-default.png",
+      "card.png"
+    ],
+    "coverage_review": "each inventory row found on page",
+    "semantic_review": "done"
+  },
+  "publication": {
+    "status": "not-attempted (brief forbids publishing)",
+    "commit": "e5f6468e1236181794e9e3884f522290cf1184c7",
+    "branch": "claude/fa-part-21-corporate-actions",
+    "live_url": null,
+    "readback_results": []
+  }
+}

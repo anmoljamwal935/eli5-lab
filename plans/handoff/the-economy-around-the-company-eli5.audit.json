@@ -1,0 +1,984 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": null,
+    "title": "Topic: The economy around the company (series Part 22)",
+    "author": "n/a; primary sources in claims",
+    "verified_date": "2026-11-18",
+    "language": "en",
+    "capture_mode": "primary documents downloaded to fa22/src (outside repo)",
+    "limitations": "31 March 2026 FBIL rate not found; monsoon effects illustrative; FY25 International derived"
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "outside forces map onto P&L lines",
+      "kind": "mechanism",
+      "check_needed": false,
+      "panel": "p1"
+    },
+    {
+      "id": "I2",
+      "item": "repo rate 5.25% at 31 Mar 2026, 6.25% a year earlier",
+      "kind": "number",
+      "check_needed": true,
+      "panel": "p2"
+    },
+    {
+      "id": "I3",
+      "item": "CPI inflation Mar 2026 3.40%, food 3.87%; new base 2024",
+      "kind": "number",
+      "check_needed": true,
+      "panel": "p2"
+    },
+    {
+      "id": "I4",
+      "item": "inflation target 4% +/-2 retained to Mar 2031",
+      "kind": "number",
+      "check_needed": true,
+      "panel": "p2"
+    },
+    {
+      "id": "I5",
+      "item": "rupee 94.60/$ (27 Mar 2026) vs 85.58 (28 Mar 2025); no 31 Mar rate found",
+      "kind": "number",
+      "check_needed": true,
+      "panel": "p2"
+    },
+    {
+      "id": "I6",
+      "item": "tea +20%: +0.18/cup, +18 cr; absorbed EBITDA 85->67",
+      "kind": "example",
+      "check_needed": false,
+      "panel": "p3"
+    },
+    {
+      "id": "I7",
+      "item": "passed on: cup 5.18 (+3.6%)",
+      "kind": "example",
+      "check_needed": false,
+      "panel": "p3"
+    },
+    {
+      "id": "I8",
+      "item": "weak monsoon: cost and demand channels; TCPL weather quote",
+      "kind": "mechanism",
+      "check_needed": false,
+      "panel": "p4"
+    },
+    {
+      "id": "I9",
+      "item": "pricing power / elasticity",
+      "kind": "mechanism",
+      "check_needed": false,
+      "panel": "p5"
+    },
+    {
+      "id": "I10",
+      "item": "nominal vs real; relative price moves; link real-gdp-eli5",
+      "kind": "definition",
+      "check_needed": false,
+      "panel": "p6"
+    },
+    {
+      "id": "I11",
+      "item": "rate +1pt: finance 10->11, PBT 67->66",
+      "kind": "example",
+      "check_needed": false,
+      "panel": "p7"
+    },
+    {
+      "id": "I12",
+      "item": "rates act via demand and valuation; hand-off to Part 23",
+      "kind": "context",
+      "check_needed": false,
+      "panel": "p7,p13"
+    },
+    {
+      "id": "I13",
+      "item": "rupee translation and constant currency",
+      "kind": "definition",
+      "check_needed": false,
+      "panel": "p8"
+    },
+    {
+      "id": "I14",
+      "item": "cyclical vs defensive",
+      "kind": "definition",
+      "check_needed": false,
+      "panel": "p9"
+    },
+    {
+      "id": "I15",
+      "item": "policy: GST, duties; RBI quotes",
+      "kind": "context",
+      "check_needed": false,
+      "panel": "p10"
+    },
+    {
+      "id": "I16",
+      "item": "lab: input-cost and rate shocks with pass-through",
+      "kind": "lab",
+      "check_needed": false,
+      "panel": "p11"
+    },
+    {
+      "id": "I17",
+      "item": "TCPL International 4,885 cr +16% / +9% cc",
+      "kind": "number",
+      "check_needed": true,
+      "panel": "p12"
+    },
+    {
+      "id": "I18",
+      "item": "TCPL tea cost statements",
+      "kind": "claim",
+      "check_needed": true,
+      "panel": "p12"
+    },
+    {
+      "id": "I19",
+      "item": "TCPL FX sensitivity, translation OCI",
+      "kind": "number",
+      "check_needed": true,
+      "panel": "p12"
+    },
+    {
+      "id": "I20",
+      "item": "link how-money-actually-works-in-india",
+      "kind": "context",
+      "check_needed": false,
+      "panel": "p2"
+    }
+  ],
+  "claims": [
+    {
+      "id": "I2",
+      "claim": "Policy repo rate 5.25% (held 6 Feb 2026); RBI WSS shows 5.25 on 27 Mar and 3 Apr 2026, 6.25 on 28 Mar 2025",
+      "verdict": "Supported",
+      "as_of": "2026-03-27/2026-04-03",
+      "evidence": [
+        "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=62169",
+        "https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28372",
+        "https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28357"
+      ]
+    },
+    {
+      "id": "I3",
+      "claim": "All-India CPI inflation March 2026 3.40% (final), CFPI 3.87%",
+      "verdict": "Supported",
+      "as_of": "2026-03",
+      "evidence": [
+        "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/apr/doc2026413845701.pdf",
+        "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/may/doc2026512869001.pdf"
+      ]
+    },
+    {
+      "id": "I4",
+      "claim": "Target 4% CPI, 2-6% band, retained on 25 Mar 2026 for Apr 2026-Mar 2031",
+      "verdict": "Supported",
+      "as_of": "2026-03-25",
+      "evidence": [
+        "https://www.rbi.org.in/Scripts/FS_Overview.aspx?fn=2752"
+      ]
+    },
+    {
+      "id": "I5",
+      "claim": "FBIL INR-US$ 94.60 (27 Mar 2026), 93.21 (3 Apr 2026), 85.58 (28 Mar 2025); no 31 Mar 2026 value in RBI tables",
+      "verdict": "Supported; 31 Mar value unverifiable, said so on page",
+      "as_of": "2026-03-27",
+      "evidence": [
+        "https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28372",
+        "https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28357"
+      ]
+    },
+    {
+      "id": "I15",
+      "claim": "RBI Feb 2026 resolution cites 'GST rationalisation' and 'healthy rabi prospects'",
+      "verdict": "Supported",
+      "as_of": "2026-02-06",
+      "evidence": [
+        "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=62169"
+      ]
+    },
+    {
+      "id": "I17",
+      "claim": "International 4,885 cr, +16%, +9% constant currency (slide 7)",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": [
+        "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf"
+      ]
+    },
+    {
+      "id": "I17b",
+      "claim": "Consolidated revenue 20,290 cr +15% (+13% cc), IAR p.223; International +16% (9% cc) p.176",
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": [
+        "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf"
+      ]
+    },
+    {
+      "id": "I18",
+      "claim": "Tea quotes p.179, p.177; standalone EBITDA margin +140bps to 12.5% p.223; International margins fell on coffee costs and US tariffs p.177; weather quote p.255",
+      "verdict": "Supported (quoted)",
+      "as_of": "FY2026",
+      "evidence": [
+        "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf"
+      ]
+    },
+    {
+      "id": "I19",
+      "claim": "5% FX appreciation: PBT +5.46 cr, pre-tax equity -20.79 cr (Note 36 p.467); translation OCI 908.17 (FY25 246.25) p.415; commodity management p.468",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence": [
+        "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf"
+      ]
+    },
+    {
+      "id": "I17c",
+      "claim": "FY25 International about 4,211 cr; cc growth ~379, rupee ~295",
+      "verdict": "Derived (our arithmetic on rounded %), labelled",
+      "as_of": "FY2026",
+      "evidence": [
+        "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf"
+      ]
+    },
+    {
+      "id": "I8b",
+      "claim": "5% fewer cups after weak monsoon",
+      "verdict": "Example assumption, labelled; no rainfall statistic used",
+      "as_of": null,
+      "evidence": []
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "Same company, different weather"
+    },
+    {
+      "id": "p2",
+      "heading": "The economy at the end of FY26"
+    },
+    {
+      "id": "p3",
+      "heading": "Tea up 20%: absorb or pass on?"
+    },
+    {
+      "id": "p4",
+      "heading": "A weak monsoon can hit twice"
+    },
+    {
+      "id": "p5",
+      "heading": "Passing it on needs pricing power"
+    },
+    {
+      "id": "p6",
+      "heading": "Inflation lifts the numbers, not the business"
+    },
+    {
+      "id": "p7",
+      "heading": "For Ramu, rates bite less than tea"
+    },
+    {
+      "id": "p8",
+      "heading": "Same dollars, more rupees"
+    },
+    {
+      "id": "p9",
+      "heading": "How far demand swings in a slowdown"
+    },
+    {
+      "id": "p10",
+      "heading": "Six outside forces, and where they show"
+    },
+    {
+      "id": "p11",
+      "heading": "Shock Ramu's year yourself"
+    },
+    {
+      "id": "p12",
+      "heading": "TCPL: tea costs and the rupee"
+    },
+    {
+      "id": "p13",
+      "heading": "Questions about the world outside"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "only tea moves among costs",
+      "price rises by pass-through share of tea change",
+      "cups set independently",
+      "fixed 140, D&A 12, other income 4 unchanged",
+      "rate applies to all 100 cr debt",
+      "tax 17/67 of PBT, none on loss"
+    ],
+    "units": {
+      "money": "Rs crore",
+      "price": "Rs per cup"
+    },
+    "independent_calculation_method": "labcheck.py: exact Fraction arithmetic from canonical accounts, compared with window.labResults via Playwright",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": [
+          20,
+          0,
+          0,
+          10
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 67.0,
+          "pbt": 49.0,
+          "pat": 36.5672
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 67.0,
+          "pbt": 49.0,
+          "pat": 36.5672
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "preset 1 (20, 0, 0, 10)",
+        "inputs": [
+          20,
+          0,
+          0,
+          10
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 67.0,
+          "pbt": 49.0,
+          "pat": 36.5672
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 67.0,
+          "pbt": 49.0,
+          "pat": 36.5672
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "preset 2 (20, 100, 0, 10)",
+        "inputs": [
+          20,
+          100,
+          0,
+          10
+        ],
+        "expected": {
+          "price": 5.18,
+          "ebitda": 85.0,
+          "pbt": 67.0,
+          "pat": 50.0
+        },
+        "observed": {
+          "price": 5.18,
+          "ebitda": 85.0,
+          "pbt": 67.0,
+          "pat": 50.0
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "preset 3 (0, 0, 0, 11)",
+        "inputs": [
+          0,
+          0,
+          0,
+          11
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 85.0,
+          "pbt": 66.0,
+          "pat": 49.2537
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 85,
+          "pbt": 66,
+          "pat": 49.2537
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "preset 4 (20, 50, -5, 11)",
+        "inputs": [
+          20,
+          50,
+          -5,
+          11
+        ],
+        "expected": {
+          "price": 5.09,
+          "ebitda": 65.2,
+          "pbt": 46.2,
+          "pat": 34.4776
+        },
+        "observed": {
+          "price": 5.09,
+          "ebitda": 65.2,
+          "pbt": 46.2,
+          "pat": 34.4776
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 0, -15, 8)",
+        "inputs": [
+          -20,
+          0,
+          -15,
+          8
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 66.55,
+          "pbt": 50.55,
+          "pat": 37.7239
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 66.55,
+          "pbt": 50.55,
+          "pat": 37.7239
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 0, -15, 14)",
+        "inputs": [
+          -20,
+          0,
+          -15,
+          14
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 66.55,
+          "pbt": 44.55,
+          "pat": 33.2463
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 66.55,
+          "pbt": 44.55,
+          "pat": 33.2463
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 0, 10, 8)",
+        "inputs": [
+          -20,
+          0,
+          10,
+          8
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 127.3,
+          "pbt": 111.3,
+          "pat": 83.0597
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 127.3,
+          "pbt": 111.3,
+          "pat": 83.0597
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 0, 10, 14)",
+        "inputs": [
+          -20,
+          0,
+          10,
+          14
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 127.3,
+          "pbt": 105.3,
+          "pat": 78.5821
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 127.3,
+          "pbt": 105.3,
+          "pat": 78.5821
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 100, -15, 8)",
+        "inputs": [
+          -20,
+          100,
+          -15,
+          8
+        ],
+        "expected": {
+          "price": 4.82,
+          "ebitda": 51.25,
+          "pbt": 35.25,
+          "pat": 26.306
+        },
+        "observed": {
+          "price": 4.82,
+          "ebitda": 51.25,
+          "pbt": 35.25,
+          "pat": 26.306
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 100, -15, 14)",
+        "inputs": [
+          -20,
+          100,
+          -15,
+          14
+        ],
+        "expected": {
+          "price": 4.82,
+          "ebitda": 51.25,
+          "pbt": 29.25,
+          "pat": 21.8284
+        },
+        "observed": {
+          "price": 4.82,
+          "ebitda": 51.25,
+          "pbt": 29.25,
+          "pat": 21.8284
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 100, 10, 8)",
+        "inputs": [
+          -20,
+          100,
+          10,
+          8
+        ],
+        "expected": {
+          "price": 4.82,
+          "ebitda": 107.5,
+          "pbt": 91.5,
+          "pat": 68.2836
+        },
+        "observed": {
+          "price": 4.82,
+          "ebitda": 107.5,
+          "pbt": 91.5,
+          "pat": 68.2836
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (-20, 100, 10, 14)",
+        "inputs": [
+          -20,
+          100,
+          10,
+          14
+        ],
+        "expected": {
+          "price": 4.82,
+          "ebitda": 107.5,
+          "pbt": 85.5,
+          "pat": 63.806
+        },
+        "observed": {
+          "price": 4.82,
+          "ebitda": 107.5,
+          "pbt": 85.5,
+          "pat": 63.806
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 0, -15, 8)",
+        "inputs": [
+          50,
+          0,
+          -15,
+          8
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 13.0,
+          "pbt": -3.0,
+          "pat": -3.0
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 13.0,
+          "pbt": -3.0,
+          "pat": -3.0
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 0, -15, 14)",
+        "inputs": [
+          50,
+          0,
+          -15,
+          14
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 13.0,
+          "pbt": -9.0,
+          "pat": -9.0
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 13.0,
+          "pbt": -9.0,
+          "pat": -9.0
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 0, 10, 8)",
+        "inputs": [
+          50,
+          0,
+          10,
+          8
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 58.0,
+          "pbt": 42.0,
+          "pat": 31.3433
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 58,
+          "pbt": 42,
+          "pat": 31.3433
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 0, 10, 14)",
+        "inputs": [
+          50,
+          0,
+          10,
+          14
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 58.0,
+          "pbt": 36.0,
+          "pat": 26.8657
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 58,
+          "pbt": 36,
+          "pat": 26.8657
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 100, -15, 8)",
+        "inputs": [
+          50,
+          100,
+          -15,
+          8
+        ],
+        "expected": {
+          "price": 5.45,
+          "ebitda": 51.25,
+          "pbt": 35.25,
+          "pat": 26.306
+        },
+        "observed": {
+          "price": 5.45,
+          "ebitda": 51.25,
+          "pbt": 35.25,
+          "pat": 26.306
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 100, -15, 14)",
+        "inputs": [
+          50,
+          100,
+          -15,
+          14
+        ],
+        "expected": {
+          "price": 5.45,
+          "ebitda": 51.25,
+          "pbt": 29.25,
+          "pat": 21.8284
+        },
+        "observed": {
+          "price": 5.45,
+          "ebitda": 51.25,
+          "pbt": 29.25,
+          "pat": 21.8284
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 100, 10, 8)",
+        "inputs": [
+          50,
+          100,
+          10,
+          8
+        ],
+        "expected": {
+          "price": 5.45,
+          "ebitda": 107.5,
+          "pbt": 91.5,
+          "pat": 68.2836
+        },
+        "observed": {
+          "price": 5.45,
+          "ebitda": 107.5,
+          "pbt": 91.5,
+          "pat": 68.2836
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "extreme (50, 100, 10, 14)",
+        "inputs": [
+          50,
+          100,
+          10,
+          14
+        ],
+        "expected": {
+          "price": 5.45,
+          "ebitda": 107.5,
+          "pbt": 85.5,
+          "pat": 63.806
+        },
+        "observed": {
+          "price": 5.45,
+          "ebitda": 107.5,
+          "pbt": 85.5,
+          "pat": 63.806
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "point (0, 0, 0, 10)",
+        "inputs": [
+          0,
+          0,
+          0,
+          10
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 85.0,
+          "pbt": 67.0,
+          "pat": 50.0
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 85,
+          "pbt": 67,
+          "pat": 50
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "point (20, 100, -8, 10)",
+        "inputs": [
+          20,
+          100,
+          -8,
+          10
+        ],
+        "expected": {
+          "price": 5.18,
+          "ebitda": 67.0,
+          "pbt": 49.0,
+          "pat": 36.5672
+        },
+        "observed": {
+          "price": 5.18,
+          "ebitda": 67.0,
+          "pbt": 49.0,
+          "pat": 36.5672
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "point (5, 0, 0, 10)",
+        "inputs": [
+          5,
+          0,
+          0,
+          10
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 80.5,
+          "pbt": 62.5,
+          "pat": 46.6418
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 80.5,
+          "pbt": 62.5,
+          "pat": 46.6418
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "point (50, 0, -15, 14)",
+        "inputs": [
+          50,
+          0,
+          -15,
+          14
+        ],
+        "expected": {
+          "price": 5.0,
+          "ebitda": 13.0,
+          "pbt": -9.0,
+          "pat": -9.0
+        },
+        "observed": {
+          "price": 5,
+          "ebitda": 13.0,
+          "pbt": -9.0,
+          "pat": -9.0
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "point (-20, 100, 0, 10)",
+        "inputs": [
+          -20,
+          100,
+          0,
+          10
+        ],
+        "expected": {
+          "price": 4.82,
+          "ebitda": 85.0,
+          "pbt": 67.0,
+          "pat": 50.0
+        },
+        "observed": {
+          "price": 4.82,
+          "ebitda": 85,
+          "pbt": 67,
+          "pat": 50
+        },
+        "pass_": true,
+        "mismatched": []
+      },
+      {
+        "case": "point (35, 30, 3, 12.5)",
+        "inputs": [
+          35,
+          30,
+          3,
+          12.5
+        ],
+        "expected": {
+          "price": 5.0945,
+          "ebitda": 69.0385,
+          "pbt": 48.5385,
+          "pat": 36.2228
+        },
+        "observed": {
+          "price": 5.0945,
+          "ebitda": 69.0385,
+          "pbt": 48.5385,
+          "pat": 36.2228
+        },
+        "pass_": true,
+        "mismatched": []
+      }
+    ],
+    "invariants": [
+      "full pass-through with cups unchanged keeps EBITDA at 85: True"
+    ],
+    "tolerance": 1e-09,
+    "axis_and_clipping": "fixed axis -20..140 Rs cr; range min PBT -9, max EBITDA 127.3: no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render.py 0 errors",
+      "labcheck.py 27 cases 0 failures",
+      "check_card.py 0 errors 0 warnings"
+    ],
+    "screenshots": "fa22/shots desktop-00..13, phone-00..13 inspected",
+    "coverage_review": "each inventory row found on page",
+    "semantic_review": "matches shared Part 22 rows",
+    "artifact_sha256": "619947f628a22d2c72d970a9e05f7cbe0e3f367648c5b496e3952f9aa9986db8",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 13,
+        "notes": 0
+      },
+      "artifact_sha256": "619947f628a22d2c72d970a9e05f7cbe0e3f367648c5b496e3952f9aa9986db8",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/agent-a2a10a3bcfe7fbdc6/explainers/the-economy-around-the-company-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief forbids publishing)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

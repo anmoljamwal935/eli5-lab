@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reverse DCF — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (costs, reinvestment) | gold #f5c76a = what belongs to shareholders (profit, NOPAT, value)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, and the growth the price implies) */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eq b{color:var(--fg)}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .events button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:15px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    /* Part 25: real-report tables */
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent)}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .rep tr.grp td{padding-top:14px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .sens{width:100%;font-size:15px}.sens td,.sens th{text-align:right}.sens td:first-child,.sens th:first-child{text-align:left}
+    /* Part 25 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets{margin-top:6px}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .dl-chart{max-width:600px;margin-top:6px;overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 32px;margin:0 0 16px}
+    .dashlab .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .control input[type=range]{display:block;width:100%}
+    .dashlab .group-label{margin:16px 0 8px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .dashlab details.trace{margin-top:0}
+    .dashlab .yt{width:100%;margin-top:14px;font-size:13px}
+    .dashlab .yt th,.dashlab .yt td{padding:6px 8px;text-align:right;white-space:nowrap}
+    .dashlab .yt th:first-child,.dashlab .yt td:first-child{text-align:left}
+    @media (max-width:700px){.dashlab .dl-chart svg{min-width:460px}.dashlab .dl-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .control{margin-bottom:14px}
+      .eli5-study-container table.yt,.eli5-study-container table.sens,.eli5-study-container table.rep{min-width:0}
+      .dashlab .yt th,.dashlab .yt td{padding:5px 4px;font-size:12px}
+      .rep td.wk{display:none}.rep th.wk{display:none}.rep td,.rep th{padding:8px 6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 25: what growth today&#x27;s price already assumes, solved and checked">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/reverse-dcf-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Reverse DCF">
+<meta property="og:description" content="Part 25: what growth today&#x27;s price already assumes, solved and checked">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/reverse-dcf-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/reverse-dcf-eli5.png?v=df310d28">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Reverse DCF">
+<meta property="article:published_time" content="2026-11-22">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="reverse-dcf-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 15 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Reverse DCF</h1>
+      <p class="lede">A DCF turns a growth forecast into a value. A reverse DCF runs the same sums backwards: it starts from today’s price and finds the growth that price already assumes. Then the question becomes one you can check: is that growth believable?</p>
+      <p class="source-note">Built from this series’ Ramu Chai model (Parts 23 and 24), and, for the real-report box, Tata Consumer Products’ audited FY2026 consolidated statements in its Integrated Annual Report 2025-26, its FY26 AGM presentation, and NSE’s closing prices · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: Part 23, “Discounting and the discount rate”, built Ramu’s discount rate, a weighted average cost of capital (WACC) of 11.6%. Part 24, “DCF, step by step”, forecast Ramu’s cash, discounted it at that rate and found ₹76.7 a share. <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> measured Ramu’s past growth as a CAGR, the steady yearly rate that links a start and an end. This part uses exactly Part 24’s model and inputs. Facts carry a tag: <span class="tag">public</span> is a figure from a filing or the exchange, <span class="tag">example</span> is a made-up but consistent number for our fictional Ramu Chai Ltd, or an assumption of this page. Amounts are ₹ crore (cr) unless they are per share. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales, free cash</span>
+        <span><i style="background:#ff8059"></i>money going out: reinvestment</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, value</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, implied growth</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>The forecast is the weakest link</h2>
+      <p>Part 24 valued Ramu at ₹76.7 a share <span class="tag">example</span>. The market price is ₹100. The gap comes almost entirely from one guess: growth of 12% a year for FY27–FY31, 8% for FY32–FY36 and 5% for ever after. Change the guess and the value moves a lot. Nobody knows Ramu’s next ten years.</p>
+      <figure><svg viewBox="0 0 800 225" role="img" aria-label="Two bars on one scale: Part 24 values a Ramu share at 76.7 rupees, a gold bar, while the market price is 100 rupees, a longer lavender bar, leaving a dashed gap of 23.3 rupees"><text x="40.0" y="40.0" text-anchor="start" fill="#a5a29c" font-size="16">DCF value, Part 24</text><rect x="40.0" y="52.0" width="460.1" height="30.0" fill="#f5c76a"/><text x="48.0" y="73.0" text-anchor="start" fill="#202020" font-size="16">₹76.7</text><rect x="500.1" y="52.0" width="139.9" height="30.0" fill="none" stroke="#f1eee8" stroke-width="1.5" stroke-dasharray="5 4"/><text x="652.0" y="73.0" text-anchor="start" fill="#f1eee8" font-size="16">gap ₹23.3</text><text x="40.0" y="120.0" text-anchor="start" fill="#a5a29c" font-size="16">Market price</text><rect x="40.0" y="132.0" width="600.0" height="30.0" fill="#c3b8ff"/><text x="48.0" y="153.0" text-anchor="start" fill="#202020" font-size="16">₹100</text><text x="40.0" y="205.0" text-anchor="start" fill="#a5a29c" font-size="16">6 px = ₹1 a share · Ramu Chai, example</text></svg></figure>
+      <p>So the honest question is not “what is it worth?”, which needs a forecast you cannot check. It is “what does ₹100 already assume?”, which needs only the price and the same model.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The idea</p>
+      <h2>Read the same curve backwards</h2>
+      <p>Hold everything in Part 24’s model fixed except one growth rate for FY27–FY36. Each rate gives one value a share, so the model draws a curve. A DCF reads it forward: choose growth, get value. A reverse DCF reads it backward: start at the price, go across to the curve, and down to the growth <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 400" role="img" aria-label="A rising gold curve of Ramu share value against one steady growth rate for FY27 to FY36. A gold arrow reads it forward, from 10.2 percent growth up to a value of 76.7 rupees; a lavender arrow reads it backward, from the 100 rupee price across to the curve and down to 15.3 percent"><defs><marker id="ar2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#f5c76a"/></marker><marker id="ar2l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#c3b8ff"/></marker></defs><path d="M100 30 L100 340 L750 340" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="100.0" y="366.0" text-anchor="middle" fill="#a5a29c" font-size="16">-10%</text><text x="260.0" y="366.0" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="420.0" y="366.0" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="580.0" y="366.0" text-anchor="middle" fill="#a5a29c" font-size="16">20%</text><text x="740.0" y="366.0" text-anchor="middle" fill="#a5a29c" font-size="16">30%</text><text x="88.0" y="345.0" text-anchor="end" fill="#a5a29c" font-size="16">₹0</text><text x="88.0" y="270.0" text-anchor="end" fill="#a5a29c" font-size="16">₹50</text><text x="88.0" y="195.0" text-anchor="end" fill="#a5a29c" font-size="16">₹100</text><text x="88.0" y="120.0" text-anchor="end" fill="#a5a29c" font-size="16">₹150</text><text x="88.0" y="45.0" text-anchor="end" fill="#a5a29c" font-size="16">₹200</text><polyline points="100.0,292.2 108.0,291.4 116.0,290.5 124.0,289.6 132.0,288.7 140.0,287.7 148.0,286.7 156.0,285.7 164.0,284.6 172.0,283.5 180.0,282.4 188.0,281.3 196.0,280.1 204.0,278.8 212.0,277.6 220.0,276.3 228.0,274.9 236.0,273.6 244.0,272.1 252.0,270.6 260.0,269.1 268.0,267.6 276.0,265.9 284.0,264.3 292.0,262.6 300.0,260.8 308.0,258.9 316.0,257.1 324.0,255.1 332.0,253.1 340.0,251.0 348.0,248.9 356.0,246.7 364.0,244.4 372.0,242.0 380.0,239.6 388.0,237.1 396.0,234.5 404.0,231.8 412.0,229.1 420.0,226.2 428.0,223.3 436.0,220.3 444.0,217.2 452.0,213.9 460.0,210.6 468.0,207.2 476.0,203.7 484.0,200.0 492.0,196.3 500.0,192.4 508.0,188.4 516.0,184.3 524.0,180.1 532.0,175.7 540.0,171.2 548.0,166.6 556.0,161.8 564.0,156.8 572.0,151.8 580.0,146.5 588.0,141.1 596.0,135.6 604.0,129.9 612.0,124.0 620.0,117.9 628.0,111.7 636.0,105.3 644.0,98.6 652.0,91.8 660.0,84.8 668.0,77.6 676.0,70.2 684.0,62.6 692.0,54.7 700.0,46.6" fill="none" stroke="#f5c76a" stroke-width="3"/><path d="M423.5 338 L423.5 224.9 L104 224.9" stroke="#f5c76a" stroke-width="2.5" fill="none" marker-end="url(#ar2g)"/><path d="M102 190.0 L504.9 190.0 L504.9 336" stroke="#c3b8ff" stroke-width="2.5" fill="none" marker-end="url(#ar2l)"/><text x="114.0" y="214.9" text-anchor="start" fill="#f5c76a" font-size="16">forward: 10.2% → ₹76.7</text><text x="114.0" y="180.0" text-anchor="start" fill="#c3b8ff" font-size="16">backward: ₹100 → 15.3%</text><text x="604.0" y="163.0" text-anchor="start" fill="#f5c76a" font-size="16">value a share</text><text x="740.0" y="392.0" text-anchor="end" fill="#a5a29c" font-size="16">growth a year, FY27–FY36</text><text x="100.0" y="24.0" text-anchor="start" fill="#a5a29c" font-size="16">value of a share</text></svg></figure>
+      <p>One steady rate of 10.2% a year gives the same ₹76.7 as Part 24’s 12%-then-8% path. To reach ₹100 the rate must be <b>15.3% a year for ten years</b>, then 5% for ever. That is the <b>implied growth</b>: not a forecast, but the growth the buyer at ₹100 is paying for.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>Growth is paid for with reinvestment</h2>
+      <p>Growth is not free. To grow, Ramu must put part of its after-tax operating profit (NOPAT) back into machines, cafés and stock. Part 24’s rule: if new money earns 20% <span class="tag">example</span>, growing NOPAT by g needs g ÷ 20% of it reinvested. What is left is free cash flow to the firm (FCFF).</p>
+      <span class="eq">FCFF = NOPAT × (1 − growth ÷ 20%) · FY26 NOPAT = EBIT 73 × (1 − 25%) = 54.75</span>
+      <figure><svg viewBox="0 0 800 318" role="img" aria-label="Four FY27 NOPAT bars on one scale, each split into teal free cash flow and coral reinvestment: at 0 percent growth all of it is free, at 10.2 percent about half, at 15.3 percent less than a quarter, and at 20 percent none"><rect x="40.0" y="18.0" width="16.0" height="16.0" fill="#76d5c1"/><text x="64.0" y="32.0" text-anchor="start" fill="#f1eee8" font-size="16">free cash flow (FCFF)</text><rect x="300.0" y="18.0" width="16.0" height="16.0" fill="#ff8059"/><text x="324.0" y="32.0" text-anchor="start" fill="#f1eee8" font-size="16">reinvested to grow</text><text x="40.0" y="85.0" text-anchor="start" fill="#a5a29c" font-size="16">0% growth</text><rect x="170.0" y="64.0" width="438.0" height="30.0" fill="#76d5c1"/><text x="178.0" y="85.0" text-anchor="start" fill="#202020" font-size="16">54.8</text><text x="40.0" y="141.0" text-anchor="start" fill="#a5a29c" font-size="16">10.2% growth</text><rect x="170.0" y="120.0" width="236.1" height="30.0" fill="#76d5c1"/><text x="178.0" y="141.0" text-anchor="start" fill="#202020" font-size="16">29.5</text><rect x="406.1" y="120.0" width="246.7" height="30.0" fill="#ff8059"/><text x="414.1" y="141.0" text-anchor="start" fill="#202020" font-size="16">30.8</text><text x="40.0" y="197.0" text-anchor="start" fill="#a5a29c" font-size="16">15.3% growth</text><rect x="170.0" y="176.0" width="118.6" height="30.0" fill="#76d5c1"/><text x="178.0" y="197.0" text-anchor="start" fill="#202020" font-size="16">14.8</text><rect x="288.6" y="176.0" width="386.4" height="30.0" fill="#ff8059"/><text x="296.6" y="197.0" text-anchor="start" fill="#202020" font-size="16">48.3</text><text x="40.0" y="253.0" text-anchor="start" fill="#a5a29c" font-size="16">20% growth</text><rect x="170.0" y="232.0" width="525.6" height="30.0" fill="#ff8059"/><text x="178.0" y="253.0" text-anchor="start" fill="#202020" font-size="16">65.7</text><text x="705.6" y="253.0" text-anchor="start" fill="#f1eee8" font-size="16">free 0</text><text x="40.0" y="300.0" text-anchor="start" fill="#a5a29c" font-size="16">8 px = ₹1 cr · FY27 NOPAT · new money earns 20%</text></svg></figure>
+      <p>Faster growth means bigger profits later but less cash now. At 15.3% growth, FY27’s FCFF is only ₹14.8 cr of ₹63.1 cr NOPAT. At 20% every rupee is reinvested. That trade-off is why the curve rises steadily rather than shooting up.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How to solve it</p>
+      <h2>Guess, check, and halve the range</h2>
+      <p>There is no neat formula that turns ₹100 back into a growth rate, but a computer, or a patient person, can search. Start with a range that must contain the answer, say 0% to 20%. Try the middle, value the share, and keep the half where ₹100 still lies <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 378" role="img" aria-label="Six rows of a narrowing lavender range on a growth axis from 0 to 20 percent: each row tries the midpoint, values the share, and keeps the half that still contains 100 rupees, closing in on 15.3 percent"><text x="40.0" y="45.0" text-anchor="start" fill="#a5a29c" font-size="16">try 1</text><rect x="110.0" y="32.0" width="480.0" height="16.0" fill="#c3b8ff" opacity="0.35"/><circle cx="350.0" cy="40" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="612.0" y="45.0" text-anchor="start" fill="#f1eee8" font-size="16">10% → ₹75.85 low</text><text x="40.0" y="91.0" text-anchor="start" fill="#a5a29c" font-size="16">try 2</text><rect x="350.0" y="78.0" width="240.0" height="16.0" fill="#c3b8ff" opacity="0.35"/><circle cx="470.0" cy="86" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="612.0" y="91.0" text-anchor="start" fill="#f1eee8" font-size="16">15% → ₹98.40 low</text><text x="40.0" y="137.0" text-anchor="start" fill="#a5a29c" font-size="16">try 3</text><rect x="470.0" y="124.0" width="120.0" height="16.0" fill="#c3b8ff" opacity="0.35"/><circle cx="530.0" cy="132" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="612.0" y="137.0" text-anchor="start" fill="#a5a29c" font-size="16">17.5% → ₹112.54 high</text><text x="40.0" y="183.0" text-anchor="start" fill="#a5a29c" font-size="16">try 4</text><rect x="470.0" y="170.0" width="60.0" height="16.0" fill="#c3b8ff" opacity="0.35"/><circle cx="500.0" cy="178" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="612.0" y="183.0" text-anchor="start" fill="#a5a29c" font-size="16">16.25% → ₹105.20 high</text><text x="40.0" y="229.0" text-anchor="start" fill="#a5a29c" font-size="16">try 5</text><rect x="470.0" y="216.0" width="30.0" height="16.0" fill="#c3b8ff" opacity="0.35"/><circle cx="485.0" cy="224" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="612.0" y="229.0" text-anchor="start" fill="#a5a29c" font-size="16">15.62% → ₹101.73 high</text><text x="40.0" y="275.0" text-anchor="start" fill="#a5a29c" font-size="16">try 6</text><rect x="470.0" y="262.0" width="15.0" height="16.0" fill="#c3b8ff" opacity="0.35"/><circle cx="477.5" cy="270" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="612.0" y="275.0" text-anchor="start" fill="#a5a29c" font-size="16">15.31% → ₹100.05 high</text><path d="M110 306 L590 306" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="110.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="230.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">5%</text><text x="350.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="470.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">15%</text><text x="590.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">20%</text><text x="40.0" y="362.0" text-anchor="start" fill="#a5a29c" font-size="16">each try halves the range · it closes on 15.3%</text></svg></figure>
+      <p>This is called bisection. Each try halves the range, so twenty tries pin the rate to within a hundred-thousandth of a percentage point. It works because value only ever rises with growth in this model. The lab below runs the same search every time you move a slider.</p>
+      <details class="trace"><summary>Go deeper: when growth adds no value</summary>
+        <p>Value rises with growth here because new money earns 20%, more than the 11.6% it costs. If new money earned exactly the WACC, extra growth would add nothing, because each rupee reinvested would be worth just one rupee. If it earned less, growth would destroy value, and a higher price could not be explained by growth at all. A reverse DCF quietly assumes the first case; check that the business really earns more than its cost of capital (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>).</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">What 15.3% means</p>
+      <h2>Ten years, four times the profit</h2>
+      <p>At 15.3% a year, NOPAT grows from ₹54.75 cr in FY26 to ₹227.4 cr in FY36, 4.2 times as much. Part 24’s path reaches ₹141.8 cr. And more of the value now sits far away: 85% of the enterprise value (EV) comes from the years after FY36, against 68% in Part 24 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 446" role="img" aria-label="Paired NOPAT bars for FY26 to FY36: gold for Part 24’s forecast rising from 54.8 to 141.8 crore, lavender for the path the price needs rising to 227.4 crore. Below, a bar of enterprise value split into the first ten years, 15 percent, and the years after FY36, 85 percent"><rect x="90.0" y="18.0" width="16.0" height="16.0" fill="#f5c76a"/><text x="114.0" y="32.0" text-anchor="start" fill="#f1eee8" font-size="16">Part 24’s forecast</text><rect x="330.0" y="18.0" width="16.0" height="16.0" fill="#c3b8ff"/><text x="354.0" y="32.0" text-anchor="start" fill="#f1eee8" font-size="16">what ₹100 needs</text><rect data-v="54.75" x="96" y="245.2" width="20" height="54.8" fill="#f5c76a"/><rect data-v="54.75" x="120" y="245.2" width="20" height="54.8" fill="#c3b8ff"/><rect data-v="61.32" x="152" y="238.7" width="20" height="61.3" fill="#f5c76a"/><rect data-v="63.13" x="176" y="236.9" width="20" height="63.1" fill="#c3b8ff"/><rect data-v="68.68" x="208" y="231.3" width="20" height="68.7" fill="#f5c76a"/><rect data-v="72.79" x="232" y="227.2" width="20" height="72.8" fill="#c3b8ff"/><rect data-v="76.92" x="264" y="223.1" width="20" height="76.9" fill="#f5c76a"/><rect data-v="83.93" x="288" y="216.1" width="20" height="83.9" fill="#c3b8ff"/><rect data-v="86.15" x="320" y="213.8" width="20" height="86.2" fill="#f5c76a"/><rect data-v="96.77" x="344" y="203.2" width="20" height="96.8" fill="#c3b8ff"/><rect data-v="96.49" x="376" y="203.5" width="20" height="96.5" fill="#f5c76a"/><rect data-v="111.58" x="400" y="188.4" width="20" height="111.6" fill="#c3b8ff"/><rect data-v="104.21" x="432" y="195.8" width="20" height="104.2" fill="#f5c76a"/><rect data-v="128.66" x="456" y="171.3" width="20" height="128.7" fill="#c3b8ff"/><rect data-v="112.54" x="488" y="187.5" width="20" height="112.5" fill="#f5c76a"/><rect data-v="148.35" x="512" y="151.7" width="20" height="148.3" fill="#c3b8ff"/><rect data-v="121.55" x="544" y="178.5" width="20" height="121.5" fill="#f5c76a"/><rect data-v="171.05" x="568" y="128.9" width="20" height="171.1" fill="#c3b8ff"/><rect data-v="131.27" x="600" y="168.7" width="20" height="131.3" fill="#f5c76a"/><rect data-v="197.23" x="624" y="102.8" width="20" height="197.2" fill="#c3b8ff"/><rect data-v="141.77" x="656" y="158.2" width="20" height="141.8" fill="#f5c76a"/><rect data-v="227.41" x="680" y="72.6" width="20" height="227.4" fill="#c3b8ff"/><path d="M90 300 L706 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="118.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><text x="398.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY31</text><text x="678.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY36</text><text x="118.0" y="235.2" text-anchor="middle" fill="#f1eee8" font-size="16">54.8</text><text x="716.0" y="78.6" text-anchor="start" fill="#c3b8ff" font-size="16">227.4</text><text x="716.0" y="164.2" text-anchor="start" fill="#f5c76a" font-size="16">141.8</text><text x="90.0" y="362.0" text-anchor="start" fill="#a5a29c" font-size="16">EV ₹1,060 cr at 15.3%</text><rect x="90.0" y="372.0" width="92.7" height="28.0" fill="#76d5c1"/><text x="98.0" y="392.0" text-anchor="start" fill="#202020" font-size="16">15%</text><rect x="182.7" y="372.0" width="543.3" height="28.0" fill="#76d5c1" opacity="0.4"/><text x="192.7" y="392.0" text-anchor="start" fill="#f1eee8" font-size="16">after FY36: 85%</text><text x="90.0" y="430.0" text-anchor="start" fill="#a5a29c" font-size="16">NOPAT bars 1 px = ₹1 cr · EV bar 0.6 px = ₹1 cr</text></svg></figure>
+      <details class="trace"><summary>Go deeper: the sums at 15.3%</summary>
+        <p>Present value of FCFF for FY27–FY36 at 11.6%: ₹154.5 cr. FCFF in FY37 = FY36 NOPAT × 1.05 × (1 − 5% ÷ 20%) = ₹179.08 cr. Terminal value at FY36 = 179.08 ÷ (11.6% − 5%) = ₹2,713.4 cr, worth ₹905.5 cr today. EV = 154.5 + 905.5 = ₹1,060 cr. Less net debt of ₹60 cr gives equity of ₹1,000 cr, or ₹100 on 10 crore shares.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Solve for the growth in the price</h2>
+      <p>Part 24’s Ramu model, fixed: FY26 NOPAT ₹54.75 cr, new money earns 20%, net debt ₹60 cr, 10 crore shares <span class="tag">example</span>. Move the price and the discount rate; the page searches for the growth that makes the DCF value equal the price.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Set the price and the discount rate</p>
+          <div class="dl-grid">
+            <div class="control"><label for="price">Share price <output id="price-o"></output></label><input id="price" type="range" min="40" max="250" step="0.1" value="100"></div>
+            <div class="control"><label for="wacc">Discount rate (WACC) <output id="wacc-o"></output></label><input id="wacc" type="range" min="9" max="14" step="0.1" value="11.6"></div>
+            <div class="control"><label for="tg">Growth after FY36 <output id="tg-o"></output></label><input id="tg" type="range" min="4" max="6" step="0.1" value="5"></div>
+          </div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="100,11.6,5">Today: ₹100</button>
+            <button type="button" class="secondary" data-p="76.7,11.6,5">Part 24’s value: ₹76.7</button>
+            <button type="button" class="secondary" data-p="50,11.6,5">Price halves: ₹50</button>
+            <button type="button" class="secondary" data-p="100,13,5">Rates up: WACC 13%</button>
+          </div>
+          <p class="group-label">WHICH GROWTH TO SOLVE FOR</p>
+          <div class="events" role="group" aria-label="Which growth to solve for">
+            <button type="button" class="secondary" data-mode="one" aria-pressed="true">One rate, FY27–FY36</button>
+            <button type="button" class="secondary" data-mode="two" aria-pressed="false">FY27–FY31, then 8%</button>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Read the crossing</p>
+          <div class="dl-chart"><svg id="curveChart" viewBox="0 0 520 340" role="img" aria-label="Value of a Ramu share against the growth rate, a gold curve, with the chosen price as a lavender line; where they cross, a dashed line drops to the implied growth"></svg></div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Compare it with Ramu’s record</p>
+          <div class="dl-chart"><svg id="labChart" viewBox="0 0 520 330" role="img" aria-label="Bars comparing the growth the price implies with Ramu’s own record: profit 13.6 percent and sales 11.0 percent a year over FY22 to FY26, and Part 24’s forecast average of 10.0 percent"></svg></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · See the working</p>
+          <details class="trace"><summary>Show the search and the year-by-year sums</summary><div class="ledger" id="ledger"></div><div class="table-wrap"><table class="yt" id="yearTable"></table></div></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Is it believable?</p>
+      <h2>Against Ramu’s own record</h2>
+      <p>Now compare the 15.3% with what Ramu has done. From FY22 to FY26 its sales grew 11.0% a year and its profit after tax 13.6% (<a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a>) <span class="tag">example</span>. The price asks for faster growth than either, for twice as long.</p>
+      <figure><svg viewBox="0 0 800 314" role="img" aria-label="Bars on one scale: the 100 rupee price implies 15.3 percent a year, above Ramu’s own record of 13.6 percent for profit and 11.0 percent for sales over FY22 to FY26, Part 24’s forecast average of 10.0 percent and the tea market’s 8 percent"><text x="40.0" y="45.0" text-anchor="start" fill="#a5a29c" font-size="16">Price implies</text><rect x="230.0" y="24.0" width="489.7" height="30.0" fill="#c3b8ff"/><text x="238.0" y="45.0" text-anchor="start" fill="#202020" font-size="16">15.3%</text><text x="40.0" y="93.0" text-anchor="start" fill="#a5a29c" font-size="16">PAT, FY22–26</text><rect x="230.0" y="72.0" width="435.2" height="30.0" fill="#f5c76a"/><text x="238.0" y="93.0" text-anchor="start" fill="#202020" font-size="16">13.6%</text><text x="40.0" y="141.0" text-anchor="start" fill="#a5a29c" font-size="16">Sales, FY22–26</text><rect x="230.0" y="120.0" width="352.0" height="30.0" fill="#76d5c1"/><text x="238.0" y="141.0" text-anchor="start" fill="#202020" font-size="16">11.0%</text><text x="40.0" y="189.0" text-anchor="start" fill="#a5a29c" font-size="16">Part 24 forecast</text><rect x="230.0" y="168.0" width="319.4" height="30.0" fill="#f5c76a" opacity="0.5"/><text x="238.0" y="189.0" text-anchor="start" fill="#f1eee8" font-size="16">10.0%</text><text x="40.0" y="237.0" text-anchor="start" fill="#a5a29c" font-size="16">Tea market</text><rect x="230.0" y="216.0" width="256.0" height="30.0" fill="#76d5c1" opacity="0.5"/><text x="238.0" y="237.0" text-anchor="start" fill="#f1eee8" font-size="16">8.0%</text><path d="M230 16 L230 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40.0" y="298.0" text-anchor="start" fill="#a5a29c" font-size="16">32 px = 1% a year · CAGR or average growth</text></svg></figure>
+      <p>Part of the 13.6% came from a margin that rose from 9.1% to 10% of sales, which cannot repeat for ever. A second check uses the market: Ramu’s ₹300 cr of packaged tea is 2.4% of a ₹12,500 cr regional market growing 8% a year (Part 17, “Industry structure and moats”). If packaged tea grows with NOPAT, Ramu needs about 4.6% of that market by FY36.</p>
+      <figure><svg viewBox="0 0 800 166" role="img" aria-label="Ramu’s share of its regional packaged-tea market: 2.4 percent in FY26 and 4.6 percent by FY36 if packaged tea grows with the price-implied path while the market grows 8 percent a year"><text x="40.0" y="45.0" text-anchor="start" fill="#a5a29c" font-size="16">FY26</text><rect x="160.0" y="24.0" width="240.0" height="30.0" fill="#76d5c1"/><text x="168.0" y="45.0" text-anchor="start" fill="#202020" font-size="16">2.4%</text><text x="412.0" y="45.0" text-anchor="start" fill="#a5a29c" font-size="16">₹300 of ₹12,500 cr</text><text x="40.0" y="103.0" text-anchor="start" fill="#a5a29c" font-size="16">FY36</text><rect x="160.0" y="82.0" width="461.7" height="30.0" fill="#76d5c1"/><text x="168.0" y="103.0" text-anchor="start" fill="#202020" font-size="16">4.6%</text><text x="633.7" y="103.0" text-anchor="start" fill="#a5a29c" font-size="16">₹1,246 of ₹26,987 cr</text><text x="40.0" y="150.0" text-anchor="start" fill="#a5a29c" font-size="16">100 px = 1 point of market share</text></svg></figure>
+      <p>Neither check says ₹100 is wrong. They say what you must believe to pay it: roughly double the market share, without the margin slipping, while still earning 20% on new money.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Another story</p>
+      <h2>Same price, a different shape</h2>
+      <p>One equation can only solve for one unknown. Keep Part 24’s 8% for FY32–FY36 and 5% after, and solve only for FY27–FY31: the price then needs <b>21.9% a year for five years</b> <span class="tag">example</span>. That is faster than the 20% that new money earns.</p>
+      <figure><svg viewBox="0 0 800 424" role="img" aria-label="Top: two growth paths that both give 100 rupees, a steady lavender line at 15.3 percent and a dashed path at 21.9 percent for five years then 8 percent, above a coral line at 20 percent, the return on new money. Bottom: yearly free cash flow, small and positive on the steady path; on the fast path negative coral bars for FY27 to FY31, then large teal bars"><defs></defs><path d="M120 170 L720 170" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="108.0" y="175.0" text-anchor="end" fill="#a5a29c" font-size="16">0%</text><text x="108.0" y="131.0" text-anchor="end" fill="#a5a29c" font-size="16">10%</text><text x="108.0" y="87.0" text-anchor="end" fill="#a5a29c" font-size="16">20%</text><text x="108.0" y="43.0" text-anchor="end" fill="#a5a29c" font-size="16">30%</text><path d="M120 82.0 L720 82.0" stroke="#ff8059" stroke-width="1.5" fill="none" stroke-dasharray="6 5"/><path d="M120 102.7 L720 102.7" stroke="#c3b8ff" stroke-width="3" fill="none"/><path d="M120 73.6 L420 73.6 L420 134.8 L720 134.8" stroke="#c3b8ff" stroke-width="3" fill="none" stroke-dasharray="9 6"/><text x="126.0" y="63.6" text-anchor="start" fill="#c3b8ff" font-size="16">fast five: 21.9%, then 8%</text><text x="720.0" y="74.0" text-anchor="end" fill="#ff8059" font-size="16">new money earns 20%</text><text x="720.0" y="126.7" text-anchor="end" fill="#c3b8ff" font-size="16">one rate: 15.3%</text><text x="40.0" y="24.0" text-anchor="start" fill="#a5a29c" font-size="16">growth a year</text><text x="40.0" y="214.0" text-anchor="start" fill="#a5a29c" font-size="16">free cash flow, ₹ cr</text><rect data-v="14.82" x="128" y="345.2" width="20" height="14.8" fill="#76d5c1" opacity="0.5"/><rect data-v="-6.38" x="152" y="360.0" width="20" height="6.4" fill="#ff8059"/><rect data-v="17.09" x="188" y="342.9" width="20" height="17.1" fill="#76d5c1" opacity="0.5"/><rect data-v="-7.78" x="212" y="360.0" width="20" height="7.8" fill="#ff8059"/><rect data-v="19.71" x="248" y="340.3" width="20" height="19.7" fill="#76d5c1" opacity="0.5"/><rect data-v="-9.48" x="272" y="360.0" width="20" height="9.5" fill="#ff8059"/><rect data-v="22.72" x="308" y="337.3" width="20" height="22.7" fill="#76d5c1" opacity="0.5"/><rect data-v="-11.56" x="332" y="360.0" width="20" height="11.6" fill="#ff8059"/><rect data-v="26.20" x="368" y="333.8" width="20" height="26.2" fill="#76d5c1" opacity="0.5"/><rect data-v="-14.09" x="392" y="360.0" width="20" height="14.1" fill="#ff8059"/><rect data-v="30.21" x="428" y="329.8" width="20" height="30.2" fill="#76d5c1" opacity="0.5"/><rect data-v="95.54" x="452" y="264.5" width="20" height="95.5" fill="#76d5c1"/><rect data-v="34.84" x="488" y="325.2" width="20" height="34.8" fill="#76d5c1" opacity="0.5"/><rect data-v="103.18" x="512" y="256.8" width="20" height="103.2" fill="#76d5c1"/><rect data-v="40.17" x="548" y="319.8" width="20" height="40.2" fill="#76d5c1" opacity="0.5"/><rect data-v="111.44" x="572" y="248.6" width="20" height="111.4" fill="#76d5c1"/><rect data-v="46.31" x="608" y="313.7" width="20" height="46.3" fill="#76d5c1" opacity="0.5"/><rect data-v="120.35" x="632" y="239.6" width="20" height="120.4" fill="#76d5c1"/><rect data-v="53.40" x="668" y="306.6" width="20" height="53.4" fill="#76d5c1" opacity="0.5"/><rect data-v="129.98" x="692" y="230.0" width="20" height="130.0" fill="#76d5c1"/><path d="M120 360 L720 360" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="150.0" y="406.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY27</text><text x="390.0" y="406.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY31</text><text x="690.0" y="406.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY36</text><text x="728.0" y="236.0" text-anchor="start" fill="#76d5c1" font-size="16">130.0</text><rect x="260.0" y="200.0" width="16.0" height="16.0" fill="#76d5c1" opacity="0.5"/><text x="284.0" y="214.0" text-anchor="start" fill="#f1eee8" font-size="16">one rate</text><rect x="380.0" y="200.0" width="16.0" height="16.0" fill="#76d5c1"/><text x="404.0" y="214.0" text-anchor="start" fill="#f1eee8" font-size="16">fast five</text><rect x="500.0" y="200.0" width="16.0" height="16.0" fill="#ff8059"/><text x="524.0" y="214.0" text-anchor="start" fill="#f1eee8" font-size="16">cash raised</text></svg></figure>
+      <p>Growing faster than the return on new money means reinvesting more than all of the profit: 110% of NOPAT. FCFF turns negative, from −₹6.4 cr in FY27 to −₹14.1 cr in FY31, and the gap must be raised from lenders or shareholders. Both paths give ₹100; they are different businesses.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Implied growth depends on the rate</h2>
+      <p>It is tempting to read 15.3% as “the market’s forecast”. It is not. It is the growth that fits ₹100 <i>if</i> investors discount at 11.6%, expect 5% after FY36, and believe new money earns 20%. Change the discount rate by one point and the implied growth moves about four or five <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 348" role="img" aria-label="A rising lavender curve: the growth that the 100 rupee price implies climbs from about 4.7 percent at a 9 percent discount rate to about 27 percent at 14 percent; at 10 percent it is 8.8, at 11.6 percent 15.3 and at 13 percent 21.7"><path d="M120 40 L120 280 L730 280" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="120.0" y="306.0" text-anchor="middle" fill="#a5a29c" font-size="16">9%</text><text x="240.0" y="306.0" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="360.0" y="306.0" text-anchor="middle" fill="#a5a29c" font-size="16">11%</text><text x="480.0" y="306.0" text-anchor="middle" fill="#a5a29c" font-size="16">12%</text><text x="600.0" y="306.0" text-anchor="middle" fill="#a5a29c" font-size="16">13%</text><text x="720.0" y="306.0" text-anchor="middle" fill="#a5a29c" font-size="16">14%</text><text x="108.0" y="285.0" text-anchor="end" fill="#a5a29c" font-size="16">0%</text><text x="108.0" y="210.0" text-anchor="end" fill="#a5a29c" font-size="16">10%</text><text x="108.0" y="135.0" text-anchor="end" fill="#a5a29c" font-size="16">20%</text><text x="108.0" y="60.0" text-anchor="end" fill="#a5a29c" font-size="16">30%</text><polyline points="120.0,244.6 150.0,236.9 180.0,229.3 210.0,221.7 240.0,214.2 270.0,206.7 300.0,199.1 330.0,191.6 360.0,183.9 390.0,176.2 420.0,168.4 450.0,160.4 480.0,152.3 510.0,143.9 540.0,135.4 570.0,126.5 600.0,117.2 630.0,107.6 660.0,97.4 690.0,86.6 720.0,75.0" fill="none" stroke="#c3b8ff" stroke-width="3"/><circle cx="240.0" cy="214.2" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="226.0" y="202.2" text-anchor="end" fill="#f1eee8" font-size="16">10.0% → 8.8%</text><circle cx="432.0" cy="165.2" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="418.0" y="153.2" text-anchor="end" fill="#f1eee8" font-size="16">Part 23’s 11.6% → 15.3%</text><circle cx="600.0" cy="117.2" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="586.0" y="105.2" text-anchor="end" fill="#f1eee8" font-size="16">13.0% → 21.7%</text><text x="720.0" y="332.0" text-anchor="end" fill="#a5a29c" font-size="16">discount rate (WACC)</text><text x="40.0" y="24.0" text-anchor="start" fill="#a5a29c" font-size="16">growth the ₹100 price implies</text></svg></figure>
+      <p>At a WACC of 10% the same price implies only 8.8% growth; at 13% it implies 21.7%. A reverse DCF does not remove judgement. It moves it to places you can argue about: the discount rate (Part 23), the return on new money, and whether the business can grow that fast.</p>
+      <p class="note">Every number on this page comes from one simple model with a constant 20% return on new money and two growth stages. A real reverse DCF should also test margins, the length of the fast-growth period and the cost of capital.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>What TCPL’s FY26 price assumes</h2>
+      <p>This box is <b>the page’s own estimate</b>, built from Tata Consumer Products’ (TCPL) consolidated FY2026 figures and Part 24’s model. The inputs below come from the audited statements and the exchange <span class="tag">public</span>; the assumptions underneath are this page’s choices <span class="tag">example</span>, not TCPL’s, and nothing here is TCPL’s or anyone’s forecast.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Input</th><th class="wk">Working</th><th>Value</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">FROM THE FILINGS AND THE EXCHANGE</td></tr>
+          <tr><td>EBIT</td><td class="wk">PBT before exceptional items 2,192.84 + finance costs 137.03 − other income 164.75</td><td class="val">₹2,165.12 cr</td><td class="pg">P&amp;L, P. 415</td></tr>
+          <tr><td>Tax rate</td><td class="wk">Indian rate in the tax reconciliation</td><td class="val">25.17%</td><td class="pg">NOTE 20(B), P. 451</td></tr>
+          <tr><td>NOPAT</td><td class="wk">2,165.12 × (1 − 25.17%)</td><td class="val">₹1,620.16 cr</td><td class="pg">COMPUTED</td></tr>
+          <tr><td>Net cash</td><td class="wk">cash and equivalents net of total borrowings, 31 Mar 2026</td><td class="val">₹2,978 cr</td><td class="pg">AGM PRESENTATION</td></tr>
+          <tr><td>Shares</td><td class="wk">98,95,61,780 at 31 Mar 2026</td><td class="val">98.96 cr</td><td class="pg">NOTE 14, P. 445</td></tr>
+          <tr><td>Price</td><td class="wk">NSE close, 30 Mar 2026, the last trading day of FY26</td><td class="val">₹1,014.80</td><td class="pg">NSE BHAVCOPY</td></tr>
+          <tr><td>Market cap</td><td class="wk">98.956 cr × ₹1,014.80</td><td class="val">₹100,421 cr</td><td class="pg">COMPUTED</td></tr>
+          <tr><td>EV the price implies</td><td class="wk">100,421 − 2,978 net cash</td><td class="val">₹97,443 cr</td><td class="pg">60.1 × NOPAT</td></tr>
+          <tr class="grp"><td colspan="4">THE PAGE’S ASSUMPTIONS</td></tr>
+          <tr><td>Discount rate</td><td class="wk">Part 23’s cost of equity with beta 1.0; TCPL has net cash, so no debt to weight</td><td class="val">12%</td><td class="pg">EXAMPLE</td></tr>
+          <tr><td>Growth after FY36</td><td class="wk">as for Ramu</td><td class="val">5%</td><td class="pg">EXAMPLE</td></tr>
+          <tr><td>New money earns</td><td class="wk">Ramu’s 20%, or 40%, near TCPL’s own ROCE of 41.87% (p. 483)</td><td class="val">20% or 40%</td><td class="pg">EXAMPLE</td></tr>
+        </tbody>
+      </table></div>
+      <p>On 31 March 2026 itself the exchanges did not trade: NSE’s bhavcopy for 1 April 2026 gives TCPL’s previous close as ₹1,014.80, the 30 March close, so that is FY26’s closing price. TCPL’s beta and the equity risk premium are not in any filing, so the discount rate is an assumption, not a figure.</p>
+      <figure><svg viewBox="0 0 800 312" role="img" aria-label="Bars on one scale for Tata Consumer Products: at a 12 percent discount rate its price at the end of FY26 implies NOPAT growth of 39.0 percent a year if new money earns 20 percent, or 28.9 percent if it earns 40 percent, against FY26 growth of 15.3 percent in EBIT and 15.2 percent in revenue"><text x="40.0" y="32.0" text-anchor="start" fill="#a5a29c" font-size="16">Price implies, new money earns 20%</text><rect x="40.0" y="40.0" width="624.6" height="28.0" fill="#c3b8ff"/><text x="674.6" y="60.0" text-anchor="start" fill="#f1eee8" font-size="16">39.0%</text><text x="40.0" y="96.0" text-anchor="start" fill="#a5a29c" font-size="16">Price implies, new money earns 40%</text><rect x="40.0" y="104.0" width="462.9" height="28.0" fill="#c3b8ff"/><text x="512.9" y="124.0" text-anchor="start" fill="#f1eee8" font-size="16">28.9%</text><text x="40.0" y="160.0" text-anchor="start" fill="#a5a29c" font-size="16">EBIT growth, FY26</text><rect x="40.0" y="168.0" width="244.0" height="28.0" fill="#f5c76a"/><text x="294.0" y="188.0" text-anchor="start" fill="#f1eee8" font-size="16">15.3%</text><text x="40.0" y="224.0" text-anchor="start" fill="#a5a29c" font-size="16">Revenue growth, FY26</text><rect x="40.0" y="232.0" width="242.7" height="28.0" fill="#76d5c1"/><text x="292.7" y="252.0" text-anchor="start" fill="#f1eee8" font-size="16">15.2%</text><text x="40.0" y="296.0" text-anchor="start" fill="#a5a29c" font-size="16">16 px = 1% a year · TCPL, the page’s own estimate</text></svg></figure>
+      <div class="table-wrap"><table class="sens">
+        <thead><tr><th>Discount rate</th><th>New money earns 20%</th><th>New money earns 40%</th></tr></thead>
+        <tbody>
+          <tr><td>10%</td><td>27.6%</td><td>22.0%</td></tr>
+          <tr><td>11%</td><td>33.0%</td><td>25.6%</td></tr>
+          <tr><td>12%</td><td>39.0%</td><td>28.9%</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>Read it as a question.</b> At 12% and 40%, ₹1,014.80 needs NOPAT to grow 28.9% a year for ten years, about 12.7 times by FY36. In FY26, EBIT grew 15.3% (₹2,165.12 cr against ₹1,878.61 cr). Either the market expects far faster growth than FY26 delivered, or it discounts at a much lower rate: at FY26’s 15.3% growth, the price fits a discount rate of about 8.3% with a 40% return, or 7.7% with 20%. With 20% the implied growth is above the return on new money, so FCFF would be negative for years, as in the panel above.</p>
+      <details class="trace"><summary>Go deeper: choices behind the TCPL estimate</summary>
+        <p>EBIT follows this series’ definition, EBITDA less D&amp;A, so it leaves out other income (as Ramu’s does). NOPAT uses the 25.17% rate printed in the tax reconciliation; the effective rate was 24.6% (₹535.28 cr on ₹2,172.78 cr), which gives 28.8% instead of 28.9% at 12% and 40%. Net cash is TCPL’s own ₹2,978 cr, which also counts other bank balances and current investments; on <a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a>’s stricter ₹926 cr the answer is 29.3%. Adding the ₹1,401.33 cr non-controlling interest to EV gives 29.2%. The loss from associates and joint ventures (₹90.70 cr) is not modelled. None of these changes the picture.</p>
+      </details>
+      <div class="field-grid">
+        <div><b>₹2,165.12 cr EBIT</b><span>From the consolidated P&amp;L for the year to 31 March 2026</span><em>INTEGRATED ANNUAL REPORT 2025-26 · P. 415</em></div>
+        <div><b>₹2,978 cr net cash</b><span>Cash and equivalents net of total borrowings, 31 March 2026</span><em>AGM PRESENTATION, 10 JUNE 2026</em></div>
+        <div><b>₹1,014.80 close</b><span>30 March 2026; 1 April’s previous close confirms no session on 31 March</span><em>NSE BHAVCOPY, 30 MAR AND 1 APR 2026</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements in its Integrated Annual Report 2025-26 (printed pages as cited), its <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf">FY26 AGM presentation</a>, and NSE’s bhavcopy for <a href="https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv.zip">30 March 2026</a> and <a href="https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260401_F_0000.csv.zip">1 April 2026</a>. The growth figures are this page’s own estimates. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions to ask of any price</h2>
+      <ol class="checks">
+        <li><b>What growth is in the price?</b> Solve for it with a model you understand, and write the number down.</li>
+        <li><b>Has the company ever grown that fast?</b> Compare with its own record over several years, not one good year.</li>
+        <li><b>Is there room?</b> Turn the growth into market share, and ask who would lose it.</li>
+        <li><b>Does new money earn more than it costs?</b> If not, growth cannot justify any price.</li>
+        <li><b>How much hangs on the discount rate?</b> Move it a point each way before you conclude anything.</li>
+      </ol>
+      <p>A reverse DCF asks what one price assumes. Part 26, “Relative valuation and P/E bands”, asks the other everyday question: is this price high or low against similar companies, and against the company’s own history?</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Don’t start by guessing what a share is worth: ask what growth today’s price already assumes, then check that number against the company’s record, its market and its returns.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Reverse DCF lab. Model = Part 24: FCFF = NOPAT × (1 − g ÷ 20%), terminal value at FY36, net debt 60, 10 cr shares.
+    // Expected results are checked by an independent Python script, not by this code.
+    const $=id=>document.getElementById(id);
+    const ids=['price','wacc','tg'];
+    const N0=54.75, ROI=0.20, ND=60, SH=10, MID=0.08, GLO=-0.20, GHI=0.45;
+    const HIST=[['Ramu PAT, FY22–26',13.6,'#f5c76a',1],['Ramu sales, FY22–26',11.0,'#76d5c1',1],['Part 24 forecast, average',9.98,'#f5c76a',0.5]];
+    const FG='#f1eee8',MUT='#a5a29c',AXC='#57534f',GOLD='#f5c76a',LAV='#c3b8ff';
+    const T=(x,y,s,a,fill,cls,dv)=>`<text${cls?` class="${cls}"`:''}${dv!==undefined?` data-v="${dv}"`:''} x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FG}" font-size="16">${s}</text>`;
+    const pc=(v,d=1)=>(v<0?'−':'')+Math.abs(v).toFixed(d)+'%';
+    const cr=v=>(v<0?'−':'')+Math.abs(v).toLocaleString('en-IN',{minimumFractionDigits:1,maximumFractionDigits:1});
+    let mode='one';
+    function dcf(g1,w,gt){
+      let nop=N0,pv=0;const rows=[];
+      for(let t=1;t<=10;t++){const g=(mode==='two'&&t>5)?MID:g1;nop*=1+g;const fc=nop*(1-g/ROI),d=Math.pow(1+w,t);pv+=fc/d;rows.push({fy:2026+t,g,nop,fc,pv:fc/d});}
+      const fN=nop*(1+gt)*(1-gt/ROI),tv=fN/(w-gt),pvtv=tv/Math.pow(1+w,10),ev=pv+pvtv,eq=ev-ND;
+      return {rows,pv,fN,tv,pvtv,ev,eq,ps:eq/SH};
+    }
+    function solveG(price,w,gt){
+      let lo=GLO,hi=GHI;const iters=[];
+      const vlo=dcf(lo,w,gt).ps,vhi=dcf(hi,w,gt).ps;
+      if(price<=vlo) return {g:lo,status:'below',iters,vlo,vhi};
+      if(price>=vhi) return {g:hi,status:'above',iters,vlo,vhi};
+      for(let i=0;i<60;i++){const m=(lo+hi)/2,v=dcf(m,w,gt).ps;iters.push([lo,hi,m,v]);if(v<price)lo=m;else hi=m;}
+      return {g:(lo+hi)/2,status:'ok',iters,vlo,vhi};
+    }
+    function curve(w,gt,price,res){
+      const X0=70,X1=490,Y0=280,Y1=30,VH=300,sx=g=>X0+(g-GLO)*(X1-X0)/(GHI-GLO),sy=v=>Y0-v*(Y0-Y1)/VH;
+      let s=`<defs><clipPath id="cclip"><rect x="${X0}" y="${Y1-4}" width="${X1-X0+6}" height="${Y0-Y1+4}"/></clipPath></defs>`;
+      s+=`<path d="M${X0} ${Y1-6} L${X0} ${Y0} L${X1+8} ${Y0}" stroke="${AXC}" stroke-width="1.5" fill="none"/>`;
+      [-0.2,0,0.2,0.4].forEach(g=>{s+=T(sx(g),Y0+24,pc(g*100,0),'middle',MUT);});
+      [0,100,200,300].forEach(v=>{s+=T(X0-10,sy(v)+5,'₹'+v,'end',MUT);});
+      const pts=[];for(let g=GLO;g<=GHI+1e-9;g+=0.005){pts.push(sx(g).toFixed(1)+','+sy(Math.max(-40,dcf(g,w,gt).ps)).toFixed(1));}
+      s+=`<polyline clip-path="url(#cclip)" points="${pts.join(' ')}" fill="none" stroke="${GOLD}" stroke-width="3"/>`;
+      const py=sy(price),gx=sx(res.g);
+      s+=`<path d="M${X0} ${py.toFixed(1)} L${X1} ${py.toFixed(1)}" stroke="${LAV}" stroke-width="2" stroke-dasharray="7 5" fill="none"/>`;
+      s+=T(X0+8,py-10,'price ₹'+price.toFixed(1),'start',LAV);
+      if(res.status==='ok'){
+        s+=`<path d="M${gx.toFixed(1)} ${(py+8).toFixed(1)} L${gx.toFixed(1)} ${Y0}" stroke="${LAV}" stroke-width="2" stroke-dasharray="3 4" fill="none"/>`;
+        s+=`<circle cx="${gx.toFixed(1)}" cy="${py.toFixed(1)}" r="7" fill="${LAV}" stroke="#202020" stroke-width="2"/>`;
+        const right=gx<360;s+=T(right?gx+12:gx-12,right?py+24:py-12,pc(res.g*100)+' a year',right?'start':'end',FG);
+      }
+      s+=T(X1,Y0+50,'growth a year, '+(mode==='one'?'FY27–FY36':'FY27–FY31'),'end',MUT);
+      $('curveChart').innerHTML=s;
+    }
+    function bars(gi){
+      const rows=[['Price implies',gi,LAV,1],...HIST];
+      const lo=Math.min(0,Math.floor(Math.min(...rows.map(r=>r[1]))/10)*10),hi=Math.max(10,Math.ceil(Math.max(...rows.map(r=>r[1]))/10)*10);
+      const X0=30,X1=490,sx=v=>X0+(v-lo)*(X1-X0)/(hi-lo),z=sx(0);
+      let s='';
+      rows.forEach(([n,v,c,op],i)=>{const y=34+i*68,x=sx(v);
+        s+=T(30,y-10,n+' · '+pc(v),'start',i?MUT:FG);
+        s+=`<rect data-v="${v}" x="${Math.min(x,z).toFixed(2)}" y="${y}" width="${Math.abs(x-z).toFixed(2)}" height="26" fill="${c}" opacity="${op}"/>`;});
+      const bottom=34+rows.length*68-14;
+      s+=`<path d="M${z.toFixed(2)} 20 L${z.toFixed(2)} ${bottom}" stroke="${AXC}" stroke-width="1.5" fill="none"/>`;
+      const ticks=lo<0?[lo,0,hi]:[0,hi/2,hi];
+      ticks.forEach((t,i)=>{s+=T(sx(t),bottom+24,labConfig.format(t),['start','middle','end'][i],MUT,'tick',t);});
+      s+=T(30,bottom+52,'growth a year; axis adjusts to the values','start',MUT);
+      $('labChart').setAttribute('viewBox',`0 0 520 ${bottom+66}`);
+      $('labChart').innerHTML=s;
+    }
+    const labConfig={format:v=>pc(v,0)};
+    function update(){
+      window.labResults={valid:false};
+      const price=+$('price').value,w=+$('wacc').value/100,gt=+$('tg').value/100;
+      $('price-o').textContent='₹'+price.toFixed(1);$('wacc-o').textContent=(w*100).toFixed(1)+'%';$('tg-o').textContent=(gt*100).toFixed(1)+'%';
+      document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
+      const res=solveG(price,w,gt),d=dcf(res.g,w,gt),gi=res.g*100;
+      curve(w,gt,price,res);bars(gi);
+      const span=mode==='one'?'for ten years, FY27–FY36, then '+pc(gt*100)+' for ever':'for FY27–FY31, then 8% to FY36 and '+pc(gt*100)+' for ever';
+      let m;
+      if(res.status==='below') m=`Even shrinking 20% a year ${span} is worth ₹${res.vlo.toFixed(1)} a share, more than ₹${price.toFixed(1)}. This model cannot explain so low a price with growth; the market must doubt the 20% return or the business itself.`;
+      else if(res.status==='above') m=`Even 45% a year ${span} is worth only ₹${res.vhi.toFixed(1)} a share, less than ₹${price.toFixed(1)}. No sensible growth rate in this model explains the price.`;
+      else{m=`At ₹${price.toFixed(1)} and a ${(w*100).toFixed(1)}% discount rate, the price needs NOPAT to grow ${pc(gi)} a year ${span}. Ramu’s profit grew 13.6% a year over FY22–26.`;
+        if(res.g>ROI+1e-9) m+=' That is faster than the 20% new money earns, so free cash flow is negative while it lasts.';}
+      $('msg').textContent=m;
+      const L=[['Equity the price implies','₹'+price.toFixed(1)+' × '+SH+' cr shares = ₹'+cr(price*SH)+' cr'],
+        ['Add net debt for EV','₹'+cr(price*SH)+' + '+ND+' = ₹'+cr(price*SH+ND)+' cr'],
+        ['Search range',pc(GLO*100,0)+' to '+pc(GHI*100,0)+': ₹'+res.vlo.toFixed(1)+' to ₹'+res.vhi.toFixed(1)+' a share']];
+      res.iters.slice(0,6).forEach((it,i)=>L.push(['Try '+(i+1)+': '+pc(it[2]*100,2),'₹'+it[3].toFixed(2)+(it[3]<price?' · too low, go up':' · too high, go down')]));
+      if(res.status==='ok') L.push(['After '+res.iters.length+' halvings',pc(gi,3)]);
+      L.push(['PV of FCFF, FY27–FY36','₹'+cr(d.pv)+' cr'],['FCFF FY37 ÷ (WACC − '+pc(gt*100)+')','₹'+cr(d.fN)+' ÷ '+((w-gt)*100).toFixed(1)+'% = ₹'+cr(d.tv)+' cr'],
+        ['PV of that terminal value','₹'+cr(d.pvtv)+' cr ('+(100*d.pvtv/d.ev).toFixed(0)+'% of EV)'],['EV − net debt','₹'+cr(d.ev)+' − '+ND+' = ₹'+cr(d.eq)+' cr'],['Value a share','₹'+d.ps.toFixed(2)]);
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      $('yearTable').innerHTML='<thead><tr><th>Year</th><th>Growth</th><th>NOPAT</th><th>FCFF</th><th>PV</th></tr></thead><tbody>'+d.rows.map(r=>`<tr><td>FY${String(r.fy).slice(2)}</td><td>${pc(r.g*100)}</td><td>${cr(r.nop)}</td><td>${cr(r.fc)}</td><td>${cr(r.pv)}</td></tr>`).join('')+'</tbody>';
+      window.labResults={valid:[gi,d.ps,d.ev,d.pv,d.pvtv].every(Number.isFinite),price,wacc:w*100,tg:gt*100,mode,g:gi,status:res.status,ps:d.ps,ev:d.ev,pv:d.pv,pvtv:d.pvtv,rows:[gi,...HIST.map(h=>h[1])]};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update();}));
+    document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;update();}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

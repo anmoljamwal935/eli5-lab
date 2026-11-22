@@ -1,0 +1,666 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+    "title": "HDFC Bank Integrated Annual Report 2025-26 (with AGM notice), exchange filing SE/2026-27/65",
+    "author": "HDFC Bank Ltd",
+    "verified_date": "2026-07-10 (filing date); read 2026-11-18",
+    "section_count": "678 PDF pages; printed page = PDF page - 20",
+    "language": "en",
+    "caption_type": "n/a (document)",
+    "capture_mode": "PDF downloaded, pdftotext -layout",
+    "beginning_middle_ending_evidence": "cover letter (p.1), directors' report and MD&A (pp.252-260), standalone statements and schedules (pp.358-419) read",
+    "other_sources": [
+      "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=13146 (Commercial Banks IRACP Directions 2025, updated 1 Oct 2026; paras 5, 42, 44, 85-87, 125, 132, 135 read via WebFetch)",
+      "https://nsearchives.nseindia.com/corporate/HDFCBANK_24042026154113_SEintimationTranscriptofearningscall18April2026.pdf (Q4 FY26 call transcript, context only)"
+    ],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa29/src/ar.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa29/src/ar.txt",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa29/src/call.txt"
+    ],
+    "limitations": [
+      "RBI Commercial Banks Capital Adequacy Directions 2025 (151MD.PDF) could not be opened: rbidocs host returns a bot-protection page; capital minimums on the page are stated as printed by HDFC Bank (p.382) rather than from the RBI text",
+      "Topic build: inventory from primary sources, not a single source"
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Debt is a bank's raw material; D/E and EBITDA don't apply",
+      "kind": "claim",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P1"
+    },
+    {
+      "id": "I2",
+      "item": "NIM = NII / average assets",
+      "kind": "definition",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P2"
+    },
+    {
+      "id": "I3",
+      "item": "CASA ratio and its effect on cost of funds",
+      "kind": "mechanism",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": false,
+      "destination": "P3"
+    },
+    {
+      "id": "I4",
+      "item": "Bank P&L: NII, fees, opex, PPOP, provisions, PAT; cost-to-income; ROA x leverage = ROE",
+      "kind": "mechanism",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": false,
+      "destination": "P4"
+    },
+    {
+      "id": "I5",
+      "item": "NPA at >90 days overdue (RBI para 42), borrower-wise (para 44), substandard/doubtful/loss, 15%/25% provisions, cash-basis income",
+      "kind": "definition",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P5"
+    },
+    {
+      "id": "I6",
+      "item": "GNPA, NNPA, PCR, credit cost, slippage",
+      "kind": "definition",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P6"
+    },
+    {
+      "id": "I7",
+      "item": "RWA, CRAR, CET1, Tier 1/2, minimums incl. CCB and D-SIB",
+      "kind": "definition",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P7"
+    },
+    {
+      "id": "I8",
+      "item": "Bad loans flow through provisions to profit, equity, BVPS, capital",
+      "kind": "mechanism",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": false,
+      "destination": "LAB"
+    },
+    {
+      "id": "I9",
+      "item": "Valuing banks on P/B against ROE; justified P/B",
+      "kind": "mechanism",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": false,
+      "destination": "P9"
+    },
+    {
+      "id": "I10",
+      "item": "Under-provisioning flatters profit",
+      "kind": "misconception",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": false,
+      "destination": "P10"
+    },
+    {
+      "id": "I11",
+      "item": "HDFC Bank FY26 metrics",
+      "kind": "number",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P11"
+    },
+    {
+      "id": "I12",
+      "item": "2023 merger with HDFC Ltd and 1:1 bonus distort comparisons",
+      "kind": "context",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P12"
+    },
+    {
+      "id": "I13",
+      "item": "Hand-off to Part 30 NBFCs and insurers",
+      "kind": "context",
+      "source_locator": "plan blurb + primary sources",
+      "check_needed": true,
+      "destination": "P13"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I11",
+      "claim": "NIM 3.34% on average assets",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.259",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "CASA 34.1%: SA 7,05,802, CA 3,54,495, deposits 31,05,251",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.260",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Cost-to-income 38.0%",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.259",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "GNPA 1.15%, NNPA 0.38%, PCR 67.21%",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.405",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "GNPA 34,061.19 cr, NNPA 11,169.54 cr, specific provisions 22,891.65, additions 31,246.58, opening gross 26,43,510.83",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.403",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Floating provisions 21,351.28 cr, 9,000 added in FY26",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.405, p.259",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "CET1 5,14,070.42 / RWA 29,74,116.57 = 17.28%; Tier1 17.73; total 19.71",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.383",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Minimums CET1 8.4, Tier1 9.9, total 11.9 incl CCB 2.5 and D-SIB 0.4",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.382, p.258",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "ROA 1.94%",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.253",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "ROE 14.29% on average net worth",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.238, p.260",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Interest earned 3,07,522.07; expended 1,78,836.04; NII 1,28,686.03",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.359, p.238",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Loan loss provisions 11,404.74; total provisions 23,389.58; loans FY25 26,19,608.62, FY26 29,37,166.27",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.238",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Deposits 31,05,250.47; borrowings 4,89,394.64; net worth 5,62,900.91",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.358, p.238",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "BVPS and price FY23-FY26: 251.09/804.78, 289.76/723.95, 327.64/914.10, 365.68/731.55; ROE 17.39/16.09/14.56/14.29; P/E 15.05 FY26; bonus 1:1 in FY26 restatement",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.238",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Merger effective 1 July 2023",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.254",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "HDFC Ltd borrowings 2,25,019.44 cr at 31 Mar 2026, ~20% due to FY2028, 80% after",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.260",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Repo cuts 1.25 percent Feb-Dec 2025; assets repriced faster",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.21",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "HDB Financial stake-sale gain 9,179.4 cr; other income 62,532.57",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.259",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Bank's own debt equity ratio 0.53",
+      "verdict": "Supported",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.260",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "NPA if overdue >90 days; borrower-wise; substandard <=12 months; 15%/25% provision; cash-basis income",
+      "verdict": "Supported",
+      "as_of": "28 Nov 2025 (updated 1 Oct 2026)",
+      "evidence_url": "https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=13146",
+      "locator": "paras 5, 42, 44, 85-86, 125, 132",
+      "page_use": "stated as public"
+    },
+    {
+      "inventory_id": "I7",
+      "claim": "Base minimums 9% total / 5.5% CET1 / 7% Tier 1",
+      "verdict": "Unverifiable from RBI text (blocked); derived from HDFC printed minimums less buffers",
+      "as_of": "31 March 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf",
+      "locator": "p.382",
+      "page_use": "page states HDFC's printed minimums only; Pipal's 11.5% = 11.9 - 0.4"
+    }
+  ],
+  "panels": [
+    {
+      "id": "P1",
+      "heading": "Debt is a bank's raw material"
+    },
+    {
+      "id": "P2",
+      "heading": "NIM: the spread on every rupee"
+    },
+    {
+      "id": "P3",
+      "heading": "CASA: deposits that cost little"
+    },
+    {
+      "id": "P4",
+      "heading": "From spread to profit"
+    },
+    {
+      "id": "P5",
+      "heading": "The 90-day rule"
+    },
+    {
+      "id": "P6",
+      "heading": "GNPA, NNPA and provision coverage"
+    },
+    {
+      "id": "P7",
+      "heading": "Capital adequacy: CRAR and CET1"
+    },
+    {
+      "id": "P8",
+      "heading": "Push bad loans through the bank"
+    },
+    {
+      "id": "P9",
+      "heading": "P/B against ROE"
+    },
+    {
+      "id": "P10",
+      "heading": "Higher profit, weaker bank"
+    },
+    {
+      "id": "P11",
+      "heading": "Nine bank numbers, one card each"
+    },
+    {
+      "id": "P12",
+      "heading": "HDFC Bank, FY2026: the numbers"
+    },
+    {
+      "id": "P13",
+      "heading": "The 2023 merger breaks comparisons"
+    },
+    {
+      "id": "P14",
+      "heading": "Questions before buying a bank"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "PPOP fixed at 32",
+      "bad loans turn bad at year end",
+      "provisions = bad loans x coverage",
+      "tax 25%, symmetric credit on loss",
+      "opening equity 85, no dividend",
+      "gross loans 812, net = 812 - provisions",
+      "RWA = 0.75 x net loans + 150",
+      "minimum 11.5% of RWA",
+      "price fixed at 20"
+    ],
+    "units": {
+      "money": "Rs crore",
+      "ratios": "percent"
+    },
+    "independent_calculation_method": "tools/model.py (Python, separate from page JS), compared to window.labResults with tools/labcheck.py",
+    "cases": [
+      {
+        "case": "defaults",
+        "expected": {
+          "s": 16,
+          "pcr": 75,
+          "P": 12.0,
+          "pbt": 20.0,
+          "pat": 15.0,
+          "eq": 100.0,
+          "bvps": 10.0,
+          "gnpa": 1.9704,
+          "nnpa": 0.5,
+          "cc": 1.5,
+          "cet1": 13.3333,
+          "rwa": 750.0,
+          "head": 13.75,
+          "roe": 15.0,
+          "roa": 1.5,
+          "pb": 2.0,
+          "px_at_2": 20.0,
+          "unprov": 4.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "Base year",
+        "expected": {
+          "s": 16,
+          "pcr": 75,
+          "P": 12.0,
+          "pbt": 20.0,
+          "pat": 15.0,
+          "eq": 100.0,
+          "bvps": 10.0,
+          "gnpa": 1.9704,
+          "nnpa": 0.5,
+          "cc": 1.5,
+          "cet1": 13.3333,
+          "rwa": 750.0,
+          "head": 13.75,
+          "roe": 15.0,
+          "roa": 1.5,
+          "pb": 2.0,
+          "px_at_2": 20.0,
+          "unprov": 4.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "Clean year",
+        "expected": {
+          "s": 4,
+          "pcr": 75,
+          "P": 3.0,
+          "pbt": 29.0,
+          "pat": 21.75,
+          "eq": 106.75,
+          "bvps": 10.675,
+          "gnpa": 0.4926,
+          "nnpa": 0.1236,
+          "cc": 0.375,
+          "cet1": 14.1064,
+          "rwa": 756.75,
+          "head": 19.7237,
+          "roe": 20.3747,
+          "roa": 2.175,
+          "pb": 1.8735,
+          "px_at_2": 21.35,
+          "unprov": 1.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "Bad credit cycle",
+        "expected": {
+          "s": 56,
+          "pcr": 75,
+          "P": 42.0,
+          "pbt": -10.0,
+          "pat": -7.5,
+          "eq": 77.5,
+          "bvps": 7.75,
+          "gnpa": 6.8966,
+          "nnpa": 1.8182,
+          "cc": 5.25,
+          "cet1": 10.6529,
+          "rwa": 727.5,
+          "head": -6.1625,
+          "roe": -9.6774,
+          "roa": -0.75,
+          "pb": 2.5806,
+          "px_at_2": 15.5,
+          "unprov": 14.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "Bad cycle, thin provisions",
+        "expected": {
+          "s": 56,
+          "pcr": 40,
+          "P": 22.4,
+          "pbt": 9.6,
+          "pat": 7.2,
+          "eq": 92.2,
+          "bvps": 9.22,
+          "gnpa": 6.8966,
+          "nnpa": 4.2553,
+          "cc": 2.8,
+          "cet1": 12.4225,
+          "rwa": 742.2,
+          "head": 6.847,
+          "roe": 7.8091,
+          "roa": 0.72,
+          "pb": 2.1692,
+          "px_at_2": 18.44,
+          "unprov": 33.6
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "sliders 0/40",
+        "expected": {
+          "s": 0,
+          "pcr": 40,
+          "P": 0.0,
+          "pbt": 32.0,
+          "pat": 24.0,
+          "eq": 109.0,
+          "bvps": 10.9,
+          "gnpa": 0.0,
+          "nnpa": 0.0,
+          "cc": 0.0,
+          "cet1": 14.361,
+          "rwa": 759.0,
+          "head": 21.715,
+          "roe": 22.0183,
+          "roa": 2.4,
+          "pb": 1.8349,
+          "px_at_2": 21.8,
+          "unprov": 0.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "sliders 0/100",
+        "expected": {
+          "s": 0,
+          "pcr": 100,
+          "P": 0.0,
+          "pbt": 32.0,
+          "pat": 24.0,
+          "eq": 109.0,
+          "bvps": 10.9,
+          "gnpa": 0.0,
+          "nnpa": 0.0,
+          "cc": 0.0,
+          "cet1": 14.361,
+          "rwa": 759.0,
+          "head": 21.715,
+          "roe": 22.0183,
+          "roa": 2.4,
+          "pb": 1.8349,
+          "px_at_2": 21.8,
+          "unprov": 0.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "sliders 80/40",
+        "expected": {
+          "s": 80,
+          "pcr": 40,
+          "P": 32.0,
+          "pbt": 0.0,
+          "pat": 0.0,
+          "eq": 85.0,
+          "bvps": 8.5,
+          "gnpa": 9.8522,
+          "nnpa": 6.1538,
+          "cc": 4.0,
+          "cet1": 11.5646,
+          "rwa": 735.0,
+          "head": 0.475,
+          "roe": 0.0,
+          "roa": 0.0,
+          "pb": 2.3529,
+          "px_at_2": 17.0,
+          "unprov": 48.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      },
+      {
+        "case": "sliders 80/100",
+        "expected": {
+          "s": 80,
+          "pcr": 100,
+          "P": 80.0,
+          "pbt": -48.0,
+          "pat": -36.0,
+          "eq": 49.0,
+          "bvps": 4.9,
+          "gnpa": 9.8522,
+          "nnpa": 0.0,
+          "cc": 10.0,
+          "cet1": 7.01,
+          "rwa": 699.0,
+          "head": -31.385,
+          "roe": -73.4694,
+          "roa": -3.6,
+          "pb": 4.0816,
+          "px_at_2": 9.8,
+          "unprov": 0.0
+        },
+        "observed": "matched within 0.01 on all 22 keys",
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "base case reproduces Pipal's stated accounts (PAT 15, equity 100, CET1 13.33%)",
+      "assets - liabilities = equity after each extra provision (net loans -dP, cash +0.25dP, equity -0.75dP)"
+    ],
+    "tolerance": 0.01,
+    "axis_and_clipping": "fixed axis -40..120 Rs cr; all outputs within range at slider extremes (min -36, max 109); no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render.py 0 errors",
+      "labcheck 9/9 cases pass",
+      "card lint 0 errors"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa29/shots"
+    ],
+    "coverage_review": "every inventory row found on page",
+    "semantic_review": "facts rechecked; unverified claims removed (HDFC Ltd funding mix, RBI payout restriction, 2026 direction date, mortgage spreads)",
+    "card": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa29/card.svg",
+    "artifact_sha256": "4b5b27668467b10ace707bb14f46ac09cb8b5d0d381ac6f24560bf95480f8d92",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 14,
+        "notes": 0
+      },
+      "artifact_sha256": "4b5b27668467b10ace707bb14f46ac09cb8b5d0d381ac6f24560bf95480f8d92",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/fa29/explainers/analysing-banks-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief forbids publishing)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

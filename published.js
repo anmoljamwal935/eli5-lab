@@ -1,5 +1,242 @@
 window.PUBLISHED = [
   {
+    "id": "nbfcs-and-insurers-eli5",
+    "title": "NBFCs and insurers",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 30: what lenders' money costs, when it falls due, and insurers' yardsticks",
+    "bullets": [
+      "A lender earns a spread over its cost of funds and fails when short borrowing falls due before its loans repay",
+      "Life insurers are read through VNB and embedded value, general insurers through the combined ratio and float"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "COST OF FUNDS",
+      "MATURITY LADDER",
+      "VNB AND EV"
+    ],
+    "file": "explainers/nbfcs-and-insurers-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Miniature of the funding-freeze lab: for six months, a teal bar of money coming in above a longer rose bar of money owed, the gap showing a lender running short of cash\"><path d=\"M40 36V128\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"40\" y=\"38\" width=\"48.0\" height=\"6\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"45\" width=\"66.8\" height=\"6\" fill=\"#ec6a94\"/><rect x=\"40\" y=\"53\" width=\"69.3\" height=\"6\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"60\" width=\"133.3\" height=\"6\" fill=\"#ec6a94\"/><rect x=\"40\" y=\"68\" width=\"90.7\" height=\"6\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"75\" width=\"199.3\" height=\"6\" fill=\"#ec6a94\"/><rect x=\"40\" y=\"83\" width=\"112.0\" height=\"6\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"90\" width=\"207.9\" height=\"6\" fill=\"#ec6a94\"/><rect x=\"40\" y=\"98\" width=\"133.3\" height=\"6\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"105\" width=\"216.6\" height=\"6\" fill=\"#ec6a94\"/><rect x=\"40\" y=\"113\" width=\"154.7\" height=\"6\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"120\" width=\"225.1\" height=\"6\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"280\" y=\"32\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 30</text><text x=\"40\" y=\"140\" fill=\"#ec6a94\">SHORT OF CASH</text></g></svg>",
+    "part": 30
+  },
+  {
+    "id": "analysing-banks-eli5",
+    "title": "Banks",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 29: spreads, bad loans and capital, and why banks trade on book",
+    "bullets": [
+      "Debt is a bank's raw material: judge NIM, CASA, bad loans and provision cover instead of D/E",
+      "Bad loans flow through provisions into profit, capital and book value; price banks on P/B against ROE"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "NIM",
+      "BAD LOANS",
+      "CAPITAL",
+      "P/B"
+    ],
+    "file": "explainers/analysing-banks-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Bad loans flowing into provisions and then out of book value: a dashed coral bar of bad loans, a solid coral provision bar, and a gold book-value bar shorter than its dashed outline before the loss\"><rect x=\"24\" y=\"44\" width=\"120\" height=\"14\" fill=\"#ff8059\" fill-opacity=\"0.15\" stroke=\"#ff8059\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><rect x=\"24\" y=\"68\" width=\"90\" height=\"14\" fill=\"#ff8059\"/><rect x=\"24\" y=\"92\" width=\"186\" height=\"14\" fill=\"#f5c76a\"/><rect x=\"210\" y=\"92\" width=\"70\" height=\"14\" fill=\"none\" stroke=\"#f5c76a\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><path d=\"M114 75 L206 99\" stroke=\"#a5a29c\" stroke-width=\"1\" fill=\"none\" stroke-dasharray=\"2 3\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"152\" y=\"55\" fill=\"#a5a29c\">BAD LOANS</text><text x=\"24\" y=\"132\" fill=\"#a5a29c\">BOOK VALUE</text><text x=\"296\" y=\"30\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 29</text></g></svg>",
+    "part": 29
+  },
+  {
+    "id": "margin-of-safety-eli5",
+    "title": "Margin of safety and scenarios",
+    "category": "Monetary Architecture",
+    "minutes": 17,
+    "summary": "Part 28: value is a range; weight bull, base, bear, then buy well below",
+    "bullets": [
+      "Grids and bull, base and bear stories turn one DCF value into a range; weighted, Ramu is worth ₹74.3",
+      "A 30% margin of safety means paying at most ₹52.0, which protects you from your own errors"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "GRID",
+      "SCENARIOS",
+      "WEIGHTED",
+      "MARGIN"
+    ],
+    "file": "explainers/margin-of-safety-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three gold blocks whose widths are the bull, base and bear probabilities and whose heights are their values, with the weighted value as a dashed line below the lavender price line\"><path d=\"M40 130H280\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"40\" y=\"40.4\" width=\"60\" height=\"89.6\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"100\" y=\"61\" width=\"120\" height=\"69\" fill=\"#f5c76a\" opacity=\"0.78\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"220\" y=\"90.3\" width=\"60\" height=\"39.7\" fill=\"#f5c76a\" opacity=\"0.56\" stroke=\"#202020\" stroke-width=\"1.5\"/><path d=\"M40 63.2H280\" stroke=\"#f1eee8\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\" fill=\"none\"/><path d=\"M40 40H280\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"40\" y=\"28\" fill=\"#f5c76a\">PART 28</text><text x=\"280\" y=\"32\" text-anchor=\"end\" fill=\"#c3b8ff\">PRICE</text></g></svg>",
+    "part": 28
+  },
+  {
+    "id": "sum-of-the-parts-eli5",
+    "title": "Conglomerates and special cases",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 27: sum of the parts, holding-company discounts, dividend models and NAV",
+    "bullets": [
+      "Value a group business by business, then take net debt off once: Ramu's parts give ₹101 a share",
+      "Holding companies trade below their holdings (Bajaj Holdings 55% below NAV); dividend models break when growth reaches the discount rate"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SEGMENTS",
+      "MULTIPLES",
+      "EV",
+      "NET DEBT",
+      "PER SHARE"
+    ],
+    "file": "explainers/sum-of-the-parts-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three gold rectangles whose widths are each business’s EBITDA and heights its multiple, so their areas are their values, stacked into one column for the whole group\"><path d=\"M24 120H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"30\" y=\"50\" width=\"120\" height=\"70\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"160\" y=\"70\" width=\"30\" height=\"50\" fill=\"#f5c76a\" opacity=\"0.75\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"200\" y=\"80\" width=\"20\" height=\"40\" fill=\"#f5c76a\" opacity=\"0.5\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"250\" y=\"49.3\" width=\"26\" height=\"70.7\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"250\" y=\"36.7\" width=\"26\" height=\"12.6\" fill=\"#f5c76a\" opacity=\"0.75\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"250\" y=\"30\" width=\"26\" height=\"6.7\" fill=\"#f5c76a\" opacity=\"0.5\" stroke=\"#202020\" stroke-width=\"1.5\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"140\" fill=\"#a5a29c\">SUM OF PARTS</text><text x=\"230\" y=\"30\" text-anchor=\"end\" fill=\"#f5c76a\">PART 27</text></g></svg>",
+    "part": 27
+  },
+  {
+    "id": "relative-valuation-eli5",
+    "title": "Relative valuation and P/E bands",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 26: peer multiples, P/E bands, and why re-ratings move prices",
+    "bullets": [
+      "A P/E is a DCF in shorthand: compare only with peers that grow, earn and borrow alike",
+      "Price = EPS × P/E, so a re-rating can add or erase a year of earnings growth"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PEERS",
+      "P/E BAND",
+      "RE-RATING"
+    ],
+    "file": "explainers/relative-valuation-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A P/E band: Ramu’s price dots wander between lines of EPS times 16, 20 and 24, which fan out to a hollow FY27 estimate\">\n<polygon points=\"40.0,79.0 86.0,72.5 132.0,64.4 178.0,56.2 224.0,46.4 270.0,34.2 270.0,65.4 224.0,73.6 178.0,80.1 132.0,85.6 86.0,91.0 40.0,95.4\" fill=\"#c3b8ff\" opacity=\"0.18\"/>\n<path d=\"M30 132 L290 132\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/>\n<polyline points=\"40.0,79.0 86.0,72.5 132.0,64.4 178.0,56.2 224.0,46.4\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\"/>\n<polyline points=\"224.0,46.4 270.0,34.2\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\" stroke-dasharray=\"4 3\"/>\n<polyline points=\"40.0,87.2 86.0,81.8 132.0,75.0 178.0,68.2 224.0,60.0\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"2.5\" opacity=\"1\"/>\n<polyline points=\"224.0,60.0 270.0,49.8\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"2.5\" opacity=\"1\" stroke-dasharray=\"4 3\"/>\n<polyline points=\"40.0,95.4 86.0,91.0 132.0,85.6 178.0,80.1 224.0,73.6\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\"/>\n<polyline points=\"224.0,73.6 270.0,65.4\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\" stroke-dasharray=\"4 3\"/>\n<circle cx=\"40.0\" cy=\"91.3\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"86.0\" cy=\"91.0\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"132.0\" cy=\"69.7\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"178.0\" cy=\"56.2\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"224.0\" cy=\"60.0\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"270.0\" cy=\"49.8\" r=\"4.5\" fill=\"#202020\" stroke=\"#f5c76a\" stroke-width=\"2\"/>\n<g font-family=\"monospace\" font-size=\"9\"><text x=\"30\" y=\"30\" fill=\"#f5c76a\">PART 26</text><text x=\"290\" y=\"30\" text-anchor=\"end\" fill=\"#a5a29c\">P/E BAND</text></g>\n</svg>",
+    "part": 26
+  },
+  {
+    "id": "reverse-dcf-eli5",
+    "title": "Reverse DCF",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 25: what growth today's price already assumes, solved and checked",
+    "bullets": [
+      "Run the DCF backwards: find the growth that makes value equal the price",
+      "Then test it against the record, the market and the discount rate"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PRICE",
+      "DCF",
+      "IMPLIED GROWTH"
+    ],
+    "file": "explainers/reverse-dcf-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A gold curve of share value rising with growth, crossed by a dashed lavender price line; a dashed line drops from the crossing to the growth the price implies\"><path d=\"M30 22V125H290\" stroke=\"#57534f\" fill=\"none\"/><polyline points=\"30.0,109.9 36.5,109.3 43.0,108.7 49.5,108.1 56.0,107.5 62.5,106.8 69.0,106.0 75.5,105.2 82.0,104.4 88.5,103.5 95.0,102.6 101.5,101.5 108.0,100.5 114.5,99.3 121.0,98.1 127.5,96.8 134.0,95.4 140.5,94.0 147.0,92.4 153.5,90.7 160.0,89.0 166.5,87.1 173.0,85.1 179.5,82.9 186.0,80.7 192.5,78.3 199.0,75.7 205.5,73.0 212.0,70.1 218.5,67.0 225.0,63.7 231.5,60.3 238.0,56.6 244.5,52.7 251.0,48.6 257.5,44.2 264.0,39.6 270.5,34.7\" fill=\"none\" stroke=\"#f5c76a\" stroke-width=\"2.5\"/><path d=\"M30 77.5H290\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\" fill=\"none\"/><path d=\"M194.5 82.5V125\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"2 3\" fill=\"none\"/><circle cx=\"194.5\" cy=\"77.5\" r=\"4\" fill=\"#c3b8ff\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"36\" y=\"71.5\" fill=\"#c3b8ff\">PRICE</text><text x=\"200.5\" y=\"139\" fill=\"#c3b8ff\">IMPLIED GROWTH</text><text x=\"44\" y=\"32\" fill=\"#f5c76a\">PART 25</text></g></svg>",
+    "part": 25
+  },
+  {
+    "id": "dcf-step-by-step-eli5",
+    "title": "DCF, step by step",
+    "category": "Monetary Architecture",
+    "minutes": 22,
+    "summary": "Part 24: turning ten years of free cash into a value per share",
+    "bullets": [
+      "Free cash is NOPAT minus the reinvestment growth needs: 54.75 × (1 − 12% ÷ 20%) starts the forecast, discounted at the 11.6% WACC",
+      "68% of Ramu’s ₹826.9 cr value is terminal value; ₹76.7 a share against ₹100 tests the assumptions, not the shares"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FORECAST",
+      "DISCOUNT",
+      "TERMINAL",
+      "PER SHARE"
+    ],
+    "file": "explainers/dcf-step-by-step-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"One enterprise-value bar drawn to scale: a solid teal third for the ten forecast years and a paler teal two-thirds for the terminal value, with a gold part label\"><rect x=\"24\" y=\"66\" width=\"37\" height=\"30\" fill=\"#76d5c1\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"61\" y=\"66\" width=\"50\" height=\"30\" fill=\"#76d5c1\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"111\" y=\"66\" width=\"185\" height=\"30\" fill=\"#76d5c1\" fill-opacity=\"0.5\" stroke=\"#202020\" stroke-width=\"1.5\"/><path d=\"M113 58 V52 H296 V58\" stroke=\"#a5a29c\" stroke-width=\"1\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#f5c76a\">PART 24</text><text x=\"296\" y=\"42\" text-anchor=\"end\" fill=\"#f1eee8\">68% TERMINAL</text><text x=\"24\" y=\"124\" fill=\"#a5a29c\">TEN YEARS 32%</text></g></svg>",
+    "part": 24
+  },
+  {
+    "id": "discount-rate-eli5",
+    "title": "Discounting and the discount rate",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 23: why money later is worth less, and how much less",
+    "bullets": [
+      "Present value runs compounding backwards: ₹100 in ten years at 12% is ₹32.20 today",
+      "Ramu's rate: 7% G-sec + 1.0 × 5% ERP = 12% equity, blended with 7.5% debt into an 11.6% WACC"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "G-SEC",
+      "ERP",
+      "BETA",
+      "WACC"
+    ],
+    "file": "explainers/discount-rate-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Eleven teal bars shrinking left to right: what 100 rupees due now and in each of the next ten years is worth today at 12 percent, from 100 down to 32\"><path d=\"M24 120H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"28\" y=\"32.0\" width=\"16\" height=\"88.0\" fill=\"#76d5c1\"/><rect x=\"52\" y=\"41.4\" width=\"16\" height=\"78.6\" fill=\"#76d5c1\"/><rect x=\"76\" y=\"49.8\" width=\"16\" height=\"70.2\" fill=\"#76d5c1\"/><rect x=\"100\" y=\"57.4\" width=\"16\" height=\"62.6\" fill=\"#76d5c1\"/><rect x=\"124\" y=\"64.1\" width=\"16\" height=\"55.9\" fill=\"#76d5c1\"/><rect x=\"148\" y=\"70.1\" width=\"16\" height=\"49.9\" fill=\"#76d5c1\"/><rect x=\"172\" y=\"75.4\" width=\"16\" height=\"44.6\" fill=\"#76d5c1\"/><rect x=\"196\" y=\"80.2\" width=\"16\" height=\"39.8\" fill=\"#76d5c1\"/><rect x=\"220\" y=\"84.5\" width=\"16\" height=\"35.5\" fill=\"#76d5c1\"/><rect x=\"244\" y=\"88.3\" width=\"16\" height=\"31.7\" fill=\"#76d5c1\"/><rect x=\"268\" y=\"91.7\" width=\"16\" height=\"28.3\" fill=\"#76d5c1\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"138\" fill=\"#a5a29c\">TODAY</text><text x=\"296\" y=\"138\" text-anchor=\"end\" fill=\"#a5a29c\">10 YEARS</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#f5c76a\">PART 23</text></g></svg>",
+    "part": 23
+  },
+  {
+    "id": "the-economy-around-the-company-eli5",
+    "title": "The economy around the company",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 22: tea prices, the monsoon, rates and the rupee in a company's accounts",
+    "bullets": [
+      "A 20% tea rise is 3.6% of a cup's price but takes a fifth of Ramu's EBITDA unless it can be passed on",
+      "Rates, the rupee and demand swings reach profit differently; constant-currency growth strips out the rupee"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "TEA",
+      "MONSOON",
+      "RATES",
+      "RUPEE"
+    ],
+    "file": "explainers/the-economy-around-the-company-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two cups on one scale after tea rises 20 percent: absorbed, the gold profit slice shrinks inside the old 5 rupee price; passed on, the price runs past the dashed 5 rupee line and the profit slice is restored\"><rect x=\"24.0\" y=\"44\" width=\"51.8\" height=\"22\" fill=\"#ff8059\"/><rect x=\"75.8\" y=\"44\" width=\"88.8\" height=\"22\" fill=\"#ff8059\" opacity=\"0.7\"/><rect x=\"164.6\" y=\"44\" width=\"67.2\" height=\"22\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"1.5\"/><rect x=\"231.8\" y=\"44\" width=\"32.2\" height=\"22\" fill=\"#f5c76a\"/><rect x=\"24.0\" y=\"84\" width=\"51.8\" height=\"22\" fill=\"#ff8059\"/><rect x=\"75.8\" y=\"84\" width=\"88.8\" height=\"22\" fill=\"#ff8059\" opacity=\"0.7\"/><rect x=\"164.6\" y=\"84\" width=\"67.2\" height=\"22\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"1.5\"/><rect x=\"231.8\" y=\"84\" width=\"40.8\" height=\"22\" fill=\"#f5c76a\"/><path d=\"M264 36 V114\" stroke=\"#f1eee8\" stroke-width=\"1\" stroke-dasharray=\"3 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"134\" fill=\"#c3b8ff\">PART 22</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#ff8059\">TEA +20%</text></g></svg>",
+    "part": 22
+  },
+  {
+    "id": "corporate-actions-eli5",
+    "title": "Corporate actions and dilution",
+    "category": "Monetary Architecture",
+    "minutes": 22,
+    "summary": "Part 21: bonus, split, buyback, rights, QIP and ESOPs, and what each does to you",
+    "bullets": [
+      "A bonus, split or demerger re-slices the same company; your stake is unchanged",
+      "Rights, QIPs, options and buybacks change your slice; the price paid against value decides who gains"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "RE-SLICE",
+      "ADD SHARES",
+      "REMOVE SHARES"
+    ],
+    "file": "explainers/corporate-actions-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Ramu’s profit as one bar cut into slices three times: ten slices with one yours, twenty thinner slices with two yours, and eleven slices where your one slice is smaller\"><rect x=\"40.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"64.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"88.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"112.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"136.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"160.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"184.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"208.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"232.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"256.00\" y=\"40\" width=\"24.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"40.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"52.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"64.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"76.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"88.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"100.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"112.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"124.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"136.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"148.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"160.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"172.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"184.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"196.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"208.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"220.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"232.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"244.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"256.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"268.00\" y=\"72\" width=\"12.00\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"40.00\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"61.82\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"83.64\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"105.45\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"127.27\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"149.09\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"170.91\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"192.73\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"214.55\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"236.36\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"258.18\" y=\"104\" width=\"21.82\" height=\"20\" fill=\"#f5c76a\" opacity=\"0.35\" stroke=\"#202020\" stroke-width=\"1\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"40\" y=\"30\" fill=\"#f5c76a\">PART 21</text><text x=\"280\" y=\"30\" text-anchor=\"end\" fill=\"#a5a29c\">SAME PROFIT</text><text x=\"40\" y=\"138\" fill=\"#a5a29c\">MORE SLICES</text></g></svg>",
+    "part": 21
+  },
+  {
     "id": "red-flags-eli5",
     "title": "Red flags and forensic checks",
     "category": "Monetary Architecture",

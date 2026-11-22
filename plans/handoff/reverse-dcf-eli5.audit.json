@@ -1,0 +1,761 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "Part 25 Reverse DCF (topic-based series part)",
+    "author": "n/a (topic request; primary sources)",
+    "verified_date": "2026-11-18",
+    "duration_or_sections": "topic",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "topic-only; primary filings fetched to scratchpad src/",
+    "beginning_middle_ending": "n/a",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa25/src"
+    ],
+    "limitations": "TCPL WACC is an assumption; Part 23/24 pages not readable (being written)"
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Reverse DCF: solve the DCF for the growth the price implies",
+      "kind": "definition",
+      "destination": "p02-idea",
+      "check_needed": false
+    },
+    {
+      "id": "I2",
+      "item": "Forward DCF depends on an uncheckable growth guess; Part 24 value 76.7 vs price 100",
+      "kind": "context",
+      "destination": "p01-problem",
+      "check_needed": false
+    },
+    {
+      "id": "I3",
+      "item": "Same model as Part 24 (FCFF = NOPAT x (1 - g/20%), WACC 11.6%, 5% terminal, net debt 60)",
+      "kind": "mechanism",
+      "destination": "p03-catch",
+      "check_needed": false
+    },
+    {
+      "id": "I4",
+      "item": "Value rises with growth only while new money earns more than WACC",
+      "kind": "mechanism",
+      "destination": "p04-solve (go deeper)",
+      "check_needed": false
+    },
+    {
+      "id": "I5",
+      "item": "Numerical solution by bisection",
+      "kind": "mechanism",
+      "destination": "p04-solve, lab",
+      "check_needed": false
+    },
+    {
+      "id": "I6",
+      "item": "One rate FY27-FY36: 15.3%",
+      "kind": "number",
+      "destination": "p02, p05, lab",
+      "check_needed": true
+    },
+    {
+      "id": "I7",
+      "item": "NOPAT path 54.75 -> 227.4; terminal share of EV 85% vs 68%",
+      "kind": "number",
+      "destination": "p05-path",
+      "check_needed": true
+    },
+    {
+      "id": "I8",
+      "item": "Two-stage: keep 8% then 5%, solve FY27-FY31: 21.9% (numbers file said 19.0%; corrected)",
+      "kind": "number",
+      "destination": "p08-another-story, lab",
+      "check_needed": true
+    },
+    {
+      "id": "I9",
+      "item": "Growth above return on new money makes FCFF negative",
+      "kind": "mechanism",
+      "destination": "p08",
+      "check_needed": false
+    },
+    {
+      "id": "I10",
+      "item": "Compare with Ramu history: sales 11.0%, PAT 13.6% (Part 9)",
+      "kind": "example",
+      "destination": "p07-record, lab step 3",
+      "check_needed": false
+    },
+    {
+      "id": "I11",
+      "item": "Market-share reality check: 2.4% -> 4.6% of the Part 17 market",
+      "kind": "example",
+      "destination": "p07-record",
+      "check_needed": false
+    },
+    {
+      "id": "I12",
+      "item": "Implied growth is sensitive to WACC (10% -> 8.8%, 13% -> 21.7%)",
+      "kind": "misconception",
+      "destination": "p09-mistake, lab presets",
+      "check_needed": false
+    },
+    {
+      "id": "I13",
+      "item": "TCPL reverse DCF from real FY26 inputs",
+      "kind": "number",
+      "destination": "p10-real-report",
+      "check_needed": true
+    },
+    {
+      "id": "I14",
+      "item": "Hand-off to Part 26",
+      "kind": "context",
+      "destination": "p11-so-what",
+      "check_needed": false
+    }
+  ],
+  "claims": [
+    {
+      "id": "C1",
+      "claim": "TCPL FY26 consolidated: PBT before exceptional items 2,192.84; finance costs 137.03; other income 164.75; D&A 626.68; FY25: 1,781.66 / 290.20 / 193.25; revenue 20,290.43 vs 17,618.30",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Consolidated Statement of Profit and Loss, printed p. 415",
+      "page_use": "EBIT 2,165.12 (FY25 1,878.61), growth 15.3%"
+    },
+    {
+      "id": "C2",
+      "claim": "Indian tax rate 25.17% in tax reconciliation; tax 535.28 on PBT 2,172.78",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 20(a),(b), printed p. 451",
+      "page_use": "NOPAT 1,620.16"
+    },
+    {
+      "id": "C3",
+      "claim": "Shares 989,561,780 at 31 March 2026",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 14(a), printed p. 445 (reconciliation p. 446)",
+      "page_use": "98.96 cr shares"
+    },
+    {
+      "id": "C4",
+      "claim": "Net cash Rs 2,978 cr (cash and equivalents net of total borrowings, 31 Mar 2026)",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "locator": "AGM presentation dated 10 June 2026, slide Summary of Financial Performance FY26, footnote $",
+      "page_use": "net cash"
+    },
+    {
+      "id": "C5",
+      "claim": "TATACONSUM NSE close 1,014.80 on 30 Mar 2026; no NSE bhavcopy for 31 Mar 2026 (HTTP 404); 1 Apr 2026 bhavcopy PrvsClsgPric 1,014.80",
+      "verdict": "Supported",
+      "as_of": "2026-03-30",
+      "url": "https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv.zip",
+      "locator": "TckrSymb TATACONSUM, ClsPric; also https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260401_F_0000.csv.zip and https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260331_F_0000.csv.zip (404). BSE 30 Mar close 1,014.45 (not used)",
+      "page_use": "FY26 closing price 1,014.80"
+    },
+    {
+      "id": "C6",
+      "claim": "TCPL own ROCE 41.87% (EBIT / capital employed on tangible net worth basis)",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Additional regulatory information, ratios table (j), printed p. 483",
+      "page_use": "justifies 40% return-on-new-money case"
+    },
+    {
+      "id": "C7",
+      "claim": "Non-controlling interest 1,401.33; share of associates/JV loss 90.70; strict net cash 926 (Part 15)",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Balance sheet p. 414 / P&L p. 415",
+      "page_use": "go-deeper sensitivities"
+    },
+    {
+      "id": "C8",
+      "claim": "TCPL beta, equity risk premium",
+      "verdict": "Unverifiable",
+      "as_of": "n/a",
+      "url": "",
+      "locator": "not in any filing",
+      "page_use": "stated on page as assumption, not figure"
+    },
+    {
+      "id": "C9",
+      "claim": "Numbers-file row: two-stage implied growth 19.0%",
+      "verdict": "Contradicted",
+      "as_of": "n/a",
+      "url": "",
+      "locator": "independent model.py: 19.0% gives Rs 92.6 a share; 21.9% gives Rs 100.0",
+      "page_use": "page states 21.9%"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p01",
+      "heading": "The forecast is the weakest link"
+    },
+    {
+      "id": "p02",
+      "heading": "Read the same curve backwards"
+    },
+    {
+      "id": "p03",
+      "heading": "Growth is paid for with reinvestment"
+    },
+    {
+      "id": "p04",
+      "heading": "Guess, check, and halve the range"
+    },
+    {
+      "id": "p05",
+      "heading": "Ten years, four times the profit"
+    },
+    {
+      "id": "p06",
+      "heading": "Solve for the growth in the price"
+    },
+    {
+      "id": "p07",
+      "heading": "Against Ramu’s own record"
+    },
+    {
+      "id": "p08",
+      "heading": "Same price, a different shape"
+    },
+    {
+      "id": "p09",
+      "heading": "Implied growth depends on the rate"
+    },
+    {
+      "id": "p10",
+      "heading": "What TCPL’s FY26 price assumes"
+    },
+    {
+      "id": "p11",
+      "heading": "Questions to ask of any price"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": "Part 24 model; NOPAT0 54.75, RONI 20%, net debt 60, 10 cr shares; bisection on [-20%, 45%], 60 halvings; out-of-range reported",
+    "units": "% a year, Rs a share",
+    "independent_calculation": "model.py (Python) + labcheck.py driving Chromium",
+    "tolerance": "0.01 pp growth, Rs 0.01",
+    "cases": [
+      {
+        "case": "defaults",
+        "mode": "one",
+        "inputs": [
+          100,
+          11.6,
+          5
+        ],
+        "expected": {
+          "g": 15.303,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "observed": {
+          "g": 15.303,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset Today",
+        "mode": "one",
+        "inputs": [
+          100,
+          11.6,
+          5
+        ],
+        "expected": {
+          "g": 15.303,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "observed": {
+          "g": 15.303,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset Part 24",
+        "mode": "one",
+        "inputs": [
+          76.7,
+          11.6,
+          5
+        ],
+        "expected": {
+          "g": 10.22,
+          "status": "ok",
+          "ps": 76.7
+        },
+        "observed": {
+          "g": 10.22,
+          "status": "ok",
+          "ps": 76.7
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset halves",
+        "mode": "one",
+        "inputs": [
+          50,
+          11.6,
+          5
+        ],
+        "expected": {
+          "g": 1.285,
+          "status": "ok",
+          "ps": 50.0
+        },
+        "observed": {
+          "g": 1.285,
+          "status": "ok",
+          "ps": 50.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset rates up",
+        "mode": "one",
+        "inputs": [
+          100,
+          13,
+          5
+        ],
+        "expected": {
+          "g": 21.701,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "observed": {
+          "g": 21.701,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "two-stage defaults",
+        "mode": "two",
+        "inputs": [
+          100,
+          11.6,
+          5
+        ],
+        "expected": {
+          "g": 21.911,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "observed": {
+          "g": 21.911,
+          "status": "ok",
+          "ps": 100.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "two-stage Part 24 value",
+        "mode": "two",
+        "inputs": [
+          76.7,
+          11.6,
+          5
+        ],
+        "expected": {
+          "g": 12.005,
+          "status": "ok",
+          "ps": 76.7
+        },
+        "observed": {
+          "g": 12.005,
+          "status": "ok",
+          "ps": 76.7
+        },
+        "pass_": true
+      },
+      {
+        "case": "mid case",
+        "mode": "one",
+        "inputs": [
+          150,
+          10.0,
+          4.5
+        ],
+        "expected": {
+          "g": 16.45,
+          "status": "ok",
+          "ps": 150.0
+        },
+        "observed": {
+          "g": 16.45,
+          "status": "ok",
+          "ps": 150.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/min",
+        "mode": "one",
+        "inputs": [
+          40,
+          9,
+          4
+        ],
+        "expected": {
+          "g": -10.32,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "observed": {
+          "g": -10.32,
+          "status": "ok",
+          "ps": 40
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/min",
+        "mode": "two",
+        "inputs": [
+          40,
+          9,
+          4
+        ],
+        "expected": {
+          "g": -19.803,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "observed": {
+          "g": -19.803,
+          "status": "ok",
+          "ps": 40
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/max",
+        "mode": "one",
+        "inputs": [
+          40,
+          9,
+          6
+        ],
+        "expected": {
+          "g": -13.091,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "observed": {
+          "g": -13.091,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/max",
+        "mode": "two",
+        "inputs": [
+          40,
+          9,
+          6
+        ],
+        "expected": {
+          "g": -20.0,
+          "status": "below",
+          "ps": 48.72
+        },
+        "observed": {
+          "g": -20,
+          "status": "below",
+          "ps": 48.72
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/min",
+        "mode": "one",
+        "inputs": [
+          40,
+          14,
+          4
+        ],
+        "expected": {
+          "g": 4.345,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "observed": {
+          "g": 4.345,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/min",
+        "mode": "two",
+        "inputs": [
+          40,
+          14,
+          4
+        ],
+        "expected": {
+          "g": 2.195,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "observed": {
+          "g": 2.195,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/max",
+        "mode": "one",
+        "inputs": [
+          40,
+          14,
+          6
+        ],
+        "expected": {
+          "g": 2.867,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "observed": {
+          "g": 2.867,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/max",
+        "mode": "two",
+        "inputs": [
+          40,
+          14,
+          6
+        ],
+        "expected": {
+          "g": -0.209,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "observed": {
+          "g": -0.209,
+          "status": "ok",
+          "ps": 40.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/min",
+        "mode": "one",
+        "inputs": [
+          250,
+          9,
+          4
+        ],
+        "expected": {
+          "g": 21.136,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "observed": {
+          "g": 21.136,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/min",
+        "mode": "two",
+        "inputs": [
+          250,
+          9,
+          4
+        ],
+        "expected": {
+          "g": 34.549,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "observed": {
+          "g": 34.549,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/max",
+        "mode": "one",
+        "inputs": [
+          250,
+          9,
+          6
+        ],
+        "expected": {
+          "g": 15.341,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "observed": {
+          "g": 15.341,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/max",
+        "mode": "two",
+        "inputs": [
+          250,
+          9,
+          6
+        ],
+        "expected": {
+          "g": 22.55,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "observed": {
+          "g": 22.55,
+          "status": "ok",
+          "ps": 250.0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/min",
+        "mode": "one",
+        "inputs": [
+          250,
+          14,
+          4
+        ],
+        "expected": {
+          "g": 45.0,
+          "status": "above",
+          "ps": 176.08
+        },
+        "observed": {
+          "g": 45,
+          "status": "above",
+          "ps": 176.08
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/min",
+        "mode": "two",
+        "inputs": [
+          250,
+          14,
+          4
+        ],
+        "expected": {
+          "g": 45.0,
+          "status": "above",
+          "ps": 81.8
+        },
+        "observed": {
+          "g": 45,
+          "status": "above",
+          "ps": 81.8
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/max",
+        "mode": "one",
+        "inputs": [
+          250,
+          14,
+          6
+        ],
+        "expected": {
+          "g": 45.0,
+          "status": "above",
+          "ps": 234.02
+        },
+        "observed": {
+          "g": 45,
+          "status": "above",
+          "ps": 234.02
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/max",
+        "mode": "two",
+        "inputs": [
+          250,
+          14,
+          6
+        ],
+        "expected": {
+          "g": 45.0,
+          "status": "above",
+          "ps": 95.08
+        },
+        "observed": {
+          "g": 45,
+          "status": "above",
+          "ps": 95.08
+        },
+        "pass_": true
+      }
+    ],
+    "invariants": "value monotone in growth for RONI 20%, WACC 9-14%, terminal 4-6% (checked on grid)"
+  },
+  "verification": {
+    "screenshots": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa25/shots",
+    "screenshot_review": "all desktop and 390px shots inspected; fixed sensitivity-table class clash (.grid3), lab charts made scrollable on phones, label collisions in WACC chart",
+    "card": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa25/card.svg",
+    "card_lint": "0 errors, 0 warnings",
+    "render_check": "0 errors",
+    "artifact_sha256": "1be929f16188e4cb923608551eb673e00e622f245d39e4601e21e862e40fbd46",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 11,
+        "notes": 1
+      },
+      "artifact_sha256": "1be929f16188e4cb923608551eb673e00e622f245d39e4601e21e862e40fbd46",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/agent-aa1dccd412ecca68c/explainers/reverse-dcf-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published (brief forbids); pushed to branch only"
+  }
+}

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Margin of safety and scenarios — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (capex, costs) | gold #f5c76a = what belongs to shareholders (profit, EPS, equity, dividends)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 28: every case's value a share is gold (bull, base, bear told apart by labels, line style and shade); losses in a gain/loss chart are coral. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .events button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:5.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    /* Part 15: dashboard tables and traffic lights */
+    .dash{min-width:0;font-size:14px}
+    .dash th,.dash td{padding:7px 8px;vertical-align:top}
+    .dash tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .dash td.line{font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .dash td.val{white-space:nowrap}
+    .dash th.ed::after{content:" ✎";color:var(--accent)}
+    .lt{display:inline-block;width:1.2em;font-weight:700}.lt.g{color:#7bd88f}.lt.a{color:#ffb04d}.lt.r{color:#ff6b6b}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .lab .picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .picks button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .picks button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    /* Part 15 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events,.dashlab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+    .dashlab .dash tr.grp td{padding:16px 10px 6px;border-bottom:0}
+    .dashlab .dash td.line{font:13px/1.4 var(--font-mono)}
+    .dashlab .lights-key{margin:12px 0 0}
+    .dashlab .dl-chart{max-width:560px;margin-top:18px}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:12px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab details.trace{margin-top:16px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab #msg:empty{display:none}
+    .dashlab .gi,.dashlab .nm-short{display:none}
+    @media (max-width:700px){.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash .line{display:none}.dashlab .gi{display:block;margin-top:2px;font:11px/1.4 var(--font-mono);color:var(--muted)}.dashlab .nm-full{display:none}.dashlab .nm-short{display:inline}.dashlab .dash td.val{font-size:14px}}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}}
+  
+    /* Part 28 */
+    .dashlab .presets button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .grid28{width:100%;border-collapse:collapse;font-size:15px}
+    .grid28 th,.grid28 td{padding:8px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06)}
+    .grid28 th{font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted);text-transform:none}
+    .grid28 td{color:#202020;font-weight:600}
+    .grid28 td.at{outline:2px solid #c3b8ff;outline-offset:-3px}
+    .grid28 td.me{box-shadow:inset 0 0 0 2px #f1eee8}
+    .grid28 th.rh{text-align:left;white-space:nowrap}
+    .cases{width:100%;border-collapse:collapse;font-size:15px}
+    .cases td,.cases th{padding:8px 8px}
+    .cases td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .lab .outs{margin:12px 0 0;font:13px/1.7 var(--font-mono);color:var(--muted)}
+    .lab .outs b{color:var(--fg)}
+    @media (max-width:700px){.eli5-study-container table.grid28,.eli5-study-container table.cases{min-width:0}.grid28{font-size:13px}.grid28 th,.grid28 td{padding:7px 2px}.cases{font-size:13px}.cases td,.cases th{padding:7px 4px}.eli5-study-container table.rep{min-width:0}.rep th:nth-child(2),.rep td.wk{display:none}.rep td,.rep th{padding:7px 4px}}
+</style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 28: value is a range; weight bull, base, bear, then buy well below">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/margin-of-safety-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Margin of safety and scenarios">
+<meta property="og:description" content="Part 28: value is a range; weight bull, base, bear, then buy well below">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/margin-of-safety-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/margin-of-safety-eli5.png?v=5f32cb01">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Margin of safety and scenarios">
+<meta property="article:published_time" content="2026-11-22">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="margin-of-safety-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 17 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Margin of safety and scenarios</h1>
+      <p class="lede">A valuation is a range, not a number. Test two guesses at once, tell a bull, a base and a bear story, weight them by how likely you think each is, and then buy only well below the result, because the biggest risk in any model is your own error.</p>
+      <p class="source-note">Built from this series’ Ramu Chai model (Parts 23 to 25) and, for the real-report box, Tata Consumer Products’ audited FY2026 consolidated statements in its Integrated Annual Report 2025-26, its FY26 AGM presentation and NSE’s closing prices · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: Part 24, “DCF, step by step”, valued Ramu Chai at ₹76.7 a share with free cash flow to the firm (FCFF) = NOPAT × (1 − growth ÷ return on new investment), discounted at an 11.6% weighted average cost of capital (WACC). Part 25, “Reverse DCF”, found that the ₹100 price needs about 15.3% growth a year for ten years. Part 26, “Relative valuation and P/E bands”, priced Ramu against its own history: ₹92 to ₹138 on FY27 earnings. This part uses exactly Part 24’s model. Facts carry a tag: <span class="tag">public</span> is a figure from a filing or the exchange, <span class="tag">example</span> is a made-up but consistent number for our fictional Ramu Chai Ltd, or an assumption of this page. Amounts are ₹ crore (cr) unless they are per share. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: value a share, NOPAT, gains</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, P/E band</span>
+        <span><i style="background:#ff8059"></i>money going out: losses</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>₹76.7 is one point in a range</h2>
+      <p>Part 24’s answer looks precise, to a tenth of a rupee. But every input was a judgement. Change two of them within reason and the value runs from ₹57.7 to ₹106.5; tell a gloomier or a sunnier story and it runs from ₹44.1 to ₹99.6; Part 26’s P/E band gives ₹92 to ₹138 <span class="tag">example</span>. Each method gives a range, and the ranges overlap.</p>
+      <figure><svg viewBox="0 0 800 384" role="img" aria-label="Ramu’s value a share drawn as ranges on one rupee scale: Part 24’s single point of 76.7, the sensitivity grid’s 15 values from 57.7 to 106.5, the bear-to-bull range from 44.1 to 99.6 and the P/E band from 92 to 138, with the 100 rupee price as a dashed line"><text x="524.0" y="26.0" text-anchor="middle" fill="#c3b8ff" font-size="16">price ₹100</text><path d="M524.0 36 L524.0 300" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="40.0" y="52.0" text-anchor="start" fill="#a5a29c" font-size="16">Part 24 base case</text><circle cx="398.1" cy="66.0" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="412.1" y="72.0" text-anchor="start" fill="#f1eee8" font-size="16">₹76.7</text><text x="40.0" y="112.0" text-anchor="start" fill="#a5a29c" font-size="16">Grid: WACC × growth</text><rect x="295.5" y="120.0" width="263.6" height="24.0" fill="#f5c76a" opacity="0.45"/><path d="M295.5 120 L295.5 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M311.6 120 L311.6 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M328.2 120 L328.2 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M345.6 120 L345.6 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M354.5 120 L354.5 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M363.5 120 L363.5 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M375.8 120 L375.8 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M398.1 120 L398.1 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M421.4 120 L421.4 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M435.3 120 L435.3 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M445.8 120 L445.8 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M464.0 120 L464.0 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M494.1 120 L494.1 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M525.8 120 L525.8 144" stroke="#202020" stroke-width="2" fill="none"/><path d="M559.1 120 L559.1 144" stroke="#202020" stroke-width="2" fill="none"/><text x="287.5" y="138.0" text-anchor="end" fill="#f1eee8" font-size="16">57.7</text><text x="567.1" y="138.0" text-anchor="start" fill="#f1eee8" font-size="16">106.5</text><text x="40.0" y="182.0" text-anchor="start" fill="#a5a29c" font-size="16">Bear to bull</text><rect x="221.9" y="190.0" width="299.9" height="24.0" fill="#f5c76a" opacity="0.75"/><text x="213.9" y="208.0" text-anchor="end" fill="#f1eee8" font-size="16">44.1</text><text x="531.8" y="208.0" text-anchor="start" fill="#f1eee8" font-size="16">99.6</text><text x="40.0" y="252.0" text-anchor="start" fill="#a5a29c" font-size="16">P/E band, 16–24×</text><rect x="480.8" y="260.0" width="248.4" height="24.0" fill="#c3b8ff" opacity="0.7"/><text x="472.8" y="278.0" text-anchor="end" fill="#f1eee8" font-size="16">92</text><text x="737.2" y="278.0" text-anchor="start" fill="#f1eee8" font-size="16">138</text><path d="M200 312 L740 312" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="200.0" y="336.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹40</text><text x="308.0" y="336.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹60</text><text x="416.0" y="336.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹80</text><text x="524.0" y="336.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹100</text><text x="632.0" y="336.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹120</text><text x="740.0" y="336.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹140</text><text x="40.0" y="368.0" text-anchor="start" fill="#a5a29c" font-size="16">5.4 px = ₹1 · value a share</text></svg></figure>
+      <p>So the useful questions are: how wide is the range, where does the price sit in it, and how far below it would you need to buy to be safe if you are wrong? The rest of this part answers them in that order.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Sensitivity</p>
+      <h2>Move two guesses at once</h2>
+      <p>Part 24 moved one input at a time. A <b>sensitivity grid</b> moves two together: here the WACC (rows) and growth for FY27–FY31 (columns), with FY32–FY36 at 8%, then 5% for ever, and new money earning 20% <span class="tag">example</span>. Each cell is a full DCF.</p>
+      <figure><svg viewBox="0 0 800 372" role="img" aria-label="Three gold lines of Ramu’s value a share against growth for FY27 to FY31 from 8 to 16 percent, one line for each discount rate: 83.6 to 106.5 rupees at 10.6 percent, 68.6 to 85.5 at 11.6 percent and 57.7 to 70.3 at 12.6 percent; only the lowest discount rate with 14 percent or more growth crosses the 100 rupee price"><path d="M120 50 L120 300 L680 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="108.0" y="305.0" text-anchor="end" fill="#a5a29c" font-size="16">50</text><text x="108.0" y="265.0" text-anchor="end" fill="#a5a29c" font-size="16">60</text><text x="108.0" y="225.0" text-anchor="end" fill="#a5a29c" font-size="16">70</text><text x="108.0" y="185.0" text-anchor="end" fill="#a5a29c" font-size="16">80</text><text x="108.0" y="145.0" text-anchor="end" fill="#a5a29c" font-size="16">90</text><text x="108.0" y="105.0" text-anchor="end" fill="#a5a29c" font-size="16">100</text><text x="108.0" y="65.0" text-anchor="end" fill="#a5a29c" font-size="16">110</text><text x="120.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">8%</text><text x="260.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="400.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">12%</text><text x="540.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">14%</text><text x="680.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">16%</text><path d="M120 100.0 L680 100.0" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="692.0" y="105.0" text-anchor="start" fill="#c3b8ff" font-size="16">price</text><polyline points="120.0,165.7 260.0,144.5 400.0,122.1 540.0,98.7 680.0,74.0" fill="none" stroke="#f5c76a" stroke-width="3" opacity="1"/><circle cx="120.0" cy="165.7" r="5" fill="#f5c76a" opacity="1"/><circle cx="260.0" cy="144.5" r="5" fill="#f5c76a" opacity="1"/><circle cx="400.0" cy="122.1" r="5" fill="#f5c76a" opacity="1"/><circle cx="540.0" cy="98.7" r="5" fill="#f5c76a" opacity="1"/><circle cx="680.0" cy="74.0" r="5" fill="#f5c76a" opacity="1"/><text x="692.0" y="79.0" text-anchor="start" fill="#a5a29c" font-size="16">WACC 10.6%</text><polyline points="120.0,225.5 260.0,209.8 400.0,193.2 540.0,176.0 680.0,157.9" fill="none" stroke="#f5c76a" stroke-width="3" opacity="0.75"/><circle cx="120.0" cy="225.5" r="5" fill="#f5c76a" opacity="0.75"/><circle cx="260.0" cy="209.8" r="5" fill="#f5c76a" opacity="0.75"/><circle cx="400.0" cy="193.2" r="5" fill="#f5c76a" opacity="0.75"/><circle cx="540.0" cy="176.0" r="5" fill="#f5c76a" opacity="0.75"/><circle cx="680.0" cy="157.9" r="5" fill="#f5c76a" opacity="0.75"/><text x="692.0" y="162.9" text-anchor="start" fill="#a5a29c" font-size="16">WACC 11.6%</text><polyline points="120.0,269.3 260.0,257.4 400.0,245.0 540.0,232.2 680.0,218.9" fill="none" stroke="#f5c76a" stroke-width="3" opacity="0.5"/><circle cx="120.0" cy="269.3" r="5" fill="#f5c76a" opacity="0.5"/><circle cx="260.0" cy="257.4" r="5" fill="#f5c76a" opacity="0.5"/><circle cx="400.0" cy="245.0" r="5" fill="#f5c76a" opacity="0.5"/><circle cx="540.0" cy="232.2" r="5" fill="#f5c76a" opacity="0.5"/><circle cx="680.0" cy="218.9" r="5" fill="#f5c76a" opacity="0.5"/><text x="692.0" y="223.9" text-anchor="start" fill="#a5a29c" font-size="16">WACC 12.6%</text><circle cx="400.0" cy="193.2" r="8" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="400.0" y="223.2" text-anchor="middle" fill="#f1eee8" font-size="16">base ₹76.7</text><circle cx="540.0" cy="98.7" r="8" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="550.0" y="128.7" text-anchor="start" fill="#c3b8ff" font-size="16">₹100.3</text><text x="40.0" y="34.0" text-anchor="start" fill="#a5a29c" font-size="16">value a share, ₹</text><text x="680.0" y="356.0" text-anchor="end" fill="#a5a29c" font-size="16">growth FY27–31, % a year</text></svg></figure>
+      <p>Two things stand out. The discount rate matters more than the growth: one point of WACC either way moves the base case to ₹94.5 or ₹63.7, while two points of growth either way only move it to ₹72.6 or ₹81.0. And no single change reaches ₹100, but two modest ones together do: a WACC of 10.6% with 14% growth gives ₹100.3, the corner Part 24 found.</p>
+      <details class="trace"><summary>Go deeper: the grid in numbers</summary>
+        <div class="table-wrap"><table class="grid28"><thead><tr><th class="rh">WACC \ growth</th><th>8%</th><th>10%</th><th>12%</th><th>14%</th><th>16%</th></tr></thead><tbody><tr><td>10.6%</td><td>83.6</td><td>88.9</td><td>94.5</td><td>100.3</td><td>106.5</td></tr><tr><td>11.6%</td><td>68.6</td><td>72.6</td><td>76.7</td><td>81.0</td><td>85.5</td></tr><tr><td>12.6%</td><td>57.7</td><td>60.7</td><td>63.7</td><td>67.0</td><td>70.3</td></tr></tbody></table></div>
+        <p>Value a share, ₹. Everything else is Part 24’s model: FY26 NOPAT 54.75, net debt 60, 10 crore shares, cash counted at each year end and discounted to 31 March 2026. A grid only shows what happens when the two inputs move; it does not say which cells are likely.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Scenarios</p>
+      <h2>Three stories, not three tweaks</h2>
+      <p>A grid moves inputs independently, but in real life they move together. A business that wins customers grows faster <i>and</i> earns more on the money it puts in; one that stumbles grows slower, earns less, and looks riskier to lenders and owners. A <b>scenario</b> is a consistent story that sets every input at once <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 332" role="img" aria-label="Three step lines of Ramu’s yearly growth: bull at 15 percent for FY27 to FY31, 10 percent to FY36 and 5 percent after; base at 12, 8 and 5 percent; bear at 6, 5 and 4 percent"><path d="M100 60 L100 290 L720 290" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="88.0" y="295.0" text-anchor="end" fill="#a5a29c" font-size="16">0%</text><text x="88.0" y="225.0" text-anchor="end" fill="#a5a29c" font-size="16">5%</text><text x="88.0" y="155.0" text-anchor="end" fill="#a5a29c" font-size="16">10%</text><text x="88.0" y="85.0" text-anchor="end" fill="#a5a29c" font-size="16">15%</text><text x="127.0" y="314.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY27</text><text x="343.0" y="314.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY31</text><text x="613.0" y="314.0" text-anchor="middle" fill="#a5a29c" font-size="16">FY36</text><text x="670.0" y="314.0" text-anchor="middle" fill="#a5a29c" font-size="16">after</text><path d="M100 80 L370 80 L370 150 L640 150 L640 220 L700 220" stroke="#f5c76a" stroke-width="4" fill="none" stroke-linecap="round"/><text x="108.0" y="70.0" text-anchor="start" fill="#f5c76a" font-size="16">bull 15%</text><text x="378.0" y="140.0" text-anchor="start" fill="#f5c76a" font-size="16">10%</text><path d="M100 122 L370 122 L370 178 L640 178 L640 220 L700 220" stroke="#f5c76a" stroke-width="3" fill="none" stroke-dasharray="12 6" stroke-linecap="round"/><text x="108.0" y="112.0" text-anchor="start" fill="#f5c76a" font-size="16">base 12%</text><text x="378.0" y="168.0" text-anchor="start" fill="#f5c76a" font-size="16">8%</text><path d="M100 206 L370 206 L370 220 L640 220 L640 234 L700 234" stroke="#f5c76a" stroke-width="3" fill="none" stroke-dasharray="3 5" stroke-linecap="round"/><text x="108.0" y="196.0" text-anchor="start" fill="#f5c76a" font-size="16">bear 6%</text><text x="378.0" y="210.0" text-anchor="start" fill="#f5c76a" font-size="16">5%</text><text x="708.0" y="225.0" text-anchor="start" fill="#f5c76a" font-size="16">5%</text><text x="708.0" y="255.0" text-anchor="start" fill="#f5c76a" font-size="16">4%</text><text x="40.0" y="34.0" text-anchor="start" fill="#a5a29c" font-size="16">NOPAT growth, % a year</text></svg></figure>
+      <div class="table-wrap"><table class="cases"><thead><tr><th>Case</th><th>Growth</th><th>New money earns</th><th>WACC</th><th>Value</th></tr></thead><tbody>
+        <tr><td>Bull</td><td>15 / 10 / 5%</td><td>25%</td><td>11.6%</td><td class="val">₹99.6</td></tr>
+        <tr><td>Base</td><td>12 / 8 / 5%</td><td>20%</td><td>11.6%</td><td class="val">₹76.7</td></tr>
+        <tr><td>Bear</td><td>6 / 5 / 4%</td><td>15%</td><td>12.6%</td><td class="val">₹44.1</td></tr>
+      </tbody></table></div>
+      <p><b>Bull</b>: the cafés take off and pricing power holds. <b>Base</b>: Part 24’s forecast, close to Ramu’s record. <b>Bear</b>: a bigger rival squeezes margins, growth slows to the market’s pace, and investors ask a point more. Write the story first, then the numbers; a bear case that is just “base minus 2%” is a tweak, not a story.</p>
+      <details class="trace"><summary>Go deeper: the three cases in the model</summary>
+        <p>Growth is for FY27–FY31, FY32–FY36 and after FY36. Present value of the ten forecast years / terminal value worth today / enterprise value (EV), ₹ crore: bull 302.7 / 753.2 / 1055.9; base 262.4 / 564.5 / 826.9; bear 247.5 / 253.1 / 500.6. Less net debt of 60, divided by 10 crore shares. The terminal value is 71% of EV in the bull case and 51% in the bear case: the gloomy story also has less riding on the far future.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Weighting</p>
+      <h2>Weight each story by its chance</h2>
+      <p>Give each story a probability that adds up to 100%: here 25% bull, 50% base, 25% bear <span class="tag">example</span>. Multiply each value by its probability and add. Drawn as blocks whose widths are the chances and heights the values, the weighted value is simply their average height.</p>
+      <figure><svg viewBox="0 0 800 388" role="img" aria-label="Three gold blocks side by side whose widths are the probabilities and heights the values: bull 25 percent at 99.6 rupees, base 50 percent at 76.7 and bear 25 percent at 44.1. Their average height, the dashed line, is the weighted value of 74.3 rupees, below the 100 rupee price"><path d="M100 50 L100 320 L700 320" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="88.0" y="325.0" text-anchor="end" fill="#a5a29c" font-size="16">₹0</text><text x="88.0" y="205.0" text-anchor="end" fill="#a5a29c" font-size="16">₹50</text><text x="88.0" y="85.0" text-anchor="end" fill="#a5a29c" font-size="16">₹100</text><rect x="100.0" y="81.0" width="150.0" height="239.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="110.0" y="105.0" text-anchor="start" fill="#202020" font-size="16">bull ₹99.6</text><text x="110.0" y="306.0" text-anchor="start" fill="#202020" font-size="16">25%</text><rect x="250.0" y="135.9" width="300.0" height="184.1" fill="#f5c76a" opacity="0.78" stroke="#202020" stroke-width="2"/><text x="260.0" y="181.9" text-anchor="start" fill="#202020" font-size="16">base ₹76.7</text><text x="260.0" y="306.0" text-anchor="start" fill="#202020" font-size="16">50%</text><rect x="550.0" y="214.3" width="150.0" height="105.7" fill="#f5c76a" opacity="0.56" stroke="#202020" stroke-width="2"/><text x="560.0" y="238.3" text-anchor="start" fill="#202020" font-size="16">bear ₹44.1</text><text x="560.0" y="306.0" text-anchor="start" fill="#202020" font-size="16">25%</text><path d="M100 141.8 L700 141.8" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="694.0" y="131.8" text-anchor="end" fill="#f1eee8" font-size="16">weighted ₹74.3</text><path d="M100 80.0 L700 80.0" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="694.0" y="70.0" text-anchor="end" fill="#c3b8ff" font-size="16">price ₹100</text><text x="100.0" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="250.0" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">25%</text><text x="550.0" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">75%</text><text x="700.0" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">100%</text><text x="700.0" y="372.0" text-anchor="end" fill="#a5a29c" font-size="16">width = probability · height = value</text></svg></figure>
+      <span class="eq">Weighted value = 25% × 99.6 + 50% × 76.7 + 25% × 44.1 = ₹74.3</span>
+      <p>At ₹100 the price is 35% above that. Notice where the bull block ends: ₹99.6, just under the price. On these stories, a buyer at ₹100 is paying for slightly more than the best case.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>Probabilities are judgements too</h2>
+      <p>Nobody hands you the 25 / 50 / 25. It is an opinion, so show how much it matters. Keep the base case at 50% and slide the other half from bull to bear: the weighted value falls in a straight line from ₹88.1 to ₹60.4 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 372" role="img" aria-label="A falling gold line of Ramu’s weighted value as weight moves from the bull case to the bear case with the base case fixed at 50 percent: 88.1 rupees with no bear weight, 74.3 at the plan’s 25 percent and 60.4 at 50 percent; every point stays below the 100 rupee price"><path d="M120 50 L120 300 L680 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="108.0" y="305.0" text-anchor="end" fill="#a5a29c" font-size="16">₹40</text><text x="108.0" y="237.0" text-anchor="end" fill="#a5a29c" font-size="16">₹60</text><text x="108.0" y="169.0" text-anchor="end" fill="#a5a29c" font-size="16">₹80</text><text x="108.0" y="101.0" text-anchor="end" fill="#a5a29c" font-size="16">₹100</text><text x="120.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="400.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">25%</text><text x="680.0" y="324.0" text-anchor="middle" fill="#a5a29c" font-size="16">50%</text><path d="M120 96.0 L680 96.0" stroke="#c3b8ff" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="680.0" y="86.0" text-anchor="end" fill="#c3b8ff" font-size="16">price ₹100</text><path d="M120 286.2 L680 286.2" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="3 5"/><text x="132.0" y="276.2" text-anchor="start" fill="#a5a29c" font-size="16">bear alone ₹44.1</text><path d="M120.0 136.3 L680.0 230.7" stroke="#f5c76a" stroke-width="3" fill="none"/><circle cx="120.0" cy="136.3" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="134.0" y="124.3" text-anchor="start" fill="#f1eee8" font-size="16">₹88.1</text><circle cx="400.0" cy="183.5" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="412.0" y="169.5" text-anchor="start" fill="#f1eee8" font-size="16">plan ₹74.3</text><circle cx="680.0" cy="230.7" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="668.0" y="260.7" text-anchor="end" fill="#f1eee8" font-size="16">₹60.4</text><text x="40.0" y="34.0" text-anchor="start" fill="#a5a29c" font-size="16">weighted value a share</text><text x="680.0" y="356.0" text-anchor="end" fill="#a5a29c" font-size="16">chance of bear · bull gets 50% minus it</text></svg></figure>
+      <p>Two lessons. First, the weights move the answer about as much as the WACC did, so write them down and be ready to defend them. Second, a weighted value can never leave the range of its stories: since even the bull case is below ₹100, no set of probabilities makes Ramu worth ₹100 on these three cases. To justify the price you need a better story, not different weights.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Margin of safety</p>
+      <h2>Buy well below your value</h2>
+      <p>Benjamin Graham’s phrase <b>margin of safety</b> means the gap between what you think a share is worth and what you pay. Pick the margin first, then work out the price: a 30% margin on the weighted ₹74.3 means paying no more than ₹52.0; on the base case alone, ₹53.7 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 326" role="img" aria-label="Bars on one rupee scale: Ramu’s weighted value of 74.3 rupees with its last 30 percent marked as the margin, leaving a buy price of 52.0; the base case of 76.7 with a buy price of 53.7; and the market price of 100, 35 percent above the weighted value"><text x="60.0" y="34.0" text-anchor="start" fill="#a5a29c" font-size="16">Weighted value</text><rect x="60.0" y="44.0" width="332.7" height="30.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="68.0" y="65.0" text-anchor="start" fill="#202020" font-size="16">buy at ₹52.0</text><rect x="392.7" y="44.0" width="142.6" height="30.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="400.7" y="65.0" text-anchor="start" fill="#f1eee8" font-size="16">margin 30%</text><text x="545.2" y="65.0" text-anchor="start" fill="#f1eee8" font-size="16">₹74.3</text><text x="60.0" y="112.0" text-anchor="start" fill="#a5a29c" font-size="16">Base case</text><rect x="60.0" y="122.0" width="343.6" height="30.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="68.0" y="143.0" text-anchor="start" fill="#202020" font-size="16">buy at ₹53.7</text><rect x="403.6" y="122.0" width="147.2" height="30.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="411.6" y="143.0" text-anchor="start" fill="#f1eee8" font-size="16">margin 30%</text><text x="560.8" y="143.0" text-anchor="start" fill="#f1eee8" font-size="16">₹76.7</text><text x="60.0" y="190.0" text-anchor="start" fill="#a5a29c" font-size="16">Market price</text><rect x="60.0" y="200.0" width="640.0" height="30.0" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="68.0" y="221.0" text-anchor="start" fill="#202020" font-size="16">price ₹100</text><text x="710.0" y="221.0" text-anchor="start" fill="#f1eee8" font-size="16">35% above</text><path d="M60 254 L700 254" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="60.0" y="278.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹0</text><text x="188.0" y="278.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹20</text><text x="316.0" y="278.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹40</text><text x="444.0" y="278.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹60</text><text x="572.0" y="278.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹80</text><text x="700.0" y="278.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹100</text><text x="60.0" y="310.0" text-anchor="start" fill="#a5a29c" font-size="16">6.4 px = ₹1</text></svg></figure>
+      <span class="eq">Buy price = value × (1 − margin) = 74.26 × (1 − 30%) = ₹52.0</span>
+      <p>How big a margin? The wider your range, the bigger it should be. A steady business with a narrow range might need 20%; a young or cyclical one with a wide range, 40% or more. The margin is a rule you set before you look at the price, so that the price cannot talk you out of it.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why it works</p>
+      <h2>It protects you against your own errors</h2>
+      <p>The margin is not there because the market is wrong. It is there because <i>you</i> might be. Suppose you buy, and then one of the three stories comes true <span class="tag">example</span>:</p>
+      <figure><svg viewBox="0 0 800 418" role="img" aria-label="Gains in gold and losses in coral for three purchase prices if the bear, base or bull case turns out true: bought at 100 rupees the result is minus 55.9, minus 23.3 and minus 0.4 percent; at 74.3 it is minus 40.7, plus 3.3 and plus 34.1; at 52.0 it is minus 15.2, plus 47.5 and plus 91.6"><path d="M380 30 L380 382" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40.0" y="52.0" text-anchor="start" fill="#f1eee8" font-size="16">buy at ₹100</text><text x="60.0" y="77.0" text-anchor="start" fill="#a5a29c" font-size="16">if bear</text><rect x="212.2" y="62.0" width="167.8" height="20.0" fill="#ff8059"/><text x="204.2" y="78.0" text-anchor="end" fill="#f1eee8" font-size="16">−55.9%</text><text x="60.0" y="103.0" text-anchor="start" fill="#a5a29c" font-size="16">if base</text><rect x="310.1" y="88.0" width="69.9" height="20.0" fill="#ff8059"/><text x="302.1" y="104.0" text-anchor="end" fill="#f1eee8" font-size="16">−23.3%</text><text x="60.0" y="129.0" text-anchor="start" fill="#a5a29c" font-size="16">if bull</text><rect x="378.8" y="114.0" width="1.5" height="20.0" fill="#ff8059"/><text x="370.8" y="130.0" text-anchor="end" fill="#f1eee8" font-size="16">−0.4%</text><text x="40.0" y="168.0" text-anchor="start" fill="#f1eee8" font-size="16">buy at ₹74.3</text><text x="60.0" y="193.0" text-anchor="start" fill="#a5a29c" font-size="16">if bear</text><rect x="258.0" y="178.0" width="122.0" height="20.0" fill="#ff8059"/><text x="250.0" y="194.0" text-anchor="end" fill="#f1eee8" font-size="16">−40.7%</text><text x="60.0" y="219.0" text-anchor="start" fill="#a5a29c" font-size="16">if base</text><rect x="380.0" y="204.0" width="9.8" height="20.0" fill="#f5c76a"/><text x="397.8" y="220.0" text-anchor="start" fill="#f1eee8" font-size="16">+3.3%</text><text x="60.0" y="245.0" text-anchor="start" fill="#a5a29c" font-size="16">if bull</text><rect x="380.0" y="230.0" width="102.4" height="20.0" fill="#f5c76a"/><text x="490.4" y="246.0" text-anchor="start" fill="#f1eee8" font-size="16">+34.1%</text><text x="40.0" y="284.0" text-anchor="start" fill="#f1eee8" font-size="16">buy at ₹52.0</text><text x="60.0" y="309.0" text-anchor="start" fill="#a5a29c" font-size="16">if bear</text><rect x="334.3" y="294.0" width="45.7" height="20.0" fill="#ff8059"/><text x="326.3" y="310.0" text-anchor="end" fill="#f1eee8" font-size="16">−15.2%</text><text x="60.0" y="335.0" text-anchor="start" fill="#a5a29c" font-size="16">if base</text><rect x="380.0" y="320.0" width="142.6" height="20.0" fill="#f5c76a"/><text x="530.6" y="336.0" text-anchor="start" fill="#f1eee8" font-size="16">+47.5%</text><text x="60.0" y="361.0" text-anchor="start" fill="#a5a29c" font-size="16">if bull</text><rect x="380.0" y="346.0" width="274.8" height="20.0" fill="#f5c76a"/><text x="662.8" y="362.0" text-anchor="start" fill="#f1eee8" font-size="16">+91.6%</text><text x="380.0" y="402.0" text-anchor="middle" fill="#a5a29c" font-size="16">gain or loss on the price paid · 3 px = 1 point</text></svg></figure>
+      <p>Bought at ₹100, even the bull case barely breaks even. Bought at ₹52.0, the bear case still hurts, −15.2%, but far less, and the base case earns 47.5%. A margin does not remove mistakes; it makes them survivable. It helps less the further the truth falls below your bear case, which is why the bear case should be genuinely bad.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Build the range yourself</h2>
+      <p>Part 24’s model, three tools in a row <span class="tag">example</span>: a sensitivity grid, the scenario weights, and the margin of safety. Start from a preset, then move one setting at a time.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Choose a starting point</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="plan" aria-pressed="true">The plan: 25 / 50 / 25</button>
+            <button type="button" class="secondary" data-p="cautious">Cautious</button>
+            <button type="button" class="secondary" data-p="optimist">Optimist</button>
+            <button type="button" class="secondary" data-p="cost">Growth that only earns its cost</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · The sensitivity grid</p>
+          <div class="dl-col"><div class="control"><label for="ret">Return on new investment in the grid: <output id="ret-o"></output></label><input id="ret" type="range" min="10" max="30" step="0.2" value="20"></div></div>
+          <div class="table-wrap"><table class="grid28" id="grid"></table></div>
+          <p class="lights-key">Value a share, ₹; darker gold = higher. <span style="color:#c3b8ff">Outlined</span>: at or above the ₹100 price. White frame: Part 24’s base case. FY32–36 at 8%, then 5%.</p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Weight the three stories</p>
+          <div class="dl-grid">
+            <div class="dl-col"><div class="control"><label for="pbull">Chance of the bull case: <output id="pbull-o"></output></label><input id="pbull" type="range" min="0" max="50" step="5" value="25"></div></div>
+            <div class="dl-col"><div class="control"><label for="pbear">Chance of the bear case: <output id="pbear-o"></output></label><input id="pbear" type="range" min="0" max="50" step="5" value="25"></div></div>
+          </div>
+          <p class="outs" id="base-o"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Set your margin of safety</p>
+          <div class="dl-col"><div class="control"><label for="mos">Margin of safety: <output id="mos-o"></output></label><input id="mos" type="range" min="0" max="50" step="5" value="30"></div></div>
+          <div class="dl-chart"><svg id="labChart" viewBox="0 0 400 300" role="img" aria-label="Bars on one rupee scale for the bear, base and bull values, the weighted value, your buy price and the 100 rupee market price, redrawn as the weights and the margin change"></svg></div>
+          <p class="outs" id="outs"></p>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>The grid and the three cases all use Part 24’s model: FY26 NOPAT 54.75, growing at each stage’s rate; reinvestment = NOPAT × growth ÷ return on new investment; cash counted at each year end and discounted to 31 March 2026; terminal value from FY37’s cash; net debt 60; 10 crore shares. The return slider changes only the grid; each scenario keeps its own return (25%, 20%, 15%). The base case’s chance is whatever is left after bull and bear. Returns on the price paid assume the share eventually trades at the value of the story that comes true.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>A fall in price is not a margin</h2>
+      <p>“It is down 30% from its high, so I have a 30% margin” is the most common slip. A margin is measured against <i>your value</i>, not against an old price. If Ramu fell from ₹100 to ₹70, it would sit only ₹4.3 below the weighted ₹74.3: a margin of 5.7%, nowhere near 30% <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 344" role="img" aria-label="On one rupee scale, a price that fell from 100 to 70 rupees, 30 percent, sits only 4.3 rupees below the weighted value of 74.3, a real margin of 5.7 percent, far above the 52.0 rupee buy price that a 30 percent margin needs"><text x="60.0" y="34.0" text-anchor="start" fill="#a5a29c" font-size="16">Price last year</text><rect x="60.0" y="44.0" width="640.0" height="28.0" fill="#c3b8ff" opacity="0.45" stroke="#202020" stroke-width="2"/><text x="710.0" y="64.0" text-anchor="start" fill="#f1eee8" font-size="16">₹100</text><text x="60.0" y="108.0" text-anchor="start" fill="#a5a29c" font-size="16">Price now, down 30%</text><rect x="60.0" y="118.0" width="448.0" height="28.0" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="518.0" y="138.0" text-anchor="start" fill="#f1eee8" font-size="16">₹70</text><text x="60.0" y="182.0" text-anchor="start" fill="#a5a29c" font-size="16">Your weighted value</text><rect x="60.0" y="192.0" width="475.2" height="28.0" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="545.2" y="212.0" text-anchor="start" fill="#f1eee8" font-size="16">₹74.3</text><rect x="508.0" y="192.0" width="27.2" height="28.0" fill="none" stroke="#f1eee8" stroke-width="2"/><path d="M508.0 236 L508.0 248" stroke="#f1eee8" stroke-width="2" fill="none"/><path d="M535.2 236 L535.2 248" stroke="#f1eee8" stroke-width="2" fill="none"/><text x="547.2" y="262.0" text-anchor="start" fill="#f1eee8" font-size="16">real margin 5.7%</text><path d="M392.7 30 L392.7 290" stroke="#f5c76a" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="384.7" y="286.0" text-anchor="end" fill="#f5c76a" font-size="16">30% margin: ₹52.0</text><path d="M60 304 L700 304" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="60.0" y="328.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹0</text><text x="188.0" y="328.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹20</text><text x="316.0" y="328.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹40</text><text x="444.0" y="328.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹60</text><text x="572.0" y="328.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹80</text><text x="700.0" y="328.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹100</text></svg></figure>
+      <p>The reverse also holds: a share that has doubled can still trade below its value, if the value rose faster. The old price is an anchor, and a margin of safety only works if you ignore it.</p>
+      <details class="trace"><summary>Go deeper: two more slips</summary>
+        <p><b>Double caution.</b> If your base case is already gloomy, demanding a big margin on top can mean you never buy anything good. Be honest in the scenarios, then cautious in the margin, not cautious twice. <b>Fake precision.</b> A weighted value of ₹74.26 from 25 / 50 / 25 is no more accurate than one from 30 / 45 / 25; quote it to the nearest rupee or so, and the margin absorbs the rest.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL in three stories</h2>
+      <p>This box is the page’s own estimate, built from Tata Consumer Products’ (TCPL) consolidated FY2026 figures and Part 24’s model, in the same way as Part 25. The inputs come from the audited statements and the exchange <span class="tag">public</span>; the three stories and their probabilities are this page’s choices <span class="tag">example</span>, not TCPL’s, and not anyone’s forecast.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Input</th><th>Working</th><th>Value</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">FROM THE FILINGS AND THE EXCHANGE</td></tr>
+          <tr><td>EBIT</td><td class="wk">PBT before exceptional items 2,192.84 + finance costs 137.03 − other income 164.75</td><td class="val">₹2,165.12 cr</td><td class="pg">P&amp;L, P. 415</td></tr>
+          <tr><td>NOPAT</td><td class="wk">2,165.12 × (1 − 25.17%, the Indian rate in the tax reconciliation)</td><td class="val">₹1,620.16 cr</td><td class="pg">NOTE 20, P. 451</td></tr>
+          <tr><td>EBIT growth, FY26</td><td class="wk">2,165.12 ÷ (1,781.66 + 290.20 − 193.25) − 1</td><td class="val">15.3%</td><td class="pg">P&amp;L, P. 415</td></tr>
+          <tr><td>Net cash</td><td class="wk">cash and equivalents net of total borrowings, 31 Mar 2026</td><td class="val">₹2,978 cr</td><td class="pg">AGM PRESENTATION</td></tr>
+          <tr><td>Shares</td><td class="wk">98,95,61,780 at 31 Mar 2026</td><td class="val">98.96 cr</td><td class="pg">NOTE 14, P. 445</td></tr>
+          <tr><td>Price</td><td class="wk">NSE close, 30 Mar 2026, the last trading day of FY26</td><td class="val">₹1,014.80</td><td class="pg">NSE BHAVCOPY</td></tr>
+        </tbody>
+      </table></div>
+      <div class="table-wrap"><table class="cases"><thead><tr><th>Story</th><th>Growth</th><th>New money earns</th><th>Discount</th><th>Value</th></tr></thead><tbody>
+        <tr><td>Bull</td><td>25 / 12 / 5%</td><td>40%</td><td>11%</td><td class="val">₹656</td></tr>
+        <tr><td>Base</td><td>15 / 10 / 5%</td><td>40%</td><td>12%</td><td class="val">₹376</td></tr>
+        <tr><td>Bear</td><td>8 / 6 / 4%</td><td>25%</td><td>13%</td><td class="val">₹212</td></tr>
+      </tbody></table></div>
+      <figure><svg viewBox="0 0 800 378" role="img" aria-label="Bars on one rupee scale for Tata Consumer Products under this page’s own scenarios: bear 212, base 376 and bull 656 rupees a share, a weighted value of 405 and a 30 percent margin buy price of 283, against the 30 March 2026 closing price of 1,014.80"><text x="206.0" y="49.0" text-anchor="end" fill="#a5a29c" font-size="16">Bear</text><rect x="220.0" y="30.0" width="95.4" height="26.0" fill="#f5c76a" opacity="0.56" stroke="#202020" stroke-width="2"/><text x="325.4" y="49.0" text-anchor="start" fill="#f1eee8" font-size="16">₹212</text><text x="206.0" y="93.0" text-anchor="end" fill="#a5a29c" font-size="16">Base</text><rect x="220.0" y="74.0" width="169.2" height="26.0" fill="#f5c76a" opacity="0.78" stroke="#202020" stroke-width="2"/><text x="399.2" y="93.0" text-anchor="start" fill="#f1eee8" font-size="16">₹376</text><text x="206.0" y="137.0" text-anchor="end" fill="#a5a29c" font-size="16">Bull</text><rect x="220.0" y="118.0" width="295.2" height="26.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="525.2" y="137.0" text-anchor="start" fill="#f1eee8" font-size="16">₹656</text><text x="206.0" y="193.0" text-anchor="end" fill="#a5a29c" font-size="16">Weighted</text><rect x="220.0" y="174.0" width="182.3" height="26.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="412.3" y="193.0" text-anchor="start" fill="#f1eee8" font-size="16">₹405</text><text x="206.0" y="237.0" text-anchor="end" fill="#a5a29c" font-size="16">30% margin buy</text><rect x="220.0" y="218.0" width="127.6" height="26.0" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="357.6" y="237.0" text-anchor="start" fill="#f1eee8" font-size="16">₹284</text><text x="206.0" y="281.0" text-anchor="end" fill="#a5a29c" font-size="16">Price, 30 Mar 2026</text><rect x="220.0" y="262.0" width="456.7" height="26.0" fill="#c3b8ff" opacity="1" stroke="#202020" stroke-width="2"/><text x="686.7" y="281.0" text-anchor="start" fill="#f1eee8" font-size="16">₹1,014.80</text><path d="M220 306 L740 306" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="220.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹0</text><text x="332.5" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹250</text><text x="445.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹500</text><text x="557.5" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹750</text><text x="670.0" y="330.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹1,000</text><text x="40.0" y="362.0" text-anchor="start" fill="#a5a29c" font-size="16">TCPL, ₹ a share · 0.45 px = ₹1 · page’s own estimate</text></svg></figure>
+      <p>The base case repeats FY26’s 15% for five years; the bull case asks for 25%. New money earns 40% in both, near TCPL’s own reported return on capital employed of 41.87%, which leaves goodwill out of the base (p. 483); the bear case cuts it to 25%. The discount rates are Part 25’s 12% cost of equity, a point either side. Weighted 25 / 50 / 25, the value is ₹405 a share, and a 30% margin would mean paying about ₹284.</p>
+      <p>The FY26 closing price of ₹1,014.80 is 2.5 times the weighted value and 1.5 times even the bull case. That matches Part 25, which found the price needs about 28.9% growth a year for ten years at 12%. It is not a verdict: the market may expect a longer run of fast growth or use a lower discount rate. It says that on these three stories, no choice of probabilities reaches the price, so a buyer must believe a fourth.</p>
+      <details class="trace"><summary>Go deeper: choices behind the TCPL estimate</summary>
+        <p>EBIT follows this series’ definition and leaves out other income, as Ramu’s does. TCPL has net cash, so the discount rate is a cost of equity with no debt to weight; its beta and the equity risk premium are not in any filing, so the rate is an assumption. Net cash is TCPL’s own ₹2,978 cr, which counts more than cash and equivalents; on Part 15’s stricter ₹926 cr each value falls by about ₹21 a share. The loss from associates and joint ventures (₹90.70 cr) and the non-controlling interest are not modelled. Growth is for FY27–FY31, FY32–FY36 and after.</p>
+      </details>
+      <div class="field-grid">
+        <div><b>₹2,165.12 cr EBIT</b><span>PBT before exceptional items, plus finance costs, less other income</span><em>INTEGRATED ANNUAL REPORT 2025-26 · P. 415</em></div>
+        <div><b>₹2,978 cr net cash</b><span>Cash and equivalents net of total borrowings, 31 March 2026</span><em>AGM PRESENTATION, 10 JUNE 2026</em></div>
+        <div><b>₹1,014.80 close</b><span>30 March 2026; the 1 April 2026 bhavcopy gives it as the previous close</span><em>NSE BHAVCOPY, 30 MAR AND 1 APR 2026</em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements in its Integrated Annual Report 2025-26 (printed pages as cited), its <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf">FY26 AGM presentation</a>, and NSE’s bhavcopy for <a href="https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv.zip">30 March 2026</a> and <a href="https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260401_F_0000.csv.zip">1 April 2026</a>. The scenario values are this page’s own estimates. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before you buy</h2>
+      <ol class="checks">
+        <li><b>What is the range?</b> Run a grid on the two inputs that matter most, usually the discount rate and growth.</li>
+        <li><b>What are the stories?</b> Write a bull, base and bear case in words, and let each set every input.</li>
+        <li><b>Whose probabilities?</b> Yours. Write them down, and see how far the value moves if you are wrong about them.</li>
+        <li><b>Where is the price?</b> Above the bull case, you are paying for a story you have not written.</li>
+        <li><b>What margin, set in advance?</b> Wider range, wider margin, measured against your value, never against an old price.</li>
+      </ol>
+      <p>That completes Stage 5, valuation. Everything so far has used one kind of business: one that sells things, earns on its capital and borrows a little. Part 29, “Banks”, starts the sector stage, where debt is the raw material and the usual ratios stop working.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A value is a range: test the guesses that matter, weight honest bull, base and bear stories, and buy only well below the result, because the margin of safety is there to protect you from your own mistakes.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLDC='#f5c76a',LAVC='#c3b8ff';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- Part 24's model: FCFF = NOPAT x (1 - growth / return on new investment), discounted at WACC ----
+    const NOPAT0=54.75, NETDEBT=60, SHARES=10, PRICE=100;
+    function valueShare(g1,g2,gt,r,w){
+      let n=NOPAT0,pv=0;
+      for(let t=1;t<=10;t++){const g=t<=5?g1:g2;n*=1+g;pv+=n*(1-g/r)/Math.pow(1+w,t);}
+      const tv=n*(1+gt)*(1-gt/r)/(w-gt), pvtv=tv/Math.pow(1+w,10);
+      return {v:(pv+pvtv-NETDEBT)/SHARES,pv,pvtv,ev:pv+pvtv};
+    }
+    const CASES={bull:[.15,.10,.05,.25,.116],base:[.12,.08,.05,.20,.116],bear:[.06,.05,.04,.15,.126]};
+    const WACCS=[.106,.116,.126], GROWTHS=[.08,.10,.12,.14,.16];
+    const PRESETS={
+      plan:{v:{ret:20,pbull:25,pbear:25,mos:30},t:'The plan: 25% bull, 50% base, 25% bear, and a 30% margin. Weighted value ₹74.3; pay no more than ₹52.0.'},
+      cautious:{v:{ret:20,pbull:10,pbear:40,mos:40},t:'Cautious: more weight on the bear story and a 40% margin. The weighted value drops to ₹65.9 and the buy price to ₹39.6.'},
+      optimist:{v:{ret:20,pbull:50,pbear:10,mos:20},t:'Optimist: half the weight on the bull story and a thinner 20% margin. Even so the weighted value, ₹84.9, stays below the ₹100 price.'},
+      cost:{v:{ret:11.6,pbull:25,pbear:25,mos:30},t:'Growth that only earns its cost: in the grid, new money earns 11.6%, the same as the base WACC. Read along the 11.6% row: faster growth adds almost nothing. The scenarios keep their own returns.'}};
+    const SL=['ret','pbull','pbear','mos'];
+    const fmt1=v=>v.toFixed(1);
+    const labConfig={format:v=>String(Math.round(v))};
+    function draw(){
+      const ret=+$('ret').value/100, pb=+$('pbull').value, pr=+$('pbear').value, mos=+$('mos').value;
+      const pm=100-pb-pr;
+      $('ret-o').textContent=(+$('ret').value).toFixed(1)+'%';$('pbull-o').textContent=pb+'%';$('pbear-o').textContent=pr+'%';$('mos-o').textContent=mos+'%';
+      // grid
+      const grid=WACCS.map(w=>GROWTHS.map(g=>valueShare(g,.08,.05,ret,w).v));
+      const all=grid.flat(), lo=Math.min(...all), hi=Math.max(...all);
+      let h='<thead><tr><th class="rh">WACC</th>'+GROWTHS.map(g=>`<th>${Math.round(g*100)}%</th>`).join('')+'</tr></thead><tbody>';
+      grid.forEach((row,i)=>{h+=`<tr><th class="rh">${(WACCS[i]*100).toFixed(1)}%</th>`+row.map((v,j)=>{
+        const a=hi>lo?0.45+0.55*(v-lo)/(hi-lo):0.7, cls=[v>=PRICE?'at':'',(i===1&&j===2&&Math.abs(ret-.2)<1e-9)?'me':''].join(' ').trim();
+        return `<td class="${cls}" style="background:rgba(245,199,106,${a.toFixed(2)})">${fmt1(v)}</td>`;}).join('')+'</tr>';});
+      $('grid').innerHTML=h+'</tbody>';
+      // scenarios
+      const V={};Object.keys(CASES).forEach(k=>V[k]=valueShare(...CASES[k]).v);
+      const wv=(pb*V.bull+pm*V.base+pr*V.bear)/100, buy=wv*(1-mos/100);
+      $('base-o').innerHTML=`Base case gets what is left: <b>${pm}%</b>. Weighted value: <b>₹${fmt1(wv)}</b>.`;
+      // chart
+      const X0=92,X1=320,MAX=120,sx=v=>X0+(Math.max(0,v)/MAX)*(X1-X0);
+      const rows=[['Bear',V.bear,GOLDC,'0.56','Bear'],['Base',V.base,GOLDC,'0.78','Base'],['Bull',V.bull,GOLDC,'1','Bull'],['Weighted',wv,GOLDC,'1','Weighted'],['Buy price',buy,GOLDC,'0.35','Buy price'],['Price',PRICE,LAVC,'1','Price']];
+      let s=`<path d="M${X0} 8 L${X0} 250" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      rows.forEach((r,i)=>{const y=12+i*40;s+=T(X0-10,y+19,r[4],'end',MUTC)+`<rect data-v="${r[1].toFixed(3)}" x="${X0}" y="${y}" width="${(sx(r[1])-X0).toFixed(2)}" height="26" fill="${r[2]}" opacity="${r[3]}"/>`+T(sx(r[1])+8,y+19,'₹'+fmt1(r[1]));});
+      [0,40,80,120].forEach(t=>{s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="276" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;});
+      $('labChart').innerHTML=s;
+      const ret_=(v,b)=>(v/b-1)*100, sg=x=>(x>=0?'+':'−')+Math.abs(x).toFixed(1)+'%';
+      $('outs').innerHTML=`Bought at <b>₹${fmt1(buy)}</b>: if bear ${sg(ret_(V.bear,buy))}, if base ${sg(ret_(V.base,buy))}, if bull ${sg(ret_(V.bull,buy))}.<br>Bought at <b>₹100</b>: if bear ${sg(ret_(V.bear,PRICE))}, if base ${sg(ret_(V.base,PRICE))}, if bull ${sg(ret_(V.bull,PRICE))}.<br>The price is <b>${sg(ret_(PRICE,wv))}</b> against your weighted value.`;
+      const L=[['Bull value',fmt1(V.bull)],['Base value',fmt1(V.base)],['Bear value',fmt1(V.bear)],
+        ['Weighted',`${pb}% × ${fmt1(V.bull)} + ${pm}% × ${fmt1(V.base)} + ${pr}% × ${fmt1(V.bear)} = ${wv.toFixed(2)}`],
+        ['Buy price',`${wv.toFixed(2)} × (1 − ${mos}%) = ${buy.toFixed(2)}`],
+        ['Grid, base cell',`WACC 11.6%, growth 12%, return ${(ret*100).toFixed(1)}% = ${fmt1(grid[1][2])}`]];
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:[...all,wv,buy,V.bull,V.base,V.bear].every(Number.isFinite)&&pm>=0,ret:ret*100,pbull:pb,pbase:pm,pbear:pr,mos,values:V,weighted:wv,buy,grid};
+    }
+    function clampProb(changed){const o=changed==='pbull'?'pbear':'pbull';if(+$('pbull').value+ +$('pbear').value>100)$(o).value=100-(+$(changed).value);}
+    SL.forEach(id=>$(id).addEventListener('input',()=>{clampProb(id);$('msg').textContent='';document.querySelectorAll('.presets button').forEach(b=>b.setAttribute('aria-pressed','false'));draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];SL.forEach(id=>$(id).value=p.v[id]);
+      document.querySelectorAll('.presets button').forEach(x=>x.setAttribute('aria-pressed',String(x===bt)));draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
