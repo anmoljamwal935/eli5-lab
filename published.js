@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "dcf-step-by-step-eli5",
+    "title": "DCF, step by step",
+    "category": "Monetary Architecture",
+    "minutes": 22,
+    "summary": "Part 24: turning ten years of free cash into a value per share",
+    "bullets": [
+      "Free cash is NOPAT minus the reinvestment growth needs: 54.75 × (1 − 12% ÷ 20%) starts the forecast, discounted at the 11.6% WACC",
+      "68% of Ramu’s ₹826.9 cr value is terminal value; ₹76.7 a share against ₹100 tests the assumptions, not the shares"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FORECAST",
+      "DISCOUNT",
+      "TERMINAL",
+      "PER SHARE"
+    ],
+    "file": "explainers/dcf-step-by-step-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"One enterprise-value bar drawn to scale: a solid teal third for the ten forecast years and a paler teal two-thirds for the terminal value, with a gold part label\"><rect x=\"24\" y=\"66\" width=\"37\" height=\"30\" fill=\"#76d5c1\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"61\" y=\"66\" width=\"50\" height=\"30\" fill=\"#76d5c1\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"111\" y=\"66\" width=\"185\" height=\"30\" fill=\"#76d5c1\" fill-opacity=\"0.5\" stroke=\"#202020\" stroke-width=\"1.5\"/><path d=\"M113 58 V52 H296 V58\" stroke=\"#a5a29c\" stroke-width=\"1\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#f5c76a\">PART 24</text><text x=\"296\" y=\"42\" text-anchor=\"end\" fill=\"#f1eee8\">68% TERMINAL</text><text x=\"24\" y=\"124\" fill=\"#a5a29c\">TEN YEARS 32%</text></g></svg>",
+    "part": 24
+  },
+  {
     "id": "discount-rate-eli5",
     "title": "Discounting and the discount rate",
     "category": "Monetary Architecture",
