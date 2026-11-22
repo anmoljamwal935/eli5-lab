@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "analysing-banks-eli5",
+    "title": "Banks",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 29: spreads, bad loans and capital, and why banks trade on book",
+    "bullets": [
+      "Debt is a bank's raw material: judge NIM, CASA, bad loans and provision cover instead of D/E",
+      "Bad loans flow through provisions into profit, capital and book value; price banks on P/B against ROE"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "NIM",
+      "BAD LOANS",
+      "CAPITAL",
+      "P/B"
+    ],
+    "file": "explainers/analysing-banks-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Bad loans flowing into provisions and then out of book value: a dashed coral bar of bad loans, a solid coral provision bar, and a gold book-value bar shorter than its dashed outline before the loss\"><rect x=\"24\" y=\"44\" width=\"120\" height=\"14\" fill=\"#ff8059\" fill-opacity=\"0.15\" stroke=\"#ff8059\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><rect x=\"24\" y=\"68\" width=\"90\" height=\"14\" fill=\"#ff8059\"/><rect x=\"24\" y=\"92\" width=\"186\" height=\"14\" fill=\"#f5c76a\"/><rect x=\"210\" y=\"92\" width=\"70\" height=\"14\" fill=\"none\" stroke=\"#f5c76a\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><path d=\"M114 75 L206 99\" stroke=\"#a5a29c\" stroke-width=\"1\" fill=\"none\" stroke-dasharray=\"2 3\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"152\" y=\"55\" fill=\"#a5a29c\">BAD LOANS</text><text x=\"24\" y=\"132\" fill=\"#a5a29c\">BOOK VALUE</text><text x=\"296\" y=\"30\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 29</text></g></svg>",
+    "part": 29
+  },
+  {
     "id": "margin-of-safety-eli5",
     "title": "Margin of safety and scenarios",
     "category": "Monetary Architecture",
