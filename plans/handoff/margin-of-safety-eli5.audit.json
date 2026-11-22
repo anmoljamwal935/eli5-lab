@@ -1,0 +1,495 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": null,
+    "title": "Part 28 of Fundamental analysis, from scratch (topic, no single source)",
+    "author": "series plan + numbers file",
+    "verified_date": "2026-11-19",
+    "capture_mode": "topic-only; primary filings downloaded",
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa28/src/consolidated.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa28/src/agm.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa28/src/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa28/src/BhavCopy_NSE_CM_0_0_0_20260401_F_0000.csv"
+    ],
+    "limitations": "Parts 26 and 27 pages not readable; referenced by title only; Part 26 P/E band figures taken from the shared numbers file."
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "A value is a range, not a number (grid, scenarios, P/E band overlap)",
+      "kind": "claim",
+      "check_needed": false,
+      "destination": "P1"
+    },
+    {
+      "id": "I2",
+      "item": "Two-way sensitivity grid WACC x FY27-31 growth; values from numbers file",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "P2"
+    },
+    {
+      "id": "I3",
+      "item": "WACC matters more than growth; 10.6%/14% gives 100.3",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "P2"
+    },
+    {
+      "id": "I4",
+      "item": "Scenarios move inputs together as a coherent story; bull 99.6 / base 76.7 / bear 44.1",
+      "kind": "definition",
+      "check_needed": false,
+      "destination": "P3"
+    },
+    {
+      "id": "I5",
+      "item": "Probability-weighted value 74.3 at 25/50/25; price 35% above",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "P4"
+    },
+    {
+      "id": "I6",
+      "item": "Probabilities are judgements; weighted value moves linearly with them; cannot leave the range of stories",
+      "kind": "misconception",
+      "check_needed": false,
+      "destination": "P5"
+    },
+    {
+      "id": "I7",
+      "item": "Margin of safety definition; buy price = value x (1 - margin); 52.0 weighted, 53.7 base",
+      "kind": "definition",
+      "check_needed": false,
+      "destination": "P6"
+    },
+    {
+      "id": "I8",
+      "item": "Margin size scales with uncertainty; set it in advance",
+      "kind": "context",
+      "check_needed": false,
+      "destination": "P6"
+    },
+    {
+      "id": "I9",
+      "item": "Margin protects against your own errors: outcomes by purchase price",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "P7"
+    },
+    {
+      "id": "I10",
+      "item": "Lab: grid with return slider, scenario weights, margin and buy price",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "P8 lab"
+    },
+    {
+      "id": "I11",
+      "item": "Growth that only earns its cost flattens the grid (Part 24 callback)",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "P8 lab preset"
+    },
+    {
+      "id": "I12",
+      "item": "A fall from an old price is not a margin (5.7% at Rs70)",
+      "kind": "misconception",
+      "check_needed": false,
+      "destination": "P9"
+    },
+    {
+      "id": "I13",
+      "item": "Double caution and fake precision",
+      "kind": "misconception",
+      "check_needed": false,
+      "destination": "P9 go deeper"
+    },
+    {
+      "id": "I14",
+      "item": "TCPL scenarios from real FY26 figures, page own estimate",
+      "kind": "number",
+      "check_needed": true,
+      "destination": "P10"
+    },
+    {
+      "id": "I15",
+      "item": "Hand-off to Part 29 Banks, start of sector stage",
+      "kind": "context",
+      "check_needed": false,
+      "destination": "P11"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I14",
+      "claim": "TCPL EBIT 2,165.12 = PBT before exceptional 2,192.84 + finance costs 137.03 - other income 164.75",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Consolidated Statement of Profit and Loss, printed p. 415",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "FY25 EBIT 1,878.61 (1,781.66 + 290.20 - 193.25); FY26 growth 15.3%",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "P&L p. 415, FY25 column",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Tax at Indian rate 25.17%; NOPAT 1,620.16",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 20 tax reconciliation, printed p. 451",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Shares 98,95,61,780 at 31 Mar 2026",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 14, printed p. 445",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "ROCE 41.87% on TCPL definition (tangible net worth)",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Ratio table and Note 5, printed p. 483",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Net cash Rs2,978 cr (cash and equivalents net of total borrowings, 31 Mar 2026)",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "locator": "Summary of Financial Performance FY26 slide, footnote $",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "NSE close Rs1,014.80 on 30 Mar 2026; previous close on 1 Apr 2026 bhavcopy = 1,014.80",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv.zip ; https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260401_F_0000.csv.zip",
+      "locator": "TATACONSUM EQ row, ClsPric / PrvsClsgPric",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Associates loss 90.70 cr",
+      "verdict": "Supported",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "P&L p. 415",
+      "on_page": "tagged public"
+    },
+    {
+      "inventory_id": "I7",
+      "claim": "Margin of safety is Benjamin Graham's phrase",
+      "verdict": "Supported (general knowledge, attributed, no figure)",
+      "as_of": "2026-03-31 (FY2026)",
+      "evidence_url": null,
+      "locator": "Attributed by name only; no page or chapter claimed",
+      "on_page": "tagged public"
+    }
+  ],
+  "panels": [
+    {
+      "id": "P1",
+      "heading": "₹76.7 is one point in a range"
+    },
+    {
+      "id": "P2",
+      "heading": "Move two guesses at once"
+    },
+    {
+      "id": "P3",
+      "heading": "Three stories, not three tweaks"
+    },
+    {
+      "id": "P4",
+      "heading": "Weight each story by its chance"
+    },
+    {
+      "id": "P5",
+      "heading": "Probabilities are judgements too"
+    },
+    {
+      "id": "P6",
+      "heading": "Buy well below your value"
+    },
+    {
+      "id": "P7",
+      "heading": "It protects you against your own errors"
+    },
+    {
+      "id": "P8",
+      "heading": "Build the range yourself"
+    },
+    {
+      "id": "P9",
+      "heading": "A fall in price is not a margin"
+    },
+    {
+      "id": "P10",
+      "heading": "TCPL in three stories"
+    },
+    {
+      "id": "P11",
+      "heading": "Questions before you buy"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Part 24 model: NOPAT0 54.75, FCFF = NOPAT x (1 - g/R), year-end discounting, terminal from FY37, net debt 60, 10 cr shares",
+      "grid: FY32-36 8%, then 5%; return slider affects grid only",
+      "base probability = 100 - bull - bear"
+    ],
+    "units": {
+      "value": "Rs a share",
+      "sliders": "%"
+    },
+    "independent_calculation_method": "model.py (Python, separate from page JS) via labcheck.py reading window.labResults with Playwright",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": "ret 20.0 25/50/25 mos 30",
+        "expected_weighted_buy": "74.26/51.98",
+        "observed_weighted_buy": "74.26/51.98",
+        "expected_grid_base_cell": "76.7",
+        "observed_grid_base_cell": "76.7",
+        "status": "PASS"
+      },
+      {
+        "case": "preset The plan: 25 / 50 / 25",
+        "inputs": "ret 20.0 25/50/25 mos 30",
+        "expected_weighted_buy": "74.26/51.98",
+        "observed_weighted_buy": "74.26/51.98",
+        "expected_grid_base_cell": "76.7",
+        "observed_grid_base_cell": "76.7",
+        "status": "PASS"
+      },
+      {
+        "case": "preset Cautious",
+        "inputs": "ret 20.0 10/50/40 mos 40",
+        "expected_weighted_buy": "65.93/39.56",
+        "observed_weighted_buy": "65.93/39.56",
+        "expected_grid_base_cell": "76.7",
+        "observed_grid_base_cell": "76.7",
+        "status": "PASS"
+      },
+      {
+        "case": "preset Optimist",
+        "inputs": "ret 20.0 50/40/10 mos 20",
+        "expected_weighted_buy": "84.88/67.90",
+        "observed_weighted_buy": "84.88/67.90",
+        "expected_grid_base_cell": "76.7",
+        "observed_grid_base_cell": "76.7",
+        "status": "PASS"
+      },
+      {
+        "case": "preset Growth that only earns its cost",
+        "inputs": "ret 11.6 25/50/25 mos 30",
+        "expected_weighted_buy": "74.26/51.98",
+        "observed_weighted_buy": "74.26/51.98",
+        "expected_grid_base_cell": "43.7",
+        "observed_grid_base_cell": "43.7",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LLLL",
+        "inputs": "ret 10.0 0/100/0 mos 0",
+        "expected_weighted_buy": "76.69/76.69",
+        "observed_weighted_buy": "76.69/76.69",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LLLH",
+        "inputs": "ret 10.0 0/100/0 mos 50",
+        "expected_weighted_buy": "76.69/38.34",
+        "observed_weighted_buy": "76.69/38.34",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LLHL",
+        "inputs": "ret 10.0 0/50/50 mos 0",
+        "expected_weighted_buy": "60.37/60.37",
+        "observed_weighted_buy": "60.37/60.37",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LLHH",
+        "inputs": "ret 10.0 0/50/50 mos 50",
+        "expected_weighted_buy": "60.37/30.19",
+        "observed_weighted_buy": "60.37/30.19",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LHLL",
+        "inputs": "ret 10.0 50/50/0 mos 0",
+        "expected_weighted_buy": "88.14/88.14",
+        "observed_weighted_buy": "88.14/88.14",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LHLH",
+        "inputs": "ret 10.0 50/50/0 mos 50",
+        "expected_weighted_buy": "88.14/44.07",
+        "observed_weighted_buy": "88.14/44.07",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LHHL",
+        "inputs": "ret 10.0 50/0/50 mos 0",
+        "expected_weighted_buy": "71.83/71.83",
+        "observed_weighted_buy": "71.83/71.83",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme LHHH",
+        "inputs": "ret 10.0 50/0/50 mos 50",
+        "expected_weighted_buy": "71.83/35.91",
+        "observed_weighted_buy": "71.83/35.91",
+        "expected_grid_base_cell": "31.2",
+        "observed_grid_base_cell": "31.2",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HLLL",
+        "inputs": "ret 30.0 0/100/0 mos 0",
+        "expected_weighted_buy": "76.69/76.69",
+        "observed_weighted_buy": "76.69/76.69",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HLLH",
+        "inputs": "ret 30.0 0/100/0 mos 50",
+        "expected_weighted_buy": "76.69/38.34",
+        "observed_weighted_buy": "76.69/38.34",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HLHL",
+        "inputs": "ret 30.0 0/50/50 mos 0",
+        "expected_weighted_buy": "60.37/60.37",
+        "observed_weighted_buy": "60.37/60.37",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HLHH",
+        "inputs": "ret 30.0 0/50/50 mos 50",
+        "expected_weighted_buy": "60.37/30.19",
+        "observed_weighted_buy": "60.37/30.19",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HHLL",
+        "inputs": "ret 30.0 50/50/0 mos 0",
+        "expected_weighted_buy": "88.14/88.14",
+        "observed_weighted_buy": "88.14/88.14",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HHLH",
+        "inputs": "ret 30.0 50/50/0 mos 50",
+        "expected_weighted_buy": "88.14/44.07",
+        "observed_weighted_buy": "88.14/44.07",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HHHL",
+        "inputs": "ret 30.0 50/0/50 mos 0",
+        "expected_weighted_buy": "71.83/71.83",
+        "observed_weighted_buy": "71.83/71.83",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      },
+      {
+        "case": "extreme HHHH",
+        "inputs": "ret 30.0 50/0/50 mos 50",
+        "expected_weighted_buy": "71.83/35.91",
+        "observed_weighted_buy": "71.83/35.91",
+        "expected_grid_base_cell": "91.9",
+        "observed_grid_base_cell": "91.9",
+        "status": "PASS"
+      }
+    ],
+    "invariants": [
+      "weighted value between bear and bull",
+      "probabilities sum to 100",
+      "grid default equals numbers file"
+    ],
+    "tolerance": "1e-6",
+    "axis_and_clipping": "fixed axis 0-120 Rs; all values within 0-100"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render 0 errors",
+      "labcheck 21/21 PASS",
+      "card lint 0/0"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa28/shots/"
+    ],
+    "coverage_review": "done: all 15 inventory rows on page",
+    "semantic_review": "done: figures recomputed in model.py/figures.py; screenshots inspected desktop and 390px",
+    "artifact_sha256": "787bb716441d2523303599421ba0e95438b00e958e5181235549cc44af0f390d",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 10,
+        "panels": 11,
+        "notes": 0
+      },
+      "artifact_sha256": "787bb716441d2523303599421ba0e95438b00e958e5181235549cc44af0f390d",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/fa28/explainers/margin-of-safety-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

@@ -1,0 +1,659 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "Series part 24 (topic-only); Ramu Chai example numbers from plans/fundamental-analysis-series.md and fa21-25-numbers.md; TCPL Integrated Annual Report 2025-26 consolidated financial statements",
+    "author": "Tata Consumer Products Ltd (real figures); series plan (example figures)",
+    "verified_date": "2026-11-18",
+    "as_of": "31 March 2026",
+    "capture_mode": "PDF downloaded and read with pdftotext -layout",
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa24/src/consolidated.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa24/src/c.txt"
+    ],
+    "beginning_middle_ending": "topic-only part; TCPL statements pp. 414-417, notes 14, 15, 27 read",
+    "limitations": "No market price or G-sec yield used; Part 23 carries the G-sec real-report box."
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "DCF = future free cash discounted to today",
+      "kind": "definition",
+      "check_needed": false,
+      "destination": "The idea"
+    },
+    {
+      "id": "I2",
+      "item": "NOPAT = EBIT x (1 - tax) = 54.75",
+      "kind": "definition",
+      "check_needed": false,
+      "destination": "Step 1"
+    },
+    {
+      "id": "I3",
+      "item": "FCFF = NOPAT x (1 - growth / return on new investment); reinvestment 60/40/25%",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "Step 1"
+    },
+    {
+      "id": "I4",
+      "item": "Why EBIT not PAT; other income excluded (cash counted in net debt)",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "Step 1 go deeper"
+    },
+    {
+      "id": "I5",
+      "item": "Growth 12% FY27-31, 8% FY32-36, 5% after; FY27 61.3/24.5 ... FY36 141.8/85.1",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "The forecast"
+    },
+    {
+      "id": "I6",
+      "item": "Discount at WACC 11.6% (Part 23); PV ten years 262.4",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "Step 2"
+    },
+    {
+      "id": "I7",
+      "item": "Mid-year convention; FCFF+WACC vs FCFE+cost of equity",
+      "kind": "context",
+      "check_needed": false,
+      "destination": "Step 2 go deeper"
+    },
+    {
+      "id": "I8",
+      "item": "Terminal value = FCFF37 / (WACC - g) = 1,691.6; PV 564.5",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "Step 3"
+    },
+    {
+      "id": "I9",
+      "item": "Formula breaks as g -> WACC; exit multiples hide the same assumptions",
+      "kind": "misconception",
+      "check_needed": false,
+      "destination": "Step 3"
+    },
+    {
+      "id": "I10",
+      "item": "Terminal value is 68% of EV, drawn to scale",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "The surprise"
+    },
+    {
+      "id": "I11",
+      "item": "EV 826.9 - net debt 60 = 766.9 -> Rs 76.7 a share vs Rs 100",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "Step 4"
+    },
+    {
+      "id": "I12",
+      "item": "Full DCF lab: growth, WACC, terminal growth, return on new investment; stage-2 stepper",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "Lab"
+    },
+    {
+      "id": "I13",
+      "item": "WACC sensitivity 10/11/11.6/12/13 -> 108.7/86.6/76.7/71.0/59.5",
+      "kind": "number",
+      "check_needed": true,
+      "destination": "Sensitivity"
+    },
+    {
+      "id": "I14",
+      "item": "Reconcile Part 13 FCF 13 vs 11.75: tax on EBIT vs tax paid (interest)",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "Reconcile"
+    },
+    {
+      "id": "I15",
+      "item": "DCF only as good as assumptions; 76.7 vs 100 not a verdict (tornado)",
+      "kind": "misconception",
+      "check_needed": false,
+      "destination": "The common mistake"
+    },
+    {
+      "id": "I16",
+      "item": "Growth earning only its cost adds ~nothing (43.7 vs 41.2)",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "Lab preset / So what"
+    },
+    {
+      "id": "I17",
+      "item": "TCPL FY26 DCF inputs from audited statements",
+      "kind": "number",
+      "check_needed": true,
+      "destination": "Real report"
+    },
+    {
+      "id": "I18",
+      "item": "Hand-off: Part 25 reverse DCF, 15.3% implied growth",
+      "kind": "context",
+      "check_needed": false,
+      "destination": "So what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I17",
+      "claim": "Revenue 20,290.43; materials 7,788.16 + purchases 4,108.23 - inventory change 40.75; employee 1,661.00; other exp 3,981.99; D&A 626.68 -> EBITDA 2,791.80, EBIT 2,165.12",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "P. 415 consolidated P&L"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Tax 535.28 (current 545.27, deferred -9.99); PBT 2,172.78 -> 24.6%",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "P. 415"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Capex (payment for PPE incl intangibles) 448.57; working capital change +145.19; FY25 acquisition of subsidiaries 1,809.00",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "P. 417 cash flow"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Borrowings 302.14 + 1,818.17 = 2,120.31; cash and cash equivalents 3,046.57",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "P. 414 balance sheet; note 15"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Shares 989,561,780 of Re 1",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 14(a), p. 445"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Amortisation of intangibles 342.67; depreciation PPE 187.61; ROU 96.40",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "locator": "Note 27, p. 455"
+    },
+    {
+      "inventory_id": "I18",
+      "claim": "Shared numbers file earlier said 19.0% for stage-1-only reverse DCF; independent model gives 21.9% (file since corrected). Page cites only 15.3%, reproduced.",
+      "verdict": "Supported (15.3%)",
+      "as_of": "n/a",
+      "evidence_url": "internal model",
+      "locator": "tools/model.py"
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "heading": "A business is worth its future cash"
+    },
+    {
+      "id": 2,
+      "heading": "Free cash is profit minus reinvestment"
+    },
+    {
+      "id": 3,
+      "heading": "Ten years at two speeds, then for ever"
+    },
+    {
+      "id": 4,
+      "heading": "Shrink each year’s cash to today"
+    },
+    {
+      "id": 5,
+      "heading": "Everything after FY36, in one number"
+    },
+    {
+      "id": 6,
+      "heading": "Two-thirds of the value comes after FY36"
+    },
+    {
+      "id": 7,
+      "heading": "From the whole firm to one share"
+    },
+    {
+      "id": 8,
+      "heading": "Build Ramu’s DCF yourself"
+    },
+    {
+      "id": 9,
+      "heading": "Small changes in WACC, big changes in value"
+    },
+    {
+      "id": 10,
+      "heading": "Why 11.75 here, when Part 13 found 13"
+    },
+    {
+      "id": 11,
+      "heading": "₹76.7 is not a verdict on ₹100"
+    },
+    {
+      "id": 12,
+      "heading": "TCPL’s DCF inputs, line by line"
+    },
+    {
+      "id": 13,
+      "heading": "Questions before trusting any DCF"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "NOPAT0 54.75",
+      "reinvestment = NOPAT x g / RONI",
+      "year-end discounting to 31 Mar 2026",
+      "net debt 60, 10 cr shares fixed",
+      "WACC >= 8 > terminal g <= 7"
+    ],
+    "units": {
+      "money": "Rs crore; per share in Rs"
+    },
+    "independent_calculation_method": "tools/model.py (Python) vs window.labResults via Playwright (tools/verify_lab.py)",
+    "cases": [
+      {
+        "case": "defaults",
+        "settings": {
+          "g1": 12,
+          "g2": 8,
+          "w": 11.6,
+          "gt": 5,
+          "r": 20
+        },
+        "expected_ps": 76.689,
+        "observed_ps": 76.689,
+        "expected_ev": 826.89,
+        "observed_ev": 826.89,
+        "tv_share": 68.3,
+        "ok": true
+      },
+      {
+        "case": "preset base",
+        "settings": {
+          "g1": 12,
+          "g2": 8,
+          "w": 11.6,
+          "gt": 5,
+          "r": 20
+        },
+        "expected_ps": 76.689,
+        "observed_ps": 76.689,
+        "expected_ev": 826.89,
+        "observed_ev": 826.89,
+        "tv_share": 68.3,
+        "ok": true
+      },
+      {
+        "case": "preset need",
+        "settings": {
+          "g1": 15.3,
+          "g2": 15.3,
+          "w": 11.6,
+          "gt": 5,
+          "r": 20
+        },
+        "expected_ps": 99.981,
+        "observed_ps": 99.981,
+        "expected_ev": 1059.81,
+        "observed_ev": 1059.81,
+        "tv_share": 85.4,
+        "ok": true
+      },
+      {
+        "case": "preset cost",
+        "settings": {
+          "g1": 12,
+          "g2": 8,
+          "w": 11.6,
+          "gt": 5,
+          "r": 11.6
+        },
+        "expected_ps": 43.717,
+        "observed_ps": 43.717,
+        "expected_ev": 497.17,
+        "observed_ev": 497.17,
+        "tv_share": 86.1,
+        "ok": true
+      },
+      {
+        "case": "preset hurdle",
+        "settings": {
+          "g1": 12,
+          "g2": 8,
+          "w": 13,
+          "gt": 5,
+          "r": 20
+        },
+        "expected_ps": 59.519,
+        "observed_ps": 59.519,
+        "expected_ev": 655.19,
+        "observed_ev": 655.19,
+        "tv_share": 62.7,
+        "ok": true
+      },
+      {
+        "case": "sliders min/min/min/min",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 8,
+          "gt": 0,
+          "r": 8
+        },
+        "expected_ps": 62.437,
+        "observed_ps": 62.437,
+        "expected_ev": 684.37,
+        "observed_ev": 684.37,
+        "tv_share": 68.1,
+        "ok": true
+      },
+      {
+        "case": "sliders min/min/min/max",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 8,
+          "gt": 7,
+          "r": 8
+        },
+        "expected_ps": 65.698,
+        "observed_ps": 65.698,
+        "expected_ev": 716.98,
+        "observed_ev": 716.98,
+        "tv_share": 69.5,
+        "ok": true
+      },
+      {
+        "case": "sliders min/min/max/min",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 16,
+          "gt": 0,
+          "r": 8
+        },
+        "expected_ps": 23.324,
+        "observed_ps": 23.324,
+        "expected_ev": 293.24,
+        "observed_ev": 293.24,
+        "tv_share": 38.9,
+        "ok": true
+      },
+      {
+        "case": "sliders min/min/max/max",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 16,
+          "gt": 7,
+          "r": 8
+        },
+        "expected_ps": 14.637,
+        "observed_ps": 14.637,
+        "expected_ev": 206.37,
+        "observed_ev": 206.37,
+        "tv_share": 13.1,
+        "ok": true
+      },
+      {
+        "case": "sliders min/max/min/min",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 8,
+          "gt": 0,
+          "r": 40
+        },
+        "expected_ps": 77.342,
+        "observed_ps": 77.342,
+        "expected_ev": 833.42,
+        "observed_ev": 833.42,
+        "tv_share": 55.9,
+        "ok": true
+      },
+      {
+        "case": "sliders min/max/min/max",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 8,
+          "gt": 7,
+          "r": 40
+        },
+        "expected_ps": 359.695,
+        "observed_ps": 359.695,
+        "expected_ev": 3656.95,
+        "observed_ev": 3656.95,
+        "tv_share": 89.9,
+        "ok": true
+      },
+      {
+        "case": "sliders min/max/max/min",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 16,
+          "gt": 0,
+          "r": 40
+        },
+        "expected_ps": 31.782,
+        "observed_ps": 31.782,
+        "expected_ev": 377.82,
+        "observed_ev": 377.82,
+        "tv_share": 30.2,
+        "ok": true
+      },
+      {
+        "case": "sliders min/max/max/max",
+        "settings": {
+          "g1": 0,
+          "g2": 8,
+          "w": 16,
+          "gt": 7,
+          "r": 40
+        },
+        "expected_ps": 38.271,
+        "observed_ps": 38.271,
+        "expected_ev": 442.71,
+        "observed_ev": 442.71,
+        "tv_share": 40.4,
+        "ok": true
+      },
+      {
+        "case": "sliders max/min/min/min",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 8,
+          "gt": 0,
+          "r": 8
+        },
+        "expected_ps": 44.011,
+        "observed_ps": 44.011,
+        "expected_ev": 500.11,
+        "observed_ev": 500.11,
+        "tv_share": 284.2,
+        "ok": true
+      },
+      {
+        "case": "sliders max/min/min/max",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 8,
+          "gt": 7,
+          "r": 8
+        },
+        "expected_ps": 53.961,
+        "observed_ps": 53.961,
+        "expected_ev": 599.61,
+        "observed_ev": 599.61,
+        "tv_share": 253.7,
+        "ok": true
+      },
+      {
+        "case": "sliders max/min/max/min",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 16,
+          "gt": 0,
+          "r": 8
+        },
+        "expected_ps": -44.415,
+        "observed_ps": -44.415,
+        "expected_ev": -384.15,
+        "observed_ev": -384.15,
+        "tv_share": null,
+        "ok": true
+      },
+      {
+        "case": "sliders max/min/max/max",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 16,
+          "gt": 7,
+          "r": 8
+        },
+        "expected_ps": -70.926,
+        "observed_ps": -70.926,
+        "expected_ev": -649.26,
+        "observed_ev": -649.26,
+        "tv_share": null,
+        "ok": true
+      },
+      {
+        "case": "sliders max/max/min/min",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 8,
+          "gt": 0,
+          "r": 40
+        },
+        "expected_ps": 197.887,
+        "observed_ps": 197.887,
+        "expected_ev": 2038.87,
+        "observed_ev": 2038.87,
+        "tv_share": 69.7,
+        "ok": true
+      },
+      {
+        "case": "sliders max/max/min/max",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 8,
+          "gt": 7,
+          "r": 40
+        },
+        "expected_ps": 1059.558,
+        "observed_ps": 1059.558,
+        "expected_ev": 10655.58,
+        "observed_ev": 10655.58,
+        "tv_share": 94.2,
+        "ok": true
+      },
+      {
+        "case": "sliders max/max/max/min",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 16,
+          "gt": 0,
+          "r": 40
+        },
+        "expected_ps": 67.511,
+        "observed_ps": 67.511,
+        "expected_ev": 735.11,
+        "observed_ev": 735.11,
+        "tv_share": 47.3,
+        "ok": true
+      },
+      {
+        "case": "sliders max/max/max/max",
+        "settings": {
+          "g1": 25,
+          "g2": 8,
+          "w": 16,
+          "gt": 7,
+          "r": 40
+        },
+        "expected_ps": 87.313,
+        "observed_ps": 87.313,
+        "expected_ev": 933.13,
+        "observed_ev": 933.13,
+        "tv_share": 58.5,
+        "ok": true
+      },
+      {
+        "case": "g2 stepper to 20 (+12 clicks from 8)",
+        "settings": {
+          "g1": 12,
+          "g2": 20,
+          "w": 11.6,
+          "gt": 5,
+          "r": 20
+        },
+        "expected_ps": 100.666,
+        "observed_ps": 100.666,
+        "expected_ev": 1066.66,
+        "observed_ev": 1066.66,
+        "tv_share": 89.6,
+        "ok": true
+      }
+    ],
+    "invariants": [
+      "perShare = (pvYears + pvTv - 60)/10",
+      "fcff matches per year"
+    ],
+    "tolerance": "abs 0.01",
+    "axis_and_clipping": "labChart ticks from nice step covering min(0,values)..max; no clipping (check_render 0 errors at defaults, presets, 16 slider extremes)"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "lab 22/22 pass",
+      "card lint 0/0"
+    ],
+    "screenshots": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa24/shots",
+    "coverage_review": "every inventory row located on page",
+    "semantic_review": "numbers cross-checked against shared numbers file; 19.0% discrepancy reported",
+    "artifact_sha256": "eb383b496266eb4797009fb044df68ca7fc2c4b5da4b440165618ccc540c92c3",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 15,
+        "panels": 13,
+        "notes": 1
+      },
+      "artifact_sha256": "eb383b496266eb4797009fb044df68ca7fc2c4b5da4b440165618ccc540c92c3",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/agent-ab2e623cf19854199/explainers/dcf-step-by-step-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief forbids publishing)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

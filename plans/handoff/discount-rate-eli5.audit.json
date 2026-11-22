@@ -1,0 +1,865 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28387",
+    "title": "Topic-only part (Part 23, Fundamental analysis, from scratch); primary sources listed in claims",
+    "author": "n/a",
+    "verified_date": "2026-11-18",
+    "capture_mode": "topic request; sources fetched directly with curl",
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa23/src/rbi-wss-2026-04-17-ratios-rates.html",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa23/src/ctryprem.html",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa23/src/gt.html",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa23/src/ey2024.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa23/src/betaIndia.xls"
+    ],
+    "limitations": [
+      "RBI WSS PDF route was bot-protected; the HTML WSSView table (Id=28387) was read instead",
+      "Fernandez IESE survey could not be fetched (Cloudflare); omitted",
+      "No RBI figure dated exactly 31 March 2026; page brackets it with the 27 Mar and 3 Apr weekly readings"
+    ]
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Money now beats money later: interest, inflation, risk",
+      "kind": "context",
+      "destination": "p1",
+      "check_needed": false
+    },
+    {
+      "id": 2,
+      "item": "₹100 at 7% → ₹107; ₹100 in a year worth ₹93.46",
+      "kind": "example",
+      "destination": "p1",
+      "check_needed": false
+    },
+    {
+      "id": 3,
+      "item": "Discounting = compounding backwards; PV = FV ÷ (1+r)^n",
+      "kind": "definition",
+      "destination": "p2",
+      "check_needed": false
+    },
+    {
+      "id": 4,
+      "item": "PV at 12%: ₹89.29 (1 yr), ₹32.20 (10 yrs) (shared numbers file)",
+      "kind": "number",
+      "destination": "p2",
+      "check_needed": true
+    },
+    {
+      "id": 5,
+      "item": "Discount factors; rule of 72 in reverse",
+      "kind": "mechanism",
+      "destination": "p2 trace",
+      "check_needed": false
+    },
+    {
+      "id": 6,
+      "item": "Rate matters as much as time; long-dated cash most rate-sensitive",
+      "kind": "mechanism",
+      "destination": "p3",
+      "check_needed": false
+    },
+    {
+      "id": 7,
+      "item": "Risk-free rate = 10-year G-sec; why 10-year; yield vs price; default-free not change-free",
+      "kind": "definition",
+      "destination": "p4",
+      "check_needed": false
+    },
+    {
+      "id": 8,
+      "item": "Series stand-in risk-free 7.0%",
+      "kind": "number",
+      "destination": "p4, p12",
+      "check_needed": true
+    },
+    {
+      "id": 9,
+      "item": "ERP definition; why owners want more",
+      "kind": "definition",
+      "destination": "p5",
+      "check_needed": false
+    },
+    {
+      "id": 10,
+      "item": "ERP is an estimate: range 5.1–7.6% from GT, Damodaran, EY–NSE, with dates and methods",
+      "kind": "claim",
+      "destination": "p5",
+      "check_needed": true
+    },
+    {
+      "id": 11,
+      "item": "Three ways to estimate ERP and their weaknesses",
+      "kind": "mechanism",
+      "destination": "p5",
+      "check_needed": false
+    },
+    {
+      "id": 12,
+      "item": "Series ERP 5.0% is a low-end teaching assumption",
+      "kind": "misconception",
+      "destination": "p5 note",
+      "check_needed": false
+    },
+    {
+      "id": 13,
+      "item": "Beta definition and regression estimate; noisy; industry averages",
+      "kind": "definition",
+      "destination": "p6",
+      "check_needed": false
+    },
+    {
+      "id": 14,
+      "item": "Damodaran India industry betas Jan 2026: food 0.80, soft bev 0.59, household 0.51; unlevered 0.77",
+      "kind": "number",
+      "destination": "p6",
+      "check_needed": true
+    },
+    {
+      "id": 15,
+      "item": "Beta captures only market-linked risk",
+      "kind": "misconception",
+      "destination": "p6",
+      "check_needed": false
+    },
+    {
+      "id": 16,
+      "item": "CAPM: Ke = rf + β × ERP = 12.0%",
+      "kind": "mechanism",
+      "destination": "p7",
+      "check_needed": false
+    },
+    {
+      "id": 17,
+      "item": "EY–NSE: analysts 12%, companies 14.2%, ~2% company-specific add-on",
+      "kind": "number",
+      "destination": "p7",
+      "check_needed": true
+    },
+    {
+      "id": 18,
+      "item": "Cost of debt 10% pre-tax, 7.5% after 25% tax (Part 11 recap)",
+      "kind": "number",
+      "destination": "p8",
+      "check_needed": true
+    },
+    {
+      "id": 19,
+      "item": "WACC at market weights 1,000/100 = 11.59%, used as 11.6%",
+      "kind": "number",
+      "destination": "p8, lab",
+      "check_needed": true
+    },
+    {
+      "id": 20,
+      "item": "Book weights 10.71%; net-debt weights 11.75%",
+      "kind": "number",
+      "destination": "p8 trace",
+      "check_needed": true
+    },
+    {
+      "id": 21,
+      "item": "Lab: build a discount rate",
+      "kind": "example",
+      "destination": "p9",
+      "check_needed": false
+    },
+    {
+      "id": 22,
+      "item": "Value sensitivity to WACC (Part 24 numbers: 108.7/86.6/76.7/71.0/59.5)",
+      "kind": "number",
+      "destination": "p10",
+      "check_needed": true
+    },
+    {
+      "id": 23,
+      "item": "Rules: match rate to cash, nominal/currency, count risk once, market weights, false precision, date",
+      "kind": "context",
+      "destination": "p11 field guide",
+      "check_needed": false
+    },
+    {
+      "id": 24,
+      "item": "Real 10-year G-sec par yield near 31 Mar 2026: 7.02% (wk 27 Mar), 7.19% (wk 3 Apr); repo 5.25%; call 5.37%",
+      "kind": "number",
+      "destination": "p12",
+      "check_needed": true
+    },
+    {
+      "id": 25,
+      "item": "Hand-off to Part 24 at 11.6%",
+      "kind": "context",
+      "destination": "p13",
+      "check_needed": false
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 24,
+      "claim": "10-year G-sec par yield (FBIL) 7.02% week ended 27 Mar 2026; 7.19% week ended 3 Apr 2026; 6.48% week ended 11 Apr 2025; 6.74/6.85/6.99 for 13 Mar, 20 Mar, 10 Apr 2026; repo 5.25% (6.00% a year earlier); call money 5.37% (27 Mar)",
+      "verdict": "Supported",
+      "as_of": "17 Apr 2026",
+      "evidence_url": "https://www.rbi.org.in/Scripts/WSSView.aspx?Id=28387",
+      "locator": "WSS Ratios and Rates table, issue dated Apr 17, 2026; no 31 March column exists, so page brackets it"
+    },
+    {
+      "inventory_id": 10,
+      "claim": "Grant Thornton: historical 7.6%, adjusted 5.1%, forward 7.04% (rf 6.79% CCIL), conclusion 6.75%, 15.2% return 2001–2024",
+      "verdict": "Supported",
+      "as_of": "31 Dec 2024 cut-off; study Mar 2025",
+      "evidence_url": "https://www.grantthornton.in/insights/thought-leadership/equity-risk-premium-study/",
+      "locator": "Study web page text read in full"
+    },
+    {
+      "inventory_id": 10,
+      "claim": "Damodaran: India ERP 7.08% (Baa3, CRP 2.85%, mature 4.23%), CDS-based 5.23%",
+      "verdict": "Supported",
+      "as_of": "5 Jan 2026",
+      "evidence_url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html",
+      "locator": "Country table row India; Australia (Aaa) row shows mature 4.23%"
+    },
+    {
+      "inventory_id": 10,
+      "claim": "EY–NSE 2024: CoE 14.2%, rf 7.2%, MRP 7.0% (2021 7.5%, 2017 7.7%); ~185 respondents; analysts 12%; ~2% adjustment",
+      "verdict": "Supported",
+      "as_of": "2024",
+      "evidence_url": "https://nsearchives.nseindia.com/web/sites/default/files/inline-files/TheCostofCapitalSurvey_IndiaInsights2024_EY_NSE.pdf",
+      "locator": "Survey PDF pp. 8–11, Chart 1"
+    },
+    {
+      "inventory_id": 14,
+      "claim": "Damodaran India betas: Food Processing 0.80 (220 firms), Beverage (Soft) 0.59 (5), Household Products 0.51 (43); food unlevered 0.77; method 2y/5y weekly, simple average",
+      "verdict": "Supported",
+      "as_of": "5 Jan 2026",
+      "evidence_url": "https://www.stern.nyu.edu/~adamodar/pc/datasets/betaIndia.xls",
+      "locator": "Industry Averages and Explanation sheets"
+    },
+    {
+      "inventory_id": 22,
+      "claim": "Part 24 values at WACC 10/11/11.6/12/13%",
+      "verdict": "Supported (arithmetic)",
+      "as_of": "n/a",
+      "evidence_url": "shared numbers file",
+      "locator": "Recomputed independently: 108.7/86.6/76.7/71.0/59.5; TV share 68%"
+    },
+    {
+      "inventory_id": 19,
+      "claim": "WACC 11.59%",
+      "verdict": "Supported (arithmetic)",
+      "as_of": "n/a",
+      "evidence_url": "shared numbers file",
+      "locator": "(12×1000 + 7.5×100)/1100 = 11.5909"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "Money now beats money later"
+    },
+    {
+      "id": "p2",
+      "heading": "Compounding, run backwards"
+    },
+    {
+      "id": "p3",
+      "heading": "The rate matters as much as time"
+    },
+    {
+      "id": "p4",
+      "heading": "The risk-free rate: the 10-year G-sec"
+    },
+    {
+      "id": "p5",
+      "heading": "Equity risk premium: an estimate, not a fact"
+    },
+    {
+      "id": "p6",
+      "heading": "Beta: how much this share swings"
+    },
+    {
+      "id": "p7",
+      "heading": "Cost of equity: floor plus premium"
+    },
+    {
+      "id": "p8",
+      "heading": "WACC: one rate for the company"
+    },
+    {
+      "id": "p9",
+      "heading": "Build a discount rate"
+    },
+    {
+      "id": "p10",
+      "heading": "A small change, a big value"
+    },
+    {
+      "id": "p11",
+      "heading": "Six rules for using a discount rate"
+    },
+    {
+      "id": "p12",
+      "heading": "The 10-year G-sec near 31 March 2026"
+    },
+    {
+      "id": "p13",
+      "heading": "Questions before using any discount rate"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "market-value weights fixed at equity 1,000 / debt 100",
+      "tax 25%",
+      "CAPM"
+    ],
+    "units": {
+      "rates": "% a year",
+      "pv": "₹ per ₹100"
+    },
+    "independent_calculation_method": "tools/labcheck.py: plain Python arithmetic vs window.labResults",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": [
+          7,
+          1,
+          5,
+          10
+        ],
+        "expected": {
+          "ke": 12,
+          "kdAfterTax": 7.5,
+          "wacc": 11.5909,
+          "pv10": 33.3973,
+          "pv1": 89.613
+        },
+        "observed": {
+          "ke": 12,
+          "kdAfterTax": 7.5,
+          "wacc": 11.5909,
+          "pv10": 33.3973,
+          "pv1": 89.613
+        },
+        "pass": true
+      },
+      {
+        "case": "preset Series base case",
+        "inputs": [
+          7,
+          1,
+          5,
+          10
+        ],
+        "expected": {
+          "ke": 12,
+          "kdAfterTax": 7.5,
+          "wacc": 11.5909,
+          "pv10": 33.3973,
+          "pv1": 89.613
+        },
+        "observed": {
+          "ke": 12,
+          "kdAfterTax": 7.5,
+          "wacc": 11.5909,
+          "pv10": 33.3973,
+          "pv1": 89.613
+        },
+        "pass": true
+      },
+      {
+        "case": "preset ERP of 7%",
+        "inputs": [
+          7,
+          1,
+          7,
+          10
+        ],
+        "expected": {
+          "ke": 14,
+          "kdAfterTax": 7.5,
+          "wacc": 13.4091,
+          "pv10": 28.4133,
+          "pv1": 88.1764
+        },
+        "observed": {
+          "ke": 14,
+          "kdAfterTax": 7.5,
+          "wacc": 13.4091,
+          "pv10": 28.4133,
+          "pv1": 88.1764
+        },
+        "pass": true
+      },
+      {
+        "case": "preset Industry beta 0.8",
+        "inputs": [
+          7,
+          0.8,
+          5,
+          10
+        ],
+        "expected": {
+          "ke": 11.0,
+          "kdAfterTax": 7.5,
+          "wacc": 10.6818,
+          "pv10": 36.2441,
+          "pv1": 90.3491
+        },
+        "observed": {
+          "ke": 11,
+          "kdAfterTax": 7.5,
+          "wacc": 10.6818,
+          "pv10": 36.2441,
+          "pv1": 90.3491
+        },
+        "pass": true
+      },
+      {
+        "case": "preset Rates up a point",
+        "inputs": [
+          8,
+          1,
+          5,
+          11
+        ],
+        "expected": {
+          "ke": 13,
+          "kdAfterTax": 8.25,
+          "wacc": 12.5682,
+          "pv10": 30.6086,
+          "pv1": 88.835
+        },
+        "observed": {
+          "ke": 13,
+          "kdAfterTax": 8.25,
+          "wacc": 12.5682,
+          "pv10": 30.6086,
+          "pv1": 88.835
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/min/min",
+        "inputs": [
+          5,
+          0.5,
+          3,
+          7
+        ],
+        "expected": {
+          "ke": 6.5,
+          "kdAfterTax": 5.25,
+          "wacc": 6.3864,
+          "pv10": 53.8444,
+          "pv1": 93.997
+        },
+        "observed": {
+          "ke": 6.5,
+          "kdAfterTax": 5.25,
+          "wacc": 6.3864,
+          "pv10": 53.8444,
+          "pv1": 93.997
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/min/max",
+        "inputs": [
+          5,
+          0.5,
+          3,
+          14
+        ],
+        "expected": {
+          "ke": 6.5,
+          "kdAfterTax": 10.5,
+          "wacc": 6.8636,
+          "pv10": 51.4873,
+          "pv1": 93.5772
+        },
+        "observed": {
+          "ke": 6.5,
+          "kdAfterTax": 10.5,
+          "wacc": 6.8636,
+          "pv10": 51.4873,
+          "pv1": 93.5772
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/max/min",
+        "inputs": [
+          5,
+          0.5,
+          9,
+          7
+        ],
+        "expected": {
+          "ke": 9.5,
+          "kdAfterTax": 5.25,
+          "wacc": 9.1136,
+          "pv10": 41.8032,
+          "pv1": 91.6476
+        },
+        "observed": {
+          "ke": 9.5,
+          "kdAfterTax": 5.25,
+          "wacc": 9.1136,
+          "pv10": 41.8032,
+          "pv1": 91.6476
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/max/max",
+        "inputs": [
+          5,
+          0.5,
+          9,
+          14
+        ],
+        "expected": {
+          "ke": 9.5,
+          "kdAfterTax": 10.5,
+          "wacc": 9.5909,
+          "pv10": 40.0179,
+          "pv1": 91.2484
+        },
+        "observed": {
+          "ke": 9.5,
+          "kdAfterTax": 10.5,
+          "wacc": 9.5909,
+          "pv10": 40.0179,
+          "pv1": 91.2484
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/min/min",
+        "inputs": [
+          5,
+          1.5,
+          3,
+          7
+        ],
+        "expected": {
+          "ke": 9.5,
+          "kdAfterTax": 5.25,
+          "wacc": 9.1136,
+          "pv10": 41.8032,
+          "pv1": 91.6476
+        },
+        "observed": {
+          "ke": 9.5,
+          "kdAfterTax": 5.25,
+          "wacc": 9.1136,
+          "pv10": 41.8032,
+          "pv1": 91.6476
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/min/max",
+        "inputs": [
+          5,
+          1.5,
+          3,
+          14
+        ],
+        "expected": {
+          "ke": 9.5,
+          "kdAfterTax": 10.5,
+          "wacc": 9.5909,
+          "pv10": 40.0179,
+          "pv1": 91.2484
+        },
+        "observed": {
+          "ke": 9.5,
+          "kdAfterTax": 10.5,
+          "wacc": 9.5909,
+          "pv10": 40.0179,
+          "pv1": 91.2484
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/max/min",
+        "inputs": [
+          5,
+          1.5,
+          9,
+          7
+        ],
+        "expected": {
+          "ke": 18.5,
+          "kdAfterTax": 5.25,
+          "wacc": 17.2955,
+          "pv10": 20.2856,
+          "pv1": 85.2548
+        },
+        "observed": {
+          "ke": 18.5,
+          "kdAfterTax": 5.25,
+          "wacc": 17.2955,
+          "pv10": 20.2856,
+          "pv1": 85.2548
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/max/max",
+        "inputs": [
+          5,
+          1.5,
+          9,
+          14
+        ],
+        "expected": {
+          "ke": 18.5,
+          "kdAfterTax": 10.5,
+          "wacc": 17.7727,
+          "pv10": 19.4784,
+          "pv1": 84.9093
+        },
+        "observed": {
+          "ke": 18.5,
+          "kdAfterTax": 10.5,
+          "wacc": 17.7727,
+          "pv10": 19.4784,
+          "pv1": 84.9093
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/min/min",
+        "inputs": [
+          9,
+          0.5,
+          3,
+          7
+        ],
+        "expected": {
+          "ke": 10.5,
+          "kdAfterTax": 5.25,
+          "wacc": 10.0227,
+          "pv10": 38.4748,
+          "pv1": 90.8903
+        },
+        "observed": {
+          "ke": 10.5,
+          "kdAfterTax": 5.25,
+          "wacc": 10.0227,
+          "pv10": 38.4748,
+          "pv1": 90.8903
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/min/max",
+        "inputs": [
+          9,
+          0.5,
+          3,
+          14
+        ],
+        "expected": {
+          "ke": 10.5,
+          "kdAfterTax": 10.5,
+          "wacc": 10.5,
+          "pv10": 36.8449,
+          "pv1": 90.4977
+        },
+        "observed": {
+          "ke": 10.5,
+          "kdAfterTax": 10.5,
+          "wacc": 10.5,
+          "pv10": 36.8449,
+          "pv1": 90.4977
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/max/min",
+        "inputs": [
+          9,
+          0.5,
+          9,
+          7
+        ],
+        "expected": {
+          "ke": 13.5,
+          "kdAfterTax": 5.25,
+          "wacc": 12.75,
+          "pv10": 30.1186,
+          "pv1": 88.6918
+        },
+        "observed": {
+          "ke": 13.5,
+          "kdAfterTax": 5.25,
+          "wacc": 12.75,
+          "pv10": 30.1186,
+          "pv1": 88.6918
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/max/max",
+        "inputs": [
+          9,
+          0.5,
+          9,
+          14
+        ],
+        "expected": {
+          "ke": 13.5,
+          "kdAfterTax": 10.5,
+          "wacc": 13.2273,
+          "pv10": 28.8728,
+          "pv1": 88.3179
+        },
+        "observed": {
+          "ke": 13.5,
+          "kdAfterTax": 10.5,
+          "wacc": 13.2273,
+          "pv10": 28.8728,
+          "pv1": 88.3179
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/min/min",
+        "inputs": [
+          9,
+          1.5,
+          3,
+          7
+        ],
+        "expected": {
+          "ke": 13.5,
+          "kdAfterTax": 5.25,
+          "wacc": 12.75,
+          "pv10": 30.1186,
+          "pv1": 88.6918
+        },
+        "observed": {
+          "ke": 13.5,
+          "kdAfterTax": 5.25,
+          "wacc": 12.75,
+          "pv10": 30.1186,
+          "pv1": 88.6918
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/min/max",
+        "inputs": [
+          9,
+          1.5,
+          3,
+          14
+        ],
+        "expected": {
+          "ke": 13.5,
+          "kdAfterTax": 10.5,
+          "wacc": 13.2273,
+          "pv10": 28.8728,
+          "pv1": 88.3179
+        },
+        "observed": {
+          "ke": 13.5,
+          "kdAfterTax": 10.5,
+          "wacc": 13.2273,
+          "pv10": 28.8728,
+          "pv1": 88.3179
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/max/min",
+        "inputs": [
+          9,
+          1.5,
+          9,
+          7
+        ],
+        "expected": {
+          "ke": 22.5,
+          "kdAfterTax": 5.25,
+          "wacc": 20.9318,
+          "pv10": 14.9484,
+          "pv1": 82.6912
+        },
+        "observed": {
+          "ke": 22.5,
+          "kdAfterTax": 5.25,
+          "wacc": 20.9318,
+          "pv10": 14.9484,
+          "pv1": 82.6912
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/max/max",
+        "inputs": [
+          9,
+          1.5,
+          9,
+          14
+        ],
+        "expected": {
+          "ke": 22.5,
+          "kdAfterTax": 10.5,
+          "wacc": 21.4091,
+          "pv10": 14.371,
+          "pv1": 82.3662
+        },
+        "observed": {
+          "ke": 22.5,
+          "kdAfterTax": 10.5,
+          "wacc": 21.4091,
+          "pv10": 14.371,
+          "pv1": 82.3662
+        },
+        "pass": true
+      }
+    ],
+    "tolerance": 1e-09,
+    "invariants": [
+      "WACC between after-tax Kd and Ke",
+      "PV decreasing in years"
+    ],
+    "axis_and_clipping": "fixed 0–25% axis covers max Ke 22.5%; PV axis 0–₹100; no clipping possible within slider ranges"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render.py 0 errors (defaults, 4 presets, 16 slider extremes)",
+      "card lint 0 errors; card rendered at 320 and 200 px"
+    ],
+    "screenshots": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa23/shots",
+    "screenshot_review": "every desktop and 390px panel viewed; ERP labels and WACC line contrast fixed; figures scroll sideways on phones by house rule",
+    "coverage_review": "all 25 inventory rows found on page",
+    "semantic_review": "done by author; ERP and beta presented as ranges of estimates",
+    "artifact_sha256": "5214816e7cd26bc8e28f8ff0304579eddc1f9d95fcf196c0491790976db907e1",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 13,
+        "notes": 1
+      },
+      "artifact_sha256": "5214816e7cd26bc8e28f8ff0304579eddc1f9d95fcf196c0491790976db907e1",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/agent-a4fdd130667cfc531/explainers/discount-rate-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief forbids publishing)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

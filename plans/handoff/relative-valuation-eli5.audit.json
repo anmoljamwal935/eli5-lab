@@ -1,0 +1,1116 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": null,
+    "title": "Topic: relative valuation and P/E bands (series Part 26)",
+    "author": "n/a (topic-only, series part)",
+    "verified_date": "2026-11-19",
+    "duration_or_sections": "n/a",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "topic-only; primary filings and exchange data",
+    "beginning_middle_ending_evidence": "n/a",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "src/ar.html",
+      "src/ar22.pdf",
+      "src/ar22.txt",
+      "src/ar23.pdf",
+      "src/ar23.txt",
+      "src/ar24.pdf",
+      "src/ar24.txt",
+      "src/ar25.pdf",
+      "src/ar25.txt",
+      "src/b20260330.zip",
+      "src/chk_29032024.csv",
+      "src/chk_31032024.csv",
+      "src/chk_31032026.csv",
+      "src/fy26cons.pdf",
+      "src/fy26cons.txt",
+      "src/sec_01042022.csv",
+      "src/sec_01042024.csv",
+      "src/sec_01042025.csv",
+      "src/sec_01042026.csv",
+      "src/sec_03042023.csv",
+      "src/sec_28032024.csv",
+      "src/sec_28032025.csv",
+      "src/sec_30032026.csv",
+      "src/sec_31032022.csv",
+      "src/sec_31032023.csv"
+    ],
+    "limitations": "FY22/FY23 EPS not restated for the FY25 rights bonus element (~1%); stated on page."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Two yardsticks: peers today and own history",
+      "kind": "definition",
+      "check_needed": false,
+      "destination": "p-idea"
+    },
+    {
+      "id": 2,
+      "item": "Peer multiple × EPS gives a price; median preferred to average",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "p-peers"
+    },
+    {
+      "id": 3,
+      "item": "Peer P/Es 15, 20, 35; median 20; prices ₹75/₹100/₹175",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "p-peers"
+    },
+    {
+      "id": 4,
+      "item": "Peers must be comparable on growth, returns (ROE) and debt, not just industry and size",
+      "kind": "claim",
+      "check_needed": false,
+      "destination": "p-compare"
+    },
+    {
+      "id": 5,
+      "item": "A multiple is a shortcut for a DCF: ₹76.7 ÷ ₹5 = 15.3× (Part 24); 20× ↔ 15.3% growth (Part 25)",
+      "kind": "mechanism",
+      "check_needed": false,
+      "destination": "p-dcf"
+    },
+    {
+      "id": 6,
+      "item": "Band 16–24 ↔ growth ~11.0%–18.7%; 35× ↔ ~25% on Ramu model",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "p-dcf"
+    },
+    {
+      "id": 7,
+      "item": "Historical P/E band: 18,16,22,24,20; average 20; band 16–24",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "p-history"
+    },
+    {
+      "id": 8,
+      "item": "Band × FY27E EPS ₹5.75 → ₹92/₹115/₹138; forward P/E 17.4",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "p-history, lab"
+    },
+    {
+      "id": 9,
+      "item": "P/E band chart: price vs EPS × 16/20/24, FY22–FY26 + FY27E",
+      "kind": "lab",
+      "check_needed": false,
+      "destination": "p-lab"
+    },
+    {
+      "id": 10,
+      "item": "Re-rating/de-rating defined; price change = (1+EPS g)(1+P/E change) − 1",
+      "kind": "definition",
+      "check_needed": false,
+      "destination": "p-rerate, lab"
+    },
+    {
+      "id": 11,
+      "item": "Ramu FY23–FY26 decomposition; FY22→26 EPS +66.7%, P/E +11.1%, price +85.2%",
+      "kind": "example",
+      "check_needed": false,
+      "destination": "p-rerate"
+    },
+    {
+      "id": 12,
+      "item": "Below-average P/E is not automatically cheap; rates and growth move the band (Part 24 WACC sensitivity in P/E terms)",
+      "kind": "misconception",
+      "check_needed": false,
+      "destination": "p-mistake"
+    },
+    {
+      "id": 13,
+      "item": "TCPL P/E band FY22–FY26 from AR EPS and NSE closes",
+      "kind": "number",
+      "check_needed": true,
+      "destination": "p-tcpl"
+    },
+    {
+      "id": 14,
+      "item": "TCPL de-rating FY24→FY26 ate 26.5% EPS growth; FY23 and FY24 swings",
+      "kind": "number",
+      "check_needed": true,
+      "destination": "p-tcpl"
+    },
+    {
+      "id": 15,
+      "item": "Rights-issue restatement of FY24 EPS; basic vs adjusted EPS",
+      "kind": "context",
+      "check_needed": false,
+      "destination": "p-tcpl trace"
+    },
+    {
+      "id": 16,
+      "item": "Hand-off to Part 27 (conglomerates, SOTP)",
+      "kind": "context",
+      "check_needed": false,
+      "destination": "p-sowhat"
+    }
+  ],
+  "claims": [
+    {
+      "claim": "FY22 consolidated basic EPS ₹10.15",
+      "verdict": "Supported",
+      "as_of": "2022-03-31",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2022-06/tcpl_integrated_annual_report_fy2021-22_0.pdf",
+      "passage": "Note 29, printed p.319: Basic 10.15 (Group net profit to owners 935.78 cr)"
+    },
+    {
+      "claim": "FY23 consolidated basic EPS ₹13.02",
+      "verdict": "Supported",
+      "as_of": "2023-03-31",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2023-08/TCPL_IR-22-23.pdf",
+      "passage": "Note 30, printed p.395: Basic 13.02 (1,203.77 cr)"
+    },
+    {
+      "claim": "FY24 consolidated basic EPS ₹12.32 (restated ₹12.20 in FY25 AR)",
+      "verdict": "Supported",
+      "as_of": "2024-03-31",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2025-05/tata-consumer-ar-2023-24.pdf",
+      "passage": "Note 30, printed p.490: Basic 12.32; FY25 AR Note 30 p.541 shows 12.20 restated for rights bonus element"
+    },
+    {
+      "claim": "FY25 consolidated basic EPS ₹13.06",
+      "verdict": "Supported",
+      "as_of": "2025-03-31",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2025-06/Tata_Consumer_IAR_2024_25.pdf",
+      "passage": "Note 30, printed p.541: Basic 13.06 (1,278.47 cr)"
+    },
+    {
+      "claim": "FY26 consolidated basic EPS ₹15.59; weighted shares 989,535,734; statements signed 8 May 2026",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "passage": "Note 30, printed p.456; consolidated P&L p.415; signature block Mumbai, May 08, 2026 (consolidated.pdf)"
+    },
+    {
+      "claim": "NSE close 31 Mar 2022 ₹777.40",
+      "verdict": "Supported",
+      "as_of": "2022-03-31",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_31032022.csv",
+      "passage": "TATACONSUM EQ CLOSE_PRICE 777.40; 1 Apr 2022 PREV_CLOSE 777.40"
+    },
+    {
+      "claim": "NSE close 31 Mar 2023 ₹708.85",
+      "verdict": "Supported",
+      "as_of": "2023-03-31",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_31032023.csv",
+      "passage": "CLOSE 708.85; 3 Apr 2023 PREV_CLOSE 708.85"
+    },
+    {
+      "claim": "NSE close 28 Mar 2024 ₹1,096.20, last FY24 session",
+      "verdict": "Supported",
+      "as_of": "2024-03-28",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_28032024.csv",
+      "passage": "CLOSE 1096.20; 1 Apr 2024 PREV_CLOSE 1096.20"
+    },
+    {
+      "claim": "NSE close 28 Mar 2025 ₹1,001.90, last FY25 session",
+      "verdict": "Supported",
+      "as_of": "2025-03-28",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_28032025.csv",
+      "passage": "CLOSE 1001.90; 1 Apr 2025 PREV_CLOSE 1001.90"
+    },
+    {
+      "claim": "NSE close 30 Mar 2026 ₹1,014.80, last FY26 session",
+      "verdict": "Supported",
+      "as_of": "2026-03-30",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_30032026.csv",
+      "passage": "CLOSE 1014.80; 1 Apr 2026 PREV_CLOSE 1014.80"
+    },
+    {
+      "claim": "TCPL FY26 adjusted EPS ₹17.30",
+      "verdict": "Supported (plan anchor facts)",
+      "as_of": "2026-06-10",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "passage": "AGM presentation; figure from series plan anchor facts, used only in a trace aside"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p-idea",
+      "heading": "Two yardsticks: peers and history"
+    },
+    {
+      "id": "p-peers",
+      "heading": "Borrow a peer’s multiple, get a price"
+    },
+    {
+      "id": "p-compare",
+      "heading": "A peer must match on growth, returns, debt"
+    },
+    {
+      "id": "p-dcf",
+      "heading": "A multiple hides a DCF’s assumptions"
+    },
+    {
+      "id": "p-history",
+      "heading": "Ramu’s P/E band, FY22 to FY26"
+    },
+    {
+      "id": "p-lab",
+      "heading": "Draw the band, then price FY27"
+    },
+    {
+      "id": "p-rerate",
+      "heading": "When the multiple moves, it can swamp earnings"
+    },
+    {
+      "id": "p-mistake",
+      "heading": "Below the average is not automatically cheap"
+    },
+    {
+      "id": "p-tcpl",
+      "heading": "TCPL’s own P/E band, FY22–FY26"
+    },
+    {
+      "id": "p-sowhat",
+      "heading": "Questions before calling a price cheap"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Ramu FY22–26 prices/EPS fixed (plan)",
+      "FY27E EPS = 5×(1+g)",
+      "return from ₹100 close, no dividends"
+    ],
+    "units": {
+      "price": "₹",
+      "pe": "times",
+      "growth": "%"
+    },
+    "independent_calculation_method": "tools/labcheck.py: plain arithmetic in Python, compared with window.labResults via Playwright",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": [
+          20,
+          4,
+          15,
+          20
+        ],
+        "expected": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 115.0,
+          "ret": 0.15,
+          "ePart": 0.15,
+          "rPart": 0.0,
+          "band27_lo": 92.0,
+          "band27_hi": 138.0,
+          "band26_mid": 100.0,
+          "fwdPE": 17.3913
+        },
+        "observed": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 115,
+          "ret": 0.15,
+          "ePart": 0.15,
+          "rPart": 0,
+          "band27_lo": 92,
+          "band27_hi": 138,
+          "band26_mid": 100,
+          "fwdPE": 17.3913
+        },
+        "pass": true
+      },
+      {
+        "case": "preset base",
+        "inputs": [
+          20,
+          4,
+          15,
+          20
+        ],
+        "expected": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 115.0,
+          "ret": 0.15,
+          "ePart": 0.15,
+          "rPart": 0.0,
+          "band27_lo": 92.0,
+          "band27_hi": 138.0,
+          "band26_mid": 100.0,
+          "fwdPE": 17.3913
+        },
+        "observed": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 115,
+          "ret": 0.15,
+          "ePart": 0.15,
+          "rPart": 0,
+          "band27_lo": 92,
+          "band27_hi": 138,
+          "band26_mid": 100,
+          "fwdPE": 17.3913
+        },
+        "pass": true
+      },
+      {
+        "case": "preset derate",
+        "inputs": [
+          20,
+          4,
+          15,
+          16
+        ],
+        "expected": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 92.0,
+          "ret": -0.08,
+          "ePart": 0.15,
+          "rPart": -0.2,
+          "band27_lo": 92.0,
+          "band27_hi": 138.0,
+          "band26_mid": 100.0,
+          "fwdPE": 17.3913
+        },
+        "observed": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 92,
+          "ret": -0.08,
+          "ePart": 0.15,
+          "rPart": -0.2,
+          "band27_lo": 92,
+          "band27_hi": 138,
+          "band26_mid": 100,
+          "fwdPE": 17.3913
+        },
+        "pass": true
+      },
+      {
+        "case": "preset rerate",
+        "inputs": [
+          20,
+          4,
+          0,
+          24
+        ],
+        "expected": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.0,
+          "p27": 120.0,
+          "ret": 0.2,
+          "ePart": 0.0,
+          "rPart": 0.2,
+          "band27_lo": 80.0,
+          "band27_hi": 120.0,
+          "band26_mid": 100.0,
+          "fwdPE": 20.0
+        },
+        "observed": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5,
+          "p27": 120,
+          "ret": 0.2,
+          "ePart": 0,
+          "rPart": 0.2,
+          "band27_lo": 80,
+          "band27_hi": 120,
+          "band26_mid": 100,
+          "fwdPE": 20
+        },
+        "pass": true
+      },
+      {
+        "case": "preset both",
+        "inputs": [
+          20,
+          4,
+          15,
+          24
+        ],
+        "expected": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 138.0,
+          "ret": 0.38,
+          "ePart": 0.15,
+          "rPart": 0.2,
+          "band27_lo": 92.0,
+          "band27_hi": 138.0,
+          "band26_mid": 100.0,
+          "fwdPE": 17.3913
+        },
+        "observed": {
+          "lo": 16,
+          "hi": 24,
+          "eps27": 5.75,
+          "p27": 138,
+          "ret": 0.38,
+          "ePart": 0.15,
+          "rPart": 0.2,
+          "band27_lo": 92,
+          "band27_hi": 138,
+          "band26_mid": 100,
+          "fwdPE": 17.3913
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/min/min",
+        "inputs": [
+          10,
+          0,
+          -20,
+          8
+        ],
+        "expected": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 4.0,
+          "p27": 32.0,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 40.0,
+          "band27_hi": 40.0,
+          "band26_mid": 50.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 4,
+          "p27": 32,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 40,
+          "band27_hi": 40,
+          "band26_mid": 50,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/min/max",
+        "inputs": [
+          10,
+          0,
+          -20,
+          40
+        ],
+        "expected": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 4.0,
+          "p27": 160.0,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1.0,
+          "band27_lo": 40.0,
+          "band27_hi": 40.0,
+          "band26_mid": 50.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 4,
+          "p27": 160,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1,
+          "band27_lo": 40,
+          "band27_hi": 40,
+          "band26_mid": 50,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/max/min",
+        "inputs": [
+          10,
+          0,
+          40,
+          8
+        ],
+        "expected": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 7.0,
+          "p27": 56.0,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 70.0,
+          "band27_hi": 70.0,
+          "band26_mid": 50.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 7,
+          "p27": 56,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 70,
+          "band27_hi": 70,
+          "band26_mid": 50,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/min/max/max",
+        "inputs": [
+          10,
+          0,
+          40,
+          40
+        ],
+        "expected": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 7.0,
+          "p27": 280.0,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1.0,
+          "band27_lo": 70.0,
+          "band27_hi": 70.0,
+          "band26_mid": 50.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 10,
+          "hi": 10,
+          "eps27": 7,
+          "p27": 280,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1,
+          "band27_lo": 70,
+          "band27_hi": 70,
+          "band26_mid": 50,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/min/min",
+        "inputs": [
+          10,
+          8,
+          -20,
+          8
+        ],
+        "expected": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 4.0,
+          "p27": 32.0,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 8.0,
+          "band27_hi": 72.0,
+          "band26_mid": 50.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 4,
+          "p27": 32,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 8,
+          "band27_hi": 72,
+          "band26_mid": 50,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/min/max",
+        "inputs": [
+          10,
+          8,
+          -20,
+          40
+        ],
+        "expected": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 4.0,
+          "p27": 160.0,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1.0,
+          "band27_lo": 8.0,
+          "band27_hi": 72.0,
+          "band26_mid": 50.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 4,
+          "p27": 160,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1,
+          "band27_lo": 8,
+          "band27_hi": 72,
+          "band26_mid": 50,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/max/min",
+        "inputs": [
+          10,
+          8,
+          40,
+          8
+        ],
+        "expected": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 7.0,
+          "p27": 56.0,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 14.0,
+          "band27_hi": 126.0,
+          "band26_mid": 50.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 7,
+          "p27": 56,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 14,
+          "band27_hi": 126,
+          "band26_mid": 50,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders min/max/max/max",
+        "inputs": [
+          10,
+          8,
+          40,
+          40
+        ],
+        "expected": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 7.0,
+          "p27": 280.0,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1.0,
+          "band27_lo": 14.0,
+          "band27_hi": 126.0,
+          "band26_mid": 50.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 2,
+          "hi": 18,
+          "eps27": 7,
+          "p27": 280,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1,
+          "band27_lo": 14,
+          "band27_hi": 126,
+          "band26_mid": 50,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/min/min",
+        "inputs": [
+          40,
+          0,
+          -20,
+          8
+        ],
+        "expected": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 4.0,
+          "p27": 32.0,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 160.0,
+          "band27_hi": 160.0,
+          "band26_mid": 200.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 4,
+          "p27": 32,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 160,
+          "band27_hi": 160,
+          "band26_mid": 200,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/min/max",
+        "inputs": [
+          40,
+          0,
+          -20,
+          40
+        ],
+        "expected": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 4.0,
+          "p27": 160.0,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1.0,
+          "band27_lo": 160.0,
+          "band27_hi": 160.0,
+          "band26_mid": 200.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 4,
+          "p27": 160,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1,
+          "band27_lo": 160,
+          "band27_hi": 160,
+          "band26_mid": 200,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/max/min",
+        "inputs": [
+          40,
+          0,
+          40,
+          8
+        ],
+        "expected": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 7.0,
+          "p27": 56.0,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 280.0,
+          "band27_hi": 280.0,
+          "band26_mid": 200.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 7,
+          "p27": 56,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 280,
+          "band27_hi": 280,
+          "band26_mid": 200,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/min/max/max",
+        "inputs": [
+          40,
+          0,
+          40,
+          40
+        ],
+        "expected": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 7.0,
+          "p27": 280.0,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1.0,
+          "band27_lo": 280.0,
+          "band27_hi": 280.0,
+          "band26_mid": 200.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 40,
+          "hi": 40,
+          "eps27": 7,
+          "p27": 280,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1,
+          "band27_lo": 280,
+          "band27_hi": 280,
+          "band26_mid": 200,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/min/min",
+        "inputs": [
+          40,
+          8,
+          -20,
+          8
+        ],
+        "expected": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 4.0,
+          "p27": 32.0,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 128.0,
+          "band27_hi": 192.0,
+          "band26_mid": 200.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 4,
+          "p27": 32,
+          "ret": -0.68,
+          "ePart": -0.2,
+          "rPart": -0.6,
+          "band27_lo": 128,
+          "band27_hi": 192,
+          "band26_mid": 200,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/min/max",
+        "inputs": [
+          40,
+          8,
+          -20,
+          40
+        ],
+        "expected": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 4.0,
+          "p27": 160.0,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1.0,
+          "band27_lo": 128.0,
+          "band27_hi": 192.0,
+          "band26_mid": 200.0,
+          "fwdPE": 25.0
+        },
+        "observed": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 4,
+          "p27": 160,
+          "ret": 0.6,
+          "ePart": -0.2,
+          "rPart": 1,
+          "band27_lo": 128,
+          "band27_hi": 192,
+          "band26_mid": 200,
+          "fwdPE": 25
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/max/min",
+        "inputs": [
+          40,
+          8,
+          40,
+          8
+        ],
+        "expected": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 7.0,
+          "p27": 56.0,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 224.0,
+          "band27_hi": 336.0,
+          "band26_mid": 200.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 7,
+          "p27": 56,
+          "ret": -0.44,
+          "ePart": 0.4,
+          "rPart": -0.6,
+          "band27_lo": 224,
+          "band27_hi": 336,
+          "band26_mid": 200,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      },
+      {
+        "case": "sliders max/max/max/max",
+        "inputs": [
+          40,
+          8,
+          40,
+          40
+        ],
+        "expected": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 7.0,
+          "p27": 280.0,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1.0,
+          "band27_lo": 224.0,
+          "band27_hi": 336.0,
+          "band26_mid": 200.0,
+          "fwdPE": 14.2857
+        },
+        "observed": {
+          "lo": 32,
+          "hi": 48,
+          "eps27": 7,
+          "p27": 280,
+          "ret": 1.8,
+          "ePart": 0.4,
+          "rPart": 1,
+          "band27_lo": 224,
+          "band27_hi": 336,
+          "band26_mid": 200,
+          "fwdPE": 14.2857
+        },
+        "pass": true
+      }
+    ],
+    "invariants": [
+      "(1+ePart)(1+rPart)-1 == ret",
+      "historical P/E = 18,16,22,24,20"
+    ],
+    "tolerance": 1e-09,
+    "axis_and_clipping": "band chart y-axis auto nice-ceiling of max value; decomposition axis nice ticks spanning min(0,vals)..max(0,vals); no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render 0 errors",
+      "labcheck 21/21 pass",
+      "extreme-state screenshots in myshots/"
+    ],
+    "screenshots": [
+      "shots/desktop-00.png",
+      "shots/desktop-01.png",
+      "shots/desktop-02.png",
+      "shots/desktop-03.png",
+      "shots/desktop-04.png",
+      "shots/desktop-05.png",
+      "shots/desktop-06.png",
+      "shots/desktop-07.png",
+      "shots/desktop-08.png",
+      "shots/desktop-09.png",
+      "shots/desktop-10.png",
+      "shots/phone-00.png",
+      "shots/phone-01.png",
+      "shots/phone-02.png",
+      "shots/phone-03.png",
+      "shots/phone-04.png",
+      "shots/phone-05.png",
+      "shots/phone-06.png",
+      "shots/phone-07.png",
+      "shots/phone-08.png",
+      "shots/phone-09.png",
+      "shots/phone-10.png",
+      "myshots/default-band.png",
+      "myshots/default-dec.png",
+      "myshots/derate-band.png",
+      "myshots/derate-dec.png",
+      "myshots/flat-band.png",
+      "myshots/flat-dec.png",
+      "myshots/lowband-band.png",
+      "myshots/lowband-dec.png"
+    ],
+    "coverage_review": "every inventory row found on page",
+    "semantic_review": "numbers re-derived from plan, Part 24/25 model (tools/model.py) and filings",
+    "artifact_sha256": "dc711ac37b1be3316e759e7592750d564b55e8b14de6e928aa713395331e755a",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 11,
+        "panels": 10,
+        "notes": 1
+      },
+      "artifact_sha256": "dc711ac37b1be3316e759e7592750d564b55e8b14de6e928aa713395331e755a",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/fa26/explainers/relative-valuation-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief: do not publish)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

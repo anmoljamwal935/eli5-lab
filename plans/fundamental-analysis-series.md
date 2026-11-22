@@ -263,6 +263,75 @@ Present value at 12%: ₹100 in 1 year = ₹89.29; in 10 years = ₹32.20.
 - Or keep 8% then 5% and solve FY27–FY31 only: **21.9% a year**. That is above the 20% return on new money, so FCFF is negative in FY27–FY31 (reinvestment above 100% of NOPAT).
 - Compare: Ramu's FY22–26 CAGR was 11.0% (sales) and 13.6% (PAT), Part 9.
 
+### Ramu Chai Ltd: extra canonical numbers (added for Parts 26–28; use exactly these)
+
+All tagged `example`. Builds on the canonical accounts and on Parts 21–25 (WACC 11.6%, Part 24's DCF ₹76.7 a share, Part 25's 15.3% implied growth).
+
+**Relative valuation (Part 26).** Year-end P/E history (EPS from Part 9):
+
+| | FY22 | FY23 | FY24 | FY25 | FY26 |
+|---|---|---|---|---|---|
+| EPS (₹) | 3.00 | 3.40 | 3.90 | 4.40 | 5.00 |
+| P/E at year end | 18 | 16 | 22 | 24 | 20 |
+| Price (₹) | 54.00 | 54.40 | 85.80 | 105.60 | 100.00 |
+
+Five-year average P/E 20; band 16 to 24. On FY27E EPS ₹5.75 (Part 7): ₹92 at 16×, ₹115 at 20×, ₹138 at 24×.
+Peers from Part 15: Pahadi Leaf P/E 15, Ramu 20, Masala Brew 35; median 20.
+
+**Sum of the parts (Part 27).** Segment EBITDA adds to Ramu's ₹85 cr; revenue mix from Part 16.
+
+| Segment | Sales | EBITDA | Margin | EV/EBITDA (example) | Value |
+|---|---|---|---|---|---|
+| Packaged tea through shops | 300 | 60 | 20.0% | 14× | 840 |
+| Ramu cafés | 125 | 15 | 12.0% | 10× | 150 |
+| Offices and institutions | 75 | 10 | 13.3% | 8× | 80 |
+| **Total** | **500** | **85** | 17% | 12.6× | **1,070** |
+
+EV 1,070 − net debt 60 = equity 1,010 → ₹101 a share (against ₹100). Part 21's demerger example spins off the cafés.
+Holding-company discount (example): "Ramu Family Holdings" owns 55% of Ramu (5.5 crore shares, Part 19), worth ₹550 cr at ₹100, but itself trades at a market cap of ₹385 cr: a 30% discount. Its book cost for the stake is ₹55 cr (5.5 crore shares at ₹10 face value), so NAV 550 against book 55.
+Dividend discount model: DPS ₹2.00 (Part 14), cost of equity 12% (Part 23). With 8% growth for ever: 2.00 × 1.08 ÷ (12% − 8%) = ₹54. With 10%: ₹110. With 12%, Part 14's sustainable growth, the formula breaks (growth = discount rate); say so.
+
+**Margin of safety and scenarios (Part 28).** Part 24's model, three cases:
+
+| Case | Growth FY27–31 / FY32–36 / after | Return on new investment | WACC | Value a share |
+|---|---|---|---|---|
+| Bull | 15% / 10% / 5% | 25% | 11.6% | ₹99.6 |
+| Base (Part 24) | 12% / 8% / 5% | 20% | 11.6% | ₹76.7 |
+| Bear | 6% / 5% / 4% | 15% | 12.6% | ₹44.1 |
+
+Probabilities 25% / 50% / 25% → probability-weighted value ₹74.3. Price ₹100 is 35% above it.
+A 30% margin of safety on the weighted value means buying at or below ₹52.0 (on the base case, ₹53.7).
+Sensitivity grid (value a share; FY32–36 at 8%, then 5%, return 20%):
+
+| WACC \ growth FY27–31 | 8% | 10% | 12% | 14% | 16% |
+|---|---|---|---|---|---|
+| 10.6% | 83.6 | 88.9 | 94.5 | 100.3 | 106.5 |
+| 11.6% | 68.6 | 72.6 | 76.7 | 81.0 | 85.5 |
+| 12.6% | 57.7 | 60.7 | 63.7 | 67.0 | 70.3 |
+
+### Sector parts: fictional teaching companies (Parts 29 onward; tag `example`)
+
+Sector parts do not use Ramu Chai. Each builds its own fictional company with clean numbers and uses the real company in the Stage 6 table.
+
+**Pipal Bank Ltd (Part 29), ₹ cr, FY26.**
+- Assets: net loans 800 (812 gross less 12 provisions), G-secs 150, cash 50 = 1,000.
+- Funding: deposits 900 (CASA 360 at 2%, i.e. 40%; term 540 at 7%), equity 100 (opening 85, no dividend). 10 crore shares, book value ₹10 a share.
+- Interest: earned 85 (loans 9.5% = 76, G-secs 6% = 9); paid 45; NII 40; NIM 4.0%. With CASA at 30%: paid 49.5, NIM 3.55%.
+- P&L: fees 10, costs 18 (cost-to-income 36%), PPOP 32, provisions 12, PBT 20, tax 5, profit 15. ROA 1.5%, ROE 15%.
+- Bad loans 16 (GNPA 1.97%), PCR 75%, NNPA 4 (0.50%), credit cost 1.5%.
+- Capital: RWA 750 (75% of loans + 150); CET1 = CRAR = 13.33%; minimum 11.5%.
+- Price ₹20: P/B 2.0, P/E 13.3; justified P/B (15 − 10) ÷ (12.5 − 10) = 2.0.
+
+**Sahyadri Finance Ltd (Part 30, NBFC), ₹ cr.**
+- Loans 10,000 (three-year EMI loans, about 400 a month repaid, yield 15%). Borrowings 8,000 at 8%: 3-month paper 3,200 (40%), long-term 4,800 over 36 months. Equity 2,000. Cash buffer 500.
+- P&L: interest earned 1,500, paid 640, NII 860, costs 300, credit cost 200 (2%), PBT 360, tax 90, profit 270. Spread 7 points, NIM 8.6%, ROA 2.7%, ROE 13.5%.
+- Cost of funds to 9%: interest 720, PBT 280 (−22%).
+- First-month ladder: +103% (1–7 days), +17% (8–14), −28% (15–30), breaching RBI's −20% limit. Three-month freeze with nothing renewed: short in month 1, deepest −2,036 in month 3, +132 by month 12; a 2,600 buffer survives.
+
+**Kaveri Life (Part 30).** APE 1,000, VNB about 250 (margin 25%): −120 in year 1 then +57 a year for 14 years at 11%. EV opening 5,300 (ANW 1,900 + VIF 3,400); unwind 424 + VNB 250 + experience 26 = operating profit 700, RoEV 13.2%; closing 6,000 (ANW 2,000 + VIF 4,000). P/EV 2.0 at ₹12,000 cr market cap.
+
+**Godavari General (Part 30).** Earned premium 1,000, claims 730 (73%), costs 300 (30%), combined ratio 103%, underwriting loss 30; float 2,000 at 7.5% = 150; PBT 120.
+
 ### Lab layout rule (owner feedback on Part 15, 9 Nov 2026)
 
 A longer page is fine; a crowded one is not.

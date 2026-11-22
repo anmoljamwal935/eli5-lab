@@ -1,0 +1,440 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.bseindia.com/xml-data/corpfiling/AttachHis/518f3118-1e3f-4950-9c5f-522427c796c7.pdf",
+    "title": "Topic part: Conglomerates and special cases (Part 27)",
+    "author": "series plan + primary filings",
+    "verified_date": "2026-11-19",
+    "capture_mode": "topic-only; primary filings downloaded",
+    "limitations": "Series numbers from fa26-30-numbers.md (example)."
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "One blended multiple hides a mix of businesses",
+      "kind": "misconception",
+      "destination": "p1",
+      "check_needed": false
+    },
+    {
+      "id": "I2",
+      "item": "Segment margins 20/12/13.3%",
+      "kind": "example",
+      "destination": "p1",
+      "check_needed": false
+    },
+    {
+      "id": "I3",
+      "item": "SOTP: EBITDA x own multiple per segment, sum 1,070",
+      "kind": "mechanism",
+      "destination": "p2",
+      "check_needed": false
+    },
+    {
+      "id": "I4",
+      "item": "Blended 12.6x vs market 12.5x",
+      "kind": "example",
+      "destination": "p2",
+      "check_needed": false
+    },
+    {
+      "id": "I5",
+      "item": "EV less net debt 60 = equity 1,010, Rs101/share",
+      "kind": "example",
+      "destination": "p3",
+      "check_needed": false
+    },
+    {
+      "id": "I6",
+      "item": "Demerger can unlock SOTP value (Part 21 cafés)",
+      "kind": "context",
+      "destination": "p3,lab",
+      "check_needed": false
+    },
+    {
+      "id": "I7",
+      "item": "SOTP traps: head office, loss segments, partly owned subs",
+      "kind": "claim",
+      "destination": "p3 trace",
+      "check_needed": false
+    },
+    {
+      "id": "I8",
+      "item": "Holding-company discount 30% (550 vs 385)",
+      "kind": "example",
+      "destination": "p4",
+      "check_needed": false
+    },
+    {
+      "id": "I9",
+      "item": "Reasons for holdco discount",
+      "kind": "claim",
+      "destination": "p4",
+      "check_needed": false
+    },
+    {
+      "id": "I10",
+      "item": "NAV definition, book vs NAV vs market cap",
+      "kind": "definition",
+      "destination": "p5",
+      "check_needed": false
+    },
+    {
+      "id": "I11",
+      "item": "SOTP builder lab",
+      "kind": "mechanism",
+      "destination": "lab",
+      "check_needed": false
+    },
+    {
+      "id": "I12",
+      "item": "DDM: D1/(ke-g) = Rs54 at 8%",
+      "kind": "mechanism",
+      "destination": "p7",
+      "check_needed": false
+    },
+    {
+      "id": "I13",
+      "item": "DDM Rs110 at 10%",
+      "kind": "example",
+      "destination": "p7",
+      "check_needed": false
+    },
+    {
+      "id": "I14",
+      "item": "Formula breaks at 12% = sustainable growth",
+      "kind": "misconception",
+      "destination": "p8",
+      "check_needed": false
+    },
+    {
+      "id": "I15",
+      "item": "Growth and payout linked",
+      "kind": "mechanism",
+      "destination": "p8 trace",
+      "check_needed": false
+    },
+    {
+      "id": "I16",
+      "item": "When each method fits (SOTP/DDM/NAV)",
+      "kind": "context",
+      "destination": "field guide",
+      "check_needed": false
+    },
+    {
+      "id": "I17",
+      "item": "BHIL discount to NAV 55%, 47% vs two stakes",
+      "kind": "number",
+      "destination": "p10",
+      "check_needed": true
+    },
+    {
+      "id": "I18",
+      "item": "Hand-off to Part 28",
+      "kind": "context",
+      "destination": "so what",
+      "check_needed": false
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I17",
+      "claim": "BHIL holdings at market value 31 Mar 2026: Bajaj Auto 83,904.82; Bajaj Finserv 99,987.26; other group 29,527.37; total 215,779 vs cost 21,660",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/AttachHis/518f3118-1e3f-4950-9c5f-522427c796c7.pdf",
+      "locator": "MD&A Tables 1-2, printed p. 31"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "BHIL shares 111,293,510, unchanged in FY26",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/AttachHis/518f3118-1e3f-4950-9c5f-522427c796c7.pdf",
+      "locator": "Note 15, p. 129; Note 25, p. 135"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "BHIL ownership 34.19% BAL, 38.28% BFS standalone; 36.66%/40.78% with subsidiaries",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/AttachHis/518f3118-1e3f-4950-9c5f-522427c796c7.pdf",
+      "locator": "Note 4 p. 123; MD&A p. 29"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "BHIL has no borrowings",
+      "verdict": "Supported",
+      "as_of": "2026-03-31",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/AttachHis/518f3118-1e3f-4950-9c5f-522427c796c7.pdf",
+      "locator": "p. 147"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "NSE close 30 Mar 2026: BAJAJHLDNG 8,746.00; BAJAJ-AUTO 8,781.50; BAJAJFINSV 1,631.80; 1 Apr previous close identical (no session 31 Mar)",
+      "verdict": "Supported",
+      "as_of": "2026-03-30",
+      "evidence_url": "https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv.zip ; https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260401_F_0000.csv.zip",
+      "locator": "bhavcopy rows"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "One multiple for three businesses"
+    },
+    {
+      "id": "p2",
+      "heading": "Value each business, then add"
+    },
+    {
+      "id": "p3",
+      "heading": "Subtract the debt, divide by shares"
+    },
+    {
+      "id": "p4",
+      "heading": "Why holding companies trade below their stakes"
+    },
+    {
+      "id": "p5",
+      "heading": "NAV: assets at today’s prices"
+    },
+    {
+      "id": "p6",
+      "heading": "Build Ramu’s sum of the parts"
+    },
+    {
+      "id": "p7",
+      "heading": "Value only the dividends"
+    },
+    {
+      "id": "p8",
+      "heading": "When growth meets the discount rate"
+    },
+    {
+      "id": "p9",
+      "heading": "Which method fits which company"
+    },
+    {
+      "id": "p10",
+      "heading": "Bajaj Holdings: a discount you can check"
+    },
+    {
+      "id": "p11",
+      "heading": "Questions for a group or a special case"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "units": "₹ a share; ₹ crore",
+    "independent_method": "labtest.py (Python formulas) vs window.labResults in Chromium",
+    "cases": [
+      [
+        "defaults",
+        101.0,
+        101,
+        385.0,
+        385,
+        "pass"
+      ],
+      [
+        "Base case",
+        101.0,
+        101,
+        385.0,
+        385,
+        "pass"
+      ],
+      [
+        "One multiple for the group",
+        100.25,
+        100.25,
+        385.0,
+        385,
+        "pass"
+      ],
+      [
+        "Cafés demerged and re-rated",
+        107.0,
+        107,
+        385.0,
+        385,
+        "pass"
+      ],
+      [
+        "Packaged tea de-rated",
+        77.0,
+        77,
+        385.0,
+        385,
+        "pass"
+      ],
+      [
+        "sliders min min min min",
+        28.0,
+        28,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders min min min max",
+        28.0,
+        28,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "sliders min min max min",
+        44.0,
+        44,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders min min max max",
+        44.0,
+        44,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "sliders min max min min",
+        52.0,
+        52,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders min max min max",
+        52.0,
+        52,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "sliders min max max min",
+        68.0,
+        68,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders min max max max",
+        68.0,
+        68,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "sliders max min min min",
+        124.0,
+        124,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders max min min max",
+        124.0,
+        124,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "sliders max min max min",
+        140.0,
+        140,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders max min max max",
+        140.0,
+        140,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "sliders max max min min",
+        148.0,
+        148,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders max max min max",
+        148.0,
+        148,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "sliders max max max min",
+        164.0,
+        164,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "sliders max max max max",
+        164.0,
+        164,
+        220.0,
+        220,
+        "pass"
+      ],
+      [
+        "steppers min, nd max, multiples min",
+        2.0,
+        2,
+        550.0,
+        550,
+        "pass"
+      ],
+      [
+        "steppers max, nd min, multiples max",
+        380.0,
+        380,
+        220.0,
+        220,
+        "pass"
+      ]
+    ],
+    "tolerance": 1e-06,
+    "invariants": "equity>0 at all control extremes (min ₹2/share)"
+  },
+  "verification": {
+    "screenshots": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa27/shots",
+    "card": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa27/card.svg",
+    "artifact_sha256": "149695d11db7282ddbd777c887982b1ec1a8b3bb67c8dd0ecd66d75e3185cbad",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 10,
+        "panels": 11,
+        "notes": 1
+      },
+      "artifact_sha256": "149695d11db7282ddbd777c887982b1ec1a8b3bb67c8dd0ecd66d75e3185cbad",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/fa27/explainers/sum-of-the-parts-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published; branch pushed for coordinator"
+  }
+}

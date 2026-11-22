@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "topic-only (series part 30); primary documents listed in claims",
+    "title": "NBFCs and insurers (Part 30, Fundamental analysis, from scratch)",
+    "author": "n/a",
+    "verified_date": "2026-11-19",
+    "duration_or_sections": "topic",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "primary documents downloaded to /tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/src",
+    "beginning_middle_ending_evidence": "n/a (topic-only)",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/src"
+    ],
+    "limitations": "IL&FS own maturity ladder not reconstructed (sources do not give it); PIB 1 Oct 2018 release not opened on pib.gov.in, so board supersession not stated"
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "NBFCs cannot take demand deposits; deposit-taking NBFCs take 12–60 month deposits, no DICGC cover",
+      "kind": "claim",
+      "locator": "RBI FAQ",
+      "check_needed": true,
+      "destination": "p1 problem"
+    },
+    {
+      "id": 2,
+      "item": "Fictional Sahyadri Finance balance sheet: loans 10,000, borrowings 8,000 (3,200 short / 4,800 long), equity 2,000",
+      "kind": "example",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p1"
+    },
+    {
+      "id": 3,
+      "item": "Cost of funds, spread, NIM; Sahyadri yield 15%, cost 8%, NIM 8.6%, PAT 270, ROA 2.7%, ROE 13.5%",
+      "kind": "definition/example",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p2 spread"
+    },
+    {
+      "id": 4,
+      "item": "Cost of funds +1 point: interest 640->720, PBT 360->280 (−22%); short funding reprices first",
+      "kind": "mechanism",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p3"
+    },
+    {
+      "id": 5,
+      "item": "Asset-liability mismatch: borrow short, lend long; rollover; commercial paper",
+      "kind": "mechanism",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p4"
+    },
+    {
+      "id": 6,
+      "item": "RBI 2019 LRM framework: 1–7/8–14/15–30 day buckets, cumulative negative gap limits 10/10/20%; LCR 100% by Dec 2024 for NBFCs >= Rs10,000 cr and deposit-taking",
+      "kind": "claim",
+      "locator": "RBI/2019-20/88",
+      "check_needed": true,
+      "destination": "p5"
+    },
+    {
+      "id": 7,
+      "item": "Sahyadri first-month ladder breaks the 20% limit (−28%)",
+      "kind": "example",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p5"
+    },
+    {
+      "id": 8,
+      "item": "IL&FS 2018: defaults Sept 2018; group debt ~Rs900 bn; MFs ~Rs65 bn; shift to short-term CP/CD; ALM mismatches surfaced; turn to term borrowing",
+      "kind": "claim",
+      "locator": "RBI FSR Dec 2018; RBI T&P 2018-19",
+      "check_needed": true,
+      "destination": "p6"
+    },
+    {
+      "id": 9,
+      "item": "ALM mismatch timeline lab with funding shock",
+      "kind": "lab",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p7 lab"
+    },
+    {
+      "id": 10,
+      "item": "Illiquid vs insolvent",
+      "kind": "misconception",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p8 surprise"
+    },
+    {
+      "id": 11,
+      "item": "Life insurance: VNB, APE, VNB margin",
+      "kind": "definition",
+      "locator": "HDFC Life PR for APE def",
+      "check_needed": true,
+      "destination": "p9"
+    },
+    {
+      "id": 12,
+      "item": "Embedded value = ANW + VIF; EV walk; operating RoEV; P/EV",
+      "kind": "definition",
+      "locator": "HDFC Life PR definitions",
+      "check_needed": true,
+      "destination": "p10"
+    },
+    {
+      "id": 13,
+      "item": "General insurance: loss ratio, expense ratio, combined ratio, float",
+      "kind": "definition",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "p11"
+    },
+    {
+      "id": 14,
+      "item": "Metric map by business type",
+      "kind": "context",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "field guide"
+    },
+    {
+      "id": 15,
+      "item": "Bajaj Finance FY26 real figures and ALM statement",
+      "kind": "number",
+      "locator": "Bajaj Q4FY26 IP",
+      "check_needed": true,
+      "destination": "p12 real report"
+    },
+    {
+      "id": 16,
+      "item": "HDFC Life FY26 real figures: APE, VNB, margin, IEV, op RoEV, PAT, solvency, persistency, IEV walk",
+      "kind": "number",
+      "locator": "HDFC Life FY26 PR+IP",
+      "check_needed": true,
+      "destination": "p13 real report"
+    },
+    {
+      "id": 17,
+      "item": "IRDAI control level of solvency 150%",
+      "kind": "claim",
+      "locator": "IRDAI AFIF Regs 2024",
+      "check_needed": true,
+      "destination": "p13"
+    },
+    {
+      "id": 18,
+      "item": "Hand-off to Part 31 Exporters",
+      "kind": "context",
+      "locator": "-",
+      "check_needed": false,
+      "destination": "so what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 1,
+      "claim": "NBFCs cannot accept demand deposits; deposits repayable after 12 and within 60 months; no DICGC",
+      "verdict": "Supported",
+      "as_of": "read 2026-11-19",
+      "evidence_url": "https://www.rbi.org.in/Scripts/FAQView.aspx?Id=92",
+      "passage": "NBFCs cannot accept demand deposits ... Deposit insurance facility of DICGC is not available ... repayable after 12 months but not later than 60 months"
+    },
+    {
+      "inventory_id": 6,
+      "claim": "10/10/20% limits; LCR 50% Dec 2020 to 100% Dec 2024; scope Rs10,000 cr non-deposit and all deposit-taking",
+      "verdict": "Supported",
+      "as_of": "2019-11-04; limits still shown in Bajaj 31 Mar 2026 ALM slide",
+      "evidence_url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=11719",
+      "passage": "net cumulative negative mismatches ... shall not exceed 10%, 10% and 20% of the cumulative cash outflows"
+    },
+    {
+      "inventory_id": 8,
+      "claim": "MF exposure ~Rs65 bn of ~Rs900 bn IL&FS group debt",
+      "verdict": "Supported",
+      "as_of": "2018-12-31",
+      "evidence_url": "https://rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=912",
+      "passage": "para 1.20"
+    },
+    {
+      "inventory_id": 8,
+      "claim": "NBFC/HFC payables shifted to short-term CP and CDs at the cost of long-term instruments",
+      "verdict": "Supported",
+      "as_of": "2018-12-31",
+      "evidence_url": "https://rbi.org.in/Scripts/PublicationReportDetails.aspx?ID=913",
+      "passage": "Chapter II summary"
+    },
+    {
+      "inventory_id": 8,
+      "claim": "after IL&FS episode in September 2018 ... asset liability mismatches surfaced; preference for term borrowings for better ALM",
+      "verdict": "Supported",
+      "as_of": "2019-12-24",
+      "evidence_url": "https://www.rbi.org.in/scripts/PublicationsView.aspx?Id=19367",
+      "passage": "Box VI.1; para VI.14"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "Bajaj Finance FY26 figures as tabled (AUM 509,975; PAT 19,332; NII 44,110; CoF 7.54% vs 7.97%; mix 48:31:16:5; buffer 15,020; LCR 228%; ALM gaps 24/8/36/36/28/47/49%; GNPA/NNPA 1.01/0.41; CRAR 21.55%, Tier1 20.67%; ST borrowings 11%, NCD 37%)",
+      "verdict": "Supported",
+      "as_of": "2026-03-31, filed 2026-04-29",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/BAJFINANCE_29042026172519_InvestorPresentation.pdf",
+      "passage": "PDF pages 7, 9, 23, 24, 34, 54, 57"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "HDFC Life FY26: APE 16,641; VNB 4,034; margin 24.2% (25.6%); IEV 62,139 (55,423); op RoEV 15.0% (16.7%); PAT 1,910; solvency 177% (194%); persistency 85/64; IEV walk ANW 162.8/VIF 391.4 -> 173.3/448.1 bn, EVOP 83.3; sensitivity +1% rate: VNB margin -1.2%, EV -2.3%",
+      "verdict": "Supported",
+      "as_of": "2026-03-31, filed 2026-04-16",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/PRASAD_16042026164619_Press_release.pdf",
+      "passage": "PDF pages 2-3, 6, 17, 30"
+    },
+    {
+      "inventory_id": 17,
+      "claim": "control level of solvency margin 150% of RSM (life; general and health)",
+      "verdict": "Supported",
+      "as_of": "Regulations 2024 as published; a 2026 amendment exists and was not read",
+      "evidence_url": "https://irdai.gov.in/web/guest/document-detail?documentId=4589093",
+      "passage": "Schedule (life) para 10(2); general insurers para 4(ii)(a)"
+    }
+  ],
+  "panels": [],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": "run-off of existing loans/borrowings; collections 400/month; debt 8,000 at 8%; CP 3-month with one third maturing monthly; long-term repaid over 36 months; freeze from month 1 for L months with rollover r%",
+    "units": "Rs crore",
+    "independent_calculation": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/tests/alm_model.py (Python) vs window.labResults via /tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/tests/verify_lab.py",
+    "tolerance": 0.01,
+    "cases_file": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/lab-verify.txt",
+    "result": "22/22 pass"
+  },
+  "verification": {
+    "artifact_sha256": "7df0f3cc08fd1eacfd415ab85b443bf4c330cbf4c9fdd676a2bebabd120b7924",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 13,
+        "panels": 15,
+        "notes": 0
+      },
+      "artifact_sha256": "7df0f3cc08fd1eacfd415ab85b443bf4c330cbf4c9fdd676a2bebabd120b7924",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/fa30/explainers/nbfcs-and-insurers-eli5.html"
+    },
+    "render_check": "check_render.py: 0 errors (defaults, 4 presets, 16 slider extremes, 390px overflow)",
+    "screenshots": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/shots (desktop-00..15, phone-00..15), /tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/lab-default.png, /tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/lab-freeze.png; all inspected; fixed: label overflow in spread figure, ladder label overlap, EV label clip, lab key colours inverted, odd tick values, missing closing-EV label",
+    "card": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/card.svg, check_card 0 errors, rendered /tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa30/card.png",
+    "coverage_review": "all 18 inventory rows found on page"
+  },
+  "publication": {
+    "status": "not published (brief forbids); pushed to branch claude/fa-part-30-nbfcs-insurers"
+  }
+}
