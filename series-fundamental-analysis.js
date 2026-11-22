@@ -32,7 +32,7 @@
     { id: 'management-and-capital-allocation-eli5', track: 'business', title: 'Management, capital allocation and concalls', blurb: 'What the people in charge do with the cash, and whether they keep promises', file: 'management-and-capital-allocation-eli5.html' },
     { id: 'governance-and-ownership-eli5', track: 'business', title: 'Governance and who owns the company', blurb: 'Promoters, pledges, related-party deals, auditors and boards', file: 'governance-and-ownership-eli5.html' },
     { id: 'red-flags-eli5', track: 'business', title: 'Red flags and forensic checks', blurb: 'The patterns in the accounts that come before a blow-up', file: 'red-flags-eli5.html' },
-    { id: 'corporate-actions-eli5', track: 'value', title: 'Corporate actions and dilution', blurb: 'Bonus, split, buyback, rights issue, QIP and ESOPs: what each does to you' },
+    { id: 'corporate-actions-eli5', track: 'value', title: 'Corporate actions and dilution', blurb: 'Bonus, split, buyback, rights issue, QIP and ESOPs: what each does to you', file: 'corporate-actions-eli5.html' },
     { id: 'the-economy-around-the-company-eli5', track: 'business', title: 'The economy around the company', blurb: 'Rates, inflation, the rupee, commodities and the monsoon' },
     { id: 'discount-rate-eli5', track: 'value', title: 'Discounting and the discount rate', blurb: 'Why money later is worth less, and how much less' },
     { id: 'dcf-step-by-step-eli5', track: 'value', title: 'DCF, step by step', blurb: 'Turning future cash into a value per share today' },
