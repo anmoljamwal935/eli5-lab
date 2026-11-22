@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "the-economy-around-the-company-eli5",
+    "title": "The economy around the company",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 22: tea prices, the monsoon, rates and the rupee in a company's accounts",
+    "bullets": [
+      "A 20% tea rise is 3.6% of a cup's price but takes a fifth of Ramu's EBITDA unless it can be passed on",
+      "Rates, the rupee and demand swings reach profit differently; constant-currency growth strips out the rupee"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "TEA",
+      "MONSOON",
+      "RATES",
+      "RUPEE"
+    ],
+    "file": "explainers/the-economy-around-the-company-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two cups on one scale after tea rises 20 percent: absorbed, the gold profit slice shrinks inside the old 5 rupee price; passed on, the price runs past the dashed 5 rupee line and the profit slice is restored\"><rect x=\"24.0\" y=\"44\" width=\"51.8\" height=\"22\" fill=\"#ff8059\"/><rect x=\"75.8\" y=\"44\" width=\"88.8\" height=\"22\" fill=\"#ff8059\" opacity=\"0.7\"/><rect x=\"164.6\" y=\"44\" width=\"67.2\" height=\"22\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"1.5\"/><rect x=\"231.8\" y=\"44\" width=\"32.2\" height=\"22\" fill=\"#f5c76a\"/><rect x=\"24.0\" y=\"84\" width=\"51.8\" height=\"22\" fill=\"#ff8059\"/><rect x=\"75.8\" y=\"84\" width=\"88.8\" height=\"22\" fill=\"#ff8059\" opacity=\"0.7\"/><rect x=\"164.6\" y=\"84\" width=\"67.2\" height=\"22\" fill=\"none\" stroke=\"#ff8059\" stroke-width=\"1.5\"/><rect x=\"231.8\" y=\"84\" width=\"40.8\" height=\"22\" fill=\"#f5c76a\"/><path d=\"M264 36 V114\" stroke=\"#f1eee8\" stroke-width=\"1\" stroke-dasharray=\"3 3\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"134\" fill=\"#c3b8ff\">PART 22</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#ff8059\">TEA +20%</text></g></svg>",
+    "part": 22
+  },
+  {
     "id": "corporate-actions-eli5",
     "title": "Corporate actions and dilution",
     "category": "Monetary Architecture",
