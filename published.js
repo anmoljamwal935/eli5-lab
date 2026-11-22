@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "discount-rate-eli5",
+    "title": "Discounting and the discount rate",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 23: why money later is worth less, and how much less",
+    "bullets": [
+      "Present value runs compounding backwards: ₹100 in ten years at 12% is ₹32.20 today",
+      "Ramu's rate: 7% G-sec + 1.0 × 5% ERP = 12% equity, blended with 7.5% debt into an 11.6% WACC"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "G-SEC",
+      "ERP",
+      "BETA",
+      "WACC"
+    ],
+    "file": "explainers/discount-rate-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Eleven teal bars shrinking left to right: what 100 rupees due now and in each of the next ten years is worth today at 12 percent, from 100 down to 32\"><path d=\"M24 120H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"28\" y=\"32.0\" width=\"16\" height=\"88.0\" fill=\"#76d5c1\"/><rect x=\"52\" y=\"41.4\" width=\"16\" height=\"78.6\" fill=\"#76d5c1\"/><rect x=\"76\" y=\"49.8\" width=\"16\" height=\"70.2\" fill=\"#76d5c1\"/><rect x=\"100\" y=\"57.4\" width=\"16\" height=\"62.6\" fill=\"#76d5c1\"/><rect x=\"124\" y=\"64.1\" width=\"16\" height=\"55.9\" fill=\"#76d5c1\"/><rect x=\"148\" y=\"70.1\" width=\"16\" height=\"49.9\" fill=\"#76d5c1\"/><rect x=\"172\" y=\"75.4\" width=\"16\" height=\"44.6\" fill=\"#76d5c1\"/><rect x=\"196\" y=\"80.2\" width=\"16\" height=\"39.8\" fill=\"#76d5c1\"/><rect x=\"220\" y=\"84.5\" width=\"16\" height=\"35.5\" fill=\"#76d5c1\"/><rect x=\"244\" y=\"88.3\" width=\"16\" height=\"31.7\" fill=\"#76d5c1\"/><rect x=\"268\" y=\"91.7\" width=\"16\" height=\"28.3\" fill=\"#76d5c1\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"138\" fill=\"#a5a29c\">TODAY</text><text x=\"296\" y=\"138\" text-anchor=\"end\" fill=\"#a5a29c\">10 YEARS</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#f5c76a\">PART 23</text></g></svg>",
+    "part": 23
+  },
+  {
     "id": "the-economy-around-the-company-eli5",
     "title": "The economy around the company",
     "category": "Monetary Architecture",
