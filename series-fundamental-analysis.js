@@ -39,7 +39,7 @@
     { id: 'reverse-dcf-eli5', track: 'value', title: 'Reverse DCF', blurb: 'What growth the market price is already assuming', file: 'reverse-dcf-eli5.html' },
     { id: 'relative-valuation-eli5', track: 'value', title: 'Relative valuation and P/E bands', blurb: 'Pricing against peers and against the company’s own history', file: 'relative-valuation-eli5.html' },
     { id: 'sum-of-the-parts-eli5', track: 'value', title: 'Conglomerates and special cases', blurb: 'Sum of the parts, holding-company discounts, dividend models and NAV', file: 'sum-of-the-parts-eli5.html' },
-    { id: 'margin-of-safety-eli5', track: 'value', title: 'Margin of safety and scenarios', blurb: 'Bull, base and bear cases, and how wrong you can afford to be' },
+    { id: 'margin-of-safety-eli5', track: 'value', title: 'Margin of safety and scenarios', blurb: 'Bull, base and bear cases, and how wrong you can afford to be', file: 'margin-of-safety-eli5.html' },
     { id: 'analysing-banks-eli5', track: 'business', title: 'Banks', blurb: 'NIM, CASA, bad loans and capital: why normal ratios fail for lenders' },
     { id: 'nbfcs-and-insurers-eli5', track: 'business', title: 'NBFCs and insurers', blurb: 'Cost of funds, asset-liability mismatch, VNB and embedded value' },
     { id: 'it-and-pharma-exporters-eli5', track: 'business', title: 'Exporters: IT services and pharma', blurb: 'Constant currency, the rupee, deal wins and USFDA inspections' },
