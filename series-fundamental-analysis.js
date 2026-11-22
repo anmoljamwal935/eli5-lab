@@ -37,7 +37,7 @@
     { id: 'discount-rate-eli5', track: 'value', title: 'Discounting and the discount rate', blurb: 'Why money later is worth less, and how much less', file: 'discount-rate-eli5.html' },
     { id: 'dcf-step-by-step-eli5', track: 'value', title: 'DCF, step by step', blurb: 'Turning future cash into a value per share today', file: 'dcf-step-by-step-eli5.html' },
     { id: 'reverse-dcf-eli5', track: 'value', title: 'Reverse DCF', blurb: 'What growth the market price is already assuming', file: 'reverse-dcf-eli5.html' },
-    { id: 'relative-valuation-eli5', track: 'value', title: 'Relative valuation and P/E bands', blurb: 'Pricing against peers and against the company’s own history' },
+    { id: 'relative-valuation-eli5', track: 'value', title: 'Relative valuation and P/E bands', blurb: 'Pricing against peers and against the company’s own history', file: 'relative-valuation-eli5.html' },
     { id: 'sum-of-the-parts-eli5', track: 'value', title: 'Conglomerates and special cases', blurb: 'Sum of the parts, holding-company discounts, dividend models and NAV' },
     { id: 'margin-of-safety-eli5', track: 'value', title: 'Margin of safety and scenarios', blurb: 'Bull, base and bear cases, and how wrong you can afford to be' },
     { id: 'analysing-banks-eli5', track: 'business', title: 'Banks', blurb: 'NIM, CASA, bad loans and capital: why normal ratios fail for lenders' },
