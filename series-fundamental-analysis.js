@@ -35,7 +35,7 @@
     { id: 'corporate-actions-eli5', track: 'value', title: 'Corporate actions and dilution', blurb: 'Bonus, split, buyback, rights issue, QIP and ESOPs: what each does to you', file: 'corporate-actions-eli5.html' },
     { id: 'the-economy-around-the-company-eli5', track: 'business', title: 'The economy around the company', blurb: 'Rates, inflation, the rupee, commodities and the monsoon', file: 'the-economy-around-the-company-eli5.html' },
     { id: 'discount-rate-eli5', track: 'value', title: 'Discounting and the discount rate', blurb: 'Why money later is worth less, and how much less', file: 'discount-rate-eli5.html' },
-    { id: 'dcf-step-by-step-eli5', track: 'value', title: 'DCF, step by step', blurb: 'Turning future cash into a value per share today' },
+    { id: 'dcf-step-by-step-eli5', track: 'value', title: 'DCF, step by step', blurb: 'Turning future cash into a value per share today', file: 'dcf-step-by-step-eli5.html' },
     { id: 'reverse-dcf-eli5', track: 'value', title: 'Reverse DCF', blurb: 'What growth the market price is already assuming' },
     { id: 'relative-valuation-eli5', track: 'value', title: 'Relative valuation and P/E bands', blurb: 'Pricing against peers and against the company’s own history' },
     { id: 'sum-of-the-parts-eli5', track: 'value', title: 'Conglomerates and special cases', blurb: 'Sum of the parts, holding-company discounts, dividend models and NAV' },
