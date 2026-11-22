@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Banks — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (interest earned, fees, cash) | coral #ff8059 = money going out (interest paid, costs, provisions) | gold #f5c76a = what belongs to shareholders (profit, equity, book value, capital)
+       rose #ec6a94 = what is owed (deposits, borrowings) | lavender #c3b8ff = the market's view (price, P/B)
+       Part 29 extra: grey #8a8680 = loans and other assets; a dashed coral outline = bad loans not yet covered by provisions. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .rep tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    /* Lab layout: one column of numbered steps (as in Part 15) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab .dl-chart{max-width:640px}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;min-width:0;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+    .dashlab .dash td.val{white-space:nowrap}
+    .dashlab .dash td.now{white-space:nowrap;color:var(--fg);font-weight:600}
+    .dashlab details.trace{margin-top:16px}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}.eli5-study-container table.rep{min-width:0}.rep td.wk{display:none}.rep th.wk{display:none}}
+  </style>
+</head>
+<body data-series-id="analysing-banks-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 18 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Banks</h1>
+      <p class="lede">A bank borrows from savers and lends to everyone else, so debt is its raw material, not a risk on the side. Its accounts read differently: the questions are what it earns on the spread, how many loans go bad, and how much capital is left to absorb them.</p>
+      <p class="source-note">Built from HDFC Bank’s audited FY2026 standalone statements in its Integrated Annual Report 2025-26 (filed with the exchanges on 10 July 2026), and the Reserve Bank of India’s income-recognition and asset-classification directions of 28 November 2025 · <a href="https://nsearchives.nseindia.com/annual_reports/AR_29735_HDFCBANK_2025_2026_A_12667766_11072026001055.pdf">Read the source ↗</a> · <a href="https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=13146">RBI directions ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: Parts <a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">3</a>, <a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">4</a> and <a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">5</a> read the three statements, <a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a> splits ROE into margin, turnover and leverage, <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> judges debt, and <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> introduces price-to-book (P/B). This part does not use Ramu Chai. Its teaching company is <b>Pipal Bank Ltd</b>, a fictional bank with ₹1,000 cr of assets. Facts carry a tag: <span class="tag">public</span> is from HDFC Bank’s audited report or an RBI direction, <span class="tag">example</span> is a made-up number for Pipal. All amounts are ₹ crore (cr). <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: interest earned, fees, cash</span>
+        <span><i style="background:#ff8059"></i>money going out: interest paid, costs, provisions</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, equity, capital</span>
+        <span><i style="background:#ec6a94"></i>what is owed: deposits</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, P/B</span>
+        <span><i style="background:#8a8680"></i>loans and other assets</span>
+        <span><i style="border:2px dashed #ff8059;width:8px;height:8px"></i>bad loans not yet provided for</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Debt is a bank’s raw material</h2>
+      <p>Ramu Chai borrows ₹100 cr against ₹250 cr of equity <span class="tag">example</span>, a debt-to-equity of 0.4 in Part 11’s terms. Pipal Bank owes its depositors ₹900 cr against ₹100 cr of equity <span class="tag">example</span>: read the same way, a ratio of 9 that would alarm anyone judging a tea company. For a bank it is simply the business: deposits are what it lends out.</p>
+      <figure><svg viewBox="0 0 800 280" role="img" aria-label="Two balance sheets on one scale: Ramu Chai's 400 crore of assets funded mostly by equity, and Pipal Bank's 1,000 crore of assets funded 900 crore by deposits and only 100 crore by equity"><text x="40" y="30" fill="#f1eee8" font-size="16">Ramu Chai Ltd · debt ÷ equity 0.4</text><text x="40" y="62" fill="#a5a29c" font-size="16">assets</text><rect x="150" y="44" width="220" height="26" fill="#8a8680"/><text x="158" y="62" fill="#202020" font-size="16">assets 400</text><text x="40" y="96" fill="#a5a29c" font-size="16">funding</text><rect x="150" y="78" width="137.5" height="26" fill="#f5c76a"/><text x="158" y="96" fill="#202020" font-size="16">equity 250</text><rect x="287.5" y="78" width="55" height="26" fill="#ec6a94"/><rect x="342.5" y="78" width="27.5" height="26" fill="#f4a9c2"/><text x="380" y="96" fill="#f1eee8" font-size="16">debt 100 · other 50</text><text x="40" y="150" fill="#f1eee8" font-size="16">Pipal Bank Ltd · deposits ÷ equity 9</text><text x="40" y="182" fill="#a5a29c" font-size="16">assets</text><rect x="150" y="164" width="440" height="26" fill="#8a8680"/><text x="158" y="182" fill="#202020" font-size="16">loans 800</text><rect x="590" y="164" width="82.5" height="26" fill="#a5a29c"/><text x="598" y="182" fill="#202020" font-size="16">G-secs</text><rect x="672.5" y="164" width="27.5" height="26" fill="#76d5c1"/><text x="710" y="182" fill="#f1eee8" font-size="16">cash 50</text><text x="40" y="216" fill="#a5a29c" font-size="16">funding</text><rect x="150" y="198" width="495" height="26" fill="#ec6a94"/><text x="158" y="216" fill="#202020" font-size="16">deposits 900</text><rect x="645" y="198" width="55" height="26" fill="#f5c76a"/><text x="653" y="216" fill="#202020" font-size="16">100</text><text x="40" y="262" fill="#a5a29c" font-size="16">0.55 px = ₹1 cr · one scale for both</text></svg></figure>
+      <p>So the ratios built for ordinary companies break. <b>Debt-to-equity</b> is always huge. <b>EBITDA</b> means nothing, because interest is not a financing cost for a bank but its cost of goods, like tea leaves for Ramu. The money question becomes: how wide is the spread, how good are the loans, and how much equity stands behind them? The site’s <a href="how-money-actually-works-in-india.html">How money actually works</a> course explains how a loan creates a deposit and why regulators ration a bank’s capital.</p>
+      <details class="trace"><summary>Go deeper: Pipal Bank’s accounts</summary>
+        <p>Balance sheet at 31 March 2026 <span class="tag">example</span>: loans ₹800 cr (₹812 cr lent, less ₹12 cr set aside for bad loans), government securities (G-secs) ₹150 cr, cash and balances with RBI ₹50 cr; deposits ₹900 cr (₹360 cr current and savings, ₹540 cr term), equity ₹100 cr (10 crore shares, so book value is ₹10 a share). Opening equity was ₹85 cr; profit of ₹15 cr, no dividend. Assets are treated as their year-end level all year, so averages equal closing figures.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How a bank earns</p>
+      <h2>NIM: the spread on every rupee</h2>
+      <p>Pipal earns 9.5% on ₹800 cr of loans (₹76 cr) and 6% on ₹150 cr of G-secs (₹9 cr): <b>₹85 cr of interest earned</b>. It pays ₹45 cr to depositors. The gap, ₹40 cr, is <b>net interest income</b> (NII), and NII divided by assets is the <b>net interest margin</b> (NIM) <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="Pipal Bank's interest earned of 85 crore as a teal bar above interest paid of 45 crore in coral; the 40 crore gap between them, outlined in gold, is net interest income, which is 4 percent of assets"><text x="40" y="59" fill="#a5a29c" font-size="16">earned</text><rect x="170" y="40" width="510" height="28" fill="#76d5c1"/><text x="178" y="59" fill="#202020" font-size="16">interest earned 85</text><text x="40" y="109" fill="#a5a29c" font-size="16">paid</text><rect x="170" y="90" width="270" height="28" fill="#ff8059"/><text x="178" y="109" fill="#202020" font-size="16">interest paid 45</text><rect x="440" y="90" width="240" height="28" fill="none" stroke="#f5c76a" stroke-width="2" stroke-dasharray="6 4"/><text x="452" y="109" fill="#f5c76a" font-size="16">NII 40</text><text x="170" y="168" fill="#f1eee8" font-size="16">NII 40 ÷ assets 1,000 = NIM 4.0%</text><text x="40" y="226" fill="#a5a29c" font-size="16">6 px = ₹1 cr · Pipal Bank, FY26</text></svg></figure>
+      <span class="eq">NIM = (interest earned − interest paid) ÷ average assets = (85 − 45) ÷ 1,000 = 4.0%</span>
+      <p>NIM is the bank’s gross margin. It moves with interest rates: when RBI cuts the repo rate, loan rates often reprice faster than deposits, and the spread narrows for a while. Banks differ on the denominator (all assets, or only interest-earning assets), so check which one a report uses.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Cheap money</p>
+      <h2>CASA: deposits that cost little</h2>
+      <p>Current and savings accounts (<b>CASA</b>) pay little or no interest; term deposits pay a lot more. Pipal’s CASA is ₹360 cr of its ₹900 cr, a <b>CASA ratio</b> of 40%, at 2%; its term deposits pay 7% <span class="tag">example</span>. Shift a tenth of deposits from CASA to term and the interest bill rises from ₹45 cr to ₹49.5 cr.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Two versions of Pipal's 900 crore of deposits: with 40 percent in current and savings accounts the yearly interest bill is 45 crore, with 30 percent it is 49.5 crore, drawn on a larger cost scale below each deposit bar"><text x="40" y="30" fill="#f1eee8" font-size="16">CASA 40% · NIM 4.0%</text><text x="40" y="60" fill="#a5a29c" font-size="16">deposits</text><rect x="170" y="42" width="216" height="26" fill="#f4a9c2"/><text x="178" y="60" fill="#202020" font-size="16">CASA 360</text><rect x="386" y="42" width="324" height="26" fill="#ec6a94"/><text x="394" y="60" fill="#202020" font-size="16">term 540</text><text x="40" y="93" fill="#a5a29c" font-size="16">cost</text><rect x="170" y="76" width="57.6" height="22" fill="#ffb59c"/><rect x="227.6" y="76" width="302.4" height="22" fill="#ff8059"/><text x="540" y="93" fill="#f1eee8" font-size="16">₹45 cr a year</text><text x="40" y="150" fill="#f1eee8" font-size="16">CASA 30% · NIM 3.55%</text><text x="40" y="180" fill="#a5a29c" font-size="16">deposits</text><rect x="170" y="162" width="162" height="26" fill="#f4a9c2"/><text x="178" y="180" fill="#202020" font-size="16">CASA 270</text><rect x="332" y="162" width="378" height="26" fill="#ec6a94"/><text x="340" y="180" fill="#202020" font-size="16">term 630</text><text x="40" y="213" fill="#a5a29c" font-size="16">cost</text><rect x="170" y="196" width="43.2" height="22" fill="#ffb59c"/><rect x="213.2" y="196" width="352.8" height="22" fill="#ff8059"/><text x="576" y="213" fill="#f1eee8" font-size="16">₹49.5 cr a year</text><text x="40" y="256" fill="#a5a29c" font-size="16">deposits 0.6 px = ₹1 cr · cost 8 px = ₹1 cr</text><text x="40" y="282" fill="#a5a29c" font-size="16">CASA at 2%, term deposits at 7%</text></svg></figure>
+      <p>Same loans, same deposits in total, and NIM falls from 4.0% to 3.55% because the funding mix changed. That is why a high, stable CASA ratio is a lasting advantage: it takes branches, salary accounts and payment habits that rivals cannot copy quickly (<a href="industry-and-moats-eli5.html" data-series-link="industry-and-moats-eli5">Part 17</a> on moats). Savings deposits can leave fast when rates rise elsewhere, so watch the trend, not one year.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The bank’s P&amp;L</p>
+      <h2>From spread to profit</h2>
+      <p>A bank’s P&amp;L (Part 3) runs in a different order. Start with NII ₹40 cr, add fees ₹10 cr, take off operating costs ₹18 cr: that leaves <b>pre-provision operating profit</b> (PPOP) of ₹32 cr. Then come <b>provisions</b>, money set aside for loans that will not be repaid: ₹12 cr. Tax at 25% leaves ₹15 cr <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 330" role="img" aria-label="A waterfall to one scale: net interest income of 40 crore and fees of 10 crore rise to 50, operating costs of 18, provisions of 12 and tax of 5 step down, leaving 15 crore of profit"><text x="40" y="48" fill="#a5a29c" font-size="16">net interest</text><rect x="180" y="30" width="400" height="24" fill="#76d5c1"/><text x="588" y="48" fill="#f1eee8" font-size="16">+40</text><text x="40" y="88" fill="#a5a29c" font-size="16">fees</text><rect x="580" y="70" width="100" height="24" fill="#76d5c1"/><text x="688" y="88" fill="#f1eee8" font-size="16">+10</text><text x="40" y="128" fill="#a5a29c" font-size="16">costs</text><rect x="500" y="110" width="180" height="24" fill="#ff8059"/><text x="492" y="128" text-anchor="end" fill="#f1eee8" font-size="16">−18</text><text x="40" y="168" fill="#a5a29c" font-size="16">provisions</text><rect x="380" y="150" width="120" height="24" fill="#ff8059"/><text x="372" y="168" text-anchor="end" fill="#f1eee8" font-size="16">−12</text><text x="40" y="208" fill="#a5a29c" font-size="16">tax</text><rect x="330" y="190" width="50" height="24" fill="#ff8059"/><text x="322" y="208" text-anchor="end" fill="#f1eee8" font-size="16">−5</text><text x="40" y="248" fill="#a5a29c" font-size="16">profit</text><rect x="180" y="230" width="150" height="24" fill="#f5c76a"/><text x="338" y="248" fill="#f1eee8" font-size="16">15</text><text x="40" y="300" fill="#a5a29c" font-size="16">10 px = ₹1 cr · Pipal Bank, FY26</text></svg></figure>
+      <p>Costs over net revenue is the <b>cost-to-income ratio</b>: 18 ÷ 50 = 36%. PPOP is what the bank earns before bad loans; provisions are where good and bad years differ most. Pipal’s profit is 1.5% of its assets (<b>return on assets</b>, ROA). With ₹10 of assets for every ₹1 of equity, that becomes a 15% ROE: in Part 10’s DuPont terms, ROE = ROA × equity multiplier.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">When loans go bad</p>
+      <h2>The 90-day rule</h2>
+      <p>RBI tells banks exactly when a loan stops counting as good. A term loan becomes a <b>non-performing asset</b> (NPA) when interest or principal is overdue for more than 90 days; a credit card when the minimum due is unpaid 90 days after the due date <span class="tag">public</span>. Classification is borrower-wise: one bad loan makes all that borrower’s loans NPAs.</p>
+      <figure><svg viewBox="0 0 800 210" role="img" aria-label="A timeline of days an instalment is overdue: up to day 90 the loan is merely overdue, from day 91 it is a non-performing asset, substandard for up to twelve months and doubtful after that"><text x="176" y="34" fill="#f1eee8" font-size="16">NPA from day 91</text><path d="M168 40 L168 104" stroke="#f1eee8" stroke-width="2" fill="none"/><rect x="60" y="60" width="108" height="34" fill="#8a8680"/><text x="68" y="82" fill="#202020" font-size="16">overdue</text><rect x="168" y="60" width="438" height="34" fill="#ffb59c"/><text x="178" y="82" fill="#202020" font-size="16">substandard, up to 12 months</text><rect x="606" y="60" width="102" height="34" fill="#ff8059"/><text x="614" y="82" fill="#202020" font-size="16">doubtful</text><text x="60" y="124" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="168" y="124" text-anchor="middle" fill="#a5a29c" font-size="16">90</text><text x="606" y="124" text-anchor="middle" fill="#a5a29c" font-size="16">455</text><text x="60" y="160" fill="#a5a29c" font-size="16">days an instalment is overdue</text><text x="60" y="190" fill="#a5a29c" font-size="16">1.2 px = 1 day</text></svg></figure>
+      <p>A <b>substandard</b> asset has been an NPA for up to twelve months; after twelve months in that category it becomes <b>doubtful</b>; a <b>loss</b> asset is one where the bank or its auditors have identified the loss <span class="tag">public</span>. Once a loan is an NPA the bank books its interest only when it is actually received, and reverses interest charged but not collected <span class="tag">public</span>. The minimum provision for a substandard loan is 15% of what is outstanding, 25% if it is unsecured <span class="tag">public</span>; banks may set aside more.</p>
+      <details class="trace"><summary>Go deeper: where the rule lives</summary>
+        <p>Reserve Bank of India (Commercial Banks – Income Recognition, Asset Classification and Provisioning) Directions, 2025, dated 28 November 2025: paragraph 42 lists the NPA conditions (term loans overdue more than 90 days, overdraft or cash credit accounts “out of order” for 90 days, bills overdue more than 90 days, credit cards unpaid 90 days after the due date); paragraph 44 makes classification borrower-wise; paragraph 5 defines substandard, doubtful and loss; paragraphs 85–86 set the 15% and 25% provisions; paragraphs 125 and 132 put an NPA’s interest on a cash basis and require uncollected interest to be reversed. The page cited is RBI’s consolidated text, updated as on 1 October 2026.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Gross, net and coverage</p>
+      <h2>GNPA, NNPA and provision coverage</h2>
+      <p>This year ₹16 cr of Pipal’s loans went bad <span class="tag">example</span>. That is its <b>gross NPA</b> (GNPA): 16 ÷ ₹812 cr lent = 1.97%. It set aside ₹12 cr against them, so ₹4 cr is uncovered: the <b>net NPA</b> (NNPA), 4 ÷ ₹800 cr of net loans = 0.50%. Provisions over gross NPAs is the <b>provision coverage ratio</b> (PCR): 75%.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="The same 16 crore of bad loans covered two ways: Pipal sets aside 12 crore, leaving 4 crore uncovered, a coverage ratio of 75 percent; a thinly provided bank sets aside 6.4 crore, leaving 9.6 crore uncovered, 40 percent"><text x="170" y="30" fill="#f1eee8" font-size="16">Pipal: cover 75%</text><rect x="170" y="40" width="360" height="28" fill="#ff8059"/><text x="178" y="59" fill="#202020" font-size="16">provisions 12</text><rect x="530" y="40" width="120" height="28" fill="#ff8059" fill-opacity="0.12" stroke="#ff8059" stroke-width="2" stroke-dasharray="6 4"/><text x="540" y="59" fill="#ff8059" font-size="16">net 4</text><text x="662" y="59" fill="#f1eee8" font-size="16">PCR 75%</text><text x="170" y="110" fill="#f1eee8" font-size="16">Thin cover: 40%</text><rect x="170" y="120" width="192" height="28" fill="#ff8059"/><text x="178" y="139" fill="#202020" font-size="16">provisions 6.4</text><rect x="362" y="120" width="288" height="28" fill="#ff8059" fill-opacity="0.12" stroke="#ff8059" stroke-width="2" stroke-dasharray="6 4"/><text x="372" y="139" fill="#ff8059" font-size="16">net 9.6</text><text x="662" y="139" fill="#f1eee8" font-size="16">PCR 40%</text><path d="M170 166 L170 176 L650 176 L650 166" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="410" y="198" text-anchor="middle" fill="#a5a29c" font-size="16">gross bad loans ₹16 cr</text><text x="40" y="236" fill="#a5a29c" font-size="16">30 px = ₹1 cr</text></svg></figure>
+      <span class="eq">GNPA ratio = bad loans ÷ gross loans · NNPA = bad loans − provisions held · PCR = provisions held ÷ bad loans</span>
+      <p>The year’s provision charge divided by the loan book is the <b>credit cost</b>: 12 ÷ 800 = 1.5% <span class="tag">example</span>. Read the four together. A low GNPA with a low PCR leaves losses waiting in future years; a high PCR means today’s profit has already paid for them. The fresh flow of bad loans in a year, over the loans that started it good, is the <b>slippage ratio</b>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The cushion</p>
+      <h2>Capital adequacy: CRAR and CET1</h2>
+      <p>Equity is what absorbs losses before depositors lose anything. Regulators measure it against <b>risk-weighted assets</b> (RWA): each asset counts by how risky it is. Pipal’s G-secs and cash count 0%; its loans count 75% on average; ₹150 cr is added for operational and market risk <span class="tag">example</span>. RWA: ₹750 cr.</p>
+      <figure><svg viewBox="0 0 800 320" role="img" aria-label="Pipal's 1,000 crore of assets shrink to 750 crore of risk-weighted assets: loans count at 75 percent, G-secs and cash at zero, plus 150 crore for other risks; 100 crore of equity is 13.3 percent of that, above the 86 crore an 11.5 percent minimum needs"><text x="40" y="59" fill="#a5a29c" font-size="16">assets</text><rect x="170" y="40" width="480" height="28" fill="#8a8680"/><text x="178" y="59" fill="#202020" font-size="16">loans 800</text><rect x="650" y="40" width="90" height="28" fill="#a5a29c"/><text x="658" y="59" fill="#202020" font-size="16">G-secs</text><rect x="740" y="40" width="30" height="28" fill="#76d5c1"/><text x="40" y="129" fill="#a5a29c" font-size="16">RWA</text><rect x="170" y="110" width="360" height="28" fill="#8a8680"/><text x="178" y="129" fill="#202020" font-size="16">loans × 75%</text><rect x="530" y="110" width="90" height="28" fill="#57534f"/><text x="538" y="129" fill="#f1eee8" font-size="16">other</text><text x="632" y="129" fill="#f1eee8" font-size="16">RWA 750</text><text x="170" y="164" fill="#a5a29c" font-size="16">G-secs and cash count 0%</text><text x="40" y="219" fill="#a5a29c" font-size="16">capital</text><rect x="170" y="200" width="60" height="28" fill="#f5c76a"/><path d="M221.75 192 L221.75 236" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="242" y="219" fill="#f1eee8" font-size="16">equity 100 = 13.3% of RWA</text><text x="170" y="258" fill="#a5a29c" font-size="16">dashed: 11.5% of RWA = ₹86.25 cr</text><text x="40" y="300" fill="#a5a29c" font-size="16">0.6 px = ₹1 cr · example risk weights</text></svg></figure>
+      <p>Capital over RWA is the <b>capital to risk-weighted assets ratio</b> (CRAR, or capital adequacy ratio). The best-quality part, ordinary equity and reserves after deductions, is <b>Common Equity Tier 1</b> (CET1); certain perpetual bonds add Tier 1, and subordinated bonds and some provisions form Tier 2. Pipal has only equity, so its CRAR and CET1 are both 13.3% <span class="tag">example</span>. HDFC Bank’s report prints its own minimums: total capital 11.9% and CET1 8.4%, including a 2.5% capital conservation buffer and 0.4% because it is a systemically important bank <span class="tag">public</span>. Pipal’s 11.5% is that total without the 0.4%.</p>
+      <details class="trace"><summary>Go deeper: why a bank can run out of capital while profitable last year</summary>
+        <p>Every rupee of new provisions cuts profit, and through it equity, the numerator. Losses do not reduce RWA much, because the loan book is still there. A bank whose capital falls near the minimum must stop growing, raise new equity (diluting shareholders, <a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a>) or keep more of its profit instead of paying dividends. The lab shows how quickly that can happen.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Push bad loans through the bank</h2>
+      <p>Set how many of Pipal’s loans go bad this year and how much it provides against them <span class="tag">example</span>. Watch the money flow from provisions into profit, into equity and book value, and into capital above the minimum.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Set the bad year</p>
+          <div class="dl-grid">
+            <div class="dl-col">
+              <div class="control"><label for="bad">New bad loans this year: <output id="bad-o"></output></label><input id="bad" type="range" min="0" max="80" step="2" value="16"></div>
+              <div class="control"><label for="pcr">Provision coverage on them: <output id="pcr-o"></output></label><input id="pcr" type="range" min="40" max="100" step="5" value="75"></div>
+            </div>
+            <div class="dl-col">
+              <div class="presets">
+                <button type="button" class="secondary" data-p="base">Pipal’s FY26</button>
+                <button type="button" class="secondary" data-p="clean">Clean year</button>
+                <button type="button" class="secondary" data-p="cycle">Bad credit cycle</button>
+                <button type="button" class="secondary" data-p="thin">Bad cycle, thin provisions</button>
+              </div>
+            </div>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Follow the money</p>
+          <div class="dl-chart lab-chart"><svg id="labChart" viewBox="0 0 640 320" role="img" aria-label="Bars on one crore scale for new bad loans, provisions, profit after tax, book value and capital above the 11.5 percent minimum, updated by the sliders"></svg></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Read the ratios</p>
+          <div class="table-wrap"><table class="dash" id="dash"></table></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>One year, starting from Pipal’s accounts. PPOP stays ₹32 cr; the bad loans turn bad at year end, so this year’s interest was already earned (from next year each ₹1 cr of NPA earns nothing). Provisions = bad loans × coverage. Tax 25%, and a loss earns a 25% tax credit (in reality a deferred tax asset, which capital rules partly deduct). Opening equity ₹85 cr, no dividend. Gross loans stay ₹812 cr; net loans = 812 − provisions. RWA = 75% of net loans + ₹150 cr. The minimum is 11.5% of RWA. Each extra ₹1 of provision cuts net loans by ₹1, equity by ₹0.75 and tax paid by ₹0.25, so the balance sheet still balances. The price stays at ₹20, P/B 2.0 at the base.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Valuing a bank</p>
+      <h2>P/B against ROE</h2>
+      <p>For a bank, book value is mostly loans and bonds, at close to what they are worth if the loans are sound. So banks are priced on P/B (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>), and the P/B a bank deserves depends on how much it earns on that book. Pipal earns a 15% ROE and trades at ₹20, twice its ₹10 book value <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 360" role="img" aria-label="P/B against ROE: a dashed line shows the P/B a bank earns at each ROE if shareholders want 12.5 percent and growth is 10 percent; Pipal sits on it at 15 percent and 2.0; HDFC Bank's year-end points slide from ROE 17.4 percent and P/B 3.21 in FY23 to 14.3 percent and 2.00 in FY26"><path d="M90 40 L90 290 L740 290" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="78" y="295" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="78" y="235" text-anchor="end" fill="#a5a29c" font-size="16">1</text><text x="78" y="175" text-anchor="end" fill="#a5a29c" font-size="16">2</text><text x="78" y="115" text-anchor="end" fill="#a5a29c" font-size="16">3</text><text x="78" y="55" text-anchor="end" fill="#a5a29c" font-size="16">4</text><text x="90" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="220" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">12%</text><text x="350" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">14%</text><text x="480" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">16%</text><text x="610" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">18%</text><text x="740" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">20%</text><text x="740" y="342" text-anchor="end" fill="#a5a29c" font-size="16">ROE</text><text x="100" y="30" fill="#a5a29c" font-size="16">P/B</text><path d="M90 290 L740 50" stroke="#a5a29c" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="600" y="64" text-anchor="end" fill="#a5a29c" font-size="16">justified P/B, example</text><circle cx="526" cy="30" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="540" y="36" fill="#f1eee8" font-size="16">HDFC Bank</text><circle cx="656" cy="30" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="670" y="36" fill="#f1eee8" font-size="16">Pipal</text><circle cx="570.4" cy="97.4" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="584" y="92" fill="#f1eee8" font-size="16">FY23</text><circle cx="485.9" cy="140" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="474" y="136" text-anchor="end" fill="#f1eee8" font-size="16">FY24</text><circle cx="386.4" cy="122.6" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="374" y="118" text-anchor="end" fill="#f1eee8" font-size="16">FY25</text><circle cx="368.9" cy="170" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="357" y="166" text-anchor="end" fill="#f1eee8" font-size="16">FY26</text><circle cx="415" cy="170" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="428" y="190" fill="#f1eee8" font-size="16">Pipal 15%, 2.0</text></svg></figure>
+      <span class="eq">justified P/B = (ROE − growth) ÷ (cost of equity − growth) = (15% − 10%) ÷ (12.5% − 10%) = 2.0</span>
+      <p>The formula is the dividend discount model of <a href="discount-rate-eli5.html" data-series-link="discount-rate-eli5">Part 23</a> rearranged: a bank that earns more on its book than shareholders demand deserves more than book; one that earns less deserves less <span class="tag">example</span> for the 12.5% and 10%. HDFC Bank’s points <span class="tag">public</span> show the direction: as its ROE slipped from 17.4% to 14.3% over three years, the market cut its P/B from 3.21 to 2.00. Points need not sit on the line: the market’s cost of equity and growth hopes differ from ours, and change.</p>
+      <details class="trace"><summary>Go deeper: why not P/E alone?</summary>
+        <p>A bank can lift this year’s profit by providing less for bad loans, so P/E is easy to flatter for a while. Book value also moves with provisions, but the market can check it against NNPA and coverage. Use P/B with ROE, then check the quality of the book (GNPA, NNPA, PCR) before trusting either. P/E is still a useful second view (HDFC Bank: 15.05 at 31 March 2026 <span class="tag">public</span>).</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Higher profit, weaker bank</h2>
+      <p>Two banks each see ₹56 cr of loans go bad, 6.9% of the book <span class="tag">example</span>. One provides 75% and reports a loss of ₹7.5 cr. The other provides 40% and reports a profit of ₹7.2 cr. The second looks better and is worse: it still carries ₹33.6 cr of uncovered bad loans, more than a third of its ₹92.2 cr of equity, into next year.</p>
+      <figure><svg viewBox="0 0 800 260" role="img" aria-label="Two banks with the same 56 crore of bad loans: with 75 percent cover, profit is minus 7.5 crore and 14 crore is left uncovered; with 40 percent cover, profit is plus 7.2 crore but 33.6 crore is left uncovered"><path d="M300 20 L300 216" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40" y="48" fill="#a5a29c" font-size="16">profit · 75% cover</text><rect x="240" y="30" width="60" height="24" fill="#f5c76a"/><text x="232" y="48" text-anchor="end" fill="#f1eee8" font-size="16">−7.5</text><text x="40" y="88" fill="#a5a29c" font-size="16">profit · 40% cover</text><rect x="300" y="70" width="57.6" height="24" fill="#f5c76a"/><text x="366" y="88" fill="#f1eee8" font-size="16">+7.2</text><text x="40" y="158" fill="#a5a29c" font-size="16">uncovered · 75%</text><rect x="300" y="140" width="112" height="24" fill="#ff8059" fill-opacity="0.12" stroke="#ff8059" stroke-width="2" stroke-dasharray="6 4"/><text x="420" y="158" fill="#f1eee8" font-size="16">14</text><text x="40" y="198" fill="#a5a29c" font-size="16">uncovered · 40%</text><rect x="300" y="180" width="268.8" height="24" fill="#ff8059" fill-opacity="0.12" stroke="#ff8059" stroke-width="2" stroke-dasharray="6 4"/><text x="577" y="198" fill="#f1eee8" font-size="16">33.6</text><text x="40" y="244" fill="#a5a29c" font-size="16">8 px = ₹1 cr · both banks: ₹56 cr bad loans</text></svg></figure>
+      <p>So never read a bank’s profit without its coverage and its NNPA. A jump in profit that comes from lower provisions, not from higher PPOP, is borrowed from future years. The reverse also happens: a bank may build extra, general or floating provisions in a good year, which depresses profit now and protects it later.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Nine bank numbers, one card each</h2>
+      <div class="field-grid">
+        <div><b>NIM</b><span>NII ÷ average assets. The spread; falls for a while after rate cuts.</span><em>DIRECTORS’ REPORT · MD&amp;A</em></div>
+        <div><b>CASA ratio</b><span>Current and savings deposits ÷ all deposits. Cheaper, stickier funding.</span><em>MD&amp;A · SCHEDULE 3</em></div>
+        <div><b>Cost-to-income</b><span>Operating costs ÷ (NII + other income). Efficiency.</span><em>MD&amp;A</em></div>
+        <div><b>GNPA and NNPA</b><span>Bad loans before and after provisions, as % of loans.</span><em>NOTES · ASSET QUALITY</em></div>
+        <div><b>PCR</b><span>Provisions held ÷ GNPA. How much of the damage is already paid for.</span><em>NOTES · ASSET QUALITY</em></div>
+        <div><b>Credit cost and slippage</b><span>Provisions, and new bad loans, as % of loans. The cycle shows here first.</span><em>P&amp;L SCHEDULE 18 · NPA MOVEMENT</em></div>
+        <div><b>CRAR and CET1</b><span>Capital ÷ risk-weighted assets. Room to grow and to absorb losses.</span><em>NOTES · CAPITAL ADEQUACY</em></div>
+        <div><b>ROA and ROE</b><span>Profit ÷ assets, and ÷ equity. ROE = ROA × leverage.</span><em>10-YEAR HIGHLIGHTS</em></div>
+        <div><b>P/B</b><span>Price ÷ book value per share, read against ROE.</span><em>PARTS 14 AND 10</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>HDFC Bank, FY2026: the numbers</h2>
+      <p>HDFC Bank, standalone, year to 31 March 2026, ₹ crore <span class="tag">public</span>. Standalone is the bank itself; the consolidated group adds HDFC Life, HDFC AMC, HDFC Ergo and others (<a href="where-the-numbers-live-eli5.html" data-series-link="where-the-numbers-live-eli5">Part 2</a>). Ratios printed by the bank are marked “printed”; the rest are computed from its statements with the working shown.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th class="wk">Working</th><th>Value</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">EARNING</td></tr>
+          <tr><td>Net interest income</td><td class="wk">3,07,522.07 − 1,78,836.04</td><td class="val">₹1,28,686 cr</td><td class="pg">P. 359</td></tr>
+          <tr><td>NIM</td><td class="wk">printed, on average assets</td><td class="val">3.34%</td><td class="pg">P. 259</td></tr>
+          <tr><td>CASA ratio</td><td class="wk">(7,05,802 + 3,54,495) ÷ 31,05,251</td><td class="val">34.1%</td><td class="pg">P. 260</td></tr>
+          <tr><td>Cost-to-income</td><td class="wk">printed; includes one-offs</td><td class="val">38.0%</td><td class="pg">P. 259</td></tr>
+          <tr class="grp"><td colspan="4">BAD LOANS</td></tr>
+          <tr><td>Gross NPA</td><td class="wk">₹34,061 cr; printed ratio</td><td class="val">1.15%</td><td class="pg">PP. 403, 405</td></tr>
+          <tr><td>Net NPA</td><td class="wk">₹11,170 cr; printed ratio</td><td class="val">0.38%</td><td class="pg">PP. 403, 405</td></tr>
+          <tr><td>PCR</td><td class="wk">(34,061.19 − 11,169.54) ÷ 34,061.19</td><td class="val">67.2%</td><td class="pg">P. 405</td></tr>
+          <tr><td>Credit cost</td><td class="wk">loan-loss provisions 11,404.74 ÷ average loans 27,78,387</td><td class="val">0.41%</td><td class="pg">P. 238</td></tr>
+          <tr><td>Slippage</td><td class="wk">new NPAs 31,246.58 ÷ opening gross loans 26,43,510.83</td><td class="val">1.18%</td><td class="pg">P. 403</td></tr>
+          <tr class="grp"><td colspan="4">CAPITAL AND RETURNS</td></tr>
+          <tr><td>CET1</td><td class="wk">5,14,070.42 ÷ RWA 29,74,116.57</td><td class="val">17.28%</td><td class="pg">P. 383</td></tr>
+          <tr><td>CRAR</td><td class="wk">printed (Tier 1 17.73%)</td><td class="val">19.71%</td><td class="pg">P. 383</td></tr>
+          <tr><td>ROA</td><td class="wk">printed, on average assets</td><td class="val">1.94%</td><td class="pg">P. 253</td></tr>
+          <tr><td>ROE</td><td class="wk">printed, on average net worth</td><td class="val">14.29%</td><td class="pg">P. 238</td></tr>
+          <tr><td>Deposits + borrowings ÷ equity</td><td class="wk">(31,05,250 + 4,89,395) ÷ 5,62,901</td><td class="val">6.4×</td><td class="pg">P. 358</td></tr>
+        </tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="HDFC Bank's 34,061 crore of gross NPAs split into 22,892 crore of specific provisions and 11,170 crore uncovered, a coverage of 67.2 percent, with 21,351 crore of floating provisions drawn separately; below, its CET1 of 17.28 percent and total capital of 19.71 percent against minimums of 8.4 and 11.9 percent"><text x="150" y="30" fill="#f1eee8" font-size="16">gross NPA ₹34,061 cr · PCR 67.2%</text><rect x="150" y="40" width="343.4" height="26" fill="#ff8059"/><text x="158" y="58" fill="#202020" font-size="16">provisions 22,892</text><rect x="493.4" y="40" width="167.5" height="26" fill="#ff8059" fill-opacity="0.12" stroke="#ff8059" stroke-width="2" stroke-dasharray="6 4"/><text x="503" y="58" fill="#ff8059" font-size="16">net 11,170</text><rect x="150" y="76" width="320.3" height="22" fill="#ffb59c"/><text x="158" y="93" fill="#202020" font-size="16">floating 21,351</text><text x="480" y="93" fill="#a5a29c" font-size="16">outside the PCR</text><text x="40" y="58" fill="#a5a29c" font-size="16">bad loans</text><text x="40" y="190" fill="#a5a29c" font-size="16">capital</text><rect x="150" y="172" width="518.4" height="26" fill="#f5c76a"/><text x="158" y="190" fill="#202020" font-size="16">CET1 17.28%</text><rect x="668.4" y="172" width="13.5" height="26" fill="#f5c76a" opacity="0.6"/><rect x="681.9" y="172" width="59.4" height="26" fill="#f5c76a" opacity="0.35"/><text x="741.3" y="162" text-anchor="end" fill="#f1eee8" font-size="16">total 19.71%</text><path d="M402 166 L402 210" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><path d="M507 166 L507 210" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="402" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">CET1 min 8.4%</text><text x="507" y="254" text-anchor="middle" fill="#a5a29c" font-size="16">total min 11.9%</text><text x="40" y="286" fill="#a5a29c" font-size="16">top: 0.015 px = ₹1 cr · bottom: 30 px = 1% of RWA</text></svg></figure>
+      <p><b>Read it as a story.</b> HDFC Bank’s spread is thinner than Pipal’s made-up 4%: NIM 3.34%, and the bank says loans repriced faster than deposits after RBI cut the repo rate by 1.25 points between February and December 2025 <span class="tag">public</span>. Bad loans are low (GNPA 1.15%, credit cost about 0.4%), and on top of the 67.2% specific cover it holds ₹21,351.28 cr of floating provisions, ₹9,000 cr of them added in FY26. Capital is far above the minimum. That combination, a modest ROE on a very safe book, is what a P/B of 2.0 is pricing.</p>
+      <details class="trace"><summary>Go deeper: the one-offs in FY26</summary>
+        <p>Other income of ₹62,532.57 cr includes a ₹9,179.4 cr gain from selling part of the bank’s stake in its subsidiary HDB Financial Services; total provisions of ₹23,389.58 cr include the ₹9,000 cr floating provision. The two roughly cancel before tax, so profit after tax of ₹74,671.30 cr (+10.9%) is a fair base, but ratios that use only one of them (cost-to-income, total credit cost of 0.84%) move. The bank also prints its own “debt equity ratio” of 0.53 on its own definition, a reminder that D/E means little for a bank (pp. 259–260). HDFC Bank’s report also discloses a legal review and a Dubai branch matter that came up in March 2026; this page does not assess them.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>The 2023 merger breaks comparisons</h2>
+      <p>On 1 July 2023 HDFC Ltd, a mortgage lender, merged into HDFC Bank <span class="tag">public</span>. Loans jumped 55% and equity 57% in FY24. Any growth rate that spans FY23 to FY24 mixes two companies, and ratios before and after describe different balance sheets.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="HDFC Bank's loans in lakh crore at each year end: 16.0 in FY23, 24.8 in FY24 after the merger, 26.2 in FY25 and 29.4 in FY26, while ROE fell from 17.4 to 14.3 percent"><text x="40" y="48" fill="#a5a29c" font-size="16">FY23</text><rect x="110" y="30" width="288.1" height="26" fill="#8a8680"/><text x="118" y="48" fill="#202020" font-size="16">₹16.0 lakh cr</text><text x="408" y="48" fill="#f5c76a" font-size="16">ROE 17.4%</text><text x="760" y="48" text-anchor="end" fill="#f1eee8" font-size="16">merger, 1 July 2023</text><path d="M110 67 L760 67" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="6 5"/><text x="40" y="98" fill="#a5a29c" font-size="16">FY24</text><rect x="110" y="80" width="447.3" height="26" fill="#8a8680"/><text x="118" y="98" fill="#202020" font-size="16">₹24.8 lakh cr</text><text x="567" y="98" fill="#f5c76a" font-size="16">ROE 16.1%</text><text x="40" y="148" fill="#a5a29c" font-size="16">FY25</text><rect x="110" y="130" width="471.5" height="26" fill="#8a8680"/><text x="118" y="148" fill="#202020" font-size="16">₹26.2 lakh cr</text><text x="591" y="148" fill="#f5c76a" font-size="16">ROE 14.6%</text><text x="40" y="198" fill="#a5a29c" font-size="16">FY26</text><rect x="110" y="180" width="528.7" height="26" fill="#8a8680"/><text x="118" y="198" fill="#202020" font-size="16">₹29.4 lakh cr</text><text x="649" y="198" fill="#f5c76a" font-size="16">ROE 14.3%</text><text x="40" y="236" fill="#a5a29c" font-size="16">18 px = ₹1 lakh cr of loans</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>31 March</th><th>Book value a share</th><th>Price</th><th>P/B</th><th>ROE</th></tr></thead>
+        <tbody>
+          <tr><td>FY23</td><td class="val">₹251.09</td><td class="val">₹804.78</td><td class="val">3.21</td><td class="val">17.39%</td></tr>
+          <tr><td>FY24</td><td class="val">₹289.76</td><td class="val">₹723.95</td><td class="val">2.50</td><td class="val">16.09%</td></tr>
+          <tr><td>FY25</td><td class="val">₹327.64</td><td class="val">₹914.10</td><td class="val">2.79</td><td class="val">14.56%</td></tr>
+          <tr><td>FY26</td><td class="val">₹365.68</td><td class="val">₹731.55</td><td class="val">2.00</td><td class="val">14.29%</td></tr>
+        </tbody>
+      </table></div>
+      <ol class="checks">
+        <li><b>Per-share figures are bonus-adjusted.</b> HDFC Bank issued 1:1 bonus shares in FY26, and its ten-year table restates earlier book value, EPS and price on the new share count (<a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a>). Mixing old and new figures halves or doubles them.</li>
+        <li><b>The merger brought borrowings with it.</b> HDFC Ltd’s borrowings still stood at ₹2,25,019.44 cr on 31 March 2026, about 80% due after FY2028 <span class="tag">public</span>. As they are repaid and replaced by deposits, funding costs and the loan-to-deposit mix change.</li>
+        <li><b>Compare like with like.</b> FY24 onwards is one, larger bank; FY23 and earlier is another. Compare post-merger years with each other first, and treat any growth rate that crosses the merger as a mix of growth and acquisition.</li>
+      </ol>
+      <p class="source-note">Real figures are frozen at FY2026: HDFC Bank’s audited standalone financial statements and ten-year highlights in its Integrated Annual Report 2025-26 (printed pages as cited; prices are NSE closes as printed on p. 238), and RBI’s Commercial Banks Income Recognition, Asset Classification and Provisioning Directions, 2025. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before buying a bank</h2>
+      <ol class="checks">
+        <li><b>How wide is the spread, and why?</b> NIM, and how much of the funding is CASA.</li>
+        <li><b>How good are the loans?</b> GNPA, NNPA and slippage over several years, not one.</li>
+        <li><b>Has profit already paid for the bad loans?</b> PCR, credit cost, and any floating provisions.</li>
+        <li><b>How much room is left?</b> CET1 and CRAR against the bank’s own minimums.</li>
+        <li><b>Is the price fair for the return?</b> P/B against a sustainable ROE, not this year’s.</li>
+      </ol>
+      <p>Banks take deposits and are watched closely by RBI. Part 30, “NBFCs and insurers”, turns to lenders that cannot take most deposits, where the cost of funds and the gap between when money is borrowed and when it comes back matter even more, and to insurers, whose accounts read differently again.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A bank is borrowed money lent out again: judge the spread it earns, the share of loans that go bad and how much of that is already provided for, the capital left to absorb the rest, and then pay a P/B that its ROE can justify.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- Pipal Bank lab (fictional). Every output is computed here from the two sliders.
+    const GROSS=812, PPOP=32, TAX=0.25, OPEN_EQ=85, SHARES=10, PRICE=20, AVG_LOANS=800, AVG_ASSETS=1000, OTHER_RWA=150, RW=0.75, MIN_TOTAL=0.115;
+    function compute(s,pcr){
+      const P=s*pcr/100, pbt=PPOP-P, pat=pbt*(1-TAX), eq=OPEN_EQ+pat, net=GROSS-P, rwa=RW*net+OTHER_RWA;
+      return {s,pcr,P,pbt,pat,eq,bvps:eq/SHARES,gnpa:100*s/GROSS,nnpa:100*(s-P)/net,cc:100*P/AVG_LOANS,
+        cet1:100*eq/rwa,rwa,head:eq-MIN_TOTAL*rwa,roe:100*pat/eq,roa:100*pat/AVG_ASSETS,pb:PRICE/(eq/SHARES),px2:2*eq/SHARES,unprov:s-P};
+    }
+    const BASE=compute(16,75);
+    const labConfig={format:v=>String(v),min:-40,max:120,step:40};
+    const PRESETS={
+      base:{v:[16,75],t:'Pipal’s FY26: ₹16 cr goes bad, 75% is provided. Profit ₹15 cr, ROE 15%, CET1 13.3%, P/B 2.0 at ₹20.'},
+      clean:{v:[4,75],t:'Clean year: only ₹4 cr goes bad. Provisions fall to ₹3 cr and profit rises to ₹21.75 cr, though PPOP did not change at all.'},
+      cycle:{v:[56,75],t:'Bad credit cycle: 6.9% of loans go bad. Provisions of ₹42 cr exceed PPOP, so the bank makes a loss, book value falls to ₹7.75 and CET1 drops below the 11.5% minimum.'},
+      thin:{v:[56,40],t:'Same bad loans, thin provisions: profit stays positive and capital looks fine, but NNPA is 4.3% and ₹33.6 cr of bad loans is still uncovered. The loss has been postponed, not avoided.'}};
+    const f1=v=>v.toFixed(1), f2=v=>v.toFixed(2), cr=v=>(v<0?'−':'')+'₹'+Math.abs(v).toFixed(2).replace(/\.00$/,'')+' cr', pc=(v,d)=>(v<0?'−':'')+Math.abs(v).toFixed(d==null?2:d)+'%';
+    function draw(){
+      const s=+$('bad').value, pcr=+$('pcr').value, r=compute(s,pcr);
+      $('bad-o').textContent='₹'+s+' cr ('+pc(r.gnpa,1)+' of loans)'; $('pcr-o').textContent=pcr+'%';
+      // chart: one scale for all ₹ crore bars
+      const X0=190,X1=610,lo=labConfig.min,hi=labConfig.max,sx=v=>X0+(Math.min(hi,Math.max(lo,v))-lo)*(X1-X0)/(hi-lo),z=sx(0);
+      const rows=[['new bad loans',r.s,'#8a8680'],['provisions',r.P,'#ff8059'],['profit after tax',r.pat,'#f5c76a'],['book value',r.eq,'#f5c76a'],['capital above min.',r.head,'#f5c76a']];
+      let g=`<path d="M${z.toFixed(1)} 10 L${z.toFixed(1)} 258" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      rows.forEach(([lab,v,c],i)=>{const y=14+i*48,e=sx(v),x=Math.min(z,e),w=Math.abs(e-z);
+        g+=T(14,y+19,lab,'start',MUTC)+`<rect data-v="${v.toFixed(2)}" x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="26" fill="${c}"${i===4&&v<0?' opacity="0.55"':''}/>`;
+        const txt=(v<0?'−':'')+Math.abs(v).toFixed(1);
+        g+= v<0 ? T(x-6,y+19,txt,'end') : T(e+6,y+19,txt,'start');});
+      for(let t=lo;t<=hi;t+=labConfig.step) g+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="282" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;
+      g+=T(14,310,'₹ crore · one scale','start',MUTC);
+      $('labChart').innerHTML=g;
+      // ratio table: Pipal's FY26 against this scenario
+      const tbl=[['Gross NPA',pc(BASE.gnpa),pc(r.gnpa)],['Net NPA',pc(BASE.nnpa),pc(r.nnpa)],['Provision coverage',BASE.pcr+'%',s>0?pcr+'%':'—'],['Credit cost',pc(BASE.cc),pc(r.cc)],
+        ['Profit after tax',cr(BASE.pat),cr(r.pat)],['ROE',pc(BASE.roe,1),pc(r.roe,1)],['CET1 (min 11.5%)',pc(BASE.cet1),pc(r.cet1)+(r.cet1<11.5?' ▲ below':'')],
+        ['Book value a share','₹'+f2(BASE.bvps),'₹'+f2(r.bvps)],['P/B at ₹20',f2(BASE.pb),f2(r.pb)],['Price at P/B 2.0','₹'+f2(BASE.px2),'₹'+f2(r.px2)]];
+      $('dash').innerHTML='<thead><tr><th>Ratio</th><th>FY26 base</th><th>This year</th></tr></thead><tbody>'+tbl.map(([a,b,c])=>`<tr><td>${a}</td><td class="val">${b}</td><td class="now">${c}</td></tr>`).join('')+'</tbody>';
+      const L=[['Provisions = bad loans × coverage',s+' × '+pcr+'% = '+cr(r.P)],
+        ['Profit before tax = PPOP − provisions',PPOP+' − '+f2(r.P)+' = '+cr(r.pbt)],
+        ['Profit after tax = PBT × 75%',f2(r.pbt)+' × 0.75 = '+cr(r.pat)],
+        ['Equity = opening 85 + profit',OPEN_EQ+' + '+f2(r.pat)+' = '+cr(r.eq)],
+        ['Book value a share = equity ÷ 10 cr shares','₹'+f2(r.bvps)],
+        ['Net loans = 812 − provisions',cr(GROSS-r.P)],
+        ['RWA = 75% × net loans + 150',cr(r.rwa)],
+        ['CET1 = equity ÷ RWA',pc(r.cet1)],
+        ['Capital above min. = equity − 11.5% × RWA',f2(r.eq)+' − '+f2(MIN_TOTAL*r.rwa)+' = '+cr(r.head)],
+        ['GNPA = bad loans ÷ 812',pc(r.gnpa)],
+        ['NNPA = (bad loans − provisions) ÷ net loans',f2(r.unprov)+' ÷ '+f2(GROSS-r.P)+' = '+pc(r.nnpa)],
+        ['Credit cost = provisions ÷ 800',pc(r.cc)],
+        ['ROE = profit ÷ closing equity',pc(r.roe,1)],
+        ['P/B = ₹20 ÷ book value a share',f2(r.pb)]];
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:Object.values(r).every(Number.isFinite),...r};
+    }
+    ['bad','pcr'].forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=PRESETS[b.dataset.p];$('bad').value=p.v[0];$('pcr').value=p.v[1];draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
