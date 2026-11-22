@@ -1,5 +1,30 @@
 window.PUBLISHED = [
   {
+    "id": "sum-of-the-parts-eli5",
+    "title": "Conglomerates and special cases",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 27: sum of the parts, holding-company discounts, dividend models and NAV",
+    "bullets": [
+      "Value a group business by business, then take net debt off once: Ramu's parts give ₹101 a share",
+      "Holding companies trade below their holdings (Bajaj Holdings 55% below NAV); dividend models break when growth reaches the discount rate"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SEGMENTS",
+      "MULTIPLES",
+      "EV",
+      "NET DEBT",
+      "PER SHARE"
+    ],
+    "file": "explainers/sum-of-the-parts-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three gold rectangles whose widths are each business’s EBITDA and heights its multiple, so their areas are their values, stacked into one column for the whole group\"><path d=\"M24 120H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"30\" y=\"50\" width=\"120\" height=\"70\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"160\" y=\"70\" width=\"30\" height=\"50\" fill=\"#f5c76a\" opacity=\"0.75\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"200\" y=\"80\" width=\"20\" height=\"40\" fill=\"#f5c76a\" opacity=\"0.5\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"250\" y=\"49.3\" width=\"26\" height=\"70.7\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"250\" y=\"36.7\" width=\"26\" height=\"12.6\" fill=\"#f5c76a\" opacity=\"0.75\" stroke=\"#202020\" stroke-width=\"1.5\"/><rect x=\"250\" y=\"30\" width=\"26\" height=\"6.7\" fill=\"#f5c76a\" opacity=\"0.5\" stroke=\"#202020\" stroke-width=\"1.5\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"140\" fill=\"#a5a29c\">SUM OF PARTS</text><text x=\"230\" y=\"30\" text-anchor=\"end\" fill=\"#f5c76a\">PART 27</text></g></svg>",
+    "part": 27
+  },
+  {
     "id": "relative-valuation-eli5",
     "title": "Relative valuation and P/E bands",
     "category": "Monetary Architecture",
