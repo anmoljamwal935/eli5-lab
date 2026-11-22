@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "relative-valuation-eli5",
+    "title": "Relative valuation and P/E bands",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 26: peer multiples, P/E bands, and why re-ratings move prices",
+    "bullets": [
+      "A P/E is a DCF in shorthand: compare only with peers that grow, earn and borrow alike",
+      "Price = EPS × P/E, so a re-rating can add or erase a year of earnings growth"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PEERS",
+      "P/E BAND",
+      "RE-RATING"
+    ],
+    "file": "explainers/relative-valuation-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A P/E band: Ramu’s price dots wander between lines of EPS times 16, 20 and 24, which fan out to a hollow FY27 estimate\">\n<polygon points=\"40.0,79.0 86.0,72.5 132.0,64.4 178.0,56.2 224.0,46.4 270.0,34.2 270.0,65.4 224.0,73.6 178.0,80.1 132.0,85.6 86.0,91.0 40.0,95.4\" fill=\"#c3b8ff\" opacity=\"0.18\"/>\n<path d=\"M30 132 L290 132\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/>\n<polyline points=\"40.0,79.0 86.0,72.5 132.0,64.4 178.0,56.2 224.0,46.4\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\"/>\n<polyline points=\"224.0,46.4 270.0,34.2\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\" stroke-dasharray=\"4 3\"/>\n<polyline points=\"40.0,87.2 86.0,81.8 132.0,75.0 178.0,68.2 224.0,60.0\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"2.5\" opacity=\"1\"/>\n<polyline points=\"224.0,60.0 270.0,49.8\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"2.5\" opacity=\"1\" stroke-dasharray=\"4 3\"/>\n<polyline points=\"40.0,95.4 86.0,91.0 132.0,85.6 178.0,80.1 224.0,73.6\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\"/>\n<polyline points=\"224.0,73.6 270.0,65.4\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" opacity=\"0.7\" stroke-dasharray=\"4 3\"/>\n<circle cx=\"40.0\" cy=\"91.3\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"86.0\" cy=\"91.0\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"132.0\" cy=\"69.7\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"178.0\" cy=\"56.2\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"224.0\" cy=\"60.0\" r=\"4.5\" fill=\"#f5c76a\" stroke=\"#202020\" stroke-width=\"1.5\"/>\n<circle cx=\"270.0\" cy=\"49.8\" r=\"4.5\" fill=\"#202020\" stroke=\"#f5c76a\" stroke-width=\"2\"/>\n<g font-family=\"monospace\" font-size=\"9\"><text x=\"30\" y=\"30\" fill=\"#f5c76a\">PART 26</text><text x=\"290\" y=\"30\" text-anchor=\"end\" fill=\"#a5a29c\">P/E BAND</text></g>\n</svg>",
+    "part": 26
+  },
+  {
     "id": "reverse-dcf-eli5",
     "title": "Reverse DCF",
     "category": "Monetary Architecture",
