@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "reverse-dcf-eli5",
+    "title": "Reverse DCF",
+    "category": "Monetary Architecture",
+    "minutes": 15,
+    "summary": "Part 25: what growth today's price already assumes, solved and checked",
+    "bullets": [
+      "Run the DCF backwards: find the growth that makes value equal the price",
+      "Then test it against the record, the market and the discount rate"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "PRICE",
+      "DCF",
+      "IMPLIED GROWTH"
+    ],
+    "file": "explainers/reverse-dcf-eli5.html",
+    "date": "2026-11-22",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A gold curve of share value rising with growth, crossed by a dashed lavender price line; a dashed line drops from the crossing to the growth the price implies\"><path d=\"M30 22V125H290\" stroke=\"#57534f\" fill=\"none\"/><polyline points=\"30.0,109.9 36.5,109.3 43.0,108.7 49.5,108.1 56.0,107.5 62.5,106.8 69.0,106.0 75.5,105.2 82.0,104.4 88.5,103.5 95.0,102.6 101.5,101.5 108.0,100.5 114.5,99.3 121.0,98.1 127.5,96.8 134.0,95.4 140.5,94.0 147.0,92.4 153.5,90.7 160.0,89.0 166.5,87.1 173.0,85.1 179.5,82.9 186.0,80.7 192.5,78.3 199.0,75.7 205.5,73.0 212.0,70.1 218.5,67.0 225.0,63.7 231.5,60.3 238.0,56.6 244.5,52.7 251.0,48.6 257.5,44.2 264.0,39.6 270.5,34.7\" fill=\"none\" stroke=\"#f5c76a\" stroke-width=\"2.5\"/><path d=\"M30 77.5H290\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\" fill=\"none\"/><path d=\"M194.5 82.5V125\" stroke=\"#c3b8ff\" stroke-width=\"1.5\" stroke-dasharray=\"2 3\" fill=\"none\"/><circle cx=\"194.5\" cy=\"77.5\" r=\"4\" fill=\"#c3b8ff\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"36\" y=\"71.5\" fill=\"#c3b8ff\">PRICE</text><text x=\"200.5\" y=\"139\" fill=\"#c3b8ff\">IMPLIED GROWTH</text><text x=\"44\" y=\"32\" fill=\"#f5c76a\">PART 25</text></g></svg>",
+    "part": 25
+  },
+  {
     "id": "dcf-step-by-step-eli5",
     "title": "DCF, step by step",
     "category": "Monetary Architecture",
