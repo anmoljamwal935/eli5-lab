@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conglomerates and special cases — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (costs, capex) | gold #f5c76a = what belongs to shareholders (profit, EBITDA, value, NAV, dividends)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 27: three shades of gold = the three businesses of one group (solid packaged tea, 75% cafés, 50% offices); pale gold = book value at cost, or a dividend before discounting. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{background:var(--surface);padding:16px 18px;outline:1px solid var(--border)}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eq b{color:var(--fg)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:6.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    /* Part 27 lab layout: one column of numbered steps (lab layout rule, as Part 15's .dashlab) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .presets button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .dashlab .seg{display:grid;grid-template-columns:9rem 1fr 1fr;gap:6px 28px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+    .dashlab .seg:last-of-type{border-bottom:0}
+    .dashlab .seg-n{font-size:15px;color:var(--fg)}
+    .dashlab .seg-n small{display:block;font:11px/1.4 var(--font-mono);color:var(--muted)}
+    .dashlab .seg .steps{margin:0}
+    .dashlab .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .control input[type=range]{display:block;width:100%}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:4px}
+    .dashlab .lab-chart{margin-top:16px}
+    .dashlab .lab-chart svg{display:block;width:100%;max-width:640px;height:auto}
+    .dashlab .lab-chart svg text{font-family:Outfit,system-ui,sans-serif}
+    .dashlab .readout{margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}
+    .dashlab .readout b{color:var(--fg);font-weight:600}
+    .dashlab #msg:empty{display:none}
+    .dashlab details.trace{margin-top:16px}
+    @media (max-width:700px){.dashlab .seg{grid-template-columns:1fr;gap:8px}.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.eli5-study-container table.rep{min-width:0}.rep td.wk,.rep th.wk{display:none}.rep td,.rep th{padding:8px 6px}}
+  </style>
+</head>
+<body data-series-id="sum-of-the-parts-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 18 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Conglomerates and special cases</h1>
+      <p class="lede">One multiple fits a company that does one thing. A group of different businesses is valued piece by piece and added up; a holding company often trades below what it owns; and two special tools, dividend models and net asset value, fit steady payers and asset-heavy companies.</p>
+      <p class="source-note">Built from this series’ example accounts for Ramu Chai Ltd, the arithmetic of sum-of-the-parts and dividend valuation, Bajaj Holdings &amp; Investment Ltd’s 81st Annual Report 2025-26 as filed with BSE, and NSE’s closing prices for 30 March 2026 · <a href="https://www.bseindia.com/xml-data/corpfiling/AttachHis/518f3118-1e3f-4950-9c5f-522427c796c7.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> defines enterprise value (EV), net debt, EV/EBITDA, dividends per share and sustainable growth; <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a> splits Ramu’s sales into three channels; <a href="governance-and-ownership-eli5.html" data-series-link="governance-and-ownership-eli5">Part 19</a> gives the Ramu family 55% of the shares. Part 21, “Corporate actions and dilution”, spins the cafés off in a demerger, and Part 24, “DCF, step by step”, values Ramu at ₹76.7 a share with a 12% cost of equity from Part 23. This part covers the cases one DCF or one multiple handles badly. Facts carry a tag: <span class="tag">public</span> is a figure from a filing or the exchange, <span class="tag">example</span> is a made-up but consistent number for our teaching company, Ramu Chai Ltd, or its owners. Amounts are ₹ crore (cr) unless they are per share. Go deeper boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: EBITDA, value, NAV, dividends</span>
+        <span><i style="background:#f5c76a;opacity:.5"></i>pale gold: book value at cost, or a dividend before discounting</span>
+        <span><i style="background:#ec6a94"></i>what is owed: net debt</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, market cap, multiples</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>One multiple for three businesses</h2>
+      <p>At ₹100 a share the market values all of Ramu at 12.5 times EBITDA (EV 1,060 ÷ EBITDA 85, <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>). But Ramu is three businesses with different economics <span class="tag">example</span>: packaged tea through shops keeps 20% of its sales as EBITDA, the cafés 12% and offices and institutions 13.3%.</p>
+      <figure><svg viewBox="0 0 800 342" role="img" aria-label="Three teal sales bars on one scale for Ramu’s three businesses, each with its gold EBITDA share inside: packaged tea keeps 20 percent of sales, the cafés 12 percent and offices 13.3 percent"><text x="40" y="60" text-anchor="start" fill="#f1eee8" font-size="16">Packaged tea</text><rect x="200" y="40" width="420" height="28" fill="#76d5c1"/><rect x="200" y="40" width="84" height="28" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="632" y="60" text-anchor="start" fill="#f1eee8" font-size="16">20.0% margin</text><text x="200" y="94" text-anchor="start" fill="#a5a29c" font-size="16">sales ₹300 cr · EBITDA ₹60 cr</text><text x="40" y="152" text-anchor="start" fill="#f1eee8" font-size="16">Cafés</text><rect x="200" y="132" width="175" height="28" fill="#76d5c1"/><rect x="200" y="132" width="21" height="28" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="387" y="152" text-anchor="start" fill="#f1eee8" font-size="16">12.0% margin</text><text x="200" y="186" text-anchor="start" fill="#a5a29c" font-size="16">sales ₹125 cr · EBITDA ₹15 cr</text><text x="40" y="244" text-anchor="start" fill="#f1eee8" font-size="16">Offices</text><rect x="200" y="224" width="105" height="28" fill="#76d5c1"/><rect x="200" y="224" width="14" height="28" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="317" y="244" text-anchor="start" fill="#f1eee8" font-size="16">13.3% margin</text><text x="200" y="278" text-anchor="start" fill="#a5a29c" font-size="16">sales ₹75 cr · EBITDA ₹10 cr</text><text x="40" y="322" text-anchor="start" fill="#a5a29c" font-size="16">1.4 px = ₹1 cr · gold = EBITDA, inside sales</text></svg></figure>
+      <p>A buyer would pay a different multiple for each: more for a branded, growing tea business, less for rented cafés or contract supply to offices. One blended multiple hides that mix, and it moves whenever the mix changes, even if no business changes.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Sum of the parts</p>
+      <h2>Value each business, then add</h2>
+      <p>A <b>sum-of-the-parts</b> (SOTP) valuation gives each business its own multiple, usually taken from listed companies that do only that thing (Part 26, “Relative valuation and P/E bands”, covers choosing peers). Ramu’s examples <span class="tag">example</span>: packaged tea at 14 times EBITDA, cafés at 10 times, offices at 8 times.</p>
+      <figure><svg viewBox="0 0 800 334" role="img" aria-label="Each business drawn as a gold rectangle whose width is its EBITDA and whose height is its multiple, so the area is its value: packaged tea 60 by 14 is 840, cafés 15 by 10 is 150, offices 10 by 8 is 80, together 1,070 crore"><rect x="60" y="66" width="360" height="196" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="240" y="32" text-anchor="middle" fill="#f1eee8" font-size="16">Packaged tea</text><text x="240" y="54" text-anchor="middle" fill="#a5a29c" font-size="16">60 × 14×</text><text x="240" y="170" text-anchor="middle" fill="#202020" font-size="16">840</text><rect x="450" y="122" width="90" height="140" fill="#f5c76a" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="495" y="88" text-anchor="middle" fill="#f1eee8" font-size="16">Cafés</text><text x="495" y="110" text-anchor="middle" fill="#a5a29c" font-size="16">15 × 10×</text><text x="495" y="198" text-anchor="middle" fill="#202020" font-size="16">150</text><rect x="570" y="150" width="60" height="112" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="600" y="116" text-anchor="middle" fill="#f1eee8" font-size="16">Offices</text><text x="600" y="138" text-anchor="middle" fill="#a5a29c" font-size="16">10 × 8×</text><text x="600" y="212" text-anchor="middle" fill="#202020" font-size="16">80</text><text x="650" y="212" text-anchor="start" fill="#a5a29c" font-size="16">area = value</text><text x="650" y="252" text-anchor="start" fill="#f1eee8" font-size="16">= ₹1,070 cr</text><text x="60" y="292" text-anchor="start" fill="#a5a29c" font-size="16">width: EBITDA, 6 px = ₹1 cr</text><text x="60" y="316" text-anchor="start" fill="#a5a29c" font-size="16">height: EV/EBITDA multiple, 14 px = 1×</text></svg></figure>
+      <span class="eq">Segment value = segment EBITDA × its EV/EBITDA multiple: 60 × 14 + 15 × 10 + 10 × 8 = 1,070</span>
+      <p>Packaged tea is 71% of the EBITDA but 79% of the value, because it earns the highest multiple. The blended multiple comes out at 1,070 ÷ 85 = 12.6 times, close to the market’s 12.5, so here the market and the parts roughly agree. They need not.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">From the parts to a share</p>
+      <h2>Subtract the debt, divide by shares</h2>
+      <p>Each segment value is an <b>enterprise value</b>: what the business is worth to everyone who funds it. The debt belongs to the whole group, not to any one business, so take it off once at the end. Ramu’s net debt is 60 (borrowings 100 less cash 40) <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 284" role="img" aria-label="On one scale: the enterprise value of 1,070 crore built from the three businesses, the same length split into 1,010 crore of equity and 60 crore of net debt, and the market cap of 1,000 crore just short of the equity bar"><text x="60" y="34" text-anchor="start" fill="#a5a29c" font-size="16">Enterprise value ₹1,070 cr</text><rect x="60" y="44" width="504" height="30" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="68" y="65" text-anchor="start" fill="#202020" font-size="16">packaged tea 840</text><rect x="564" y="44" width="90" height="30" fill="#f5c76a" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="572" y="65" text-anchor="start" fill="#202020" font-size="16">150</text><rect x="654" y="44" width="48" height="30" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="662" y="65" text-anchor="start" fill="#202020" font-size="16">80</text><text x="60" y="112" text-anchor="start" fill="#a5a29c" font-size="16">less net debt: equity for shareholders</text><rect x="60" y="122" width="606" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="68" y="143" text-anchor="start" fill="#202020" font-size="16">equity ₹1,010 cr</text><rect x="666" y="122" width="36" height="30" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="712" y="143" text-anchor="start" fill="#f1eee8" font-size="16">net debt 60</text><text x="60" y="190" text-anchor="start" fill="#a5a29c" font-size="16">the market’s price for the shares</text><rect x="60" y="200" width="600" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="68" y="221" text-anchor="start" fill="#202020" font-size="16">market cap ₹1,000 cr</text><text x="60" y="264" text-anchor="start" fill="#a5a29c" font-size="16">0.6 px = ₹1 cr</text></svg></figure>
+      <span class="eq">EV 1,070 − net debt 60 = equity 1,010 → ÷ 10 crore shares = ₹101 a share, against a price of ₹100</span>
+      <p>At ₹101 against ₹100, the parts say the price is about right. An SOTP is most useful when the gap is wide, and when something could close it: a demerger, like Part 21’s spin-off of the cafés into “Ramu Cafés Ltd”, lets the market price each piece on its own.</p>
+      <details class="trace"><summary>Go deeper: what an SOTP needs, and where it goes wrong</summary>
+        <p>The company must report each business separately. Listed companies publish segment results in their accounts (Ind AS 108); TCPL’s four segments, India Beverages, India Foods, International and Non-branded, are in <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a>. Common traps: head-office costs that belong to no segment (value them too, as a negative part, or they vanish); a loss-making segment, which a multiple of a negative EBITDA cannot value; a stake in a listed subsidiary that the company owns only partly (count only its share); and choosing each peer multiple to suit the answer.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Holding companies</p>
+      <h2>Why holding companies trade below their stakes</h2>
+      <p>Suppose the Ramu family holds its 5.5 crore Ramu shares through a listed company, “Ramu Family Holdings” <span class="tag">example</span>. At ₹100 the stake is worth ₹550 cr, and it owns nothing else. Yet its own shares trade at a market cap of ₹385 cr: 30% less than the one thing it owns.</p>
+      <figure><svg viewBox="0 0 800 216" role="img" aria-label="A gold bar of 550 crore for the holding company’s 55 percent stake in Ramu at 100 rupees a share, and below it a lavender bar of 385 crore for the holding company’s own market cap, with the missing 165 crore dashed: a 30 percent discount"><text x="60" y="34" text-anchor="start" fill="#a5a29c" font-size="16">5.5 crore Ramu shares × ₹100</text><rect x="60" y="44" width="550" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="68" y="65" text-anchor="start" fill="#202020" font-size="16">stake ₹550 cr</text><text x="60" y="112" text-anchor="start" fill="#a5a29c" font-size="16">Ramu Family Holdings’ own market cap</text><rect x="60" y="122" width="385" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="68" y="143" text-anchor="start" fill="#202020" font-size="16">market cap ₹385 cr</text><rect x="445" y="122" width="165" height="30" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="5 4"/><text x="622" y="143" text-anchor="start" fill="#f1eee8" font-size="16">30% discount</text><text x="60" y="196" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹1 cr</text></svg></figure>
+      <span class="eq">Holding-company discount = 1 − market cap ÷ value of holdings = 1 − 385 ÷ 550 = 30%</span>
+      <ol class="checks">
+        <li><b>You cannot get at the stake.</b> The holding company has no plan to sell or hand out its Ramu shares, so its owners get only the dividends it passes on.</li>
+        <li><b>Tax if it ever sells.</b> Selling would mean capital gains tax on the rise since it bought, so the stake is worth less to its owners than its price.</li>
+        <li><b>Running costs and a second layer of control.</b> Salaries and fees come off before anything reaches the owners, and the family controls both layers.</li>
+        <li><b>Fewer buyers.</b> Holding-company shares often trade thinly, and many funds would rather own Ramu directly.</li>
+      </ol>
+      <p>A discount is normal, not a mistake to be corrected. It can narrow if the holding company pays out more, buys back its own shares or hands out its stakes, and it can widen. Buying a holding company “for 70 paise on the rupee” works only if something changes.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Net asset value</p>
+      <h2>NAV: assets at today’s prices</h2>
+      <p>For a company whose value lies in what it owns, the method is <b>net asset value</b> (NAV): every asset at today’s market value, less everything owed. Book value (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>) often carries assets at what they cost. Say Ramu Family Holdings got its shares long ago at their ₹10 face value <span class="tag">example</span>: book ₹55 cr, NAV ₹550 cr.</p>
+      <figure><svg viewBox="0 0 800 294" role="img" aria-label="Three bars on one scale for Ramu Family Holdings: book value at cost of 55 crore, net asset value at market prices of 550 crore, and its market cap of 385 crore, 0.7 times its NAV"><text x="60" y="34" text-anchor="start" fill="#a5a29c" font-size="16">in its books, at cost</text><rect x="60" y="44" width="55" height="30" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="127" y="65" text-anchor="start" fill="#f1eee8" font-size="16">book ₹55 cr</text><text x="60" y="112" text-anchor="start" fill="#a5a29c" font-size="16">assets at market value, less debts</text><rect x="60" y="122" width="550" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="68" y="143" text-anchor="start" fill="#202020" font-size="16">NAV ₹550 cr</text><text x="60" y="190" text-anchor="start" fill="#a5a29c" font-size="16">what its own shares fetch</text><rect x="60" y="200" width="385" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="68" y="221" text-anchor="start" fill="#202020" font-size="16">market cap ₹385 cr</text><text x="457" y="221" text-anchor="start" fill="#f1eee8" font-size="16">0.7 × NAV</text><text x="60" y="274" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹1 cr</text></svg></figure>
+      <p>NAV fits holding and investment companies, property companies whose land was bought years ago, and other asset-heavy businesses where the assets could be sold one by one. The question becomes the price against NAV: here 0.7 times. NAV says what the assets are worth, not what they earn, so it suits companies the market values for their assets more than their profit.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Build Ramu’s sum of the parts</h2>
+      <p>Each business has its own EBITDA and its own multiple <span class="tag">example</span>. Start from a case, then change one business at a time and watch the value a share move. The defaults are the base case above. Step 4 puts the result through Ramu Family Holdings.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Choose a case</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="base" aria-pressed="true">Base case</button>
+            <button type="button" class="secondary" data-p="one" aria-pressed="false">One multiple for the group</button>
+            <button type="button" class="secondary" data-p="demerge" aria-pressed="false">Cafés demerged and re-rated</button>
+            <button type="button" class="secondary" data-p="derate" aria-pressed="false">Packaged tea de-rated</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Value each business</p>
+          <div class="seg">
+            <div class="seg-n">Packaged tea<small>shops, 20% margin</small></div>
+            <div class="steps"><span class="stl">EBITDA</span><button type="button" class="secondary" data-st="et" data-d="-1" aria-label="Lower packaged tea EBITDA">−</button><output id="et-o" role="status"></output><button type="button" class="secondary" data-st="et" data-d="1" aria-label="Raise packaged tea EBITDA">+</button></div>
+            <div class="control"><label for="mt">Multiple: <output id="mt-o"></output></label><input id="mt" type="range" min="4" max="20" step="0.5" value="14"></div>
+          </div>
+          <div class="seg">
+            <div class="seg-n">Cafés<small>Ramu’s own cafés</small></div>
+            <div class="steps"><span class="stl">EBITDA</span><button type="button" class="secondary" data-st="ec" data-d="-1" aria-label="Lower cafés EBITDA">−</button><output id="ec-o" role="status"></output><button type="button" class="secondary" data-st="ec" data-d="1" aria-label="Raise cafés EBITDA">+</button></div>
+            <div class="control"><label for="mc">Multiple: <output id="mc-o"></output></label><input id="mc" type="range" min="4" max="20" step="0.5" value="10"></div>
+          </div>
+          <div class="seg">
+            <div class="seg-n">Offices<small>and institutions</small></div>
+            <div class="steps"><span class="stl">EBITDA</span><button type="button" class="secondary" data-st="eo" data-d="-1" aria-label="Lower offices EBITDA">−</button><output id="eo-o" role="status"></output><button type="button" class="secondary" data-st="eo" data-d="1" aria-label="Raise offices EBITDA">+</button></div>
+            <div class="control"><label for="mo">Multiple: <output id="mo-o"></output></label><input id="mo" type="range" min="4" max="20" step="0.5" value="8"></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · From the parts to a share</p>
+          <div class="dl-grid"><div><div class="steps"><span class="stl">Net debt (borrowings less cash)</span><button type="button" class="secondary" data-st="nd" data-d="-1" aria-label="Lower net debt">−</button><output id="nd-o" role="status"></output><button type="button" class="secondary" data-st="nd" data-d="1" aria-label="Raise net debt">+</button></div></div></div>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 600 330" role="img" aria-label="A waterfall in rupees a share: the three businesses stack up to the enterprise value, net debt is taken off, leaving the value a share, drawn against the market price of 100 rupees"></svg></div>
+          <p class="msg" id="verdict" role="status" aria-live="polite"></p>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Hold it through a holding company</p>
+          <div class="dl-grid"><div class="control"><label for="hd">Ramu Family Holdings’ discount: <output id="hd-o"></output></label><input id="hd" type="range" min="0" max="60" step="1" value="30"></div></div>
+          <div class="lab-chart"><svg id="hcChart" viewBox="0 0 600 190" role="img" aria-label="Bars in crore: the holding company’s 5.5 crore Ramu shares at the market price and at your sum-of-the-parts value, and the holding company’s market cap after the chosen discount"></svg></div>
+          <p class="readout" id="hcOut"></p>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>Each segment value is its EBITDA times its multiple; the three add to the enterprise value. Net debt is taken off once, for the whole group, and the rest is split over 10 crore shares. No head-office costs, minority stakes or taxes on a break-up are modelled. Packaged tea’s EBITDA never goes below ₹30 cr and net debt never above ₹100 cr, so the equity is always positive. In step 4 the holding company owns 5.5 crore Ramu shares and nothing else, has no debt, and its market cap is the stake at the market price of ₹100 less the discount you choose.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Dividend discount model</p>
+      <h2>Value only the dividends</h2>
+      <p>For a steady payer, value only what owners receive: every future dividend, discounted at the <b>cost of equity</b>, the return owners require (12% for Ramu, from Part 23). If the dividend grows at the same rate for ever, the endless sum has a short formula. Ramu paid ₹2.00 for FY26 <span class="tag">example</span>; at 8% growth the next is ₹2.16.</p>
+      <figure><svg viewBox="0 0 800 346" role="img" aria-label="Twenty pale gold bars for Ramu’s dividend rising from 2.16 rupees by 8 percent a year to 9.32 rupees in year 20, each with a solid bar inside for what it is worth today at 12 percent, which shrinks slowly; the first 20 years are worth 27.91 rupees and all years 54 rupees"><path d="M66 270 L716 270" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="56" y="276" text-anchor="end" fill="#a5a29c" font-size="16">₹0</text><text x="56" y="176" text-anchor="end" fill="#a5a29c" font-size="16">₹5</text><text x="56" y="76" text-anchor="end" fill="#a5a29c" font-size="16">₹10</text><rect x="72" y="226.8" width="26" height="43.2" fill="#f5c76a" opacity="0.35"/><rect x="72" y="231.429" width="26" height="38.5714" fill="#f5c76a"/><rect x="104" y="223.344" width="26" height="46.656" fill="#f5c76a" opacity="0.35"/><rect x="104" y="232.806" width="26" height="37.1939" fill="#f5c76a"/><rect x="136" y="219.612" width="26" height="50.3885" fill="#f5c76a" opacity="0.35"/><rect x="136" y="234.134" width="26" height="35.8655" fill="#f5c76a"/><rect x="168" y="215.58" width="26" height="54.4196" fill="#f5c76a" opacity="0.35"/><rect x="168" y="235.415" width="26" height="34.5846" fill="#f5c76a"/><rect x="200" y="211.227" width="26" height="58.7731" fill="#f5c76a" opacity="0.35"/><rect x="200" y="236.651" width="26" height="33.3494" fill="#f5c76a"/><rect x="232" y="206.525" width="26" height="63.475" fill="#f5c76a" opacity="0.35"/><rect x="232" y="237.842" width="26" height="32.1584" fill="#f5c76a"/><rect x="264" y="201.447" width="26" height="68.553" fill="#f5c76a" opacity="0.35"/><rect x="264" y="238.99" width="26" height="31.0099" fill="#f5c76a"/><rect x="296" y="195.963" width="26" height="74.0372" fill="#f5c76a" opacity="0.35"/><rect x="296" y="240.098" width="26" height="29.9024" fill="#f5c76a"/><rect x="328" y="190.04" width="26" height="79.9602" fill="#f5c76a" opacity="0.35"/><rect x="328" y="241.166" width="26" height="28.8344" fill="#f5c76a"/><rect x="360" y="183.643" width="26" height="86.357" fill="#f5c76a" opacity="0.35"/><rect x="360" y="242.195" width="26" height="27.8046" fill="#f5c76a"/><rect x="392" y="176.734" width="26" height="93.2656" fill="#f5c76a" opacity="0.35"/><rect x="392" y="243.188" width="26" height="26.8116" fill="#f5c76a"/><rect x="424" y="169.273" width="26" height="100.727" fill="#f5c76a" opacity="0.35"/><rect x="424" y="244.146" width="26" height="25.8541" fill="#f5c76a"/><rect x="456" y="161.215" width="26" height="108.785" fill="#f5c76a" opacity="0.35"/><rect x="456" y="245.069" width="26" height="24.9307" fill="#f5c76a"/><rect x="488" y="152.512" width="26" height="117.488" fill="#f5c76a" opacity="0.35"/><rect x="488" y="245.96" width="26" height="24.0403" fill="#f5c76a"/><rect x="520" y="143.113" width="26" height="126.887" fill="#f5c76a" opacity="0.35"/><rect x="520" y="246.818" width="26" height="23.1817" fill="#f5c76a"/><rect x="552" y="132.962" width="26" height="137.038" fill="#f5c76a" opacity="0.35"/><rect x="552" y="247.646" width="26" height="22.3538" fill="#f5c76a"/><rect x="584" y="121.999" width="26" height="148.001" fill="#f5c76a" opacity="0.35"/><rect x="584" y="248.445" width="26" height="21.5555" fill="#f5c76a"/><rect x="616" y="110.159" width="26" height="159.841" fill="#f5c76a" opacity="0.35"/><rect x="616" y="249.214" width="26" height="20.7856" fill="#f5c76a"/><rect x="648" y="97.372" width="26" height="172.628" fill="#f5c76a" opacity="0.35"/><rect x="648" y="249.957" width="26" height="20.0433" fill="#f5c76a"/><rect x="680" y="83.5617" width="26" height="186.438" fill="#f5c76a" opacity="0.35"/><rect x="680" y="250.673" width="26" height="19.3275" fill="#f5c76a"/><text x="85" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">year 1</text><text x="693" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">year 20</text><text x="72" y="40" text-anchor="start" fill="#a5a29c" font-size="16">dividend when paid: ₹2.16, growing 8%</text><text x="72" y="66" text-anchor="start" fill="#f1eee8" font-size="16">worth today at 12%: shrinking</text><text x="72" y="108" text-anchor="start" fill="#f1eee8" font-size="16">first 20 years: ₹27.91</text><text x="72" y="134" text-anchor="start" fill="#f5c76a" font-size="16">all years, for ever: ₹54</text><text x="72" y="326" text-anchor="start" fill="#a5a29c" font-size="16">20 px = ₹1 a share</text></svg></figure>
+      <span class="eq">Value = next year’s dividend ÷ (cost of equity − growth) = 2.00 × 1.08 ÷ (12% − 8%) = 2.16 ÷ 0.04 = ₹54</span>
+      <p>Each later dividend is bigger, but worth a little less today, because 12% discounting outpaces 8% growth. The first 20 years give only ₹27.91; the other half of the ₹54 comes after year 20. At 10% growth the same formula gives 2.20 ÷ 0.02 = ₹110.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Where the formula breaks</p>
+      <h2>When growth meets the discount rate</h2>
+      <p>The divisor is the gap between the cost of equity and growth. As growth climbs towards 12% the gap shrinks to nothing and the value shoots up <span class="tag">example</span>. Ramu’s sustainable growth from <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>, ROE 20% × retention 60%, is exactly 12%: the formula would divide by zero.</p>
+      <figure><svg viewBox="0 0 800 340" role="img" aria-label="A gold curve of value a share against growth for ever, for Ramu’s 2 rupee dividend at a 12 percent cost of equity: 16.7 rupees at zero growth, 54 at 8 percent, 110 at 10 percent, then shooting up towards a dashed rose line at 12 percent where the formula breaks"><path d="M90 30 L90 270 L760 270" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="90" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="310" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">4%</text><text x="530" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">8%</text><text x="750" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">12%</text><text x="78" y="276" text-anchor="end" fill="#a5a29c" font-size="16">₹0</text><text x="78" y="186" text-anchor="end" fill="#a5a29c" font-size="16">₹100</text><text x="78" y="96" text-anchor="end" fill="#a5a29c" font-size="16">₹200</text><polyline points="90.0,255.0 95.5,254.9 101.0,254.7 106.5,254.6 112.0,254.4 117.5,254.3 123.0,254.1 128.5,254.0 134.0,253.8 139.5,253.6 145.0,253.5 150.5,253.3 156.0,253.1 161.5,253.0 167.0,252.8 172.5,252.6 178.0,252.4 183.5,252.2 189.0,252.0 194.5,251.8 200.0,251.6 205.5,251.4 211.0,251.2 216.5,251.0 222.0,250.8 227.5,250.6 233.0,250.4 238.5,250.1 244.0,249.9 249.5,249.6 255.0,249.4 260.5,249.1 266.0,248.9 271.5,248.6 277.0,248.4 282.5,248.1 288.0,247.8 293.5,247.5 299.0,247.2 304.5,246.9 310.0,246.6 315.5,246.3 321.0,246.0 326.5,245.6 332.0,245.3 337.5,244.9 343.0,244.6 348.5,244.2 354.0,243.8 359.5,243.4 365.0,243.0 370.5,242.6 376.0,242.2 381.5,241.7 387.0,241.3 392.5,240.8 398.0,240.3 403.5,239.8 409.0,239.3 414.5,238.8 420.0,238.2 425.5,237.6 431.0,237.0 436.5,236.4 442.0,235.8 447.5,235.1 453.0,234.5 458.5,233.8 464.0,233.0 469.5,232.3 475.0,231.5 480.5,230.7 486.0,229.8 491.5,228.9 497.0,228.0 502.5,227.0 508.0,226.0 513.5,224.9 519.0,223.8 524.5,222.6 530.0,221.4 535.5,220.1 541.0,218.7 546.5,217.3 552.0,215.8 557.5,214.2 563.0,212.5 568.5,210.7 574.0,208.8 579.5,206.8 585.0,204.6 590.5,202.3 596.0,199.8 601.5,197.1 607.0,194.3 612.5,191.2 618.0,187.8 623.5,184.1 629.0,180.2 634.5,175.8 640.0,171.0 645.5,165.7 651.0,159.8 656.5,153.2 662.0,145.8 667.5,137.4 673.0,127.8 678.5,116.7 684.0,103.8 689.5,88.5 695.0,70.2" fill="none" stroke="#f5c76a" stroke-width="3"/><path d="M750 44 L750 270" stroke="#ec6a94" stroke-width="2" stroke-dasharray="6 5" fill="none"/><text x="738" y="32" text-anchor="end" fill="#ec6a94" font-size="16">growth = 12%: breaks</text><circle cx="530" cy="221.4" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="544" y="255.4" text-anchor="start" fill="#f1eee8" font-size="16">8% → ₹54</text><circle cx="640" cy="171.0" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="624" y="159" text-anchor="end" fill="#f1eee8" font-size="16">10% → ₹110</text><circle cx="90" cy="255.0" r="6" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="104" y="232.997" text-anchor="start" fill="#f1eee8" font-size="16">0% → ₹16.7</text><text x="760" y="326" text-anchor="end" fill="#a5a29c" font-size="16">growth for ever, % a year</text><text x="100" y="22" text-anchor="start" fill="#a5a29c" font-size="16">value a share</text></svg></figure>
+      <p>That is not an infinitely valuable company. It is a broken assumption. No company can grow 12% a year for ever: the economy grows more slowly, so the company would end up bigger than the economy. Ramu can grow 12% for some years; the rate it holds for ever must sit well below its 12% cost of equity. The fix is the one Part 24 used: a few years of fast growth, then a lower rate for ever.</p>
+      <p class="note">A dividend model values only the cash paid out. Ramu keeps 60% of its profit and earns 20% on it, so a model that holds the payout at 40% misses value; that is one reason ₹54 sits so far below Part 24’s ₹76.7.</p>
+      <details class="trace"><summary>Go deeper: growth and payout are linked</summary>
+        <p>Growth comes from the profit kept back: growth = ROE × retention (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>). If Ramu’s growth slows to 8% while it still earns 20% on new money, it needs to keep only 8% ÷ 20% = 40% of its profit and could pay out 60%, not 40%. A careful dividend model raises the payout as growth slows. Above 12% the formula gives a negative number, which means nothing at all.</p>
+      </details>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Which method fits which company</h2>
+      <p>No single method fits every company. Use the one that matches where the value comes from, and check it against a second.</p>
+      <div class="field-grid">
+        <div><b>DCF: the default</b><span>Any business whose free cash flow you can forecast. Values the cash the business produces.</span><em>PART 24</em></div>
+        <div><b>Multiples: the quick check</b><span>One business with good listed peers, or the company’s own history.</span><em>PARTS 7, 14, 26</em></div>
+        <div><b>Sum of the parts</b><span>Groups of different businesses, conglomerates, companies with listed subsidiaries. Value each with its own multiple or DCF, then add.</span><em>THIS PART</em></div>
+        <div><b>Dividend discount model</b><span>Steady payers with predictable dividends: utilities with regulated returns, mature banks. For banks debt is raw material, so cash flow to the firm means little (Part 29).</span><em>THIS PART</em></div>
+        <div><b>Net asset value</b><span>Asset-heavy companies: holding and investment companies, property companies with old land, where assets could be sold separately.</span><em>THIS PART</em></div>
+        <div><b>A holding company</b><span>NAV of its stakes, then ask what discount is normal for it, and what could change it.</span><em>THIS PART</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Bajaj Holdings: a discount you can check</h2>
+      <p>Bajaj Holdings &amp; Investment Ltd (BHIL) is a holding company with no operations of its own and no borrowings. Its annual report lists the market value of everything it holds at 31 March 2026 <span class="tag">public</span>. Set that against what the market paid for BHIL itself on the last trading day of the year.</p>
+      <figure><svg viewBox="0 0 800 284" role="img" aria-label="Bajaj Holdings and Investment at 31 March 2026 on one scale: its holdings at market value of 215,779 crore, mostly Bajaj Auto and Bajaj Finserv, against its own market cap of 97,337 crore, 55 percent less, and the same holdings at cost of 21,660 crore"><text x="60" y="34" text-anchor="start" fill="#a5a29c" font-size="16">BHIL’s holdings at market value: ₹215,779 cr</text><rect x="60" y="44" width="272.19" height="30" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="68" y="65" text-anchor="start" fill="#202020" font-size="16">Bajaj Auto</text><rect x="332.192" y="44" width="324.36" height="30" fill="#f5c76a" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="340.192" y="65" text-anchor="start" fill="#202020" font-size="16">Bajaj Finserv</text><rect x="656.557" y="44" width="103.44" height="30" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="664.557" y="65" text-anchor="start" fill="#202020" font-size="16">other</text><text x="60" y="112" text-anchor="start" fill="#a5a29c" font-size="16">BHIL’s market cap: ₹97,337 cr</text><rect x="60" y="122" width="315.77" height="30" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><rect x="375.768" y="122" width="384.23" height="30" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="5 4"/><text x="567.884" y="143" text-anchor="middle" fill="#f1eee8" font-size="16">55% below</text><text x="60" y="190" text-anchor="start" fill="#a5a29c" font-size="16">the same holdings at cost: ₹21,660 cr</text><rect x="60" y="200" width="70.27" height="30" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="140.266" y="221" text-anchor="start" fill="#f1eee8" font-size="16">book</text><text x="60" y="264" text-anchor="start" fill="#a5a29c" font-size="16">1 px ≈ ₹308 cr · 31 March 2026 values</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Item, 31 March 2026</th><th class="wk">Working</th><th>Value</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Bajaj Auto shares</td><td class="wk">34.19% ownership, at market value</td><td class="val">₹83,904.82 cr</td><td class="pg">AR P. 31</td></tr>
+          <tr><td>Bajaj Finserv shares</td><td class="wk">38.28% ownership, at market value</td><td class="val">₹99,987.26 cr</td><td class="pg">AR P. 31</td></tr>
+          <tr><td>Other group companies</td><td class="wk">two unlisted insurers ₹21,857.51 cr, Maharashtra Scooters and others</td><td class="val">₹29,527.37 cr</td><td class="pg">AR P. 31</td></tr>
+          <tr><td>Financial investments, property</td><td class="wk">2,025 + property 335 (164 at cost)</td><td class="val">₹2,360 cr</td><td class="pg">AR P. 31</td></tr>
+          <tr><td>Holdings at market value</td><td class="wk">company’s grand total; cost 21,660</td><td class="val">₹215,779 cr</td><td class="pg">AR P. 31</td></tr>
+          <tr><td>BHIL’s market cap</td><td class="wk">11,12,93,510 shares × ₹8,746.00 close</td><td class="val">₹97,337 cr</td><td class="pg">AR P. 129 · NSE</td></tr>
+          <tr><td>Price ÷ NAV</td><td class="wk">97,337 ÷ 215,779</td><td class="val">0.45</td><td class="pg">—</td></tr>
+          <tr><td>Discount to NAV</td><td class="wk">1 − 0.45</td><td class="val">55%</td><td class="pg">—</td></tr>
+          <tr><td>Discount to two stakes alone</td><td class="wk">1 − 97,337 ÷ (83,904.82 + 99,987.26)</td><td class="val">47%</td><td class="pg">—</td></tr>
+        </tbody>
+      </table></div>
+      <p>BHIL’s shares were worth less than half of what it owned, and less than its stakes in just two listed companies. Every input can be checked: the market values sit in the company’s own table, and each stake value divided by that company’s 30 March close gives the shares held: about 9.55 crore Bajaj Auto shares at ₹8,781.50 and 61.27 crore Bajaj Finserv shares at ₹1,631.80. NSE did not trade on 31 March 2026; 1 April’s previous close matches 30 March’s.</p>
+      <p>The reasons are the ones in the holding-company panel, at a larger scale: holdings bought for ₹21,660 cr are now worth ₹215,779 cr, so any sale would carry a large tax bill, and BHIL’s purpose is to keep its stakes, not sell them. Whether 55% is too wide is a judgement this page does not make.</p>
+      <details class="trace"><summary>Go deeper: choices behind these numbers</summary>
+        <p>The table uses BHIL’s own holdings (standalone): 34.19% of Bajaj Auto and 38.28% of Bajaj Finserv (note 4, p. 123). Counting the shares its subsidiaries hold, the report gives 36.66% and 40.78%; those extra shares are not added here. The two unlisted insurers, Bajaj General Insurance and Bajaj Life Insurance (18.10% each), have no market price; their values are the company’s own. No tax on unrealised gains is deducted from the NAV. BHIL states it had no borrowings (p. 147). Its 11,12,93,510 shares did not change during the year (note 15, p. 129).</p>
+      </details>
+      <div class="field-grid">
+        <div><b>₹215,779 cr holdings</b><span>Market value of BHIL’s strategic and financial investments, against a cost of ₹21,660 cr</span><em>81ST ANNUAL REPORT · MD&amp;A TABLES 1–2 · P. 31</em></div>
+        <div><b>₹8,746.00 close</b><span>BAJAJHLDNG on 30 March 2026, the last session of FY26; 1 April’s previous close is the same</span><em>NSE BHAVCOPY · 30 MAR AND 1 APR 2026</em></div>
+        <div><b>11,12,93,510 shares</b><span>Issued and fully paid, ₹10 each, unchanged through FY26</span><em>NOTE 15 · P. 129</em></div>
+      </div>
+      <p class="source-note">Real figures: Bajaj Holdings &amp; Investment Ltd’s 81st Annual Report 2025-26 as filed with BSE (printed pages as cited), and NSE’s bhavcopy for 30 March 2026 and 1 April 2026. Ramu Chai Ltd and Ramu Family Holdings are fictional. Frozen at FY2026. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions for a group or a special case</h2>
+      <ol class="checks">
+        <li><b>One business or several?</b> If the segments differ, value them separately, and write down whose multiple you used for each.</li>
+        <li><b>What sits outside the segments?</b> Head-office costs, debt, minority stakes and listed subsidiaries owned only in part.</li>
+        <li><b>Is there a holding-company layer?</b> Measure the discount to NAV, compare it with its own history, and ask what could change it.</li>
+        <li><b>Does a special method fit?</b> Dividends for steady payers, NAV for asset-heavy companies, and growth always below the discount rate.</li>
+      </ol>
+      <p>Every method on this page gives one number from one set of guesses: ₹101 from the parts, ₹54 from dividends, ₹76.7 from Part 24’s DCF. Part 28, “Margin of safety and scenarios”, turns one number into bull, base and bear cases and asks how wrong you can afford to be.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Value a group piece by piece and take the debt off once; expect a holding company to trade below what it owns; and match the method to the company: dividends for steady payers, NAV for asset-heavy ones, with growth always below the discount rate.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLD='#f5c76a',ROSE='#ec6a94',LAV='#c3b8ff';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- SOTP lab. Ramu Chai's segment numbers (plan, Part 27 rows), all fictional examples.
+    const SHARES=10, PRICE=100, HOLD=5.5; // crore shares; ₹ a share; crore Ramu shares held by Ramu Family Holdings
+    const BASE={et:60,ec:15,eo:10,nd:60,mt:14,mc:10,mo:8};
+    const ST={et:{min:30,max:120,step:5},ec:{min:0,max:40,step:5},eo:{min:0,max:30,step:5},nd:{min:0,max:100,step:10}};
+    const S={...BASE};
+    const SL=['mt','mc','mo','hd'];
+    const PRESETS={
+      base:{v:{mt:14,mc:10,mo:8},t:'Base case: 14×, 10× and 8× on EBITDA of 60, 15 and 10. EV 1,070, less net debt 60, is equity of 1,010: ₹101 a share against a price of ₹100.'},
+      one:{v:{mt:12.5,mc:12.5,mo:12.5},t:'One multiple for the group: 12.5× on every business, the market’s own EV/EBITDA for Ramu. EV 1,062.5 and ₹100.25 a share: a single blended multiple simply gives back the price, and says nothing about the mix.'},
+      demerge:{v:{mt:14,mc:14,mo:8},t:'Cafés demerged and re-rated: listed on their own after a spin-off, the cafés fetch 14× (an example, not a forecast). Cafés 210, EV 1,130, ₹107 a share. An SOTP shows what a demerger could unlock, if the market agrees.'},
+      derate:{v:{mt:10,mc:10,mo:8},t:'Packaged tea de-rated: if the tea business’s multiple falls from 14× to 10×, it loses 240 of value and the share falls to ₹77. Most of the value sits in one business, so most of the risk does too.'}};
+    const f1=v=>(Math.round(v*10)/10).toFixed(1), f2=v=>(Math.round(v*100)/100).toFixed(2);
+    const fm=v=>(+v).toFixed(1)+'×';
+    const labConfig={format:v=>'₹'+v};
+    function niceStep(max){for(const s of [10,20,25,50,100,200]) if(max/s<=5) return s; return 500;}
+    function compute(){
+      const segs=[{k:'t',name:'Packaged tea',e:S.et,m:S.mt,op:'1'},{k:'c',name:'Cafés',e:S.ec,m:S.mc,op:'0.75'},{k:'o',name:'Offices',e:S.eo,m:S.mo,op:'0.5'}];
+      segs.forEach(s=>s.v=s.e*s.m);
+      const esum=segs.reduce((a,s)=>a+s.e,0), ev=segs.reduce((a,s)=>a+s.v,0), eq=ev-S.nd, ps=eq/SHARES;
+      const stake=HOLD*PRICE, look=HOLD*ps, hmc=stake*(1-S.hd/100);
+      return {segs,esum,ev,eq,ps,blend:ev/esum,stake,look,hmc};
+    }
+    function draw(){
+      SL.forEach(id=>{S[id]=+$(id).value;});
+      $('mt-o').textContent=fm(S.mt);$('mc-o').textContent=fm(S.mc);$('mo-o').textContent=fm(S.mo);$('hd-o').textContent=S.hd+'%';
+      Object.keys(ST).forEach(k=>{$(k+'-o').textContent='₹'+S[k]+' cr';
+        document.querySelector(`[data-st="${k}"][data-d="-1"]`).disabled=S[k]<=ST[k].min;
+        document.querySelector(`[data-st="${k}"][data-d="1"]`).disabled=S[k]>=ST[k].max;});
+      const r=compute();
+      // waterfall, ₹ a share, one scale function
+      const X0=170,X1=520,top0=Math.max(r.ev/SHARES,PRICE),step=niceStep(top0),top=Math.ceil(top0/step)*step,sx=v=>X0+(X1-X0)*v/top;
+      let s=`<path d="M${X0} 8 L${X0} 264" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      const row=(i,label,from,to,fill,op,dv,txt)=>{const y=14+i*36,x=sx(Math.min(from,to)),w=Math.abs(sx(to)-sx(from));
+        s+=T(14,y+19,label,'start',MUTC)+`<rect ${dv?`data-v="${f2(to)}" `:''}x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="26" fill="${fill}" opacity="${op}"/>`+T(Math.max(sx(from),sx(to))+6,y+19,txt);};
+      let run=0;
+      r.segs.forEach((g,i)=>{const a=run/SHARES,b=(run+g.v)/SHARES;row(i,g.name,i?a:0,b,GOLD,g.op,i===0,(i?'+':'')+'₹'+f1(g.v/SHARES));run+=g.v;});
+      row(3,'= Enterprise value',0,r.ev/SHARES,GOLD,'1',true,'₹'+f1(r.ev/SHARES));
+      {const y=14+4*36,x=sx(r.eq/SHARES),w=sx(r.ev/SHARES)-x;s+=T(14,y+19,'− Net debt','start',MUTC)+`<rect x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="26" fill="${ROSE}"/>`+T(sx(r.ev/SHARES)+6,y+19,'−₹'+f1(S.nd/SHARES));}
+      row(5,'= Value a share',0,r.ps,GOLD,'1',true,'₹'+f1(r.ps));
+      row(6,'Market price',0,PRICE,LAV,'1',true,'₹'+PRICE);
+      for(let v=0;v<=top+1e-9;v+=step) s+=`<text class="tick" data-v="${v}" x="${sx(v).toFixed(2)}" y="288" text-anchor="middle" fill="${MUTC}" font-size="16">₹${v}</text>`;
+      s+=T(14,318,'₹ a share · 10 crore shares','start',MUTC);
+      $('labChart').innerHTML=s;
+      const gap=100*(r.ps/PRICE-1);
+      $('verdict').textContent=`Value ₹${f1(r.ps)} a share, ${Math.abs(gap)<0.05?'the same as':(f1(Math.abs(gap))+'% '+(gap>0?'above':'below'))} the ₹100 price. Blended multiple ${f1(r.blend)}× on EBITDA of ₹${r.esum} cr; packaged tea is ${Math.round(100*r.segs[0].v/r.ev)}% of the enterprise value.`;
+      // holding company chart, ₹ crore
+      const H0=170,H1=520,hmax=Math.max(r.stake,r.look),hs=niceStep(hmax/1)*1,htop=Math.ceil(hmax/hs)*hs,hx=v=>H0+(H1-H0)*v/htop;
+      let h=`<path d="M${H0} 8 L${H0} 120" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      [['Stake at ₹100',r.stake,GOLD,'1'],['At your value',r.look,GOLD,'0.5'],['Holding co. cap',r.hmc,LAV,'1']].forEach(([l,v,c,o],i)=>{const y=14+i*36;
+        h+=T(14,y+19,l,'start',MUTC)+`<rect data-v="${f2(v)}" x="${H0}" y="${y}" width="${(hx(v)-H0).toFixed(2)}" height="26" fill="${c}" opacity="${o}"/>`+T(hx(v)+6,y+19,'₹'+Math.round(v));});
+      for(let v=0;v<=htop+1e-9;v+=hs) h+=`<text class="tick" data-v="${v}" x="${hx(v).toFixed(2)}" y="144" text-anchor="middle" fill="${MUTC}" font-size="16">${v}</text>`;
+      h+=T(14,176,'₹ crore','start',MUTC);
+      $('hcChart').innerHTML=h;
+      const lookDisc=100*(1-r.hmc/r.look);
+      $('hcOut').innerHTML=`At a ${S.hd}% discount, Ramu Family Holdings is priced at <b>₹${Math.round(r.hmc)} cr</b> for a stake worth ₹550 cr at the market price. Against the stake at your sum-of-the-parts value (5.5 crore × ₹${f1(r.ps)} = ₹${Math.round(r.look)} cr), the discount is <b>${f1(lookDisc)}%</b>.`;
+      // ledger
+      const rows=r.segs.map(g=>[g.name,`${g.e} × ${fm(g.m)} = ${f1(g.v)}`]).concat([
+        ['Enterprise value',r.segs.map(g=>f1(g.v)).join(' + ')+' = '+f1(r.ev)],
+        ['Blended multiple',`${f1(r.ev)} ÷ ${r.esum} = ${f2(r.blend)}×`],
+        ['Equity',`${f1(r.ev)} − net debt ${S.nd} = ${f1(r.eq)}`],
+        ['Value a share',`${f1(r.eq)} ÷ ${SHARES} crore shares = ₹${f2(r.ps)}`],
+        ['Against the price',`₹${f2(r.ps)} ÷ ₹100 − 1 = ${f1(gap)}%`],
+        ['Holding company',`5.5 × ₹100 = 550 × (1 − ${S.hd}%) = ${f1(r.hmc)}`]]);
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      const vals=[r.ev,r.eq,r.ps,r.blend,r.hmc,r.look];
+      window.labResults={valid:vals.every(Number.isFinite)&&r.eq>0,inputs:{...S},seg:Object.fromEntries(r.segs.map(g=>[g.k,g.v])),ev:r.ev,eq:r.eq,ps:r.ps,blend:r.blend,stake:r.stake,look:r.look,hmc:r.hmc};
+    }
+    const press=k=>document.querySelectorAll('.presets button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===k)));
+    SL.forEach(id=>$(id).addEventListener('input',()=>{if(id!=='hd'){press(null);$('msg').textContent='';}draw();}));
+    document.querySelectorAll('[data-st]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.st,d=ST[k];
+      S[k]=Math.min(d.max,Math.max(d.min,S[k]+(+b.dataset.d)*d.step));press(null);$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{const p=PRESETS[bt.dataset.p];
+      ['et','ec','eo','nd'].forEach(k=>S[k]=BASE[k]);['mt','mc','mo'].forEach(k=>$(k).value=p.v[k]);press(bt.dataset.p);draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
