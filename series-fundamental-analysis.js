@@ -43,7 +43,7 @@
     { id: 'analysing-banks-eli5', track: 'business', title: 'Banks', blurb: 'NIM, CASA, bad loans and capital: why normal ratios fail for lenders', file: 'analysing-banks-eli5.html' },
     { id: 'nbfcs-and-insurers-eli5', track: 'business', title: 'NBFCs and insurers', blurb: 'Cost of funds, asset-liability mismatch, VNB and embedded value', file: 'nbfcs-and-insurers-eli5.html' },
     { id: 'it-and-pharma-exporters-eli5', track: 'business', title: 'Exporters: IT services and pharma', blurb: 'Constant currency, the rupee, deal wins and USFDA inspections', file: 'it-and-pharma-exporters-eli5.html' },
-    { id: 'consumer-companies-eli5', track: 'business', title: 'Consumer companies', blurb: 'Volume vs price growth, rural demand, and why consumer P/Es run high' },
+    { id: 'consumer-companies-eli5', track: 'business', title: 'Consumer companies', blurb: 'Volume vs price growth, rural demand, and why consumer P/Es run high', file: 'consumer-companies-eli5.html' },
     { id: 'cyclicals-eli5', track: 'business', title: 'Cyclicals', blurb: 'Cement, steel and autos: buying at a high P/E and selling at a low one' },
     { id: 'utilities-psus-real-estate-eli5', track: 'business', title: 'Utilities, PSUs and real estate', blurb: 'Regulated returns, government owners, and pre-sales' },
     { id: 'loss-makers-and-ipos-eli5', track: 'business', title: 'Loss-making companies and IPOs', blurb: 'Reading a DRHP, unit economics, cash burn and runway' },
