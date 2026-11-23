@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Utilities, PSUs and real estate — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (tariffs billed, collections from buyers) | coral #ff8059 = money going out (fuel, costs, construction, tax)
+       gold #f5c76a = what belongs to shareholders (return on equity, profit, dividends, ownership) | rose #ec6a94 = what is owed (loans, customer advances, net debt)
+       lavender #c3b8ff = the market's view (not used in this part). */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:560px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .rep tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    @media (max-width:700px){.eli5-study-container table.rep{min-width:0}.rep td.pg,.rep th.pg{display:none}.rep td,.rep th{padding:8px 6px}}
+    /* Part 34 lab: one column of numbered steps (layout as in Part 15) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button,.sector-tabs button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .sector-tabs{display:flex;flex-wrap:wrap;gap:8px}
+    .dashlab .control{margin:0 0 14px;max-width:560px}
+    .dashlab .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .control input[type=range]{display:block;width:100%}
+    .dashlab details.trace{margin-top:16px}
+    .mcard{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+    .mcard li{border:1px solid var(--border);padding:12px 14px}
+    .mcard b{display:block;color:var(--fg);font-weight:500;font-size:16px}
+    .mcard span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .sector-note{margin:14px 0;font-size:15px;line-height:1.55;color:var(--muted)}
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 16px}
+    .readouts div{border:1px solid var(--border);padding:10px 12px}
+    .readouts b{display:block;font:600 20px/1.2 var(--font-mono);color:var(--fg)}
+    .readouts span{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted);margin-top:2px}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 34: regulated returns, government owners, and cash before revenue">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/utilities-psus-real-estate-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Utilities, PSUs and real estate">
+<meta property="og:description" content="Part 34: regulated returns, government owners, and cash before revenue">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/utilities-psus-real-estate-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/utilities-psus-real-estate-eli5.png?v=17c2969f">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Utilities, PSUs and real estate">
+<meta property="article:published_time" content="2026-11-23">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="utilities-psus-real-estate-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 22 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Utilities, PSUs and real estate</h1>
+      <p class="lede">In three kinds of company the usual reading of the accounts misleads. A power utility earns a return the regulator sets, on equity the regulator approves. A government-owned company answers to an owner who also makes policy. A property developer is paid years before it may count the sale. Each needs its own key numbers.</p>
+      <p class="source-note">Built from NTPC’s Integrated Annual Report 2025-26 and its Q4 FY26 earnings-call transcript (filed with the exchanges on 27 May 2026), DLF’s Annual Report 2025-26, and the Central Electricity Regulatory Commission’s (Terms and Conditions of Tariff) Regulations, 2024 · <a href="https://ntpc.co.in/sites/default/files/annual-report/complete-reports/Annual%20Report%202025-26%20%283%29.pdf">Read the source ↗</a> · <a href="https://www.dlf.in/annual_docket/Annual-report-2025-26.pdf">DLF report ↗</a> · <a href="https://cercind.gov.in/regulations/notification-2024.pdf">CERC regulations ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a> shows how accounting choices move profit, <a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a> measures return on equity (ROE), <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> net debt, <a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">Part 12</a> cash stuck in the business, and <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> dividends and payout. <a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a> covers new shares and dilution, and Part 33, “Cyclicals”, came just before this one. This part does not use Ramu Chai. Its teaching companies are <b>Chambal Power Ltd</b>, a power generator 60% owned by the government, and <b>Mahanadi Homes Ltd</b>, a housing developer. Facts carry a tag: <span class="tag">public</span> is from NTPC’s or DLF’s report, a stock-exchange filing or a regulation, <span class="tag">example</span> is a made-up number for the two fictional companies. All amounts are ₹ crore (cr). Real figures are frozen at FY2026. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: tariffs, collections</span>
+        <span><i style="background:#ff8059"></i>money going out: fuel, costs, construction, tax</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: return on equity, profit, dividends</span>
+        <span><i style="background:#ec6a94"></i>what is owed: loans, customer advances, net debt</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Revenue fell; profit rose 18%</h2>
+      <p>In FY26 NTPC, India’s largest power generator, sold less: revenue from operations fell 2.67% and its fuel bill fell 8.71%. Its profit after tax rose 17.88% <span class="tag">public</span>. For a tea company that would need a story about margins. For NTPC it is how the business is built: fuel is passed on to customers, and profit follows the equity the regulator lets it earn on.</p>
+      <figure><svg viewBox="0 0 800 240" role="img" aria-label="NTPC's FY26 changes against FY25 as bars from a zero line: revenue minus 2.67 percent, fuel cost minus 8.71 percent, profit after tax plus 17.88 percent"><path d="M420 28 L420 182" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40" y="60" fill="#a5a29c" font-size="16">revenue</text><rect x="382.6" y="40" width="37.4" height="28" fill="#76d5c1"/><text x="374" y="60" text-anchor="end" fill="#f1eee8" font-size="16">−2.67%</text><text x="40" y="110" fill="#a5a29c" font-size="16">fuel cost</text><rect x="298.1" y="90" width="121.9" height="28" fill="#ff8059"/><text x="290" y="110" text-anchor="end" fill="#f1eee8" font-size="16">−8.71%</text><text x="40" y="160" fill="#a5a29c" font-size="16">profit after tax</text><rect x="420" y="140" width="250.3" height="28" fill="#f5c76a"/><text x="678" y="160" fill="#f1eee8" font-size="16">+17.88%</text><text x="40" y="214" fill="#a5a29c" font-size="16">NTPC standalone, FY26 against FY25 · 14 px = 1 point</text></svg></figure>
+      <p>Three businesses break three habits. In a <b>regulated utility</b> profit is set by a rule, not by sales. In a <b>public sector undertaking</b> (PSU) the biggest shareholder is the government, which wants dividends, sells shares and makes policy. In <b>real estate</b> the cash arrives years before the revenue. The lab gives each one a card of the numbers that matter.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>A tariff built from costs plus a return</h2>
+      <p>Chambal Power runs one coal plant whose approved cost is ₹10,000 cr <span class="tag">example</span>. Its customers, state electricity distributors, pay a two-part tariff. The <b>capacity charge</b> pays the plant’s <b>annual fixed cost</b> (AFC): a return on equity, interest, depreciation, operation and maintenance (O&amp;M) and interest on working capital. The <b>energy charge</b> pays for the fuel burnt <span class="tag">public</span> for the rule.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="Chambal's 5,500 crore of revenue as a bar: a 2,200 crore capacity charge and a 3,300 crore energy charge; below it, on the same scale, what that pays for: fuel 3,300, other costs 950, interest 630 and the return on equity 620"><text x="40" y="59" fill="#a5a29c" font-size="16">billed</text><rect x="150" y="40" width="242" height="28" fill="#76d5c1"/><text x="158" y="59" fill="#202020" font-size="16">capacity 2,200</text><rect x="392" y="40" width="363" height="28" fill="#76d5c1" fill-opacity="0.55"/><text x="400" y="59" fill="#202020" font-size="16">energy charge 3,300</text><text x="40" y="119" fill="#a5a29c" font-size="16">covers</text><rect x="150" y="100" width="363" height="28" fill="#ff8059"/><text x="158" y="119" fill="#202020" font-size="16">fuel 3,300</text><rect x="513" y="100" width="104.5" height="28" fill="#ffb59c"/><text x="521" y="119" fill="#202020" font-size="16">costs 950</text><rect x="617.5" y="100" width="69.3" height="28" fill="#ec6a94"/><text x="625" y="119" fill="#202020" font-size="16">630</text><rect x="686.8" y="100" width="68.2" height="28" fill="#f5c76a"/><text x="694" y="119" fill="#202020" font-size="16">620</text><text x="150" y="164" fill="#f1eee8" font-size="16">rose: interest 630 · gold: return on equity 620</text><text x="150" y="194" fill="#f1eee8" font-size="16">fixed cost 2,200 = 620 + 630 + 500 + 350 + 100</text><text x="40" y="232" fill="#a5a29c" font-size="16">Chambal Power, FY26 · 0.11 px = ₹1 cr</text></svg></figure>
+      <span class="eq">AFC = return on equity 620 + interest on loans 630 + depreciation 500 + O&amp;M 350 + interest on working capital 100 = ₹2,200 cr</span>
+      <p>Every cost is recovered, and one line is profit: the return on equity. So the questions become how much equity the regulator counts, what rate it allows on it, and what the plant must do to collect it. CERC (the Central Electricity Regulatory Commission) sets all three for central generators such as NTPC, in five-year regulations.</p>
+      <details class="trace"><summary>Go deeper: where the rule lives</summary>
+        <p>CERC (Terms and Conditions of Tariff) Regulations, 2024, notified 15 March 2024 and in force from 1 April 2024 to 31 March 2029 (Regulation 1). Regulation 14 sets the two parts of a thermal tariff, capacity charge and energy charge; Regulation 15 lists the five components of the annual fixed cost; Regulation 16 bases the energy charge on the landed cost of fuel. Chambal’s cost split is made up; in a real tariff order each line follows its own norm.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How much equity counts</p>
+      <h2>Regulated equity: 30% of the approved cost</h2>
+      <p>CERC counts a new project as funded 70% by debt and 30% by equity. If the owner put in more than 30% equity, the extra is treated as a loan and earns only interest; if it put in less, the actual equity is used <span class="tag">public</span>. Chambal’s ₹10,000 cr plant gives a <b>regulated equity</b> of ₹3,000 cr <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 270" role="img" aria-label="The same 10,000 crore plant funded three ways: with 30 percent equity, 3,000 crore earns the return; with 40 percent, still only 3,000 earns it and 1,000 is treated as a loan; with 20 percent, only the 2,000 actually invested earns it"><text x="40" y="59" fill="#a5a29c" font-size="16">30% equity</text><rect x="170" y="40" width="180" height="28" fill="#f5c76a"/><text x="178" y="59" fill="#202020" font-size="16">equity 3,000</text><rect x="350" y="40" width="420" height="28" fill="#ec6a94"/><text x="358" y="59" fill="#202020" font-size="16">loan 7,000</text><text x="40" y="119" fill="#a5a29c" font-size="16">40% equity</text><rect x="170" y="100" width="180" height="28" fill="#f5c76a"/><text x="178" y="119" fill="#202020" font-size="16">equity 3,000</text><rect x="350" y="100" width="60" height="28" fill="#f4a9c2"/><text x="356" y="119" fill="#202020" font-size="16">1,000</text><rect x="410" y="100" width="360" height="28" fill="#ec6a94"/><text x="418" y="119" fill="#202020" font-size="16">loan 6,000</text><text x="40" y="179" fill="#a5a29c" font-size="16">20% equity</text><rect x="170" y="160" width="120" height="28" fill="#f5c76a"/><text x="178" y="179" fill="#202020" font-size="16">2,000</text><rect x="290" y="160" width="480" height="28" fill="#ec6a94"/><text x="298" y="179" fill="#202020" font-size="16">loan 8,000</text><text x="170" y="224" fill="#f1eee8" font-size="16">light rose: equity above 30%, paid as a loan</text><text x="40" y="256" fill="#a5a29c" font-size="16">approved cost ₹10,000 cr in each row · 0.06 px = ₹1 cr</text></svg></figure>
+      <p>So regulated equity grows only when new capacity is commissioned or the regulator admits new spending. It is the utility’s real growth driver, and companies quote it: NTPC’s standalone regulated equity rose from ₹90,902 cr to ₹94,631 cr in FY26 <span class="tag">public</span>, 4.1%. A utility that announces big capex is announcing future regulated equity, once the plants are built and admitted.</p>
+      <details class="trace"><summary>Go deeper: the exact wording</summary>
+        <p>Regulation 18(1): “For new projects, the debt-equity ratio of 70:30 as on date of commercial operation shall be considered. If the equity actually deployed is more than 30% of the capital cost, equity in excess of 30% shall be treated as normative loan”; where it is less than 30%, actual equity is used. For stations already running before 1 April 2024, the ratio allowed for the earlier period carries on (Regulation 18(3)). Grants do not count in the capital structure.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The rate</p>
+      <h2>15.5% after tax, grossed up</h2>
+      <p>For an existing thermal station CERC allows a base return on equity of 15.50%, and the rate is “grossed up” with the company’s effective tax rate, so that 15.5% is what is left after tax <span class="tag">public</span>. With a 25% tax rate Chambal bills 20.667% on ₹3,000 cr, ₹620 cr, pays ₹155 cr of tax and keeps ₹465 cr <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 220" role="img" aria-label="Chambal's return on equity: 620 crore billed in the tariff splits into 465 crore kept and 155 crore of tax; the 465 crore is 15.5 percent of its 3,000 crore of regulated equity"><text x="40" y="59" fill="#a5a29c" font-size="16">billed</text><rect x="150" y="40" width="465" height="28" fill="#f5c76a"/><text x="158" y="59" fill="#202020" font-size="16">kept 465</text><rect x="615" y="40" width="155" height="28" fill="#ff8059"/><text x="623" y="59" fill="#202020" font-size="16">tax 155</text><text x="40" y="119" fill="#a5a29c" font-size="16">kept</text><rect x="150" y="100" width="465" height="28" fill="#f5c76a"/><text x="158" y="119" fill="#202020" font-size="16">15.5% × 3,000 = 465</text><text x="150" y="166" fill="#f1eee8" font-size="16">20.667% × 3,000 = 620 in the tariff</text><text x="40" y="204" fill="#a5a29c" font-size="16">Chambal Power, tax 25% · 1 px = ₹1 cr</text></svg></figure>
+      <span class="eq">pre-tax rate = base rate ÷ (1 − tax rate) = 15.5% ÷ 0.75 = 20.667% · profit after tax = 15.5% × regulated equity</span>
+      <p>That is the heart of a regulated utility: <b>profit ≈ base rate × regulated equity</b>, as long as the plant meets its norms. It also means its ROE (Part 10) cannot drift far above the allowed rate on the regulated business, and that tax savings mostly go back to customers through the true-up.</p>
+      <details class="trace"><summary>Go deeper: the rates and adjustments</summary>
+        <p>Regulation 30(2), existing projects: 15.50% for thermal stations, transmission and run-of-river hydro; 16.50% for storage hydro, pumped storage and run-of-river with pondage. Regulation 30(3), new projects reaching commercial operation on or after 1 April 2024: 15.00% for transmission, 15.50% for thermal and run-of-river hydro, 17.00% for storage hydro and pumped storage. Extra spending beyond the original scope (for example emission controls) earns SBI’s one-year MCLR plus 3.5 points, capped at 14%. The rate is cut by 1 point while required grid-support systems are missing, cut 0.25 points for missing the ramp-rate standard, and raised by up to 1 point for faster ramping. Regulation 31: the rate is grossed up as base rate ÷ (1 − t), where t is the effective tax rate (the MAT rate, or the section 115BAA rate, where those apply), and trued up each year against tax actually paid. The First Amendment (11 April 2025) and Second Amendment (10 April 2026) leave these base rates unchanged; the second adds 14.00% for energy storage added to existing plants.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why revenue misleads</p>
+      <h2>Fuel is passed straight through</h2>
+      <p>If coal costs 20% less, Chambal’s energy charge falls by the same ₹660 cr and revenue drops to ₹4,840 cr. If coal costs 20% more, revenue rises to ₹6,160 cr. Profit is ₹465 cr in both worlds <span class="tag">example</span>, because the fuel bill and the energy charge move together.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Two worlds for Chambal on one scale: with cheap coal revenue is 4,840 crore, with dear coal 6,160 crore; the fixed charge is 2,200 crore in both and profit is 465 crore in both"><text x="40" y="59" fill="#a5a29c" font-size="16">cheap coal</text><rect x="170" y="40" width="198" height="28" fill="#76d5c1"/><text x="178" y="59" fill="#202020" font-size="16">fixed 2,200</text><rect x="368" y="40" width="237.6" height="28" fill="#76d5c1" fill-opacity="0.55"/><text x="376" y="59" fill="#202020" font-size="16">fuel 2,640</text><text x="614" y="59" fill="#f1eee8" font-size="16">revenue 4,840</text><text x="40" y="104" fill="#a5a29c" font-size="16">profit</text><rect x="170" y="86" width="41.9" height="24" fill="#f5c76a"/><text x="220" y="104" fill="#f1eee8" font-size="16">465</text><text x="40" y="169" fill="#a5a29c" font-size="16">dear coal</text><rect x="170" y="150" width="198" height="28" fill="#76d5c1"/><text x="178" y="169" fill="#202020" font-size="16">fixed 2,200</text><rect x="368" y="150" width="356.4" height="28" fill="#76d5c1" fill-opacity="0.55"/><text x="376" y="169" fill="#202020" font-size="16">fuel 3,960</text><text x="732" y="169" fill="#f1eee8" font-size="16">6,160</text><text x="40" y="214" fill="#a5a29c" font-size="16">profit</text><rect x="170" y="196" width="41.9" height="24" fill="#f5c76a"/><text x="220" y="214" fill="#f1eee8" font-size="16">465</text><text x="40" y="276" fill="#a5a29c" font-size="16">coal ±20% from Chambal’s base · 0.09 px = ₹1 cr</text></svg></figure>
+      <p>So for a regulated generator, revenue growth and margins say little: a fall in coal prices shrinks revenue and lifts the margin without changing profit. That is NTPC’s FY26 in miniature: its management notes say capacity and energy charges are over 95% of revenue, and that fuel cost fell mainly because it generated less and domestic coal was cheaper <span class="tag">public</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">What the plant controls</p>
+      <h2>Availability: the number that earns the return</h2>
+      <p>The full capacity charge is paid only if the plant is <b>available</b> (ready to run when called) at least 85% of the time, CERC’s normative availability for most thermal stations; 83% for older coal and lignite stations <span class="tag">public</span>. Below that, the charge is cut in proportion. At 78%, Chambal recovers only 78/85 of ₹2,200 cr <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 360" role="img" aria-label="Fixed charge recovered against plant availability: it rises in a straight line to the full 2,200 crore at 85 percent and stays flat above it; at 78 percent Chambal recovers 2,019 crore"><path d="M110 60 L110 300 L750 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="110" y="40" fill="#a5a29c" font-size="16">fixed charge recovered, ₹ cr</text><text x="98" y="305" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="98" y="225" text-anchor="end" fill="#a5a29c" font-size="16">800</text><text x="98" y="145" text-anchor="end" fill="#a5a29c" font-size="16">1,600</text><text x="98" y="85" text-anchor="end" fill="#a5a29c" font-size="16">2,200</text><text x="110" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">60%</text><text x="270" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">70%</text><text x="430" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">80%</text><text x="510" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">85%</text><text x="590" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">90%</text><text x="750" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">100%</text><path d="M510 88 L510 300" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/><text x="518" y="210" fill="#a5a29c" font-size="16">CERC norm 85%</text><polyline points="110,144.7 510,80 750,80" fill="none" stroke="#76d5c1" stroke-width="3"/><circle cx="590" cy="80" r="6" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="560" y="62" fill="#f1eee8" font-size="16">90%: full 2,200</text><circle cx="398" cy="98.1" r="6" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="408" y="130" fill="#f1eee8" font-size="16">78%: 2,019</text><text x="750" y="352" text-anchor="end" fill="#a5a29c" font-size="16">availability, % of the year</text></svg></figure>
+      <p>The ₹181 cr shortfall comes straight out of profit, because the costs are still there: profit falls from ₹465 cr to ₹329 cr, an 11.0% return instead of 15.5% <span class="tag">example</span>. That is why a utility’s operating data (availability, outages, fuel security) matter more than its revenue. CERC also pays small extras for good operation: up to 1 point more return for faster ramping, and an incentive of up to 1% of the fixed cost for frequency response.</p>
+      <details class="trace"><summary>Go deeper: how CERC computes it</summary>
+        <p>Regulation 62 computes the capacity charge month by month on a cumulative basis: 20% of the annual fixed cost is earned in four daily peak hours and 80% in the other twenty, each as AFC × (availability achieved ÷ normative availability), capped at the full amount. A shortfall in off-peak hours can be offset by extra availability in peak hours, but not the other way round. Regulation 70(A) sets normative availability at 85% for thermal stations, 83% for coal and lignite stations completing 30 years from commercial operation, and lower figures for a few named stations. Regulation 62(5) adds an incentive of up to 1% of AFC for frequency response. The lab ignores the peak split and the incentives.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>A key-metric card for each sector</h2>
+      <p>Pick a sector to see which numbers matter and why, then move its calculator <span class="tag">example</span>. The power utility and the PSU are Chambal Power; the developer is Mahanadi Homes. Each chart uses one ₹ crore scale.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Pick a sector</p>
+          <div class="sector-tabs" role="tablist" aria-label="Sector">
+            <button type="button" role="tab" id="tab-util" aria-selected="true" aria-controls="pane-util" data-s="util">Power utility</button>
+            <button type="button" class="secondary" role="tab" id="tab-psu" aria-selected="false" aria-controls="pane-psu" data-s="psu">PSU</button>
+            <button type="button" class="secondary" role="tab" id="tab-re" aria-selected="false" aria-controls="pane-re" data-s="re">Real estate</button>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · The numbers that matter, and the calculator</p>
+          <div id="pane-util" role="tabpanel" aria-labelledby="tab-util">
+            <ul class="mcard">
+              <li><b>Regulated equity</b><span>The equity the regulator lets earn a return; at most 30% of approved cost.</span></li>
+              <li><b>Allowed return</b><span>15.5% after tax for thermal stations, billed grossed up for tax.</span></li>
+              <li><b>Availability</b><span>Below 85%, the fixed charge is cut in proportion.</span></li>
+              <li><b>Collections</b><span>A return is worth only what distributors actually pay.</span></li>
+            </ul>
+            <p class="sector-note">Calculator: profit = 15.5% × regulated equity, less what an availability shortfall costs after tax.</p>
+            <div class="control"><label for="eq">Regulated equity: <output id="eq-o"></output></label><input id="eq" type="range" min="1000" max="6000" step="250" value="3000"></div>
+            <div class="control"><label for="av">Plant availability: <output id="av-o"></output></label><input id="av" type="range" min="70" max="100" step="1" value="90"></div>
+          </div>
+          <div id="pane-psu" role="tabpanel" aria-labelledby="tab-psu" hidden>
+            <ul class="mcard">
+              <li><b>Government stake</b><span>Who controls the company, and how many shares might still be sold.</span></li>
+              <li><b>Dividend floor</b><span>The higher of 30% of profit or 4% of net worth.</span></li>
+              <li><b>Payout</b><span>Dividend ÷ profit: high and steady for most PSUs.</span></li>
+              <li><b>Policy and reset dates</b><span>When the regulator or owner can change the terms.</span></li>
+            </ul>
+            <p class="sector-note">Calculator: Chambal’s minimum dividend for any profit, with net worth fixed at ₹4,000 cr and the government holding 60%.</p>
+            <div class="control"><label for="pat">Profit after tax this year: <output id="pat-o"></output></label><input id="pat" type="range" min="200" max="1000" step="5" value="465"></div>
+          </div>
+          <div id="pane-re" role="tabpanel" aria-labelledby="tab-re" hidden>
+            <ul class="mcard">
+              <li><b>Bookings (pre-sales)</b><span>Flats sold this year: the real demand signal.</span></li>
+              <li><b>Collections</b><span>Cash received from buyers this year.</span></li>
+              <li><b>Customer advances</b><span>Paid for, not yet revenue: tomorrow’s revenue, owed in flats.</span></li>
+              <li><b>Net debt</b><span>Strong collections fund construction; stalled sales leave it to debt.</span></li>
+            </ul>
+            <p class="sector-note">Calculator: Mahanadi’s FY26 for any level of new bookings, with FY23–FY25 bookings fixed.</p>
+            <div class="control"><label for="bk">New bookings in FY26: <output id="bk-o"></output></label><input id="bk" type="range" min="500" max="4000" step="100" value="2000"></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Try a situation</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="outage">Plant outage, 78% available</button>
+            <button type="button" class="secondary" data-p="slump">PSU profit slump</button>
+            <button type="button" class="secondary" data-p="record">Record bookings year</button>
+            <button type="button" class="secondary" data-p="base">Base case</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Read the result</p>
+          <div class="readouts" id="readouts"></div>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 760 314" role="img" aria-label="Bars on one crore scale for the chosen sector: for the utility, fixed charge due and billed, 15.5 percent of equity and profit; for the PSU, profit, the two dividend floors, the minimum dividend and the government's share; for the developer, bookings, collections, construction spend, revenue and customer advances"></svg></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p><b>Chambal (utility).</b> Approved cost = regulated equity ÷ 30%; loans 70%. Annual fixed cost per ₹1 of cost: return on equity 15.5% × 30% ÷ (1 − 25%), interest 9% on the loan, depreciation 5%, O&amp;M 3.5%, interest on working capital 1%: ₹2,200 cr on ₹10,000 cr. Actual costs equal the norms. Fixed charge billed = fixed cost × availability ÷ 85%, capped at 100%; fuel is passed on at ₹0.33 per ₹1 of cost a year and nets to zero. Tax 25%. <b>Chambal (PSU).</b> Net worth ₹4,000 cr (regulated equity plus money in plants under construction); government stake 60%; minimum dividend = the higher of 30% of profit and 4% of net worth. <b>Mahanadi.</b> Bookings FY23 ₹1,000 cr, FY24 ₹1,200 cr, FY25 ₹1,500 cr. Buyers pay 20% in the year of booking, 30% in each of the next two years and 20% at handover in the third year; revenue is recognised in full at handover. Construction costs 60% of the sale price, spent 10%, 20%, 20% and 10% over the same four years. Opening net debt ₹500 cr; land, overheads and tax are left out.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">PSUs: who owns it</p>
+      <h2>When the government is the biggest owner</h2>
+      <p>A public sector undertaking is a company the government controls. NTPC is one: on 31 March 2026 the President of India held 51.10% of its shares, the same as a year earlier, and the company is under the Ministry of Power <span class="tag">public</span>. Its tariffs, though, are set by CERC, a statutory regulator.</p>
+      <figure><svg viewBox="0 0 800 200" role="img" aria-label="NTPC's shareholders at 31 March 2026 as one bar: the President of India 51.10 percent, mutual funds 17.83, insurers 8.54, foreign portfolio investors 16.55 and others about 6 percent"><rect x="70" y="40" width="337.3" height="34" fill="#f5c76a"/><text x="78" y="63" fill="#202020" font-size="16">President of India 51.10%</text><rect x="407.3" y="40" width="117.7" height="34" fill="#f5c76a" fill-opacity="0.7"/><text x="415" y="63" fill="#202020" font-size="16">funds 17.8%</text><rect x="525" y="40" width="56.4" height="34" fill="#f5c76a" fill-opacity="0.45"/><rect x="581.4" y="40" width="109.2" height="34" fill="#f5c76a" fill-opacity="0.7"/><text x="589" y="63" fill="#202020" font-size="16">FPIs 16.6%</text><rect x="690.6" y="40" width="39.4" height="34" fill="#f5c76a" fill-opacity="0.45"/><text x="553" y="104" text-anchor="middle" fill="#f1eee8" font-size="16">insurers 8.5%</text><text x="710" y="104" text-anchor="middle" fill="#f1eee8" font-size="16">others 6.0%</text><text x="70" y="158" fill="#a5a29c" font-size="16">NTPC, 31 March 2026 · 6.6 px = 1% of shares</text></svg></figure>
+      <p>That owner wants things that can pull apart: dividends for the budget, cash from selling shares (<b>divestment</b>), and a power sector that works for consumers. For an investor, each shows up in a number: the payout ratio, the free float and the share supply still to come, and the rules that can change at the next reset. The next three panels take them in turn.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">PSU dividends</p>
+      <h2>The dividend floor: 30% or 4%</h2>
+      <p>The Department of Investment and Public Asset Management (DIPAM) asks every central public sector enterprise (CPSE) to pay a minimum annual dividend of the higher of 30% of profit after tax or 4% of net worth <span class="tag">public</span>. The two rules cross at a 13.3% return on net worth: below it, the 4% rule is larger.</p>
+      <figure><svg viewBox="0 0 800 380" role="img" aria-label="Minimum dividend as a percentage of net worth against return on net worth: 30 percent of profit rises with return, 4 percent of net worth is flat, and the floor is the higher of the two, crossing at 13.3 percent; Chambal at 11.6 percent pays the 4 percent floor; NTPC at 13.2 percent paid 5.0 percent"><path d="M110 60 L110 300 L730 300" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="110" y="40" fill="#a5a29c" font-size="16">minimum dividend, % of net worth</text><text x="98" y="305" text-anchor="end" fill="#a5a29c" font-size="16">0%</text><text x="98" y="245" text-anchor="end" fill="#a5a29c" font-size="16">2%</text><text x="98" y="185" text-anchor="end" fill="#a5a29c" font-size="16">4%</text><text x="98" y="125" text-anchor="end" fill="#a5a29c" font-size="16">6%</text><text x="98" y="65" text-anchor="end" fill="#a5a29c" font-size="16">8%</text><text x="110" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="234" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">5%</text><text x="358" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="482" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">15%</text><text x="606" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">20%</text><text x="730" y="324" text-anchor="middle" fill="#a5a29c" font-size="16">25%</text><path d="M110 300 L730 75" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="6 5"/><path d="M110 180 L730 180" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="6 5"/><polyline points="110,180 440.7,180 730,75" fill="none" stroke="#f5c76a" stroke-width="3.5"/><text x="720" y="62" text-anchor="end" fill="#f1eee8" font-size="16">30% of profit</text><text x="720" y="204" text-anchor="end" fill="#f1eee8" font-size="16">4% of net worth</text><text x="452" y="226" fill="#a5a29c" font-size="16">rules cross at 13.3%</text><circle cx="398.3" cy="180" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="390" y="168" text-anchor="end" fill="#f1eee8" font-size="16">Chambal 11.6%</text><circle cx="438.5" cy="150.3" r="7" fill="#f1eee8" stroke="#202020" stroke-width="2"/><text x="426" y="144" text-anchor="end" fill="#f1eee8" font-size="16">NTPC paid 5.0%</text><text x="730" y="356" text-anchor="end" fill="#a5a29c" font-size="16">return on net worth</text></svg></figure>
+      <p>Chambal earns ₹465 cr on ₹4,000 cr of net worth, 11.6%. Thirty per cent of profit would be ₹139.5 cr, but 4% of net worth is ₹160 cr, so it must pay at least ₹160 cr, 34% of profit <span class="tag">example</span>. A low-return PSU is pushed to pay out more, which leaves less to fund growth. NTPC, at 13.2% on closing net worth, was just on the 4% side: a floor of ₹6,995 cr; it paid ₹8,727 cr, ₹9 a share <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: the guidelines</summary>
+        <p>DIPAM’s Office Memorandum of 18 November 2024 issued revised Guidelines on Capital Restructuring of CPSEs, replacing those of 27 May 2016. DIPAM’s FAQ on the revision: the 2016 floor was the higher of 30% of PAT or 5% of net worth; the revised floor is the higher of 30% of PAT or 4% of net worth; financial-sector CPSEs such as NBFCs may pay 30% of PAT. NTPC’s dividend distribution policy calls the guideline “only a minimum benchmark” and lists CERC’s regulatory norms among the factors that may affect its margins and payout. Sources: <a href="https://dipam.gov.in/dipam_docs/capitalMgmtDoc/OM%20of%20DIPAM%20on%20Revised%20%20Guidelines%20on%20Capotal%20Restructuring%20of%20CPSEs.pdf">DIPAM OM</a>, <a href="https://dipam.gov.in/dipam_docs/capitalMgmtDoc/FAQs%20of%20Revised%20CRG%20(1).pdf">DIPAM FAQ</a>, <a href="https://ntpc.co.in/sites/default/files/policy-documents/Dividend-Distribution-Policy.pdf">NTPC policy</a>. NTPC’s return here uses closing equity of ₹1,74,865 cr; its own 13.77% uses average net worth.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">PSU divestment</p>
+      <h2>Divestment moves shares, not company cash</h2>
+      <p>Say the government sells 9 crore of Chambal’s 100 crore shares to investors at ₹48, through an <b>offer for sale</b> (OFS) on the exchange <span class="tag">example</span>. Those shares already exist. The ₹432 cr goes to the government; Chambal’s cash, its share count and its earnings per share do not change.</p>
+      <figure><svg viewBox="0 0 800 240" role="img" aria-label="Chambal's 100 crore shares before and after the sale: the government's slice shrinks from 60 to 51 percent and the public's grows from 40 to 49 percent; the 432 crore paid goes to the government, not to Chambal"><text x="40" y="59" fill="#a5a29c" font-size="16">before</text><rect x="150" y="40" width="360" height="28" fill="#f5c76a"/><text x="158" y="59" fill="#202020" font-size="16">government 60%</text><rect x="510" y="40" width="240" height="28" fill="#f5c76a" fill-opacity="0.45"/><text x="518" y="59" fill="#202020" font-size="16">public 40%</text><text x="40" y="119" fill="#a5a29c" font-size="16">after</text><rect x="150" y="100" width="306" height="28" fill="#f5c76a"/><text x="158" y="119" fill="#202020" font-size="16">government 51%</text><rect x="456" y="100" width="54" height="28" fill="#f5c76a" fill-opacity="0.45" stroke="#f1eee8" stroke-width="2" stroke-dasharray="5 4"/><text x="466" y="119" fill="#202020" font-size="16">9%</text><rect x="510" y="100" width="240" height="28" fill="#f5c76a" fill-opacity="0.45"/><text x="518" y="119" fill="#202020" font-size="16">public 40%</text><text x="150" y="174" fill="#f1eee8" font-size="16">₹432 cr to the government · Chambal’s cash unchanged</text><text x="40" y="216" fill="#a5a29c" font-size="16">100 crore shares before and after · 6 px = 1 crore</text></svg></figure>
+      <p>Contrast a new issue, which brings the company money and dilutes every holder (<a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a>). What an OFS changes is ownership: a larger free float, often a small discount to the market price, and the knowledge that more sales may follow until the government nears the stake it wants to keep. NTPC’s government holding did not change in FY26 <span class="tag">public</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Policy risk</p>
+      <h2>The rules reset every five years</h2>
+      <p>CERC writes its tariff rules for five years at a time: the 2019 regulations ran from 1 April 2019 to 31 March 2024, and the 2024 regulations run to 31 March 2029 <span class="tag">public</span>. The base return for thermal stations stayed at 15.5% across the last reset; new storage hydro projects now get 17.0% <span class="tag">public</span>. What comes after 2029 is not known.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="CERC's base return on equity by tariff period: thermal stations 15.5 percent for 2019 to 2024 and 2024 to 2029; storage hydro 16.5 percent then 17.0 percent for new projects; the period after 2029 is an open range"><path d="M110 60 L110 260 L710 260" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="110" y="40" fill="#a5a29c" font-size="16">base return on equity</text><text x="98" y="225" text-anchor="end" fill="#a5a29c" font-size="16">14%</text><text x="98" y="185" text-anchor="end" fill="#a5a29c" font-size="16">15%</text><text x="98" y="145" text-anchor="end" fill="#a5a29c" font-size="16">16%</text><text x="98" y="105" text-anchor="end" fill="#a5a29c" font-size="16">17%</text><text x="110" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">2019</text><text x="310" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">2024</text><text x="510" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">2029</text><text x="710" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">2034</text><path d="M310 64 L310 260" stroke="#57534f" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><path d="M110 160 L510 160" stroke="#f5c76a" stroke-width="3.5" fill="none"/><path d="M110 120 L310 120" stroke="#f8dca0" stroke-width="2" fill="none"/><path d="M310 100 L510 100" stroke="#f8dca0" stroke-width="2" fill="none"/><text x="120" y="152" fill="#f1eee8" font-size="16">thermal 15.5%</text><text x="120" y="112" fill="#a5a29c" font-size="16">storage hydro 16.5%</text><text x="320" y="92" fill="#a5a29c" font-size="16">new storage hydro 17%</text><rect x="510" y="100" width="200" height="120" fill="none" stroke="#a5a29c" stroke-width="1.5" stroke-dasharray="5 4"/><text x="530" y="166" fill="#f1eee8" font-size="16">next reset?</text></svg></figure>
+      <p>For Chambal each point of base return is ₹30 cr of profit, 6.5% of it <span class="tag">example</span>. That is the policy risk to price: not this year’s earnings, which the rules fix, but the rate and the norms at the next reset, and anything the owner asks of the company in between. NTPC’s own dividend policy names CERC’s norms as a factor that may affect its margins and payout <span class="tag">public</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Real estate: the timing</p>
+      <h2>Bookings now, revenue at handover</h2>
+      <p>A developer sells flats before it builds them: a <b>booking</b> or pre-sale. The buyer pays in instalments as construction goes on, and gets the flat years later. DLF recognises revenue from selling a unit at a point in time, when control passes to the buyer on completion <span class="tag">public</span>. Mahanadi’s buyers pay 20%, 30%, 30% and 20% over four years; revenue comes at handover <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 330" role="img" aria-label="Mahanadi's bookings from FY23 to FY26 as rows across the years: each row is paid 20, 30, 30 and 20 percent over four years and recognised as revenue only in the last, handover year; in FY26 all four rows pay instalments but only the FY23 row is handed over"><text x="175" y="34" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><text x="265" y="34" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><text x="355" y="34" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><text x="445" y="34" text-anchor="middle" fill="#f1eee8" font-size="16">FY26</text><text x="535" y="34" text-anchor="middle" fill="#a5a29c" font-size="16">FY27</text><text x="625" y="34" text-anchor="middle" fill="#a5a29c" font-size="16">FY28</text><text x="715" y="34" text-anchor="middle" fill="#a5a29c" font-size="16">FY29</text><text x="24" y="75" fill="#a5a29c" font-size="16">FY23 1,000</text><rect x="133" y="50" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="175" y="75" text-anchor="middle" fill="#202020" font-size="16">20%</text><rect x="223" y="50" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="265" y="75" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="313" y="50" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="355" y="75" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="403" y="50" width="84" height="38" fill="#76d5c1"/><text x="445" y="75" text-anchor="middle" fill="#202020" font-size="16">20%</text><text x="24" y="127" fill="#a5a29c" font-size="16">FY24 1,200</text><rect x="223" y="102" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="265" y="127" text-anchor="middle" fill="#202020" font-size="16">20%</text><rect x="313" y="102" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="355" y="127" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="403" y="102" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="445" y="127" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="493" y="102" width="84" height="38" fill="#76d5c1"/><text x="535" y="127" text-anchor="middle" fill="#202020" font-size="16">20%</text><text x="24" y="179" fill="#a5a29c" font-size="16">FY25 1,500</text><rect x="313" y="154" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="355" y="179" text-anchor="middle" fill="#202020" font-size="16">20%</text><rect x="403" y="154" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="445" y="179" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="493" y="154" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="535" y="179" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="583" y="154" width="84" height="38" fill="#76d5c1"/><text x="625" y="179" text-anchor="middle" fill="#202020" font-size="16">20%</text><text x="24" y="231" fill="#a5a29c" font-size="16">FY26 2,000</text><rect x="403" y="206" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="445" y="231" text-anchor="middle" fill="#202020" font-size="16">20%</text><rect x="493" y="206" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="535" y="231" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="583" y="206" width="84" height="38" fill="#76d5c1" fill-opacity="0.45"/><text x="625" y="231" text-anchor="middle" fill="#202020" font-size="16">30%</text><rect x="673" y="206" width="84" height="38" fill="#76d5c1"/><text x="715" y="231" text-anchor="middle" fill="#202020" font-size="16">20%</text><rect x="399" y="44" width="92" height="206" fill="none" stroke="#f1eee8" stroke-width="2" stroke-dasharray="6 4"/><text x="24" y="284" fill="#f1eee8" font-size="16">FY26 column: four vintages pay, one is handed over</text><text x="24" y="314" fill="#a5a29c" font-size="16">solid cell = handover, revenue recognised · Mahanadi Homes, ₹ cr</text></svg></figure>
+      <p>Read down the FY26 column: Mahanadi collects instalments from four years of bookings, ₹1,410 cr, but recognises revenue only on the flats sold in FY23, ₹1,000 cr <span class="tag">example</span>. FY26’s ₹2,000 cr of new bookings will reach revenue in FY29. Revenue and profit describe sales made three years ago; bookings and collections describe this year.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Real estate: the balance sheet</p>
+      <h2>Customer advances: money held for buyers</h2>
+      <p>Money collected before handover is not revenue yet. It sits on the balance sheet as a liability, <b>customer advances</b> (in Ind AS terms, contract liabilities): the developer owes the buyers flats. Mahanadi’s advances at 31 March 2026 are ₹2,110 cr <span class="tag">example</span>. They are settled by finishing and handing over the flats, not by repaying cash, unless a buyer cancels.</p>
+      <figure><svg viewBox="0 0 800 230" role="img" aria-label="Mahanadi's 2,110 crore of customer advances split by the year the flats were booked: 960 from FY24, 750 from FY25 and 400 from FY26; below, FY26's 1,410 crore of collections with 70 percent, 987 crore, going into the project's separate account"><text x="24" y="59" fill="#a5a29c" font-size="16">advances</text><rect x="170" y="40" width="268.8" height="28" fill="#ec6a94"/><text x="178" y="59" fill="#202020" font-size="16">FY24 960</text><rect x="438.8" y="40" width="210" height="28" fill="#ec6a94" fill-opacity="0.75"/><text x="446" y="59" fill="#202020" font-size="16">FY25 750</text><rect x="648.8" y="40" width="112" height="28" fill="#ec6a94" fill-opacity="0.5"/><text x="656" y="59" fill="#202020" font-size="16">FY26 400</text><text x="24" y="119" fill="#a5a29c" font-size="16">FY26 cash in</text><rect x="170" y="100" width="276.4" height="28" fill="#76d5c1"/><text x="178" y="119" fill="#202020" font-size="16">escrow 987</text><rect x="446.4" y="100" width="118.4" height="28" fill="#76d5c1" fill-opacity="0.5"/><text x="454" y="119" fill="#202020" font-size="16">423</text><text x="170" y="170" fill="#f1eee8" font-size="16">70% of each collection is ring-fenced for the project</text><text x="24" y="210" fill="#a5a29c" font-size="16">Mahanadi Homes, FY26 · 0.28 px = ₹1 cr</text></svg></figure>
+      <p>The law limits what a developer may do with that money. Under section 4(2)(l)(D) of the Real Estate (Regulation and Development) Act, 2016, 70% of the amounts collected from a project’s buyers must be kept in a separate bank account and used only for that project’s construction and land cost, withdrawn in proportion to completion <span class="tag">public</span>. So a developer’s cash is partly someone else’s project money.</p>
+      <details class="trace"><summary>Go deeper: the source of the 70% rule</summary>
+        <p>The wording above follows the Haryana Real Estate Regulatory Authority, Gurugram’s <a href="https://www.haryanarera.gov.in/regulations/Directions_regarding_Compliance_of_Section_4_2_l_D.pdf">directions of 2 March 2020</a> on compliance with section 4(2)(l)(D), which set out what a chartered accountant must verify: that seventy per cent of the amounts realised from allottees went into a separate account at a scheduled bank, to cover construction and proportionate land cost, and that withdrawals followed the percentage of completion as certified by an engineer, an architect and a chartered accountant. Most of DLF’s projects are in Gurugram, and its notes show cash held in RERA escrow accounts, usable only for the relevant projects.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Real estate: the cash</p>
+      <h2>Collections and net debt tell the story</h2>
+      <p>Because buyers fund construction, collections matter more than revenue. In FY26 Mahanadi collects ₹1,410 cr and spends ₹840 cr building: a ₹570 cr surplus that turns opening net debt of ₹500 cr into net cash of ₹70 cr <span class="tag">example</span>, before land, overheads and tax.</p>
+      <figure><svg viewBox="0 0 800 260" role="img" aria-label="A waterfall from a central zero line: Mahanadi starts FY26 with 500 crore of net debt, collects 1,410 crore, spends 840 crore on construction and ends with 70 crore of net cash"><path d="M320 30 L320 224" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="24" y="59" fill="#a5a29c" font-size="16">opening</text><rect x="170" y="40" width="150" height="28" fill="#ec6a94"/><text x="178" y="59" fill="#202020" font-size="16">net debt 500</text><text x="24" y="109" fill="#a5a29c" font-size="16">collections</text><rect x="170" y="90" width="423" height="28" fill="#76d5c1"/><text x="178" y="109" fill="#202020" font-size="16">+1,410</text><text x="24" y="159" fill="#a5a29c" font-size="16">construction</text><rect x="341" y="140" width="252" height="28" fill="#ff8059"/><text x="349" y="159" fill="#202020" font-size="16">−840</text><text x="24" y="209" fill="#a5a29c" font-size="16">closing</text><rect x="320" y="190" width="21" height="28" fill="#f5c76a"/><text x="349" y="209" fill="#f1eee8" font-size="16">net cash 70</text><text x="24" y="248" fill="#a5a29c" font-size="16">₹ cr · centre line = zero · 0.3 px = ₹1 cr</text></svg></figure>
+      <p>The same mechanism runs in reverse. If bookings stall, collections fall while flats already sold must still be finished, and the gap is filled with debt. So read net debt (Part 11) and the trend in collections together. DLF reports that its development business reached zero gross debt in FY26 <span class="tag">public</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Revenue is not this year’s sales</h2>
+      <p>In FY26 DLF’s new bookings fell 5.1% and its revenue from selling property fell 4.0%. Read only those and the business looks to be shrinking. But collections rose 14.8%, and customer advances rose 39.0% <span class="tag">public</span>: more flats are paid for and still waiting to be counted as revenue.</p>
+      <figure><svg viewBox="0 0 800 280" role="img" aria-label="DLF's FY26 changes against FY25 from a zero line: new bookings minus 5.1 percent, collections plus 14.8, revenue from property sales minus 4.0, customer advances plus 39.0"><path d="M380 28 L380 232" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40" y="60" fill="#a5a29c" font-size="16">new bookings</text><rect x="339.3" y="40" width="40.7" height="28" fill="#76d5c1" fill-opacity="0.55"/><text x="331" y="60" text-anchor="end" fill="#f1eee8" font-size="16">−5.1%</text><text x="40" y="110" fill="#a5a29c" font-size="16">collections</text><rect x="380" y="90" width="118.5" height="28" fill="#76d5c1"/><text x="506" y="110" fill="#f1eee8" font-size="16">+14.8%</text><text x="40" y="160" fill="#a5a29c" font-size="16">revenue from sales</text><rect x="347.8" y="140" width="32.2" height="28" fill="#76d5c1" fill-opacity="0.55"/><text x="340" y="160" text-anchor="end" fill="#f1eee8" font-size="16">−4.0%</text><text x="40" y="210" fill="#a5a29c" font-size="16">customer advances</text><rect x="380" y="190" width="312.2" height="28" fill="#ec6a94"/><text x="700" y="210" fill="#f1eee8" font-size="16">+39.0%</text><text x="40" y="262" fill="#a5a29c" font-size="16">DLF consolidated, FY26 against FY25 · 8 px = 1 point</text></svg></figure>
+      <p>Revenue growth, margins and P/E (Part 7) all describe handovers, which follow bookings by years. For a developer, start with bookings, collections and advances, and treat the P&amp;L as a lagging record. The same habit helps with any business paid in advance.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Which numbers to read, by sector</h2>
+      <div class="field-grid">
+        <div><b>Regulated equity</b><span>The base the allowed return is earned on; grows as plants are commissioned.</span><em>UTILITY · INVESTOR CALL</em></div>
+        <div><b>Allowed return</b><span>15.5% after tax for thermal, grossed up for tax in the tariff.</span><em>UTILITY · CERC REG. 30–31</em></div>
+        <div><b>Availability and norms</b><span>Below 85%, the fixed charge is cut; small extras for good operation.</span><em>UTILITY · OPERATING DATA</em></div>
+        <div><b>Collections, receivable days</b><span>A regulated return is worth what customers actually pay.</span><em>UTILITY · BALANCE SHEET</em></div>
+        <div><b>Government stake, float</b><span>Control, and how many shares the owner might still sell.</span><em>PSU · SHAREHOLDING PATTERN</em></div>
+        <div><b>Dividend floor and payout</b><span>Higher of 30% of profit or 4% of net worth, a minimum.</span><em>PSU · DIPAM GUIDELINES</em></div>
+        <div><b>Bookings and collections</b><span>Sales signed and cash received this year: the demand signal.</span><em>REAL ESTATE · HIGHLIGHTS</em></div>
+        <div><b>Customer advances</b><span>Paid for, not yet revenue; settled in flats.</span><em>REAL ESTATE · NOTES</em></div>
+        <div><b>Net debt or net cash</b><span>Read with collections; part of the cash is ring-fenced.</span><em>REAL ESTATE · MD&amp;A</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>NTPC, FY2026: regulated equity to dividend</h2>
+      <p>NTPC, standalone, year to 31 March 2026 <span class="tag">public</span>. Pages are the printed pages of its Integrated Annual Report 2025-26; “call” is PDF page 7 of its <a href="https://nsearchives.nseindia.com/corporate/9425178051_27052026175637_Transcript_NTPC_Earnings_Call_Q4_FY26.pdf">Q4 FY26 earnings-call transcript</a>, an exchange filing. Computed lines show the working.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th class="wk">Working or note</th><th>Value</th><th class="pg">Page</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">THE REGULATED BUSINESS</td></tr>
+          <tr><td>Regulated equity</td><td class="wk">conventional power and mining; ₹90,902 cr a year earlier</td><td class="val">₹94,631 cr</td><td class="pg">CALL</td></tr>
+          <tr><td>15.5% of it</td><td class="wk">0.155 × 94,631</td><td class="val">₹14,668 cr</td><td class="pg">—</td></tr>
+          <tr><td>Adjusted profit after tax</td><td class="wk">as stated; ₹18,016 cr in FY25</td><td class="val">₹19,530 cr</td><td class="pg">CALL</td></tr>
+          <tr><td>Dividends from group companies</td><td class="wk">subsidiaries and joint ventures</td><td class="val">₹2,264 cr</td><td class="pg">CALL</td></tr>
+          <tr><td>Profit after tax, reported</td><td class="wk">+17.88%; revenue −2.67%</td><td class="val">₹23,162 cr</td><td class="pg">P. 143</td></tr>
+          <tr><td>Fuel cost</td><td class="wk">₹97,060 cr in FY25</td><td class="val">₹88,605 cr</td><td class="pg">P. 143</td></tr>
+          <tr><td>Bills realised</td><td class="wk">letters of credit backed by tripartite agreements</td><td class="val">100%</td><td class="pg">P. 142</td></tr>
+          <tr><td>Trade receivables</td><td class="wk">30,780 ÷ revenue 1,65,494 × 365</td><td class="val">68 days</td><td class="pg">PP. 194, 196</td></tr>
+          <tr class="grp"><td colspan="4">THE GOVERNMENT AS OWNER</td></tr>
+          <tr><td>Government stake</td><td class="wk">President of India; unchanged in FY26</td><td class="val">51.10%</td><td class="pg">P. 165</td></tr>
+          <tr><td>Dividend a share</td><td class="wk">interim ₹5.50 + final ₹3.50 (proposed)</td><td class="val">₹9.00</td><td class="pg">P. 161</td></tr>
+          <tr><td>Total dividend</td><td class="wk">₹9 × 969.67 crore shares</td><td class="val">₹8,727 cr</td><td class="pg">—</td></tr>
+          <tr><td>Payout</td><td class="wk">8,727 ÷ 23,162</td><td class="val">37.7%</td><td class="pg">—</td></tr>
+          <tr><td>DIPAM floor</td><td class="wk">higher of 30% × 23,162 = 6,949 and 4% × equity 1,74,865 = 6,995</td><td class="val">₹6,995 cr</td><td class="pg">P. 194</td></tr>
+          <tr><td>Paid to the government</td><td class="wk">495.53 crore shares × ₹9</td><td class="val">₹4,460 cr</td><td class="pg">—</td></tr>
+        </tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 240" role="img" aria-label="NTPC's FY26 profit on one scale: 15.5 percent of its regulated equity is 14,668 crore; adjusted profit of 19,530 crore adds 2,264 crore of dividends from group companies and 2,598 crore of other items; reported profit of 23,162 crore adds a further 3,632 crore"><text x="40" y="59" fill="#a5a29c" font-size="16">15.5% × equity</text><rect x="200" y="40" width="322.7" height="28" fill="#f5c76a"/><text x="208" y="59" fill="#202020" font-size="16">14,668</text><text x="40" y="109" fill="#a5a29c" font-size="16">adjusted PAT</text><rect x="200" y="90" width="322.7" height="28" fill="#f5c76a"/><rect x="522.7" y="90" width="49.8" height="28" fill="#f5c76a" fill-opacity="0.6"/><rect x="572.5" y="90" width="57.2" height="28" fill="#f5c76a" fill-opacity="0.3"/><text x="638" y="109" fill="#f1eee8" font-size="16">19,530</text><text x="40" y="159" fill="#a5a29c" font-size="16">reported PAT</text><rect x="200" y="140" width="429.7" height="28" fill="#f5c76a"/><rect x="629.7" y="140" width="79.9" height="28" fill="#f5c76a" fill-opacity="0.3" stroke="#f5c76a" stroke-width="1.5" stroke-dasharray="5 4"/><text x="718" y="159" fill="#f1eee8" font-size="16">23,162</text><text x="200" y="198" fill="#f1eee8" font-size="16">mid gold: dividends from group companies, 2,264</text><text x="40" y="226" fill="#a5a29c" font-size="16">NTPC standalone, FY26, ₹ cr · 0.022 px = ₹1 cr</text></svg></figure>
+      <p><b>Read it as Chambal at scale.</b> The base return on NTPC’s regulated equity, ₹14,668 cr, explains three-quarters of its adjusted profit. Of the rest, ₹2,264 cr is dividends from group companies; the remaining ₹2,598 cr includes other income and earnings beyond the base return, which the call does not split. The annual report attributes the year’s jump in reported profit to higher regulated equity, more dividend income, favourable tariff orders and an amendment to CERC’s regulations (p. 144). Regulated equity grew 4.1% and adjusted profit 8.4%: that, not revenue, is the growth to track.</p>
+      <details class="trace"><summary>Go deeper: what this box leaves out</summary>
+        <p>The ₹94,631 cr is standalone conventional power and mining; group regulated equity, including subsidiaries and joint ventures, was ₹1,20,319 cr (call). Standalone borrowings were ₹1,37,404 cr non-current and ₹52,706 cr current (p. 194), so NTPC funds its regulated equity with a lot of debt, as the 70:30 rule expects. Some of NTPC’s capacity is hydro, which earns other rates; a single 15.5% is a rough check, not NTPC’s own calculation. The 30% and 4% floors use standalone profit and closing total equity.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>DLF, FY2026: bookings, advances, net cash</h2>
+      <p>DLF, consolidated, year to 31 March 2026 <span class="tag">public</span>. Pages are the printed pages of its Annual Report 2025-26; the statements are in ₹ lakh, converted here to ₹ crore. Bookings, collections and net cash are DLF’s own operating measures, outside the audited statements.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th class="wk">Working or note</th><th>Value</th><th class="pg">Page</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">THIS YEAR’S SALES AND CASH</td></tr>
+          <tr><td>New sales bookings</td><td class="wk">₹21,223 cr in FY25</td><td class="val">₹20,143 cr</td><td class="pg">PP. 11–12</td></tr>
+          <tr><td>Collections</td><td class="wk">₹11,773 cr in FY25</td><td class="val">₹13,517 cr</td><td class="pg">PP. 11–12</td></tr>
+          <tr><td>Net cash position</td><td class="wk">company measure; zero gross debt in development</td><td class="val">₹14,155 cr</td><td class="pg">PP. 148–149</td></tr>
+          <tr class="grp"><td colspan="4">WHAT THE ACCOUNTS RECOGNISE</td></tr>
+          <tr><td>Revenue from operations</td><td class="wk">₹7,994 cr in FY25</td><td class="val">₹8,194 cr</td><td class="pg">P. 357</td></tr>
+          <tr><td>of which, property sold</td><td class="wk">land, plots, constructed properties; ₹6,781 cr in FY25</td><td class="val">₹6,508 cr</td><td class="pg">P. 412</td></tr>
+          <tr><td>Customer advances</td><td class="wk">contract liabilities, 31 March 2026</td><td class="val">₹22,069 cr</td><td class="pg">P. 413</td></tr>
+          <tr><td>Bookings ÷ property revenue</td><td class="wk">20,143 ÷ 6,508</td><td class="val">3.1×</td><td class="pg">—</td></tr>
+          <tr><td>Net profit</td><td class="wk">includes ₹1,793 cr share of joint ventures’ profit</td><td class="val">₹4,415 cr</td><td class="pg">P. 357</td></tr>
+          <tr><td>Dividend a share</td><td class="wk">about ₹1,980 cr; subject to approval</td><td class="val">₹8</td><td class="pg">P. 149</td></tr>
+        </tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 256" role="img" aria-label="DLF's customer advances through FY26 on one scale: 15,874 crore at the start, plus 12,703 crore received or adjusted, minus 6,508 crore recognised as revenue on handover, leaves 22,069 crore at 31 March 2026"><text x="24" y="59" fill="#a5a29c" font-size="16">1 April 2025</text><rect x="170" y="40" width="317.5" height="28" fill="#ec6a94"/><text x="178" y="59" fill="#202020" font-size="16">15,874</text><text x="24" y="109" fill="#a5a29c" font-size="16">received</text><rect x="487.5" y="90" width="254" height="28" fill="#76d5c1"/><text x="495" y="109" fill="#202020" font-size="16">+12,703</text><text x="24" y="159" fill="#a5a29c" font-size="16">handed over</text><rect x="611.4" y="140" width="130.1" height="28" fill="#ff8059"/><text x="619" y="159" fill="#202020" font-size="16">−6,508</text><text x="24" y="209" fill="#a5a29c" font-size="16">31 March 2026</text><rect x="170" y="190" width="441.4" height="28" fill="#ec6a94"/><text x="178" y="209" fill="#202020" font-size="16">22,069</text><text x="24" y="244" fill="#a5a29c" font-size="16">DLF consolidated contract liabilities, ₹ cr · 0.02 px = ₹1 cr</text></svg></figure>
+      <p><b>Read it as Mahanadi at scale.</b> DLF booked three rupees of new sales for every rupee of property revenue it recognised, and its customer advances, ₹22,069 cr, are more than three years of FY26’s property revenue. Collections ran well ahead of construction, which is why the development business has no gross debt. Note, too, that ₹1,793 cr of the year’s profit, about 41%, is DLF’s share of profit from joint ventures, chiefly DCCDL, its rental business, which is not a pre-sales business at all.</p>
+      <details class="trace"><summary>Go deeper: reading the notes</summary>
+        <p>Note 28’s movement table: contract liabilities of ₹15,874.31 cr at the start of the year, ₹12,702.79 cr received or adjusted during the year, ₹6,507.73 cr of performance obligations satisfied (recognised as revenue), ₹22,069.36 cr at the end (pp. 412–413). Note 25 prints the previous year’s closing balance as ₹15,934.31 cr; the ₹60 cr difference is not explained in the pages read. Revenue from real-estate units is recognised at a point in time, when control passes to the customer on completion and intimation to the customer; co-development and construction contracts are recognised over time (p. 370). The net cash figure is DLF’s own; the notes also show deposits held in RERA escrow accounts, usable only for the relevant projects.</p>
+      </details>
+      <p class="source-note">Real figures are frozen at FY2026: NTPC’s Integrated Annual Report 2025-26 and Q4 FY26 earnings-call transcript (exchange filing, 27 May 2026); DLF’s Annual Report 2025-26 (printed pages as cited); CERC (Terms and Conditions of Tariff) Regulations, 2024, with the 2019 Regulations for the earlier period; DIPAM’s revised Capital Restructuring Guidelines (18 November 2024) and FAQ; Haryana RERA’s directions of 2 March 2020. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before any verdict</h2>
+      <ol class="checks">
+        <li><b>Utility: what is the regulated equity, and how fast will it grow?</b> Commissioning schedules and admitted capex, not revenue.</li>
+        <li><b>Utility: does it meet the norms, and do customers pay?</b> Availability against 85%, and receivable days.</li>
+        <li><b>PSU: what does the owner want?</b> The payout floor, the stake still to be sold, and when the rules reset.</li>
+        <li><b>Developer: are bookings and collections growing?</b> Then read advances and net debt; treat revenue as a lagging record.</li>
+      </ol>
+      <p>Here profit is set by a rule, shared with a government owner, or collected years early. Part 35, “Loss-making companies and IPOs”, turns to companies with no profit yet: reading a draft offer document, unit economics, cash burn and how long the money lasts.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Before trusting the usual ratios, ask what sets the profit: for a regulated utility, the return the regulator allows on the equity it approves; for a PSU, an owner who also makes policy; for a developer, cash collected years before the revenue is counted.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const IN=new Intl.NumberFormat('en-IN',{maximumFractionDigits:1});
+    const n0=v=>IN.format(Math.round(v*10)/10), cr=v=>'₹'+n0(v)+' cr', pc=(v,d)=>(100*v).toFixed(d==null?1:d)+'%';
+    // ---- Fictional teaching companies. Every output is computed here from the sliders.
+    // Chambal Power (utility): CERC-style two-part tariff; norms equal actual costs.
+    const U={EQ_SHARE:0.3,ROE:0.155,TAX:0.25,INT:0.09,DEP:0.05,OM:0.035,IWC:0.01,FUEL:0.33,NAPAF:85};
+    function util(E,A){
+      const K=E/U.EQ_SHARE, L=K-E, roePre=U.ROE*E/(1-U.TAX), interest=U.INT*L, dep=U.DEP*K, om=U.OM*K, iwc=U.IWC*K;
+      const afc=roePre+interest+dep+om+iwc, billed=afc*Math.min(A/U.NAPAF,1), short=afc-billed, fuel=U.FUEL*K;
+      const pbt=roePre-short, pat=pbt*(1-U.TAX);
+      return {E,A,K,L,roePre,interest,dep,om,iwc,afc,billed,short,fuel,revenue:billed+fuel,pbt,pat,base:U.ROE*E,roe:pat/E};
+    }
+    // Chambal Power (PSU view): DIPAM floor = higher of 30% of PAT and 4% of net worth.
+    const P={NW:4000,GOV:0.6};
+    function psu(pat){
+      const f30=0.3*pat, f4=0.04*P.NW, floor=Math.max(f30,f4);
+      return {pat,f30,f4,floor,payout:floor/pat,gov:P.GOV*floor,roeNW:pat/P.NW,binds:f4>f30?'4% of net worth':'30% of profit'};
+    }
+    // Mahanadi Homes (developer): bookings paid 20/30/30/20 over four years; revenue at handover in year 3.
+    const R={B23:1000,B24:1200,B25:1500,COST:0.6,OPEN_ND:500};
+    function re(B){
+      const revenue=R.B23, collections=0.2*B+0.3*R.B25+0.3*R.B24+0.2*R.B23;
+      const spend=0.1*B+0.2*R.B25+0.2*R.B24+0.1*R.B23, surplus=collections-spend;
+      const advances=0.8*R.B24+0.5*R.B25+0.2*B, profit=revenue-R.COST*R.B23;
+      return {B,revenue,collections,spend,surplus,advances,profit,netDebt:R.OPEN_ND-surplus};
+    }
+    const labConfig={format:v=>IN.format(v),min:0,max:5000,step:1000};
+    const AXES={util:[0,5000,1000],psu:[0,1000,200],re:[0,4000,1000]};
+    const DEF={eq:3000,av:90,pat:465,bk:2000};
+    const PRESETS={
+      outage:{s:'util',v:{eq:3000,av:78},t:'Plant outage: Chambal is available 78% of the year, below the 85% norm. It bills only 78/85 of its ₹2,200 cr fixed cost, ₹181 cr short, and profit falls from ₹465 cr to ₹329 cr: an 11.0% return on regulated equity instead of 15.5%.'},
+      slump:{s:'psu',v:{pat:250},t:'Profit slump: with ₹250 cr of profit, 30% would be ₹75 cr, but 4% of the ₹4,000 cr net worth is ₹160 cr. The floor takes 64% of the year’s profit, and the government’s 60% share of it is ₹96 cr.'},
+      record:{s:'re',v:{bk:4000},t:'Record bookings: Mahanadi sells ₹4,000 cr of flats, double the base. Collections rise to ₹1,810 cr and customer advances to ₹2,510 cr, but revenue stays ₹1,000 cr: it counts flats handed over, sold in FY23.'},
+      base:{s:'util',v:DEF,t:'Base case: Chambal earns exactly 15.5% on ₹3,000 cr of regulated equity and pays the 4%-of-net-worth floor of ₹160 cr; Mahanadi books ₹2,000 cr of sales against ₹1,000 cr of revenue.'}};
+    let sector='util';
+    function setSector(s){
+      sector=s;
+      document.querySelectorAll('.sector-tabs button').forEach(b=>{const on=b.dataset.s===s;b.setAttribute('aria-selected',on?'true':'false');b.classList.toggle('secondary',!on);$('pane-'+b.dataset.s).hidden=!on;});
+      draw();
+    }
+    function chart(rows){
+      const [lo,hi,step]=AXES[sector]; labConfig.min=lo; labConfig.max=hi; labConfig.step=step;
+      const X0=210,X1=680,sx=v=>X0+(Math.min(hi,Math.max(lo,v))-lo)*(X1-X0)/(hi-lo),z=sx(0),H=14+rows.length*48;
+      let g=`<path d="M${z.toFixed(1)} 8 L${z.toFixed(1)} ${H}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      rows.forEach(([lab,v,c,op],i)=>{const y=14+i*48,e=sx(v),w=Math.max(0,e-z);
+        g+=T(14,y+19,lab,'start',MUTC)+`<rect data-v="${v.toFixed(2)}" x="${z.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="26" fill="${c}"${op?` fill-opacity="${op}"`:''}/>`;
+        g+=T(e+6,y+19,n0(v)+(v>hi?' ▸':''),'start');});
+      for(let t=lo;t<=hi;t+=step) g+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${H+24}" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;
+      g+=T(14,H+52,'₹ crore · one scale','start',MUTC);
+      const svg=$('labChart'); svg.setAttribute('viewBox',`0 0 760 ${H+62}`); svg.innerHTML=g;
+    }
+    function readouts(items){ $('readouts').innerHTML=items.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join(''); }
+    function draw(){
+      const E=+$('eq').value, A=+$('av').value, PAT=+$('pat').value, B=+$('bk').value;
+      $('eq-o').textContent=cr(E); $('av-o').textContent=A+'% (norm 85%)'; $('pat-o').textContent=cr(PAT); $('bk-o').textContent=cr(B);
+      const u=util(E,A), p=psu(PAT), r=re(B);
+      let L=[];
+      if(sector==='util'){
+        readouts([[cr(u.revenue),'REVENUE'],[cr(u.pat),'PROFIT AFTER TAX'],[pc(u.roe),'RETURN ON REG. EQUITY']]);
+        chart([['fixed cost due',u.afc,'#76d5c1',0.45],['fixed charge billed',u.billed,'#76d5c1'],['15.5% × equity',u.base,'#f5c76a',0.45],['profit after tax',u.pat,'#f5c76a']]);
+        L=[['Approved cost = equity ÷ 30%',cr(u.K)+' (loans '+cr(u.L)+')'],
+          ['Return on equity in tariff = 15.5% ÷ 0.75 × equity',cr(u.roePre)],
+          ['+ interest 9% × loans',cr(u.interest)],['+ depreciation 5% × cost',cr(u.dep)],['+ O&M 3.5% × cost',cr(u.om)],['+ working-capital interest 1% × cost',cr(u.iwc)],
+          ['= fixed cost due (AFC)',cr(u.afc)],
+          ['Billed = AFC × min('+A+' ÷ 85, 1)',cr(u.billed)+' (short '+cr(u.short)+')'],
+          ['Fuel passed on (energy charge = fuel cost)',cr(u.fuel)],
+          ['Profit before tax = ROE in tariff − shortfall',cr(u.pbt)],
+          ['Profit after tax = PBT × 75%',cr(u.pat)],
+          ['Return on regulated equity = PAT ÷ equity',pc(u.roe,2)]];
+      } else if(sector==='psu'){
+        readouts([[cr(p.floor),'MINIMUM DIVIDEND'],[pc(p.payout),'PAYOUT OF PROFIT'],[p.binds,'RULE THAT BINDS']]);
+        chart([['profit after tax',p.pat,'#f5c76a'],['30% of profit',p.f30,'#f5c76a',0.45],['4% of net worth',p.f4,'#f5c76a',0.45],['minimum dividend',p.floor,'#f5c76a'],["government’s 60%",p.gov,'#f5c76a',0.7]]);
+        L=[['30% of profit',cr(p.pat)+' × 30% = '+cr(p.f30)],['4% of net worth','₹4,000 cr × 4% = '+cr(p.f4)],
+          ['Minimum dividend = the higher',cr(p.floor)+' ('+p.binds+')'],['Payout = dividend ÷ profit',pc(p.payout)],
+          ['Return on net worth = profit ÷ 4,000',pc(p.roeNW)],['To the government (60%)',cr(p.gov)],['To other shareholders (40%)',cr(p.floor-p.gov)]];
+      } else {
+        readouts([[cr(r.revenue),'REVENUE (HANDOVERS)'],[cr(r.collections),'COLLECTIONS'],[r.netDebt<0?'cash '+cr(-r.netDebt):cr(r.netDebt),'NET DEBT, YEAR END']]);
+        chart([['new bookings',r.B,'#76d5c1',0.55],['collections',r.collections,'#76d5c1'],['construction spend',r.spend,'#ff8059'],['revenue recognised',r.revenue,'#76d5c1',0.55],['customer advances',r.advances,'#ec6a94']]);
+        L=[['Collections = 20% × FY26 + 30% × FY25 + 30% × FY24 + 20% × FY23','0.2 × '+n0(B)+' + 450 + 360 + 200 = '+cr(r.collections)],
+          ['Construction = 10% × FY26 + 20% × FY25 + 20% × FY24 + 10% × FY23','0.1 × '+n0(B)+' + 300 + 240 + 100 = '+cr(r.spend)],
+          ['Cash surplus = collections − construction',cr(r.surplus)],
+          ['Net debt = opening 500 − surplus',r.netDebt<0?'net cash '+cr(-r.netDebt):cr(r.netDebt)],
+          ['Revenue = FY23 bookings handed over',cr(r.revenue)],['Profit before overheads and tax = revenue − 60% cost',cr(r.profit)],
+          ['Customer advances = 80% × FY24 + 50% × FY25 + 20% × FY26','960 + 750 + 0.2 × '+n0(B)+' = '+cr(r.advances)]];
+      }
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      const all={util:u,psu:p,re:r};
+      const valid=[u,p,r].every(o=>Object.values(o).every(v=>typeof v!=='number'||Number.isFinite(v)));
+      window.labResults={valid,sector,...all};
+    }
+    ['eq','av','pat','bk'].forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.sector-tabs button').forEach(b=>b.addEventListener('click',()=>{$('msg').textContent='';setSector(b.dataset.s);}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=PRESETS[b.dataset.p];Object.entries(p.v).forEach(([k,v])=>{$(k).value=v;});setSector(p.s);$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

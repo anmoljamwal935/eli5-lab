@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Consumer companies — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales; here, sales from volume) | coral #ff8059 = money going out | gold #f5c76a = what belongs to shareholders (EPS)
+       rose #ec6a94 = what is owed | lavender #c3b8ff = the market's view (price, P/E)
+       Part 32 extras: deep teal #3f9e8c = mix; stone #d9d4c7 = price; pale teal #bfe9df = regular packs, rural buyers, new stores; grey #8a8680 = store floor area; off-white #e9e6df = total sales growth. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .rep tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    /* Lab layout: one column of numbered steps (as in Part 15) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab .dl-chart{max-width:640px}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;min-width:0;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+    .dashlab .dash td.val{white-space:nowrap}
+    .dashlab .dash td.now{white-space:nowrap;color:var(--fg);font-weight:600}
+    .dashlab details.trace{margin-top:16px}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}.eli5-study-container table.rep{min-width:0}.rep td.wk{display:none}.rep th.wk{display:none}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 32: split consumer growth into volume, price and mix, and stores">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/consumer-companies-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Consumer companies">
+<meta property="og:description" content="Part 32: split consumer growth into volume, price and mix, and stores">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/consumer-companies-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/consumer-companies-eli5.png?v=70c2ed86">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Consumer companies">
+<meta property="article:published_time" content="2026-11-23">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="consumer-companies-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 20 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Consumer companies</h1>
+      <p class="lede">A soap maker and a supermarket chain both sell everyday things, so their sales are easy to see and hard to read. Split growth into more units, higher prices and a richer mix; for a retailer, into old stores and new ones. Then see why the market pays so much for steady demand.</p>
+      <p class="source-note">Built from Hindustan Unilever’s Integrated Annual Report 2025-26, Avenue Supermarts’ (DMart’s) Annual Report 2025-26 as filed with BSE and NSE on 23 July 2026, NSE’s closing prices for 30 March 2026, and Tata Consumer Products’ FY26 AGM presentation, facts checked against them · <a href="https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf">HUL report ↗</a> · <a href="https://www.bseindia.com/xml-data/corpfiling/Attachhis/b496eda6-102e-4914-9a09-ce1e7f66c8b9.pdf">DMart report ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a> wrote sales as volume × price, <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> measured growth, <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a> read P/E and its traps, <a href="industry-and-moats-eli5.html" data-series-link="industry-and-moats-eli5">Part 17</a> covered brands and moats, <a href="the-economy-around-the-company-eli5.html" data-series-link="the-economy-around-the-company-eli5">Part 22</a>, “The economy around the company”, covered input costs and the monsoon, and <a href="relative-valuation-eli5.html" data-series-link="relative-valuation-eli5">Part 26</a>, “Relative valuation and P/E bands”, showed that a P/E is a DCF in shorthand. Part 31, “Exporters: IT services and pharma”, split growth into currency and real growth; this part splits it into volume, price and mix. It does not use Ramu Chai. Its teaching companies are <b>Krishna Consumer Ltd</b>, a fictional soap and detergent maker with ₹1,000 cr of FY25 sales, and <b>Sabarmati Mart Ltd</b>, a fictional supermarket chain. Facts carry a tag: <span class="tag">public</span> is from a company’s FY2026 filing or NSE, <span class="tag">example</span> is a made-up number. All amounts are ₹ crore (cr). <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>volume: more units sold (money coming in)</span>
+        <span><i style="background:#3f9e8c"></i>mix: more of the dearer products</span>
+        <span><i style="background:#d9d4c7"></i>price: the same thing, charged more</span>
+        <span><i style="background:#bfe9df"></i>regular packs, rural buyers, new stores</span>
+        <span><i style="background:#8a8680"></i>store floor area</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: EPS</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: P/E</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Same growth, two different years</h2>
+      <p>Krishna’s sales rose from ₹1,000 cr to ₹1,087.7 cr in FY26, up 8.8% <span class="tag">example</span>. A twin company grew by exactly as much. But Krishna sold more packs, and more of its dearer ones; the twin sold the same number of packs and simply charged more for each.</p>
+      <figure><svg viewBox="0 0 800 200" role="img" aria-label="The extra 87.7 crore of sales split by cause: Krishna's is 40 crore from volume, 16 from mix and 31.7 from price; the twin's is all 87.7 from price"><text x="40" y="59" fill="#a5a29c" font-size="16">Krishna</text><rect x="170" y="40" width="240" height="28" fill="#76d5c1"/><text x="178" y="59" fill="#202020" font-size="16">volume 40</text><rect x="410" y="40" width="96" height="28" fill="#3f9e8c"/><text x="418" y="59" fill="#202020" font-size="16">mix 16</text><rect x="506" y="40" width="190.08" height="28" fill="#d9d4c7"/><text x="514" y="59" fill="#202020" font-size="16">price 31.7</text><text x="706" y="59" fill="#f1eee8" font-size="16">+8.8%</text><text x="40" y="119" fill="#a5a29c" font-size="16">twin</text><rect x="170" y="100" width="526.08" height="28" fill="#d9d4c7"/><text x="178" y="119" fill="#202020" font-size="16">price 87.7</text><text x="706" y="119" fill="#f1eee8" font-size="16">+8.8%</text><text x="40" y="176" fill="#a5a29c" font-size="16">6 px = ₹1 cr of extra sales · both start at ₹1,000 cr</text></svg></figure>
+      <p>The headline is identical; the business is not. Volume is demand: more homes using the product. Price is pricing power, and it often just passes on costlier palm oil or packaging, which can reverse. Mix is customers trading up. Analysts of consumer companies ask first: <b>how much of the growth was volume?</b></p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Sales are an area: packs × price</h2>
+      <p>Draw sales as a rectangle: its width is the packs sold, its height the average price of a pack. Krishna sold 90 crore packs in FY25 at an average ₹11.11 <span class="tag">example</span>: ₹1,000 cr. In FY26 the rectangle grew a little wider (93.6 crore packs, +4%) and a little taller (₹11.62).</p>
+      <figure><svg viewBox="0 0 800 360" role="img" aria-label="Krishna's sales drawn as a rectangle 90 crore packs wide and 11.11 rupees tall; FY26 adds a narrow strip on the right for 3.6 crore more packs and a thin strip on top for the higher average price"><text x="100" y="52" fill="#d9d4c7" font-size="16">price and mix: +₹47.7 cr</text><rect x="100" y="77.78" width="540" height="222.22" fill="#76d5c1" fill-opacity="0.22"/><rect x="640" y="77.78" width="21.6" height="222.22" fill="#76d5c1"/><rect x="100" y="67.59" width="561.6" height="10.19" fill="#d9d4c7"/><text x="124" y="180" fill="#f1eee8" font-size="16">FY25 sales ₹1,000 cr</text><text x="124" y="206" fill="#a5a29c" font-size="16">90 cr packs × ₹11.11</text><text x="674" y="190" fill="#76d5c1" font-size="16">volume +4%</text><text x="674" y="214" fill="#76d5c1" font-size="16">+₹40 cr</text><text x="100" y="326" fill="#a5a29c" font-size="16">width: packs sold · height: average price a pack</text><text x="100" y="350" fill="#a5a29c" font-size="16">6 px = 1 cr packs · 20 px = ₹1 a pack</text></svg></figure>
+      <span class="eq">sales growth = (1 + volume growth) × (1 + average-price growth) − 1 = 1.04 × 1.0458 − 1 = 8.8%</span>
+      <p>Two things follow. Growth multiplies, so 4% volume and 4.6% price give 8.8%, not 8.6%. And the thin strip on top is two things at once: the price of each pack, and which packs people bought. The next panel pulls those apart.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Mix</p>
+      <h2>Trading up lifts the average price</h2>
+      <p>Krishna sells a regular pack at ₹10 and a premium pack at ₹20 <span class="tag">example</span>. In FY26 regular packs rose 2% (80 to 81.6 crore) and premium packs 20% (10 to 12 crore). Even at FY25’s prices, the average pack is now worth ₹11.28, not ₹11.11. That gain is <b>mix</b>.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Packs sold, regular and premium, in FY25 and FY26, and the same packs valued at FY25 prices: 1,000 crore then 1,056 crore, against 1,040 crore if only the number of packs had grown; the 16 crore gap is mix"><text x="130" y="26" fill="#bfe9df" font-size="16">regular packs, ₹10</text><text x="560" y="26" fill="#3f9e8c" font-size="16">premium, ₹20</text><text x="40" y="59" fill="#a5a29c" font-size="16">FY25</text><rect x="130" y="40" width="480" height="26" fill="#bfe9df"/><text x="138" y="59" fill="#202020" font-size="16">regular 80</text><rect x="610" y="40" width="60" height="26" fill="#3f9e8c"/><text x="618" y="59" fill="#202020" font-size="16">10</text><text x="680" y="59" fill="#f1eee8" font-size="16">90</text><text x="40" y="95" fill="#a5a29c" font-size="16">FY26</text><rect x="130" y="76" width="489.6" height="26" fill="#bfe9df"/><text x="138" y="95" fill="#202020" font-size="16">regular 81.6</text><rect x="619.6" y="76" width="72" height="26" fill="#3f9e8c"/><text x="627.6" y="95" fill="#202020" font-size="16">12</text><text x="701.6" y="95" fill="#f1eee8" font-size="16">93.6</text><text x="130" y="150" fill="#a5a29c" font-size="16">sales at FY25 prices, ₹ cr</text><text x="40" y="183" fill="#a5a29c" font-size="16">FY25</text><rect x="130" y="164" width="440" height="26" fill="#bfe9df"/><text x="138" y="183" fill="#202020" font-size="16">800</text><rect x="570" y="164" width="110" height="26" fill="#3f9e8c"/><text x="578" y="183" fill="#202020" font-size="16">200</text><text x="690" y="183" fill="#f1eee8" font-size="16">1,000</text><text x="40" y="219" fill="#a5a29c" font-size="16">FY26</text><rect x="130" y="200" width="448.8" height="26" fill="#bfe9df"/><text x="138" y="219" fill="#202020" font-size="16">816</text><rect x="578.8" y="200" width="132" height="26" fill="#3f9e8c"/><text x="586.8" y="219" fill="#202020" font-size="16">240</text><text x="720.8" y="219" fill="#f1eee8" font-size="16">1,056</text><path d="M702 194 L702 232" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="696" y="254" text-anchor="end" fill="#a5a29c" font-size="16">packs alone: 1,040</text><text x="712" y="254" fill="#3f9e8c" font-size="16">mix +16</text><text x="40" y="288" fill="#a5a29c" font-size="16">packs 6 px = 1 cr · sales 0.55 px = ₹1 cr</text></svg></figure>
+      <p>So the 4.6% rise in the average price is 1.5% mix (1,056 ÷ 1,040) and 3% price (Krishna raised both packs by 3%, so 1,087.7 ÷ 1,056). Mix can run the other way: when budgets are tight, buyers shift to small packs and cheaper variants, and the average falls even if no price changed.</p>
+      <details class="trace"><summary>Go deeper: the three effects in rupees</summary>
+        <p>Volume effect = FY25 average price × extra packs = 11.11 × 3.6 = ₹40 cr. Mix effect = FY26 packs at FY25 prices − FY26 packs at FY25’s average = 1,056 − 1,040 = ₹16 cr. Price effect = FY26 sales − FY26 packs at FY25 prices = 1,087.68 − 1,056 = ₹31.68 cr. The three add to ₹87.68 cr. The order matters a little (price measured on new volumes); companies choose their own method and rarely print it, so compare a company with itself over time.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Where price hides</p>
+      <h2>Price can hide in the grams</h2>
+      <p>Indian shoppers buy many products at fixed price points: the ₹5 or ₹10 pack. To raise prices without changing the sticker, companies change the pack. Shrink a ₹10 pack from 100 g to 90 g and the price per kilo rises 11% <span class="tag">example</span>, while the pack count stays the same.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Two packs both priced at 10 rupees, drawn to height by weight: 100 grams and 90 grams; beside them the price per kilo, 100 rupees and 111.1 rupees"><rect x="80" y="60" width="90" height="200" fill="#bfe9df"/><text x="125" y="160" text-anchor="middle" fill="#202020" font-size="16">₹10</text><text x="125" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">100 g</text><rect x="210" y="80" width="90" height="180" fill="#bfe9df"/><text x="255" y="170" text-anchor="middle" fill="#202020" font-size="16">₹10</text><text x="255" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">90 g</text><text x="360" y="60" fill="#a5a29c" font-size="16">price per kilo</text><rect x="360" y="80" width="300" height="28" fill="#d9d4c7"/><text x="368" y="99" fill="#202020" font-size="16">100 g pack: ₹100</text><rect x="360" y="130" width="333.3" height="28" fill="#d9d4c7"/><text x="368" y="149" fill="#202020" font-size="16">90 g pack: ₹111.1</text><text x="703" y="149" fill="#f1eee8" font-size="16">+11%</text><text x="360" y="210" fill="#a5a29c" font-size="16">bars: 3 px = ₹1 a kilo</text><text x="360" y="236" fill="#a5a29c" font-size="16">packs: 2 px = 1 gram</text></svg></figure>
+      <p>This is why good disclosures count volume in tonnes or litres, not in packs, and why “grammage” is a price lever. It works in reverse too: when GST rates or commodity costs fall, a company may keep the ₹10 price and add grams, a price cut that a pack count never shows.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Rural and urban</p>
+      <h2>Two Indias, two speeds of demand</h2>
+      <p>About a third of Krishna’s packs go to villages and small towns <span class="tag">example</span>: 30 crore of 90. In FY26 rural packs rose 8% and urban 2%, so rural, a third of the volume, supplied two-thirds of the 3.6 crore extra packs. After a weak monsoon, rural falls 4% instead and the total does not grow at all.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="Krishna's packs split into rural and urban: 30 and 60 crore in FY25, 32.4 and 61.2 in FY26, and 28.8 and 61.2 after a weak monsoon, which leaves the total flat at 90"><text x="20" y="49" fill="#a5a29c" font-size="16">FY25</text><rect x="150" y="30" width="180" height="28" fill="#bfe9df"/><text x="158" y="49" fill="#202020" font-size="16">rural 30</text><rect x="330" y="30" width="360" height="28" fill="#76d5c1"/><text x="338" y="49" fill="#202020" font-size="16">urban 60</text><text x="700" y="49" fill="#f1eee8" font-size="16">90</text><text x="20" y="99" fill="#a5a29c" font-size="16">FY26</text><rect x="150" y="80" width="194.4" height="28" fill="#bfe9df"/><text x="158" y="99" fill="#202020" font-size="16">rural 32.4</text><rect x="344.4" y="80" width="367.2" height="28" fill="#76d5c1"/><text x="352.4" y="99" fill="#202020" font-size="16">urban 61.2</text><text x="721.6" y="99" fill="#f1eee8" font-size="16">93.6</text><text x="20" y="149" fill="#a5a29c" font-size="16">weak rain</text><rect x="150" y="130" width="172.8" height="28" fill="#bfe9df"/><text x="158" y="149" fill="#202020" font-size="16">rural 28.8</text><rect x="322.8" y="130" width="367.2" height="28" fill="#76d5c1"/><text x="330.8" y="149" fill="#202020" font-size="16">urban 61.2</text><text x="700" y="149" fill="#f1eee8" font-size="16">90</text><text x="150" y="204" fill="#a5a29c" font-size="16">rural +8%, urban +2% · weak rain: rural −4%</text><text x="150" y="232" fill="#a5a29c" font-size="16">6 px = 1 cr packs · Krishna example</text></svg></figure>
+      <p>Rural demand rides on the monsoon, crop prices, farm wages and food inflation, so it swings more; urban demand rides on jobs and salaries, and increasingly shifts to supermarkets and quick-commerce apps. Companies rarely print rural and urban growth as numbers. They describe it in the management discussion, so read the words for direction and the volume figure for size.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Split Krishna’s growth yourself</h2>
+      <p>Set how many more regular and premium packs Krishna sells in FY26, and how much it changes the price of both <span class="tag">example</span>. The chart splits the change in sales into volume, mix and price, in rupees, on one fixed scale.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Set the year</p>
+          <div class="dl-grid">
+            <div class="dl-col">
+              <div class="control"><label for="gr">Regular packs (₹10), change: <output id="gr-o"></output></label><input id="gr" type="range" min="-10" max="15" step="1" value="2"></div>
+              <div class="control"><label for="gp">Premium packs (₹20), change: <output id="gp-o"></output></label><input id="gp" type="range" min="-10" max="40" step="2" value="20"></div>
+              <div class="control"><label for="pc">Price change on both packs: <output id="pc-o"></output></label><input id="pc" type="range" min="-5" max="10" step="1" value="3"></div>
+            </div>
+            <div class="dl-col">
+              <div class="presets">
+                <button type="button" class="secondary" data-p="base">Krishna’s FY26</button>
+                <button type="button" class="secondary" data-p="infl">Costs passed on</button>
+                <button type="button" class="secondary" data-p="cut">Price cuts, more packs</button>
+                <button type="button" class="secondary" data-p="prem">Trading up</button>
+              </div>
+            </div>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Where the extra sales came from</p>
+          <div class="dl-chart lab-chart"><svg id="labChart" viewBox="0 0 640 290" role="img" aria-label="Bars on one rupee crore scale for the volume, mix and price effects and the total change in Krishna's sales, updated by the sliders"></svg></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Read it as the company would</p>
+          <div class="table-wrap"><table class="dash" id="dash"></table></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>FY25: 80 crore regular packs at ₹10 and 10 crore premium packs at ₹20, sales ₹1,000 cr, 90 crore packs, average ₹11.11. The price slider moves both packs by the same percentage, and pack sizes do not change, so packs are a fair measure of volume. Volume growth = FY26 packs ÷ 90 − 1. Mix = FY26 packs at FY25 prices ÷ (FY26 packs × ₹11.11) − 1. Price = the slider. The three multiply to total growth; in rupees they add to it. Costs and profit are left out on purpose: this lab is only about reading the sales line.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Slower sales, stronger demand</h2>
+      <p>Suppose that next year commodity costs fall and Krishna cuts prices 3%, while regular packs rise 8% and premium 10% <span class="tag">example</span>. Sales growth slows from 8.8% to 5.1%. A headline reader sees a slowdown. In fact Krishna sold 8.2% more packs, twice FY26’s volume growth.</p>
+      <figure><svg viewBox="0 0 800 240" role="img" aria-label="Two years compared: in Krishna's FY26 sales grew 8.8 percent on 4.0 percent more packs; in a price-cut year sales grew 5.1 percent on 8.2 percent more packs"><text x="40" y="34" fill="#f1eee8" font-size="16">Krishna FY26</text><text x="220" y="69" text-anchor="end" fill="#a5a29c" font-size="16">sales</text><rect x="230" y="50" width="438.5" height="26" fill="#e9e6df"/><text x="676.5" y="69" fill="#f1eee8" font-size="16">+8.8%</text><text x="220" y="99" text-anchor="end" fill="#a5a29c" font-size="16">packs</text><rect x="230" y="80" width="200" height="26" fill="#76d5c1"/><text x="438" y="99" fill="#f1eee8" font-size="16">+4.0%</text><text x="40" y="134" fill="#f1eee8" font-size="16">price-cut year</text><text x="220" y="169" text-anchor="end" fill="#a5a29c" font-size="16">sales</text><rect x="230" y="150" width="257.4" height="26" fill="#e9e6df"/><text x="495.4" y="169" fill="#f1eee8" font-size="16">+5.1%</text><text x="220" y="199" text-anchor="end" fill="#a5a29c" font-size="16">packs</text><rect x="230" y="180" width="411.1" height="26" fill="#76d5c1"/><text x="649.1" y="199" fill="#f1eee8" font-size="16">+8.2%</text><text x="40" y="230" fill="#a5a29c" font-size="16">50 px = 1 percentage point</text></svg></figure>
+      <p>The reverse trap is worse: in an inflation year a company can post double-digit sales growth with flat or falling volumes, and that growth vanishes when costs fall. HUL’s Home Care business did the first thing in FY26: high-single-digit volume growth, but only 4% sales growth after price cuts <span class="tag">public</span> (the HUL panel below).</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Why the P/E runs high</p>
+      <h2>Steady demand, high returns, long runway</h2>
+      <p><a href="relative-valuation-eli5.html" data-series-link="relative-valuation-eli5">Part 26</a>, “Relative valuation and P/E bands”, showed that a P/E is a DCF in shorthand. In the simplest version, for a company growing at a steady rate for ever, P/E on next year’s earnings = (1 − growth ÷ return on new money) ÷ (discount rate − growth). Consumer leaders score well on all three inputs.</p>
+      <figure><svg viewBox="0 0 800 340" role="img" aria-label="Justified P/E against growth for ever, at a 10.5 percent discount rate: with new money earning 100 percent the curve rises steeply and reaches HUL's 45.4 at about 8.5 percent growth; with new money earning 20 percent it stays far lower"><path d="M90 30 L90 290 L740 290" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="78" y="295" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="78" y="232.5" text-anchor="end" fill="#a5a29c" font-size="16">15</text><text x="78" y="170" text-anchor="end" fill="#a5a29c" font-size="16">30</text><text x="78" y="107.5" text-anchor="end" fill="#a5a29c" font-size="16">45</text><text x="78" y="45" text-anchor="end" fill="#a5a29c" font-size="16">60</text><text x="90" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="306.7" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">3%</text><text x="523.3" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">6%</text><text x="740" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">9%</text><text x="740" y="336" text-anchor="end" fill="#a5a29c" font-size="16">growth for ever</text><text x="100" y="26" fill="#a5a29c" font-size="16">P/E</text><path d="M90 100.8 L740 100.8" stroke="#c3b8ff" stroke-width="1.5" fill="none" stroke-dasharray="6 5"/><text x="100" y="92" fill="#c3b8ff" font-size="16">HUL 45.4×, FY26</text><polyline points="90.0,250.3 104.4,249.6 118.9,248.9 133.3,248.2 147.8,247.4 162.2,246.6 176.7,245.7 191.1,244.9 205.6,243.9 220.0,243.0 234.4,242.0 248.9,240.9 263.3,239.8 277.8,238.6 292.2,237.4 306.7,236.1 321.1,234.7 335.6,233.3 350.0,231.8 364.4,230.2 378.9,228.5 393.3,226.6 407.8,224.7 422.2,222.6 436.7,220.4 451.1,218.0 465.6,215.5 480.0,212.7 494.4,209.7 508.9,206.5 523.3,203.0 537.8,199.1 552.2,194.9 566.7,190.2 581.1,185.0 595.6,179.3 610.0,172.8 624.4,165.5 638.9,157.2 653.3,147.7 667.8,136.7 682.2,123.7 696.7,108.3 711.1,89.6 725.6,66.5 732.8,52.8" fill="none" stroke="#c3b8ff" stroke-width="2.5"/><polyline points="90.0,250.3 104.4,250.0 118.9,249.6 133.3,249.2 147.8,248.8 162.2,248.3 176.7,247.9 191.1,247.4 205.6,246.9 220.0,246.4 234.4,245.9 248.9,245.3 263.3,244.7 277.8,244.1 292.2,243.5 306.7,242.8 321.1,242.1 335.6,241.3 350.0,240.5 364.4,239.6 378.9,238.7 393.3,237.8 407.8,236.7 422.2,235.6 436.7,234.4 451.1,233.2 465.6,231.8 480.0,230.4 494.4,228.8 508.9,227.1 523.3,225.2 537.8,223.1 552.2,220.9 566.7,218.4 581.1,215.7 595.6,212.6 610.0,209.2 624.4,205.3 638.9,200.9 653.3,195.9 667.8,190.0 682.2,183.1 696.7,174.9 711.1,165.0 725.6,152.7 732.8,145.5" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="7 5"/><text x="380" y="205" text-anchor="end" fill="#c3b8ff" font-size="16">new money earns 100%</text><text x="740" y="272" text-anchor="end" fill="#a5a29c" font-size="16">new money earns 20%</text><circle cx="702.8" cy="100.8" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="690" y="80" text-anchor="end" fill="#f1eee8" font-size="16">8.5% growth</text><circle cx="631.7" cy="161.5" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="618" y="150" text-anchor="end" fill="#f1eee8" font-size="16">7.5%: 30.8×</text></svg></figure>
+      <p>Return on new money: a strong brand needs little capital to grow (HUL’s printed return on capital employed is 110.9% <span class="tag">public</span>), so almost all profit can be paid out while growth continues. Discount rate: people keep buying soap and tea in a slowdown, so profit is steady and investors accept a lower return. Runway: more homes, more categories, more premium packs. At a 10.5% discount rate <span class="tag">example</span>, HUL’s P/E of 45.4 is the price of about 8.5% growth for ever.</p>
+      <details class="trace"><summary>Go deeper: why a zero-growth company gets the same P/E either way</summary>
+        <p>At zero growth both curves start at 1 ÷ 10.5% = 9.5×: if a company does not grow, the return it would earn on new money does not matter, because it invests none. Growth adds value only when new money earns more than the discount rate; at a 20% return it adds some, at 100% it adds a lot. The formula is the steady-state case of <a href="dcf-step-by-step-eli5.html" data-series-link="dcf-step-by-step-eli5">Part 24</a>’s DCF, “DCF, step by step”, and it breaks when growth reaches the discount rate.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>A high P/E has far to fall</h2>
+      <p>The same curve is steep at the top. Drop the growth belief from 8.5% to 7.5% and the justified P/E falls from 45.4 to 30.8 <span class="tag">example</span>, a third off the price with no change in this year’s profit. HUL shows the gentler real version <span class="tag">public</span>: EPS rose from ₹37.77 to ₹45.25 over four years, the share price went nowhere, and the P/E fell.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="HUL's EPS and year-end P/E from FY22 to FY26: EPS 37.77, 43.07, 43.74, 45.36 and 45.25 rupees; P/E 54.2, 59.4, 51.9, 49.8 and 45.4"><text x="110" y="24" fill="#f5c76a" font-size="16">EPS, ₹</text><text x="470" y="24" fill="#c3b8ff" font-size="16">P/E at the year-end price</text><text x="40" y="59" fill="#a5a29c" font-size="16">FY22</text><rect x="110" y="40" width="226.6" height="26" fill="#f5c76a"/><text x="344.6" y="59" fill="#f1eee8" font-size="16">37.77</text><rect x="470" y="40" width="271.2" height="26" fill="#c3b8ff"/><text x="478" y="59" fill="#202020" font-size="16">54.2× at ₹2,049</text><text x="40" y="103" fill="#a5a29c" font-size="16">FY23</text><rect x="110" y="84" width="258.4" height="26" fill="#f5c76a"/><text x="376.4" y="103" fill="#f1eee8" font-size="16">43.07</text><rect x="470" y="84" width="297.1" height="26" fill="#c3b8ff"/><text x="478" y="103" fill="#202020" font-size="16">59.4× at ₹2,559</text><text x="40" y="147" fill="#a5a29c" font-size="16">FY24</text><rect x="110" y="128" width="262.4" height="26" fill="#f5c76a"/><text x="380.4" y="147" fill="#f1eee8" font-size="16">43.74</text><rect x="470" y="128" width="259.3" height="26" fill="#c3b8ff"/><text x="478" y="147" fill="#202020" font-size="16">51.9× at ₹2,268</text><text x="40" y="191" fill="#a5a29c" font-size="16">FY25</text><rect x="110" y="172" width="272.2" height="26" fill="#f5c76a"/><text x="390.2" y="191" fill="#f1eee8" font-size="16">45.36</text><rect x="470" y="172" width="249.1" height="26" fill="#c3b8ff"/><text x="478" y="191" fill="#202020" font-size="16">49.8× at ₹2,259</text><text x="40" y="235" fill="#a5a29c" font-size="16">FY26</text><rect x="110" y="216" width="271.5" height="26" fill="#f5c76a"/><text x="389.5" y="235" fill="#f1eee8" font-size="16">45.25</text><rect x="470" y="216" width="227.2" height="26" fill="#c3b8ff"/><text x="478" y="235" fill="#202020" font-size="16">45.4× at ₹2,056</text><text x="40" y="284" fill="#a5a29c" font-size="16">EPS 6 px = ₹1 · P/E 5 px = 1× · BSE year-end closes</text></svg></figure>
+      <p>EPS grew about 4.6% a year from FY22 to FY26, slower than the growth a P/E above 50 had assumed, so the multiple shrank as fast as earnings grew (<a href="relative-valuation-eli5.html" data-series-link="relative-valuation-eli5">Part 26</a>’s re-rating, in reverse). A great company bought at a price that assumes too much can still be a poor investment for years.</p>
+      <details class="trace"><summary>Go deeper: which EPS?</summary>
+        <p>These are HUL’s consolidated EPS from continuing operations, as printed in its long-term track record (p. 18), and the BSE closing prices it prints (p. 19). FY26 total EPS was ₹64.01, because it includes a ₹4,611 cr accounting gain on demerging the ice-cream business into Kwality Wall’s (India) Ltd on 1 December 2025 (p. 443). On that figure the P/E would look like 32.1: Part 7’s one-off trap.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Retail</p>
+      <h2>A retailer grows two ways</h2>
+      <p>Sabarmati Mart runs 100 supermarkets of 25,000 sq ft each, 2.5 million sq ft, with FY25 sales of ₹8,000 cr <span class="tag">example</span>. In FY26 its old stores sell 8% more, the <b>like-for-like</b> (LFL) or same-store growth. It also opens 20 stores, which trade for half the year on average at 75% of a mature store’s rate.</p>
+      <figure><svg viewBox="0 0 800 270" role="img" aria-label="Sabarmati Mart's floor area and sales, FY25 bars drawn equal: area grows 20 percent with 0.5 million square feet of new stores, while sales grow 15.5 percent, 640 crore from old stores and 600 crore from new ones"><text x="20" y="59" fill="#a5a29c" font-size="16">FY25 area</text><rect x="160" y="40" width="400" height="28" fill="#8a8680"/><text x="168" y="59" fill="#202020" font-size="16">100 stores, 2.5 mn sq ft</text><text x="20" y="95" fill="#a5a29c" font-size="16">FY26 area</text><rect x="160" y="76" width="400" height="28" fill="#8a8680"/><text x="168" y="95" fill="#202020" font-size="16">old 2.5</text><rect x="560" y="76" width="80" height="28" fill="#c9c6c0"/><text x="568" y="95" fill="#202020" font-size="16">new 0.5</text><text x="650" y="95" fill="#f1eee8" font-size="16">+20%</text><text x="20" y="159" fill="#a5a29c" font-size="16">FY25 sales</text><rect x="160" y="140" width="400" height="28" fill="#76d5c1"/><text x="168" y="159" fill="#202020" font-size="16">₹8,000 cr</text><text x="20" y="195" fill="#a5a29c" font-size="16">FY26 sales</text><rect x="160" y="176" width="432" height="28" fill="#76d5c1"/><text x="168" y="195" fill="#202020" font-size="16">old stores 8,640</text><rect x="592" y="176" width="30" height="28" fill="#bfe9df"/><text x="632" y="195" fill="#f1eee8" font-size="16">+15.5%</text><text x="20" y="238" fill="#a5a29c" font-size="16">FY25 bars drawn equal, so lengths compare growth</text><text x="20" y="262" fill="#a5a29c" font-size="16">area 160 px = 1 mn sq ft · sales 0.05 px = ₹1 cr</text></svg></figure>
+      <p>Sales rise 15.5% to ₹9,240 cr: 8 points from LFL and 7.5 from the ₹600 cr the new stores (the thin pale bar) add. The two halves mean different things. LFL is demand and execution in stores the market already knows. <b>Store additions</b> are capital spent on land, buildings and stock; they pay off only if the new stores mature, so watch how many open each year and how fast they reach the old stores’ sales.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Retail productivity</p>
+      <h2>Sales per square foot, and which feet</h2>
+      <p>The retailer’s productivity number is sales per square foot of selling area. Sabarmati’s FY25 figure is ₹32,000 (₹8,000 cr ÷ 2.5 million sq ft) <span class="tag">example</span>. For FY26 the answer depends on which floor area goes underneath.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="Sabarmati Mart's sales per square foot four ways: 32,000 rupees in FY25; in FY26 30,800 on closing area, 33,600 on average area and 34,560 for old stores only; a dashed line marks the FY25 level"><text x="220" y="49" text-anchor="end" fill="#a5a29c" font-size="16">FY25</text><rect x="230" y="30" width="384" height="28" fill="#76d5c1"/><text x="238" y="49" fill="#202020" font-size="16">₹32,000</text><text x="220" y="99" text-anchor="end" fill="#a5a29c" font-size="16">FY26, closing area</text><rect x="230" y="80" width="369.6" height="28" fill="#76d5c1"/><text x="238" y="99" fill="#202020" font-size="16">₹30,800 · −3.75%</text><text x="220" y="149" text-anchor="end" fill="#a5a29c" font-size="16">FY26, average area</text><rect x="230" y="130" width="403.2" height="28" fill="#76d5c1"/><text x="238" y="149" fill="#202020" font-size="16">₹33,600 · +5%</text><text x="220" y="199" text-anchor="end" fill="#a5a29c" font-size="16">old stores only</text><rect x="230" y="180" width="414.7" height="28" fill="#76d5c1"/><text x="238" y="199" fill="#202020" font-size="16">₹34,560 · +8%</text><path d="M614 20 L614 218" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="230" y="240" fill="#a5a29c" font-size="16">0.012 px = ₹1 a sq ft · dashed: FY25</text></svg></figure>
+      <p>Same year, same chain: −3.75%, +5% or +8%. A fast-expanding chain looks less productive on year-end area because its newest stores are counted in full but traded for only part of the year, and are still ramping up. So check which area a company divides by, compare a chain with itself, and read the figure next to LFL and store additions.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Twelve consumer numbers, one card each</h2>
+      <div class="field-grid">
+        <div><b>Volume growth</b><span>Units or tonnes sold, against last year. HUL calls it underlying volume growth (UVG).</span><em>MD&amp;A · RESULTS RELEASE</em></div>
+        <div><b>Price and mix</b><span>Sales growth minus volume growth, roughly. Ask which part is price.</span><em>MD&amp;A · SEGMENT REVIEW</em></div>
+        <div><b>Grammage</b><span>Grams per price point. A smaller pack at the same price is a price rise.</span><em>CONCALLS</em></div>
+        <div><b>Rural and urban</b><span>Usually described, rarely numbered. Monsoon, farm income, food inflation.</span><em>MD&amp;A · INDUSTRY</em></div>
+        <div><b>Gross-to-net</b><span>List price less trade discounts and promotions. Price cuts can hide here.</span><em>NOTES · REVENUE</em></div>
+        <div><b>Gross margin and ad spend</b><span>What pricing power keeps, and what the brand costs to defend.</span><em>P&amp;L · OTHER EXPENSES</em></div>
+        <div><b>Reach</b><span>Outlets served directly; growth in villages and new channels.</span><em>ANNUAL REPORT · OVERVIEW</em></div>
+        <div><b>Like-for-like growth</b><span>Sales growth in stores open long enough to compare; the definition varies.</span><em>RETAIL KPIs</em></div>
+        <div><b>Store additions and area</b><span>Stores opened and square feet added. Growth that needs capital.</span><em>RETAIL KPIs · CAPEX</em></div>
+        <div><b>Sales per sq ft</b><span>Productivity of the floor. Check the area used underneath.</span><em>RETAIL KPIs · MD&amp;A</em></div>
+        <div><b>Bills and basket</b><span>Number of bills, and sales per bill: more visits or bigger baskets.</span><em>MD&amp;A</em></div>
+        <div><b>P/E against returns</b><span>High returns and steady growth justify a high P/E, until growth slows.</span><em>PARTS 7 AND 26</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Hindustan Unilever, FY2026: the numbers</h2>
+      <p>HUL, year to 31 March 2026 <span class="tag">public</span>. It demerged its ice-cream business during the year, so the report splits continuing from discontinued operations; the figures below are for continuing operations. Page numbers are the printed pages of the Integrated Annual Report 2025-26.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th class="wk">Working</th><th>Value</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">GROWTH</td></tr>
+          <tr><td>Sales (products and services)</td><td class="wk">consolidated; FY25 ₹60,573 cr</td><td class="val">₹63,763 cr</td><td class="pg">PP. 18, 410</td></tr>
+          <tr><td>Underlying sales growth</td><td class="wk">printed</td><td class="val">5%</td><td class="pg">P. 78</td></tr>
+          <tr><td>Underlying volume growth</td><td class="wk">printed; price and mix about 1%</td><td class="val">4%</td><td class="pg">P. 78</td></tr>
+          <tr><td>Gross-to-net</td><td class="wk">list ₹75,718 cr − discounts ₹11,955 cr</td><td class="val">15.8% off list</td><td class="pg">P. 410</td></tr>
+          <tr class="grp"><td colspan="4">PROFIT AND PRICE</td></tr>
+          <tr><td>EBITDA margin</td><td class="wk">printed</td><td class="val">23.6%</td><td class="pg">P. 78</td></tr>
+          <tr><td>Gross margin</td><td class="wk">(64,468 − 20,981 − 11,113 + 429) ÷ 64,468</td><td class="val">50.9%</td><td class="pg">P. 364</td></tr>
+          <tr><td>EPS, continuing</td><td class="wk">consolidated; FY25 ₹45.36</td><td class="val">₹45.25</td><td class="pg">P. 417</td></tr>
+          <tr><td>P/E</td><td class="wk">BSE close ₹2,055.80 ÷ 45.25</td><td class="val">45.4×</td><td class="pg">PP. 19, 245</td></tr>
+          <tr><td>Return on capital employed</td><td class="wk">printed, standalone</td><td class="val">110.9%</td><td class="pg">P. 19</td></tr>
+          <tr><td>Dividend a share</td><td class="wk">interim ₹19 + final ₹22</td><td class="val">₹41</td><td class="pg">P. 78</td></tr>
+        </tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="HUL's FY26 growth by segment: the company's sales grew 5 percent on 4 percent volume; Home Care's sales grew 4 percent while its volume grew at a high single digit, drawn as a dashed range; Personal Care's sales grew 4 percent, led by price, with volume not given"><text x="20" y="49" fill="#f1eee8" font-size="16">HUL</text><rect x="200" y="30" width="200" height="26" fill="#e9e6df"/><text x="208" y="48" fill="#202020" font-size="16">sales 5%</text><rect x="200" y="60" width="160" height="26" fill="#76d5c1"/><text x="208" y="78" fill="#202020" font-size="16">volume 4%</text><text x="20" y="139" fill="#f1eee8" font-size="16">Home Care</text><rect x="200" y="120" width="160" height="26" fill="#e9e6df"/><text x="208" y="138" fill="#202020" font-size="16">sales 4%</text><rect x="200" y="150" width="360" height="26" fill="#76d5c1" fill-opacity="0.15" stroke="#76d5c1" stroke-width="2" stroke-dasharray="6 4"/><text x="208" y="168" fill="#f1eee8" font-size="16">volume: high single digit</text><text x="20" y="229" fill="#f1eee8" font-size="16">Personal Care</text><rect x="200" y="210" width="160" height="26" fill="#e9e6df"/><text x="208" y="228" fill="#202020" font-size="16">sales 4%</text><text x="372" y="228" fill="#a5a29c" font-size="16">led by price; volume not given</text><text x="20" y="286" fill="#a5a29c" font-size="16">40 px = 1% growth · dashed: up to 9%, not exact</text></svg></figure>
+      <p><b>Read it as a story.</b> Volume did most of the work: 4% of the 5%. Inside, the segments moved in opposite directions. Home Care cut prices as commodity costs fell and still sold far more (p. 21); Personal Care raised prices after palm-oil costs rose (p. 29); Beauty &amp; Wellbeing grew 6% from “a balanced mix of volume and price” (p. 25); Foods grew 5% on mid-single-digit volume (p. 33). On demand, HUL says rural markets “began to show signs of revival following a favourable monsoon”, while urban demand “showed periods of moderation” (p. 83), words without numbers. The series anchor gives volumes too: Tata Consumer’s India Packaged Beverages grew revenue 6% on 3% volume, India Foods 18% on 12%, and ready-to-drink 10% on 20% (FY26 AGM presentation, slides 22–24) <span class="tag">public</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>DMart, FY2026: stores, feet and bills</h2>
+      <p>Avenue Supermarts (DMart), standalone, year to 31 March 2026 <span class="tag">public</span>. Standalone is the store chain; the consolidated group adds DMart Ready, its online grocery arm. Pages are the printed pages of its Annual Report 2025-26.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th class="wk">Working</th><th>Value</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">GROWTH</td></tr>
+          <tr><td>Revenue from operations</td><td class="wk">FY25 ₹57,789.81 cr</td><td class="val">₹66,968 cr (+15.9%)</td><td class="pg">P. 40</td></tr>
+          <tr><td>Stores</td><td class="wk">415 → 500</td><td class="val">+85</td><td class="pg">PP. 11, 40</td></tr>
+          <tr><td>Retail area</td><td class="wk">17.20 → 20.58 mn sq ft</td><td class="val">+19.7%</td><td class="pg">P. 11</td></tr>
+          <tr><td>Like-for-like growth</td><td class="wk">stores open 24 months or more; FY25 8.4%</td><td class="val">8.1%</td><td class="pg">P. 11</td></tr>
+          <tr><td>Sales per sq ft</td><td class="wk">printed, “annualised”; FY25 ₹33,896</td><td class="val">₹33,422</td><td class="pg">P. 40</td></tr>
+          <tr><td>Bills</td><td class="wk">35.3 → 39.8 crore</td><td class="val">+12.7%</td><td class="pg">P. 40</td></tr>
+          <tr><td>Sales per bill</td><td class="wk">66,968 cr ÷ 39.8 cr; FY25 ₹1,637</td><td class="val">₹1,683 (+2.8%)</td><td class="pg">P. 40</td></tr>
+          <tr class="grp"><td colspan="4">PROFIT AND PRICE</td></tr>
+          <tr><td>Gross margin</td><td class="wk">(66,968 − 58,216 + 825) ÷ 66,968</td><td class="val">14.3%</td><td class="pg">P. 133</td></tr>
+          <tr><td>EBITDA margin</td><td class="wk">₹5,255 cr, printed in the highlights</td><td class="val">7.8%</td><td class="pg">P. 133</td></tr>
+          <tr><td>Profit after tax</td><td class="wk">FY25 ₹2,927 cr</td><td class="val">₹3,224 cr (+10.1%)</td><td class="pg">P. 133</td></tr>
+          <tr><td>P/E, consolidated</td><td class="wk">NSE close ₹3,956.80 ÷ EPS ₹45.65</td><td class="val">86.7×</td><td class="pg">P. 40, NSE</td></tr>
+        </tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="DMart's FY26 growth taken apart: floor area up 19.7 percent, sales per square foot down 1.4 percent, revenue up 15.9 percent, like-for-like 8.1 percent, bills up 12.7 percent and sales per bill up 2.8 percent"><path d="M230 20 L230 260" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="190" y="49" text-anchor="end" fill="#a5a29c" font-size="16">floor area</text><rect x="230" y="30" width="394" height="26" fill="#8a8680"/><text x="632" y="49" fill="#f1eee8" font-size="16">+19.7%</text><text x="190" y="89" text-anchor="end" fill="#a5a29c" font-size="16">sales per sq ft</text><rect x="202" y="70" width="28" height="26" fill="#76d5c1"/><text x="238" y="89" fill="#f1eee8" font-size="16">−1.4%</text><text x="190" y="129" text-anchor="end" fill="#a5a29c" font-size="16">revenue</text><rect x="230" y="110" width="317.6" height="26" fill="#76d5c1"/><text x="555.6" y="129" fill="#f1eee8" font-size="16">+15.9%</text><text x="190" y="169" text-anchor="end" fill="#a5a29c" font-size="16">old stores (LFL)</text><rect x="230" y="150" width="162" height="26" fill="#76d5c1"/><text x="400" y="169" fill="#f1eee8" font-size="16">+8.1%</text><text x="190" y="209" text-anchor="end" fill="#a5a29c" font-size="16">bills</text><rect x="230" y="190" width="255" height="26" fill="#76d5c1"/><text x="493" y="209" fill="#f1eee8" font-size="16">+12.7%</text><text x="190" y="249" text-anchor="end" fill="#a5a29c" font-size="16">sales per bill</text><rect x="230" y="230" width="55.6" height="26" fill="#d9d4c7"/><text x="293.6" y="249" fill="#f1eee8" font-size="16">+2.8%</text><text x="20" y="288" fill="#a5a29c" font-size="16">20 px = 1 percentage point · DMart FY26 against FY25</text></svg></figure>
+      <p><b>Read it as a story.</b> DMart is Sabarmati at scale: it added 19.7% more floor, its older stores grew 8.1%, and sales per square foot slipped 1.4% because so much new space is still young. Its growth is mostly more visits (bills +12.7%), not bigger baskets (+2.8% a bill). The margins are the opposite of HUL’s: a 14.3% gross margin against HUL’s 50.9%, made up for by selling fast (inventory turns 11.0 times a year, p. 41). Yet the market pays 86.7 times its consolidated earnings, nearly twice HUL’s P/E: it is paying for many more years of new stores.</p>
+      <details class="trace"><summary>Go deeper: checking the per-square-foot figure</summary>
+        <p>On year-end area, FY26 revenue gives ₹32,540 a sq ft (₹66,968 cr ÷ 20.58 mn) and FY25 ₹33,599 (₹57,790 cr ÷ 17.20 mn), a 3.2% fall. DMart prints ₹33,422 and ₹33,896, calling them “annualised”, but the report does not say exactly how it annualises new stores. Sales per bill is our arithmetic on revenue from operations, which may include small amounts that are not store sales. The NSE close is for 30 March 2026, the last trading session of FY26; standalone EPS was ₹49.54, a P/E of 79.9.</p>
+      </details>
+      <p class="source-note">Real figures are frozen at FY2026: Hindustan Unilever’s Integrated Annual Report 2025-26 (audited consolidated and standalone statements and performance review, printed pages as cited), Avenue Supermarts’ Annual Report 2025-26 as filed with the exchanges on 23 July 2026 (printed pages as cited), NSE’s capital-market bhavcopy for 30 March 2026, and Tata Consumer Products’ FY26 AGM presentation of 10 June 2026. Krishna Consumer and Sabarmati Mart are examples. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before buying a consumer company</h2>
+      <ol class="checks">
+        <li><b>How much of the growth was volume?</b> Split sales into volume, price and mix, and look at several years.</li>
+        <li><b>Was the price real pricing power?</b> Or costs passed on that will reverse, or grams quietly taken out?</li>
+        <li><b>Where is demand coming from?</b> Rural or urban, old channels or new ones, mass or premium.</li>
+        <li><b>For a retailer: old stores or new ones?</b> LFL, store additions, and sales per square foot on a stated area.</li>
+        <li><b>What does the P/E assume?</b> Turn it into years of growth, and ask what happens if growth is one point lower.</li>
+      </ol>
+      <p>Consumer companies are prized because their demand barely moves with the economy. Part 33, “Cyclicals”, turns to cement, steel and car makers, whose volumes and prices swing hard with the cycle, so that a low P/E can be the moment to sell and a high one the moment to buy.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Sales are packs times price: split every year’s growth into volume, price and mix, and every retailer’s into old stores and new ones, then ask whether the high P/E of steady demand still matches the growth it assumes.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- Krishna Consumer lab (fictional). Every output is computed here from the three sliders.
+    const VR0=80, VP0=10, PR0=10, PP0=20, R0=VR0*PR0+VP0*PP0, V0=VR0+VP0, AVG0=R0/V0;
+    function compute(gr,gp,pc){
+      const vr=VR0*(1+gr/100), vp=VP0*(1+gp/100), v=vr+vp, oldP=vr*PR0+vp*PP0, r=oldP*(1+pc/100);
+      const volE=AVG0*(v-V0), mixE=oldP-AVG0*v, priceE=r-oldP, tot=r-R0;
+      return {gr,gp,pc,vr,vp,v,oldP,r,volE,mixE,priceE,tot,avg:r/v,
+        volPct:100*(v/V0-1), mixPct:100*(oldP/(AVG0*v)-1), pricePct:pc, totPct:100*(r/R0-1), pmPct:100*(r/R0-1)-100*(v/V0-1)};
+    }
+    const BASE=compute(2,20,3);
+    const labConfig={format:v=>String(v).replace('-','−'),min:-160,max:320,step:80};
+    const PRESETS={
+      base:{v:[2,20,3],t:'Krishna’s FY26: packs +4.0%, mix +1.5%, price +3%. Sales +8.8%, and less than half of it is price.'},
+      infl:{v:[0,0,8],t:'Costs passed on: the same packs at 8% higher prices. Sales +8%, all of it price; if costs fall back, so can this growth.'},
+      cut:{v:[8,10,-3],t:'Price cuts, more packs: prices down 3% but 8.2% more packs. Sales growth slows to 5.1% while demand is the strongest of the four.'},
+      prem:{v:[-4,30,0],t:'Trading up: fewer regular packs, 30% more premium ones, no price change. Packs fall slightly, yet sales rise 2.8%, all from mix.'}};
+    const f1=v=>v.toFixed(1), f2=v=>v.toFixed(2), sg=(v,d)=>(v<0?'−':'+')+Math.abs(v).toFixed(d==null?1:d), cr=v=>(v<0?'−':'')+'₹'+Math.abs(v).toLocaleString('en-IN',{minimumFractionDigits:1,maximumFractionDigits:1})+' cr', pc=(v,d)=>sg(v,d)+'%';
+    function draw(){
+      const gr=+$('gr').value, gp=+$('gp').value, p=+$('pc').value, r=compute(gr,gp,p);
+      $('gr-o').textContent=pc(gr,0)+' ('+f1(r.vr)+' cr packs)'; $('gp-o').textContent=pc(gp,0)+' ('+f1(r.vp)+' cr packs)'; $('pc-o').textContent=pc(p,0);
+      // chart: one fixed ₹ crore scale for every bar
+      const X0=170,X1=570,lo=labConfig.min,hi=labConfig.max,sx=v=>X0+(Math.min(hi,Math.max(lo,v))-lo)*(X1-X0)/(hi-lo),z=sx(0);
+      const rows=[['volume',r.volE,'#76d5c1'],['mix',r.mixE,'#3f9e8c'],['price',r.priceE,'#d9d4c7'],['total change',r.tot,'#e9e6df']];
+      let g=`<path d="M${z.toFixed(1)} 10 L${z.toFixed(1)} 210" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      rows.forEach(([lab,v,c],i)=>{const y=16+i*48,e=sx(v),x=Math.min(z,e),w=Math.abs(e-z);
+        g+=T(14,y+19,lab,'start',MUTC)+`<rect data-v="${v.toFixed(2)}" x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="26" fill="${c}"/>`;
+        const txt=sg(v,1);
+        g+= v<0 ? T(x-6,y+19,txt,'end') : T(e+6,y+19,txt,'start');});
+      for(let t=lo;t<=hi;t+=labConfig.step) g+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="240" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;
+      g+=T(14,276,'₹ crore change in sales · one scale','start',MUTC);
+      $('labChart').innerHTML=g;
+      const tbl=[['Packs sold','90.0 cr',f1(r.v)+' cr'],['Average price a pack','₹'+f2(AVG0),'₹'+f2(r.avg)],['Sales',cr(R0),cr(r.r)],
+        ['Volume growth',pc(BASE.volPct),pc(r.volPct)],['Mix',pc(BASE.mixPct),pc(r.mixPct)],['Price',pc(BASE.pricePct),pc(r.pricePct)],
+        ['Sales growth',pc(BASE.totPct),pc(r.totPct)],['Price and mix, as reported',pc(BASE.pmPct),pc(r.pmPct)]];
+      $('dash').innerHTML='<thead><tr><th>Line</th><th>Krishna FY26</th><th>Your year</th></tr></thead><tbody>'+tbl.map(([a,b,c])=>`<tr><td>${a}</td><td class="val">${b}</td><td class="now">${c}</td></tr>`).join('')+'</tbody>';
+      const L=[['Regular packs = 80 × (1 + change)',f2(r.vr)+' cr'],['Premium packs = 10 × (1 + change)',f2(r.vp)+' cr'],
+        ['FY26 packs at FY25 prices = regular × ₹10 + premium × ₹20',cr(r.oldP)],['Sales = that × (1 + price change)',cr(r.r)],
+        ['Volume effect = ₹11.11 × (packs − 90)',cr(r.volE)],['Mix effect = FY25-price sales − ₹11.11 × packs',cr(r.mixE)],
+        ['Price effect = sales − FY25-price sales',cr(r.priceE)],['Total = sales − ₹1,000 cr',cr(r.tot)],
+        ['Check: (1 + volume) × (1 + mix) × (1 + price) − 1',pc(100*((1+r.volPct/100)*(1+r.mixPct/100)*(1+r.pricePct/100)-1),2)]];
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:Object.values(r).every(Number.isFinite),...r};
+    }
+    ['gr','gp','pc'].forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=PRESETS[b.dataset.p];$('gr').value=p.v[0];$('gp').value=p.v[1];$('pc').value=p.v[2];draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

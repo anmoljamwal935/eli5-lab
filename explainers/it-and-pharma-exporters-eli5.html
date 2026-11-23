@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Exporters: IT services and pharma — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (revenue, contract value) | coral #ff8059 = money going out (costs; dim = costs paid in rupees)
+       gold #f5c76a = what belongs to shareholders (operating profit, margin) | rose #ec6a94 = what is owed (here: regulatory actions against a plant)
+       lavender #c3b8ff = the market's view (price, multiples)
+       Part 31 extra (as Part 22): stone #d9d4cc = an economy-wide reading, here the exchange-rate effect. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eq b{color:var(--fg)}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    @media (max-width:700px){.eli5-study-container table.rep{min-width:0}.rep td.pg{display:none}.rep th.pg{display:none}.rep td,.rep th{padding:8px 6px}}
+    /* Part 31 lab: one column of numbered steps (layout as in Part 15) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:4px}
+    .dashlab .control{margin:0 0 14px}
+    .dashlab .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .control input[type=range]{display:block;width:100%}
+    .dashlab details.trace{margin-top:16px}
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:0 0 16px}
+    .readouts div{border:1px solid var(--border);padding:10px 12px}
+    .readouts b{display:block;font:600 20px/1.2 var(--font-mono);color:var(--fg)}
+    .readouts b.bad{color:#ec6a94}.readouts b.ok{color:#76d5c1}
+    .readouts span{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted);margin-top:2px}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 31: constant currency, rupee swings, deal wins and FDA inspections">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/it-and-pharma-exporters-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Exporters: IT services and pharma">
+<meta property="og:description" content="Part 31: constant currency, rupee swings, deal wins and FDA inspections">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/it-and-pharma-exporters-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/it-and-pharma-exporters-eli5.png?v=3dcceb12">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Exporters: IT services and pharma">
+<meta property="article:published_time" content="2026-11-23">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="it-and-pharma-exporters-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 18 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+    <section class="hero">
+      <h1>Exporters: IT services and pharma</h1>
+      <p class="lede">An exporter earns in dollars and reports in rupees, so part of its growth is the exchange rate, not the business. Strip that out first. Then check what can shrink the business itself: the contracts an IT firm signs, and the US inspections a drugmaker must pass.</p>
+      <p class="source-note">Built from Infosys’s FY26 results (Form 6-K, 23 April 2026) and Form 20-F annual report (15 June 2026), Sun Pharma’s Q4 FY26 results release (22 May 2026) and exchange filings, and US FDA documents as cited in each panel · <a href="https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w02.htm">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="the-economy-around-the-company-eli5.html" data-series-link="the-economy-around-the-company-eli5">Part 22</a> showed a weaker rupee lifting Tata Consumer’s overseas sales. <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a> showed how fixed costs magnify a change in sales, and <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a> split a company into segments. <a href="nbfcs-and-insurers-eli5.html" data-series-link="nbfcs-and-insurers-eli5">Part 30</a> looked at businesses that live on rates and timing at home; this part applies all three earlier ideas to India’s two big export industries. Facts carry a tag: <span class="tag">public</span> is a figure from a company filing or a regulator’s document, <span class="tag">example</span> is a made-up number for two fictional companies: Narmada Infotech Ltd (IT services) and Tapti Pharma Ltd (generic medicines). Amounts are ₹ crore (cr) or US$ million (mn); ₹ crore = $ million × the exchange rate ÷ 10. Real figures are frozen at FY2026. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: revenue, contract value</span>
+        <span><i style="background:#ff8059"></i>money going out: costs (dim = paid in rupees)</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: operating profit</span>
+        <span><i style="background:#d9d4cc"></i>from the exchange rate</span>
+        <span><i style="background:#ec6a94"></i>regulatory action against a plant</span>
+      </div>
+    </section>
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Earned in dollars, reported in rupees</h2>
+      <p>Narmada Infotech, a software services company in Pune, writes and runs software for American banks and bills them in US dollars <span class="tag">example</span>. In FY25 it billed $500 million. At an average of ₹80 to the dollar that was ₹4,000 cr of revenue. In FY26 it billed exactly the same $500 million for exactly the same work. But the rupee weakened to ₹84, so the same dollars became ₹4,200 cr <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="Narmada Infotech bills the same 500 million dollars in FY25 and FY26; at 80 rupees a dollar that is 4,000 crore, at 84 rupees it is 4,200 crore, and the extra 200 crore is drawn as a stone slice that comes only from the exchange rate"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Narmada Infotech · same work in both years</text><text x="40" y="72" text-anchor="start" fill="#a5a29c" font-size="16">FY25 billed</text><rect x="150" y="52" width="300" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="160" y="73" text-anchor="start" fill="#202020" font-size="16">$500 mn</text><text x="40" y="116" text-anchor="start" fill="#a5a29c" font-size="16">FY26 billed</text><rect x="150" y="96" width="300" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="160" y="117" text-anchor="start" fill="#202020" font-size="16">$500 mn</text><text x="464" y="95" text-anchor="start" fill="#a5a29c" font-size="16">dollars: 0.6 px = $1 mn</text><text x="40" y="186" text-anchor="start" fill="#a5a29c" font-size="16">FY25 in ₹</text><rect x="150" y="166" width="520" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="160" y="187" text-anchor="start" fill="#202020" font-size="16">₹4,000 cr at ₹80 a dollar</text><text x="40" y="230" text-anchor="start" fill="#a5a29c" font-size="16">FY26 in ₹</text><rect x="150" y="210" width="520" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="670" y="210" width="26" height="30" fill="#d9d4cc" stroke="#202020" stroke-width="2"/><text x="160" y="231" text-anchor="start" fill="#202020" font-size="16">₹4,200 cr at ₹84 a dollar</text><path d="M683 244 L683 258" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="696" y="278" text-anchor="end" fill="#d9d4cc" font-size="16">+₹200 cr, all from the rupee</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">rupees: 0.13 px = ₹1 cr</text></svg></figure>
+      <p>The rupee figure grew 5% with no new clients, no extra hours and no price rise. An exporter’s reported growth mixes two different things: how much more business it did, and what happened to the exchange rate. Investors pay for the first. The second can reverse next year. This part teaches you to pull them apart, then looks at what can make the business itself shrink: a missed contract for an IT firm, a failed factory inspection for a drugmaker.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Constant currency: last year’s rates, this year’s business</h2>
+      <p>In FY26 Narmada actually billed $525 million, 5% more work. <b>Constant-currency growth</b> prices this year’s business at last year’s exchange rates, so only the business can move it: $525 million at ₹80 is ₹4,200 cr, 5% up on ₹4,000 cr. <b>Reported growth</b> uses this year’s rates: $525 million at ₹84 is ₹4,410 cr, 10.25% up <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="Narmada’s revenue on one scale: 4,000 crore in FY25 and 4,410 crore in FY26; the extra 410 crore, magnified below, is 200 crore from five percent more work valued at last year’s rate and 210 crore from the weaker rupee"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore · 0.13 px = ₹1 cr</text><text x="40" y="72" text-anchor="start" fill="#a5a29c" font-size="16">FY25</text><rect x="150" y="52" width="520" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="160" y="73" text-anchor="start" fill="#202020" font-size="16">$500 mn × ₹80 = 4,000</text><text x="40" y="122" text-anchor="start" fill="#a5a29c" font-size="16">FY26</text><rect x="150" y="102" width="520" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="670" y="102" width="26" height="30" fill="#76d5c1" opacity="0.55" stroke="#202020" stroke-width="2"/><rect x="696" y="102" width="27.3" height="30" fill="#d9d4cc" stroke="#202020" stroke-width="2"/><text x="160" y="123" text-anchor="start" fill="#202020" font-size="16">$525 mn × ₹84 = 4,410</text><path d="M670 136 L150 196" stroke="#a5a29c" stroke-width="1.2" fill="none" stroke-dasharray="3 3"/><path d="M723.3 136 L560 196" stroke="#a5a29c" stroke-width="1.2" fill="none" stroke-dasharray="3 3"/><text x="40" y="222" text-anchor="start" fill="#a5a29c" font-size="16">the extra</text><rect x="150" y="200" width="200" height="34" fill="#76d5c1" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="160" y="223" text-anchor="start" fill="#202020" font-size="16">more work +200</text><rect x="350" y="200" width="210" height="34" fill="#d9d4cc" stroke="#202020" stroke-width="2"/><text x="360" y="223" text-anchor="start" fill="#202020" font-size="16">the rupee +210</text><text x="570" y="223" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹1 cr</text><text x="40" y="278" text-anchor="start" fill="#f1eee8" font-size="16">constant currency +5% · reported in ₹ +10.25%</text></svg></figure>
+      <p>The two effects multiply rather than add: 1.05 × 1.05 = 1.1025, so 5% more work and a 5% weaker rupee give 10.25%, not 10%. The extra 0.25 is the rupee’s effect on the new work. Infosys defines its own measure the same way: it compares “current period revenues in respective local currencies converted to US$ using prior period exchange rates” with last year’s reported revenue <span class="tag">public</span>.</p>
+      <span class="eq">reported growth = (1 + constant-currency growth) × (1 + currency effect) − 1 = 1.05 × 1.05 − 1 = 10.25%</span>
+    </section>
+    <section class="panel">
+      <p class="kicker">One more layer</p>
+      <h2>Why even the dollar figure moves</h2>
+      <p>Indian IT companies report constant-currency growth against the US dollar, because clients pay in dollars, euros, pounds and more. So there are two currency layers. First, other currencies against the dollar. Infosys’s own table puts the euro at an average of $1.07 in FY25 and $1.16 in FY26: the dollar fell 8.4% against it <span class="tag">public</span>. A client paying €100 mn in both years is worth $9 mn more in dollars <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 206" role="img" aria-label="A client that pays 100 million euros in both years is worth 107 million dollars at FY25’s average of 1.07 dollars a euro and 116 million dollars at FY26’s 1.16, so dollar revenue rises 8.4 percent with no extra work"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">one euro client · dollars at 4 px = $1 mn</text><text x="40" y="74" text-anchor="start" fill="#a5a29c" font-size="16">FY25, $1.07</text><rect x="190" y="52" width="428" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="200" y="74" text-anchor="start" fill="#202020" font-size="16">€100 mn = $107 mn</text><text x="40" y="128" text-anchor="start" fill="#a5a29c" font-size="16">FY26, $1.16</text><rect x="190" y="106" width="428" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="618" y="106" width="36" height="32" fill="#d9d4cc" stroke="#202020" stroke-width="2"/><text x="200" y="128" text-anchor="start" fill="#202020" font-size="16">€100 mn = $116 mn</text><text x="664" y="128" text-anchor="start" fill="#d9d4cc" font-size="16">+8.4%</text><path d="M618 44 L618 146" stroke="#f1eee8" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/><text x="40" y="186" text-anchor="start" fill="#f1eee8" font-size="16">same euros, more dollars</text></svg></figure>
+      <p>Second, the dollar against the rupee: Infosys’s average rate was ₹84.56 in FY25 and ₹88.57 in FY26, a 4.7% weaker rupee <span class="tag">public</span>. A company that gets 32% of its revenue from Europe, as Infosys did in FY26 <span class="tag">public</span>, can show dollar growth well above its constant-currency growth when the euro is strong, and below it when the euro is weak. Read all three numbers: constant currency, dollars and rupees.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">What actually happens to profit</p>
+      <h2>The rupee moves profit more than revenue</h2>
+      <p>Revenue is in dollars, but most costs are not. Narmada’s engineers in Pune are paid in rupees: ₹1,760 cr a year, 44% of FY25 revenue. Its staff at client sites in America and its foreign subcontractors are paid in dollars: $175 mn, ₹1,400 cr at ₹80 <span class="tag">example</span>. When the rupee weakens, revenue and dollar costs both rise 5%, but rupee costs do not move.</p>
+      <figure><svg viewBox="0 0 800 246" role="img" aria-label="Narmada’s revenue split into costs paid in dollars, costs paid in rupees and profit, at 80 and at 84 rupees a dollar: revenue 4,000 becomes 4,200, dollar costs 1,400 become 1,470, rupee costs stay 1,760, and profit rises from 840 to 970 crore, lifting the margin from 21.0 to 23.1 percent"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore · 0.13 px = ₹1 cr · same work</text><text x="40" y="73" text-anchor="start" fill="#a5a29c" font-size="16">at ₹80</text><rect x="150" y="52" width="182" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="158" y="73" text-anchor="start" fill="#202020" font-size="16">$ costs 1,400</text><rect x="332" y="52" width="228.8" height="30" fill="#ff8059" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="340" y="73" text-anchor="start" fill="#202020" font-size="16">₹ costs 1,760</text><rect x="560.8" y="52" width="109.2" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="568.8" y="73" text-anchor="start" fill="#202020" font-size="16">profit 840</text><text x="680" y="73" text-anchor="start" fill="#f5c76a" font-size="16">21.0%</text><text x="40" y="137" text-anchor="start" fill="#a5a29c" font-size="16">at ₹84</text><rect x="150" y="116" width="191.1" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="158" y="137" text-anchor="start" fill="#202020" font-size="16">$ costs 1,470</text><rect x="341.1" y="116" width="228.8" height="30" fill="#ff8059" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="349.1" y="137" text-anchor="start" fill="#202020" font-size="16">₹ costs 1,760</text><rect x="569.9" y="116" width="126.1" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="577.9" y="137" text-anchor="start" fill="#202020" font-size="16">profit 970</text><text x="706" y="137" text-anchor="start" fill="#f5c76a" font-size="16">23.1%</text><text x="40" y="194" text-anchor="start" fill="#f1eee8" font-size="16">revenue +5% · costs paid in rupees +0% · profit +15.5%</text><text x="40" y="226" text-anchor="start" fill="#a5a29c" font-size="16">gold figure = operating margin</text></svg></figure>
+      <p>Revenue rises ₹200 cr, dollar costs rise ₹70 cr, and the other ₹130 cr goes straight to operating profit: up 15.5% on the same work. It is <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a>’s operating leverage, with costs that are fixed in rupees playing the role of fixed costs. Infosys puts a number on it in its FY26 annual report on Form 20-F: “every percentage point depreciation / appreciation in the exchange rate between the Indian rupee and the U.S. dollar, affected our incremental operating margins by approximately 0.44%” <span class="tag">public</span>. Narmada is built to match: its rupee costs are 44% of revenue, so a 1% weaker rupee adds about 0.44 points of margin.</p>
+      <p class="note">Works both ways. A stronger rupee squeezes the margin just as fast, and wages paid in rupees rise every year. A margin gain that came from the rupee is not a sign that the business got better.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">How companies soften it</p>
+      <h2>Hedges smooth the swing, both ways</h2>
+      <p>An exporter can sell dollars it has not yet earned at a rate fixed today: a <b>forward contract</b>. Narmada expects $325 mn a year of dollar income left over after its dollar costs, and sells half of it forward at ₹80 <span class="tag">example</span>. If the rupee weakens to ₹84, the half sold forward still fetches ₹80, so it misses out on ₹65 cr. If the rupee strengthens to ₹76, the half sold forward still fetches ₹80, so it gains ₹65 cr.</p>
+      <figure><svg viewBox="0 0 800 320" role="img" aria-label="Narmada’s operating profit at 76, 80 and 84 rupees a dollar: without a hedge it is 710, 840 and 970 crore; with half of its net dollar income sold forward at 80 it is 775, 840 and 905 crore, so the swing halves"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">operating profit, ₹ crore · 0.5 px = ₹1 cr</text><text x="40" y="86" text-anchor="start" fill="#a5a29c" font-size="16">₹76</text><rect x="150" y="52" width="355" height="24" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="515" y="70" text-anchor="start" fill="#f5c76a" font-size="16">710 no hedge</text><rect x="150" y="80" width="387.5" height="24" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="547.5" y="98" text-anchor="start" fill="#f1eee8" font-size="16">775 half hedged</text><text x="40" y="162" text-anchor="start" fill="#a5a29c" font-size="16">₹80</text><rect x="150" y="128" width="420" height="24" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="580" y="146" text-anchor="start" fill="#f5c76a" font-size="16">840 no hedge</text><rect x="150" y="156" width="420" height="24" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="580" y="174" text-anchor="start" fill="#f1eee8" font-size="16">840 half hedged</text><text x="40" y="238" text-anchor="start" fill="#a5a29c" font-size="16">₹84</text><rect x="150" y="204" width="485" height="24" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="645" y="222" text-anchor="start" fill="#f5c76a" font-size="16">970 no hedge</text><rect x="150" y="232" width="452.5" height="24" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="612.5" y="250" text-anchor="start" fill="#f1eee8" font-size="16">905 half hedged</text><text x="40" y="300" text-anchor="start" fill="#f1eee8" font-size="16">spread without hedge 260 · with half hedged 130</text></svg></figure>
+      <p>A hedge does not make money on average; it makes profit steadier. Infosys says it uses “foreign exchange forward and option contracts to mitigate the risk of changes in foreign exchange exposures”, and warns that these “may not be adequate” <span class="tag">public</span>. Companies book hedge gains and losses in different lines (some in revenue, some in other income), so read the notes before comparing two exporters’ margins.</p>
+      <details class="trace"><summary>Go deeper: the working</summary><p>Same work as FY25, no growth. Net dollar income = $500 mn − $175 mn = $325 mn; half = $162.5 mn. At ₹84: profit without hedge = 500 × 8.4 − 175 × 8.4 − 1,760 = 970; the hedged half earns ₹80 instead of ₹84, so 162.5 × (80 − 84) ÷ 10 = −65; profit 905. At ₹76: 500 × 7.6 − 175 × 7.6 − 1,760 = 710; hedge 162.5 × (80 − 76) ÷ 10 = +65; profit 775. (₹ crore = $ million × rate ÷ 10.) Real forward rates also include the gap between Indian and US interest rates; this page leaves that out.</p></details>
+    </section>
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Move the rupee yourself</h2>
+      <p>Narmada’s FY26 against FY25 <span class="tag">example</span>. Set how much more work it did (constant-currency growth), how far the rupee moved from FY25’s ₹80, and how much of its net dollar income it sold forward at ₹80. The chart shows revenue and profit growth on one scale; stone is the part of revenue growth that came from the rupee.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Pick a situation</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="weak">Rupee weakens 5%</button>
+            <button type="button" class="secondary" data-p="strong">Rupee strengthens 5%</button>
+            <button type="button" class="secondary" data-p="hedged">Weak rupee, half hedged</button>
+            <button type="button" class="secondary" data-p="flat">Flat rupee</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Set the year</p>
+          <div class="dl-grid">
+            <div><div class="control"><label for="cc">More work (constant currency): <output id="cc-o"></output></label><input id="cc" type="range" min="-5" max="15" step="1" value="5"></div>
+            <div class="control"><label for="fx">Rupee move: <output id="fx-o"></output></label><input id="fx" type="range" min="-10" max="15" step="1" value="5"></div></div>
+            <div><div class="control"><label for="hedge">Sold forward at ₹80: <output id="hedge-o"></output></label><input id="hedge" type="range" min="0" max="100" step="10" value="0"></div></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Read the result</p>
+          <div class="readouts" id="readouts"></div>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 640 330" role="img" aria-label="Five bars on one percentage scale: constant-currency growth, the rupee’s effect on revenue, reported rupee revenue growth, operating profit growth without the hedge, and with it"></svg></div>
+          <p class="lights-key">teal = revenue growth · stone = from the rupee · gold = operating profit growth</p>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions</summary><p>FY25: $500 mn of revenue at ₹80 (₹4,000 cr), dollar costs $175 mn (₹1,400 cr), rupee costs ₹1,760 cr, operating profit ₹840 cr (21.0%). All revenue is in dollars. Both kinds of cost grow in line with the work (constant-currency growth); there is no wage rise, so the margin moves only with the rupee and the hedge. “Rupee move +5%” means the dollar buys 5% more rupees (₹84). The hedge sells a share of FY26’s net dollar income (revenue less dollar costs, in dollars) at ₹80, and its gain or loss is counted in operating profit. Real companies hedge on a rolling basis at forward rates, and book the results in different lines.</p></details>
+    </section>
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Dollar sales fell; rupee sales rose</h2>
+      <p>Sun Pharma, India’s largest drugmaker, is also an exporter. In the March 2026 quarter its US formulation sales were $459 mn, “lower by 1.1%”. In rupees the same line rose from ₹40,204 mn to ₹41,997 mn, 4.5% up, because Sun’s exchange rate went from ₹86.62 to ₹91.49 a dollar <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="Sun Pharma’s US formulation sales in the March quarter: about 464 million dollars in FY25 and 459 million in FY26, down 1.1 percent; in rupees, 4,020 crore at 86.62 and 4,200 crore at 91.49, up 4.5 percent"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Sun Pharma, US formulations, Q4</text><text x="40" y="74" text-anchor="start" fill="#a5a29c" font-size="16">Q4 FY25, $</text><rect x="190" y="52" width="556.8" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="200" y="73" text-anchor="start" fill="#202020" font-size="16">about $464 mn</text><text x="40" y="116" text-anchor="start" fill="#a5a29c" font-size="16">Q4 FY26, $</text><rect x="190" y="94" width="550.8" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="200" y="115" text-anchor="start" fill="#202020" font-size="16">$459 mn</text><text x="750.8" y="115" text-anchor="start" fill="#ff8059" font-size="16">−1.1%</text><text x="40" y="152" text-anchor="start" fill="#a5a29c" font-size="16">dollars: 1.2 px = $1 mn</text><text x="40" y="206" text-anchor="start" fill="#a5a29c" font-size="16">Q4 FY25, ₹</text><rect x="190" y="184" width="402" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="200" y="205" text-anchor="start" fill="#202020" font-size="16">₹4,020 cr at ₹86.62</text><text x="40" y="248" text-anchor="start" fill="#a5a29c" font-size="16">Q4 FY26, ₹</text><rect x="190" y="226" width="402" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="592" y="226" width="18" height="30" fill="#d9d4cc" stroke="#202020" stroke-width="2"/><text x="200" y="247" text-anchor="start" fill="#202020" font-size="16">₹4,200 cr at ₹91.49</text><text x="620" y="247" text-anchor="start" fill="#76d5c1" font-size="16">+4.5%</text><text x="40" y="284" text-anchor="start" fill="#a5a29c" font-size="16">rupees: 0.1 px = ₹1 cr</text></svg></figure>
+      <p>A reader who saw only the rupee table would think US sales grew. They shrank. The same filing season shows the gap in Sun’s emerging markets: dollar sales up 13.6% for FY26, but 8.2% in constant currency; for the quarter, 17.4% against 6.5% <span class="tag">public</span>. When a company gives a constant-currency figure, use it to judge the business. When it does not, divide by the exchange rate yourself.</p>
+      <details class="trace"><summary>Go deeper: the working</summary><p>₹41,997.1 mn ÷ ₹40,204.1 mn − 1 = +4.46%. Check: (1 − 1.1%) × 91.49 ÷ 86.62 = 1.0446. Q4 FY25 dollar sales are not printed in the FY26 release; about $464 mn is implied by $459 mn and “lower by 1.1%” (459 ÷ 0.989). The exchange rates are the ones Sun prints under its sales table for each quarter.</p></details>
+    </section>
+    <section class="panel">
+      <p class="kicker">IT: the order book</p>
+      <h2>A deal win is not this year’s revenue</h2>
+      <p>IT companies announce deal wins as <b>total contract value</b> (TCV): everything the client may pay over the life of the contract. Narmada signs a five-year, $300 mn contract with a bank. But it already did $40 mn a year of work for that bank, so $200 mn is a renewal and only $100 mn is <b>net new</b> <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 256" role="img" aria-label="A 300 million dollar five-year deal drawn on one scale above the five years of billing it becomes: 200 million is a renewal of work Narmada already had and 100 million is net new, so each year adds 60 million of billing of which only 20 million is new"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">$ mn · 1.6 px = $1 mn</text><text x="40" y="74" text-anchor="start" fill="#a5a29c" font-size="16">TCV signed</text><rect x="150" y="52" width="320" height="32" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="160" y="74" text-anchor="start" fill="#202020" font-size="16">renewal 200</text><rect x="470" y="52" width="160" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="480" y="74" text-anchor="start" fill="#202020" font-size="16">net new 100</text><text x="640" y="74" text-anchor="start" fill="#f1eee8" font-size="16">$300 mn</text><rect x="150" y="120" width="64" height="32" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="214" y="120" width="32" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="198" y="176" text-anchor="middle" fill="#a5a29c" font-size="16">yr 1</text><rect x="246" y="120" width="64" height="32" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="310" y="120" width="32" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="294" y="176" text-anchor="middle" fill="#a5a29c" font-size="16">yr 2</text><rect x="342" y="120" width="64" height="32" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="406" y="120" width="32" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="390" y="176" text-anchor="middle" fill="#a5a29c" font-size="16">yr 3</text><rect x="438" y="120" width="64" height="32" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="502" y="120" width="32" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="486" y="176" text-anchor="middle" fill="#a5a29c" font-size="16">yr 4</text><rect x="534" y="120" width="64" height="32" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="598" y="120" width="32" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="582" y="176" text-anchor="middle" fill="#a5a29c" font-size="16">yr 5</text><text x="40" y="142" text-anchor="start" fill="#a5a29c" font-size="16">billed</text><text x="640" y="142" text-anchor="start" fill="#f1eee8" font-size="16">$60 mn a year</text><text x="40" y="236" text-anchor="start" fill="#f1eee8" font-size="16">new to revenue: $20 mn a year, not $300 mn</text></svg></figure>
+      <p>Spread over five years, the “$300 mn win” adds $20 mn a year of new revenue: 4% of Narmada’s $500 mn. Three checks follow. How much of the TCV is net new? Over how many years? And how much is firm? Infosys’s FY26 annual report says its contracts “can generally be terminated by the customers”, typically with a termination penalty <span class="tag">public</span>. TCV is a pipeline, not a promise.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">Pharma: the factory</p>
+      <h2>Every US pill comes from an inspected plant</h2>
+      <p>An Indian generic drugmaker sells copies of off-patent medicines in the US. Each product needs US Food and Drug Administration (FDA) approval, and so does the plant that makes it. Tapti Pharma, in Gujarat, sells $200 mn a year in the US from three plants, and has 20 products waiting for approval, 8 of them to be made at plant A <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 206" role="img" aria-label="Tapti Pharma’s 200 million dollars of US sales split by plant: 60 from plant A, which makes injectables, 90 from plant B and 50 from plant C; below, 20 products awaiting US approval, 8 of them to be made at plant A"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Tapti Pharma, US sales $ mn · 2.5 px = $1 mn</text><text x="40" y="74" text-anchor="start" fill="#a5a29c" font-size="16">by plant</text><rect x="150" y="52" width="150" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="160" y="74" text-anchor="start" fill="#202020" font-size="16">A: injectables 60</text><rect x="300" y="52" width="225" height="32" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="310" y="74" text-anchor="start" fill="#202020" font-size="16">B: tablets 90</text><rect x="525" y="52" width="125" height="32" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="535" y="74" text-anchor="start" fill="#202020" font-size="16">C: creams 50</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">awaiting</text><text x="40" y="160" text-anchor="start" fill="#a5a29c" font-size="16">approval</text><circle cx="162" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="186" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="210" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="234" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="258" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="282" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="306" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="330" cy="146" r="8" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="354" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="378" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="402" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="426" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="450" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="474" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="498" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="522" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="546" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="570" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="594" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><circle cx="618" cy="146" r="8" fill="#8a8680" stroke="#202020" stroke-width="2"/><text x="150" y="186" text-anchor="start" fill="#76d5c1" font-size="16">8 of 20 pending products from plant A</text></svg></figure>
+      <p>So the question for a pharma exporter is not only how fast it grows, but which plant each dollar comes from, and how that plant’s last inspection went. FDA inspectors visit plants in India as they do in the US. A bad inspection does not touch the rupee or the price: it can switch off a slice of sales and freeze the products waiting behind it.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">Pharma: the inspection</p>
+      <h2>From a Form 483 to an import alert</h2>
+      <p>At the end of an inspection the FDA hands over a <b>Form 483</b> listing what its investigators saw. By the FDA’s own description it “does not constitute a final Agency determination” <span class="tag">public</span>. The FDA then classifies the inspection: <b>NAI</b> (no action indicated), <b>VAI</b> (voluntary action: the firm can fix it itself) or <b>OAI</b> (official action indicated: “an unacceptable state of compliance”), usually within 45 to 90 days <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 342" role="img" aria-label="Tapti’s US sales under four inspection outcomes on one scale: after a 483 that ends as voluntary action, all 200 million continue and plant A’s eight pending approvals can proceed; under OAI or a warning letter sales continue but the approvals may be held; under an import alert plant A’s 60 million is blocked, bar shortage exemptions"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">US sales $ mn · 2 px = $1 mn · dots = plant A approvals</text><text x="40" y="72" text-anchor="start" fill="#a5a29c" font-size="16">VAI after a 483</text><rect x="210" y="50" width="120" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="220" y="72" text-anchor="start" fill="#202020" font-size="16">A 60</text><rect x="330" y="50" width="280" height="32" fill="#76d5c1" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="340" y="72" text-anchor="start" fill="#202020" font-size="16">B and C 140</text><circle cx="630" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="650" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="670" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="690" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="710" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="730" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="750" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><circle cx="770" cy="66" r="7" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="40" y="130" text-anchor="start" fill="#a5a29c" font-size="16">OAI</text><rect x="210" y="108" width="120" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="220" y="130" text-anchor="start" fill="#202020" font-size="16">A 60</text><rect x="330" y="108" width="280" height="32" fill="#76d5c1" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="340" y="130" text-anchor="start" fill="#202020" font-size="16">B and C 140</text><circle cx="630" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="650" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="670" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="690" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="710" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="730" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="750" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="770" cy="124" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><text x="40" y="188" text-anchor="start" fill="#a5a29c" font-size="16">warning letter</text><rect x="210" y="166" width="120" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="220" y="188" text-anchor="start" fill="#202020" font-size="16">A 60</text><rect x="330" y="166" width="280" height="32" fill="#76d5c1" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="340" y="188" text-anchor="start" fill="#202020" font-size="16">B and C 140</text><circle cx="630" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="650" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="670" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="690" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="710" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="730" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="750" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="770" cy="182" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><text x="40" y="246" text-anchor="start" fill="#a5a29c" font-size="16">import alert</text><rect x="210" y="224" width="120" height="32" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/><text x="220" y="246" text-anchor="start" fill="#ff8059" font-size="16">A 60</text><rect x="330" y="224" width="280" height="32" fill="#76d5c1" opacity="0.6" stroke="#202020" stroke-width="2"/><text x="340" y="246" text-anchor="start" fill="#202020" font-size="16">B and C 140</text><circle cx="630" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="650" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="670" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="690" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="710" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="730" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="750" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><circle cx="770" cy="240" r="7" fill="none" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 2"/><text x="630" y="288" text-anchor="start" fill="#a5a29c" font-size="16">hollow = may be held</text><text x="40" y="322" text-anchor="start" fill="#ff8059" font-size="16">import alert: $60 mn stops, bar drug-shortage exemptions</text></svg></figure>
+      <p>OAI can lead to a <b>warning letter</b>, a public letter listing violations; in Sun Pharma’s Halol letter the FDA says it “may withhold approval of new applications or supplements” from the plant until they are fixed <span class="tag">public</span>. The hardest step is an <b>import alert</b>: products from the plant are detained at the US border “without physical examination” until the FDA is satisfied <span class="tag">public</span>. The FDA can exempt drugs that are in shortage. Tapti’s plant A would lose $60 mn of sales, 30% of its US business, and eight launches would wait <span class="tag">example</span>.</p>
+      <p class="note">A 483 is the start, not the verdict. What matters is the classification that follows, whether observations repeat from earlier inspections, and how much revenue the plant carries.</p>
+    </section>
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Which numbers to read, by business</h2>
+      <div class="field-grid">
+        <div><b>IT: growth</b><span>Constant-currency growth first; then dollar and rupee growth, and the gap between them</span><em>THIS PART</em></div>
+        <div><b>IT: margins</b><span>Operating margin, what moved it (rupee, wages, utilisation), the stated rupee sensitivity, hedge gains and losses</span><em>THIS PART · PART 8</em></div>
+        <div><b>IT: order book</b><span>Large-deal TCV, share that is net new, contract length, remaining performance obligations, next year’s guidance</span><em>THIS PART · PART 18</em></div>
+        <div><b>Pharma: where sales come from</b><span>US, India and emerging markets separately; US sales in dollars; constant-currency growth where given</span><em>THIS PART · PART 16</em></div>
+        <div><b>Pharma: plants and pipeline</b><span>Each plant’s last FDA inspection and classification, warning letters, import alerts, products awaiting approval</span><em>THIS PART</em></div>
+      </div>
+    </section>
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Infosys: three growth rates, one year</h2>
+      <p>Infosys, consolidated, year to 31 March 2026, from its results filed with the exchanges and on Form 6-K with the US SEC on 23 April 2026, and its annual report on Form 20-F filed on 15 June 2026 <span class="tag">public</span>. Dollar figures are under IFRS; rupee figures are from the Ind AS statement in the same filing.</p>
+      <figure><svg viewBox="0 0 800 282" role="img" aria-label="Infosys’s FY26 revenue growth three ways on one scale: 3.1 percent in constant currency, 4.6 percent in US dollars after a 1.5 point lift from the euro and pound, and 9.6 percent in rupees after a further 5.0 points from the weaker rupee"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">FY26 growth over FY25 · 50 px = 1 point</text><text x="40" y="74" text-anchor="start" fill="#a5a29c" font-size="16">constant currency</text><rect x="190" y="52" width="155" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="355" y="74" text-anchor="start" fill="#f1eee8" font-size="16">3.1%</text><text x="40" y="128" text-anchor="start" fill="#a5a29c" font-size="16">in US dollars</text><rect x="190" y="106" width="155" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="345" y="106" width="75" height="32" fill="#d9d4cc" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="353" y="128" text-anchor="start" fill="#202020" font-size="16">+1.5</text><text x="430" y="128" text-anchor="start" fill="#f1eee8" font-size="16">4.6%</text><text x="40" y="182" text-anchor="start" fill="#a5a29c" font-size="16">in rupees</text><rect x="190" y="160" width="155" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="345" y="160" width="75" height="32" fill="#d9d4cc" opacity="0.55" stroke="#202020" stroke-width="2"/><rect x="420" y="160" width="250" height="32" fill="#d9d4cc" stroke="#202020" stroke-width="2"/><text x="428" y="182" text-anchor="start" fill="#202020" font-size="16">weaker rupee +5.0</text><text x="680" y="182" text-anchor="start" fill="#f1eee8" font-size="16">9.6%</text><text x="382.5" y="226" text-anchor="middle" fill="#d9d4cc" font-size="16">euro, pound</text><path d="M382.5 196 L382.5 210" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="40" y="262" text-anchor="start" fill="#f1eee8" font-size="16">reported: $20,158 mn · ₹178,650 cr</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th>Working or note</th><th>Value</th><th class="pg">Where</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue, dollars</td><td class="wk">FY26; $19,277 mn in FY25</td><td class="val">$20,158 mn</td><td class="pg">6-K, Ex 99.2</td></tr>
+          <tr><td>Growth, constant currency</td><td class="wk">FY26; Q4 +4.1%</td><td class="val">+3.1%</td><td class="pg">6-K, Ex 99.2</td></tr>
+          <tr><td>Growth, dollars</td><td class="wk">20,158 ÷ 19,277 − 1; Q4 +6.6%</td><td class="val">+4.6%</td><td class="pg">6-K, Ex 99.2</td></tr>
+          <tr><td>Revenue, rupees</td><td class="wk">₹162,990 cr in FY25</td><td class="val">₹178,650 cr</td><td class="pg">6-K, Ex 99.3</td></tr>
+          <tr><td>Growth, rupees</td><td class="wk">178,650 ÷ 162,990 − 1</td><td class="val">+9.6%</td><td class="pg">6-K, Ex 99.3</td></tr>
+          <tr><td>Average ₹ per $</td><td class="wk">84.56 in FY25; rupee 4.7% weaker</td><td class="val">₹88.57</td><td class="pg">20-F, Item 5</td></tr>
+          <tr><td>Rupee sensitivity</td><td class="wk">operating margin per 1% move in ₹ vs $</td><td class="val">≈0.44 pts</td><td class="pg">20-F, Item 3</td></tr>
+          <tr><td>Operating margin</td><td class="wk">reported; adjusted 21.0%; FY25 21.1%</td><td class="val">20.3%</td><td class="pg">6-K, Ex 99.2</td></tr>
+          <tr><td>Large-deal TCV</td><td class="wk">FY26; 55% net new</td><td class="val">$14.9 bn</td><td class="pg">6-K, Ex 99.2</td></tr>
+          <tr><td>Contracted, not yet billed</td><td class="wk">49.7% due within a year; $12,258 mn a year earlier</td><td class="val">$13,709 mn</td><td class="pg">20-F, Item 18</td></tr>
+          <tr><td>FY27 guidance</td><td class="wk">constant currency; margin 20%–22%</td><td class="val">+1.5% to 3.5%</td><td class="pg">6-K, Ex 99.2</td></tr>
+        </tbody>
+      </table></div>
+      <p>Read it from the top. The business grew 3.1%. A strong euro and pound added about 1.5 points in dollars, and a 4.7% weaker rupee about 5 more in rupees. The margin still slipped, from 21.1% to 20.3% reported, partly from a one-off provision for India’s new Labour Codes (21.0% without it) <span class="tag">public</span>: the annual report puts segment profitability down on investment in talent, AI, sales and marketing, partly offset by pricing, productivity and currency. The $14.9 bn of large deals is about three-quarters of a year’s revenue, but spread over several years, and 45% of it was renewals.</p>
+      <details class="trace"><summary>Go deeper: sources and arithmetic</summary><p><a href="https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w02.htm">IFRS USD press release</a> (Exhibit 99.2) and <a href="https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w03.htm">Ind AS release to stock exchanges</a> (Exhibit 99.3) of the <a href="https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/">Form 6-K of 23 April 2026</a>; <a href="https://www.sec.gov/Archives/edgar/data/1067491/000119312526270520/infy-20260331.htm">Form 20-F for fiscal 2026</a>, filed 15 June 2026: average exchange rates (Item 5, “Operating and Financial Review and Prospects”), the 0.44% sensitivity (Item 3, risk factors; also Item 18, financial statements), the European share of revenue, 32.1% (Item 3), and remaining performance obligations (Item 18). The step sizes are differences: 4.6 − 3.1 = 1.5 and 9.6 − 4.6 = 5.0 points. Because growth compounds, the rupee’s own move was about 4.8% (1.096 ÷ 1.046); Infosys’s average rates give 4.7%. All read 22 November 2026.</p></details>
+    </section>
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Sun Pharma: currency and the Halol plant</h2>
+      <p>Sun Pharmaceutical Industries, consolidated, year to 31 March 2026, from its results release of 22 May 2026 and its earnings-call transcript filed with NSE and BSE on 29 May 2026 <span class="tag">public</span>. The timeline below follows its plant at Halol, Gujarat, from FDA documents and Sun’s own exchange disclosures.</p>
+      <figure><svg viewBox="0 0 800 432" role="img" aria-label="A timeline of Sun Pharma’s Halol plant from 2022 to 2026 at 136 pixels a year: inspection and Form 483 in April and May 2022, import alert 66-40 on 7 December 2022, warning letter on 15 December 2022, amended in October 2023, re-inspection with 8 observations in June 2025, OAI classification in September 2025; the import alert band runs on past the end of FY26"><rect x="186.7" y="324" width="538.4" height="26" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><text x="196.7" y="343" text-anchor="start" fill="#202020" font-size="16">on import alert</text><path d="M103 316 L103 68" stroke="#f1eee8" stroke-width="1.5" fill="none"/><circle cx="103" cy="316" r="5" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="111" y="64" text-anchor="start" fill="#f1eee8" font-size="16">inspection, Form 483</text><path d="M186.7 316 L186.7 106" stroke="#f1eee8" stroke-width="1.5" fill="none"/><circle cx="186.7" cy="316" r="5" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="194.7" y="102" text-anchor="start" fill="#f1eee8" font-size="16">import alert 66-40</text><path d="M189.7 316 L189.7 144" stroke="#f1eee8" stroke-width="1.5" fill="none"/><circle cx="189.7" cy="316" r="5" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="197.7" y="140" text-anchor="start" fill="#f1eee8" font-size="16">warning letter</text><path d="M303.3 316 L303.3 182" stroke="#f1eee8" stroke-width="1.5" fill="none"/><circle cx="303.3" cy="316" r="5" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="311.3" y="178" text-anchor="start" fill="#f1eee8" font-size="16">letter amended</text><path d="M526.5 316 L526.5 220" stroke="#f1eee8" stroke-width="1.5" fill="none"/><circle cx="526.5" cy="316" r="5" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="534.5" y="216" text-anchor="start" fill="#f1eee8" font-size="16">re-inspection: 8 observations</text><path d="M561.5 316 L561.5 258" stroke="#ec6a94" stroke-width="1.5" fill="none"/><circle cx="561.5" cy="316" r="5" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="569.5" y="254" text-anchor="start" fill="#ec6a94" font-size="16">OAI</text><path d="M637.5 316 L637.5 286" stroke="#a5a29c" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/><text x="645.5" y="280" text-anchor="start" fill="#a5a29c" font-size="16">FY26 ends</text><path d="M60 316 L740 316" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="60" y="380" text-anchor="middle" fill="#a5a29c" font-size="16">2022</text><path d="M60 354 L60 362" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="196" y="380" text-anchor="middle" fill="#a5a29c" font-size="16">2023</text><path d="M196 354 L196 362" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="332" y="380" text-anchor="middle" fill="#a5a29c" font-size="16">2024</text><path d="M332 354 L332 362" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="468" y="380" text-anchor="middle" fill="#a5a29c" font-size="16">2025</text><path d="M468 354 L468 362" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="604" y="380" text-anchor="middle" fill="#a5a29c" font-size="16">2026</text><path d="M604 354 L604 362" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="740" y="380" text-anchor="middle" fill="#a5a29c" font-size="16">2027</text><path d="M740 354 L740 362" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40" y="412" text-anchor="start" fill="#a5a29c" font-size="16">136 px = 1 year · Halol, Gujarat</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th>Working or note</th><th>Value</th><th class="pg">Where</th></tr></thead>
+        <tbody>
+          <tr><td>Sales</td><td class="wk">FY26, consolidated; +11.9%</td><td class="val">₹58,220 cr</td><td class="pg">Release</td></tr>
+          <tr><td>US formulations</td><td class="wk">FY26; ₹16,824 cr, +3.6% in rupees</td><td class="val">$1,904 mn</td><td class="pg">Release</td></tr>
+          <tr><td>US, Q4</td><td class="wk">dollars −1.1%; rupees +4.5%</td><td class="val">$459 mn</td><td class="pg">Release</td></tr>
+          <tr><td>Emerging markets</td><td class="wk">FY26 dollars +13.6%; constant currency +8.2%</td><td class="val">$1,265 mn</td><td class="pg">Transcript</td></tr>
+          <tr><td>EBITDA margin</td><td class="wk">FY26</td><td class="val">30.3%</td><td class="pg">Release</td></tr>
+          <tr><td>US products approved</td><td class="wk">ANDAs; 122 more await FDA approval</td><td class="val">552</td><td class="pg">Release</td></tr>
+          <tr><td>Halol 483, June 2025</td><td class="wk">Observation 1 includes repeats from the 2022 letter</td><td class="val">8 observations</td><td class="pg">FDA</td></tr>
+          <tr><td>Halol status</td><td class="wk">OAI, 9 Sep 2025; on Import Alert 66-40 since 7 Dec 2022</td><td class="val">import alert</td><td class="pg">FDA · Sun</td></tr>
+        </tbody>
+      </table></div>
+      <p>The Halol story shows why one inspection is never the end. The 2022 inspection led to an import alert and a warning letter. The 2025 re-inspection found “repeat observations from the December 2022 Warning Letter”, and the FDA classified it OAI. In Sun’s words, shipments from the plant are refused “barring certain exemptions due to drug shortage, until the facility becomes fully compliant” <span class="tag">public</span>. Sun does not state Halol’s share of FY26 sales in these documents <span class="tag np">not public</span>. Asked on the May 2026 call about re-inspections at Halol, management said it could not predict when the FDA would audit.</p>
+      <details class="trace"><summary>Go deeper: sources</summary><p><a href="https://sunpharma.com/wp-content/uploads/2026/05/Press-Release-Sun-Pharma-Q4FY26-Financial-Result.pdf">Sun Pharma Q4 FY26 results release</a>, 22 May 2026, and its sales table (US formulations ₹168,242.2 mn in FY26 against ₹162,402.8 mn; Q4 ₹41,997.1 mn against ₹40,204.1 mn; rates ₹91.49 and ₹86.62); <a href="https://nsearchives.nseindia.com/corporate/SUNSEC_29052026195722_SEintimationTranscript.pdf">earnings-call transcript</a> filed with the exchanges on 29 May 2026 (emerging markets in constant currency; the Halol question). FDA: <a href="https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/warning-letters/sun-pharmaceutical-industries-ltd-636199-10162023">warning letter 320-23-08</a>, dated 15 December 2022 and amended 16 October 2023 (inspection 26 April to 9 May 2022; import alert 66-40 from 7 December 2022); <a href="https://www.fda.gov/media/187479/download">Form 483 for Halol</a>, issued 13 June 2025 after the inspection of 2 to 13 June 2025; <a href="https://www.accessdata.fda.gov/cms_ia/importalert_189.html">Import Alert 66-40</a> (Halol still listed when read on 22 November 2026, with named shortage products excluded). Sun’s <a href="https://sunpharma.com/wp-content/uploads/2025/09/SEIntimationHalolUpdate.pdf">exchange disclosure of 9 September 2025</a> on the OAI classification. FDA definitions: <a href="https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-references/fda-form-483-frequently-asked-questions">Form 483 FAQ</a> and <a href="https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-classification-database">inspection classification database</a>. All read 22 November 2026.</p></details>
+      <p class="source-note">Real figures are frozen at FY2026: Infosys’s FY26 results (Form 6-K and exchange release, 23 April 2026) and Form 20-F (15 June 2026); Sun Pharma’s Q4 FY26 results release (22 May 2026), earnings-call transcript (29 May 2026) and Halol disclosure (9 September 2025); US FDA documents as linked. Educational, not a recommendation.</p>
+    </section>
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before any verdict</h2>
+      <ol class="checks">
+        <li><b>How much did the business grow?</b> Constant-currency growth, not the rupee figure. If none is given, convert back to dollars yourself.</li>
+        <li><b>How much of the margin is the rupee?</b> Use the company’s stated sensitivity, and ask what happens if the rupee strengthens.</li>
+        <li><b>Is the order book real?</b> TCV split into net new and renewal, its length, and how fast the contracted backlog turns into revenue.</li>
+        <li><b>For a drugmaker: which plants carry the US business, and what did the FDA last say about each?</b> A 483, its classification, warning letters and import alerts.</li>
+      </ol>
+      <p>Exporters live on the dollar and on foreign regulators. The next sector part comes home: Part 32, “Consumer companies”, splits growth into volume and price, looks at rural demand, and asks why investors pay such high P/Es for soap and biscuits.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Judge an exporter on constant-currency growth, treat the rupee’s help as weather that can turn, and remember that its business can shrink without any change in demand: a contract that ends, or a plant that fails its inspection.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',TEALC='#76d5c1',GOLDC='#f5c76a',STONEC='#d9d4cc',DARKC='#202020';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const inr=v=>{const n=Math.round(v);return (n<0?'−':'')+Math.abs(n).toLocaleString('en-IN');};
+    const rs=v=>(Math.round(v)<0?'−':'')+'₹'+Math.abs(Math.round(v)).toLocaleString('en-IN');
+    const pct=(v,d)=>{const s=(Math.abs(v)).toFixed(d===undefined?1:d);return (v>0.00001?'+':(v<-0.00001?'−':''))+s+'%';};
+    // ---- Rupee lab: Narmada Infotech (fictional). FY25 base: $500 mn revenue at ₹80, $175 mn dollar costs, ₹1,760 cr rupee costs.
+    const USD0=500, RATE0=80, DCOST0=175, RCOST0=1760;
+    const REV0=USD0*RATE0/10, OP0=REV0-DCOST0*RATE0/10-RCOST0;
+    const ids=['cc','fx','hedge'];
+    const FMT={cc:v=>(v>0?'+':v<0?'−':'')+Math.abs(v)+'%',fx:v=>v==0?'flat at ₹80':(v>0?'weaker ':'stronger ')+Math.abs(v)+'% (₹'+(RATE0*(1+v/100)).toFixed(1).replace(/\.0$/,'')+')',hedge:v=>v+'% of net dollars'};
+    const PRESETS={
+      weak:{v:{cc:5,fx:5,hedge:0},t:'Rupee weakens 5%: revenue in rupees grows 10.25% on 5% more work, and operating profit grows faster still, because costs paid in rupees do not rise with the dollar.'},
+      strong:{v:{cc:5,fx:-5,hedge:0},t:'Rupee strengthens 5%: the same 5% more work shows as almost no growth in rupees (−0.25%), and the margin shrinks by more than two points.'},
+      hedged:{v:{cc:5,fx:5,hedge:50},t:'Weak rupee, half hedged: half the net dollars were sold forward at ₹80, so half of the rupee’s gift is given up. Profit is steadier, in both directions.'},
+      flat:{v:{cc:5,fx:0,hedge:50},t:'Flat rupee: reported growth equals constant-currency growth, the margin stays at 21%, and the hedge neither gains nor loses. The shortcut of reading rupee growth is right only here.'}};
+    const labConfig={format:v=>(v>0?'+':v<0?'−':'')+Math.abs(v)+'%'};
+    function compute(g,r,h){
+      g/=100;r/=100;h/=100;
+      const rate=RATE0*(1+r), usd=USD0*(1+g), rev=usd*rate/10;
+      const dcost=DCOST0*(1+g)*rate/10, rcost=RCOST0*(1+g), op=rev-dcost-rcost;
+      const netUsd=(USD0-DCOST0)*(1+g), hedgePnl=h*netUsd*(RATE0-rate)/10, opH=op+hedgePnl;
+      const repG=rev/REV0-1, ccRev=usd*RATE0/10;
+      return {rate,usd,rev,ccRev,dcost,rcost,op,netUsd,hedgePnl,opH,
+        ccG:g*100, repG:repG*100, fxEff:(repG-g)*100, opG:(op/OP0-1)*100, opHG:(opH/OP0-1)*100,
+        m0:OP0/REV0*100, m:op/rev*100, mH:opH/rev*100};
+    }
+    function niceStep(span){for(const s of [5,10,20,25,50]) if(span/s<=6) return s; return 100;}
+    function draw(){
+      const v={}; ids.forEach(id=>{v[id]=+$(id).value;$(id+'-o').textContent=FMT[id](v[id]);});
+      const r=compute(v.cc,v.fx,v.hedge);
+      const rows=[['more work (cc)',r.ccG,TEALC,1],['from the rupee',r.fxEff,STONEC,1],['revenue in ₹',r.repG,TEALC,1],['profit, no hedge',r.opG,GOLDC,1],['profit, with hedge',r.opHG,GOLDC,0.6]];
+      const vals=rows.map(q=>q[1]);
+      let lo=Math.min(0,...vals), hi=Math.max(0,...vals);
+      if(hi-lo<20){hi=Math.max(hi,lo+20);}
+      const step=niceStep(hi-lo); lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step;
+      const X0=190,XEND=560,k=(XEND-X0)/(hi-lo),sx=x=>X0+(x-lo)*k,z=sx(0);
+      const pitch=48,top=14; let s='';
+      rows.forEach(([lab,val,col,op],i)=>{const y=top+i*pitch;
+        s+=T(20,y+22,lab,'start',MUTC);
+        const x=Math.min(z,sx(val)),w=Math.abs(sx(val)-z);
+        s+=`<rect data-v="${val.toFixed(3)}" x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="30" fill="${col}" opacity="${op}" stroke="${DARKC}" stroke-width="2"/>`;
+        const lx=val>=0?sx(val)+8:z+8, an='start';
+        s+=T(lx,y+21,pct(val),an,FGC);});
+      const yAx=top+rows.length*pitch;
+      s+=`<path d="M${z.toFixed(2)} ${top-6} L${z.toFixed(2)} ${yAx}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      for(let t=lo;t<=hi+1e-9;t+=step){s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${yAx+22}" text-anchor="${t==lo?'start':(Math.abs(t-hi)<1e-9?'end':'middle')}" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;}
+      s+=T(20,yAx+50,'growth over FY25, % · one scale','start',MUTC);
+      $('labChart').setAttribute('viewBox',`0 0 640 ${yAx+66}`);
+      $('labChart').innerHTML=s;
+      const ro=[[pct(r.repG,2),'','revenue growth in ₹'],[pct(r.ccG,0),'','of which more work'],
+        [r.m.toFixed(1)+'%',r.m<r.m0-0.05?'bad':(r.m>r.m0+0.05?'ok':''),'margin, no hedge (FY25 21.0%)'],
+        [rs(r.hedgePnl)+' cr',r.hedgePnl<-0.5?'bad':(r.hedgePnl>0.5?'ok':''),'hedge gain or loss'],
+        [r.mH.toFixed(1)+'%','','margin with hedge']];
+      $('readouts').innerHTML=ro.map(([a,c,b])=>`<div><b class="${c}">${a}</b><span>${b}</span></div>`).join('');
+      const L=[['Rate','₹80 × (1 '+(v.fx<0?'−':'+')+' '+Math.abs(v.fx)+'%) = ₹'+r.rate.toFixed(2)],
+        ['Dollars billed','$500 mn × (1 '+(v.cc<0?'−':'+')+' '+Math.abs(v.cc)+'%) = $'+r.usd.toFixed(1)+' mn'],
+        ['Revenue','$'+r.usd.toFixed(1)+' mn × '+r.rate.toFixed(2)+' ÷ 10 = ₹'+inr(r.rev)+' cr (FY25 ₹4,000 cr)'],
+        ['At FY25 rate','$'+r.usd.toFixed(1)+' mn × 80 ÷ 10 = ₹'+inr(r.ccRev)+' cr: constant-currency '+pct(r.ccG,0)],
+        ['Dollar costs','$'+(DCOST0*(1+v.cc/100)).toFixed(1)+' mn × '+r.rate.toFixed(2)+' ÷ 10 = ₹'+inr(r.dcost)+' cr'],
+        ['Rupee costs','₹1,760 cr × (1 '+(v.cc<0?'−':'+')+' '+Math.abs(v.cc)+'%) = ₹'+inr(r.rcost)+' cr'],
+        ['Operating profit','₹'+inr(r.rev)+' − '+inr(r.dcost)+' − '+inr(r.rcost)+' = ₹'+inr(r.op)+' cr (FY25 ₹840 cr)'],
+        ['Hedge',v.hedge+'% × $'+r.netUsd.toFixed(1)+' mn × (80 − '+r.rate.toFixed(2)+') ÷ 10 = '+rs(r.hedgePnl)+' cr'],
+        ['Profit with hedge','₹'+inr(r.opH)+' cr; margin '+r.mH.toFixed(1)+'%']];
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:[r.rev,r.op,r.opH,r.m,r.mH].every(Number.isFinite),inputs:v,
+        ccG:r.ccG,repG:r.repG,fxEff:r.fxEff,opG:r.opG,opHG:r.opHG,rev:r.rev,op:r.op,hedge:r.hedgePnl,opH:r.opH,margin:r.m,marginH:r.mH};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];ids.forEach(id=>$(id).value=p.v[id]);draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

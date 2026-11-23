@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Loss-making companies and IPOs — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (revenue, cash in hand, money raised) | coral #ff8059 = money going out (costs, burn, capex, what IPO money is spent on)
+       gold #f5c76a = what belongs to shareholders (profit or loss, contribution) | rose #ec6a94 = what is owed (debt, rent, a cash shortfall)
+       lavender #c3b8ff = the market's view (the offer documents and their price sections)
+       Part 35 extra: grey #a5a29c = money in an IPO that never reaches the company (offer for sale) */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .eq b{color:var(--fg)}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    @media (max-width:700px){.eli5-study-container table.rep{min-width:0}.rep td.pg{display:none}.rep th.pg{display:none}.rep td,.rep th{padding:8px 6px}}
+    /* Part 35 lab: one column of numbered steps (layout as in Part 15) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:4px}
+    .dashlab .control{margin:0 0 14px}
+    .dashlab .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .control input[type=range]{display:block;width:100%}
+    .dashlab details.trace{margin-top:16px}
+    .readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:0 0 16px}
+    .readouts div{border:1px solid var(--border);padding:10px 12px}
+    .readouts b{display:block;font:600 20px/1.2 var(--font-mono);color:var(--fg)}
+    .readouts b.bad{color:#ec6a94}.readouts b.ok{color:#76d5c1}
+    .readouts span{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted);margin-top:2px}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}}
+      .dashlab .lab-chart svg{max-width:680px}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 35: unit economics, cash burn and runway, and reading an IPO prospectus">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/loss-makers-and-ipos-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Loss-making companies and IPOs">
+<meta property="og:description" content="Part 35: unit economics, cash burn and runway, and reading an IPO prospectus">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/loss-makers-and-ipos-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/loss-makers-and-ipos-eli5.png?v=0ebc11e1">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Loss-making companies and IPOs">
+<meta property="article:published_time" content="2026-11-23">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="loss-makers-and-ipos-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 19 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Loss-making companies and IPOs</h1>
+      <p class="lede">When a company makes no profit, P/E has nothing to say. Ask three other questions: does each sale make money, how fast is the cash going, and how long will it last? And when it lists, read the offer document to see who gets the money.</p>
+      <p class="source-note">Built from Swiggy’s red herring prospectus (28 October 2024), its audited FY26 results and shareholders’ letter (filed with the exchanges on 9 May 2026), its Annual Report 2025-26 and the monitoring agency’s report on its issue proceeds to 31 March 2026 · <a href="https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a> showed that P/E breaks when earnings are negative, <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a> split costs into fixed and variable, <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a> tested profit against cash, and <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a> worked out the contribution of one cup of tea. <a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a> covered new shares and dilution. Part 34, “Utilities, PSUs and real estate”, the previous sector part, read companies whose profits are steady; this one reads companies that have none yet. Facts carry a tag: <span class="tag">public</span> is a figure from Swiggy’s filings, <span class="tag">example</span> is a made-up number for our fictional startup, Teesta Fresh Ltd, a quick-delivery grocery app. All amounts are ₹ crore (cr). Real figures are frozen at FY2026. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: revenue, cash, money raised</span>
+        <span><i style="background:#ff8059"></i>money going out: costs, burn, spending</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit or loss, contribution</span>
+        <span><i style="background:#ec6a94"></i>what is owed: debt, rent</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: the offer documents</span>
+        <span><i style="background:#a5a29c"></i>IPO money that skips the company</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>No profit, so P/E is silent</h2>
+      <p>Teesta Fresh delivers groceries in 15 minutes. Each month it takes 1 crore orders and keeps ₹100 cr of revenue, but spends ₹105 cr on costs that grow with every order and ₹40 cr on fixed costs. It loses ₹45 cr a month before depreciation, interest and tax <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 236" role="img" aria-label="Teesta Fresh's month on one scale: revenue of 100 crore rupees against costs of 145 crore, 105 that grow with each order and 40 of fixed costs, leaving a loss of 45 crore"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">one month, ₹ crore · 4 px = ₹1 cr</text><text x="40" y="84" text-anchor="start" fill="#a5a29c" font-size="16">In</text><rect x="150" y="60" width="400" height="36" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="160" y="84" text-anchor="start" fill="#202020" font-size="16">revenue 100</text><rect x="550" y="60" width="180" height="36" fill="none" stroke="#f5c76a" stroke-width="2" stroke-dasharray="6 4"/><text x="640" y="46" text-anchor="middle" fill="#f5c76a" font-size="16">loss 45</text><text x="40" y="144" text-anchor="start" fill="#a5a29c" font-size="16">Out</text><rect x="150" y="120" width="420" height="36" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="160" y="144" text-anchor="start" fill="#202020" font-size="16">per-order costs 105</text><rect x="570" y="120" width="160" height="36" fill="#ff8059" stroke="#202020" stroke-width="2" opacity="0.7"/><text x="580" y="144" text-anchor="start" fill="#202020" font-size="16">fixed 40</text><path d="M550 104 L550 172" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="40" y="214" text-anchor="start" fill="#f1eee8" font-size="16">EPS below zero, so P/E means nothing</text></svg></figure>
+      <p>With earnings below zero, P/E is negative and tells you nothing (<a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a>’s third trap). Many of India’s recent listings look like this. Swiggy lost ₹4,154 cr in FY26 on revenue from operations of ₹23,053 cr <span class="tag">public</span>. For such a company, investors ask three questions instead. Does each order make money? How fast is cash going? How long will it last?</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Unit economics: one order, in rupees</h2>
+      <p>A customer’s basket is worth ₹400, but most of that belongs to the shops whose goods Teesta delivers. Teesta keeps ₹100: its commissions, the customer’s delivery fee and ads. Then it pays ₹55 to the rider, ₹20 in offers, ₹25 for packing and handling and ₹5 in payment fees <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 250" role="img" aria-label="One order on one scale: Teesta keeps 100 rupees of a 400 rupee basket, and pays 55 to the rider, 20 in offers, 25 for packing and handling and 5 in payment fees, 105 in all, so each order loses 5 rupees before any fixed cost"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">one order, ₹ · 5 px = ₹1</text><text x="40" y="84" text-anchor="start" fill="#a5a29c" font-size="16">In</text><rect x="140" y="60" width="500" height="36" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="150" y="84" text-anchor="start" fill="#202020" font-size="16">Teesta keeps 100</text><text x="40" y="144" text-anchor="start" fill="#a5a29c" font-size="16">Out</text><rect x="140" y="120" width="275" height="36" fill="#ff8059" stroke="#202020" stroke-width="2" opacity="1"/><text x="148" y="144" text-anchor="start" fill="#202020" font-size="16">rider 55</text><rect x="415" y="120" width="100" height="36" fill="#ff8059" stroke="#202020" stroke-width="2" opacity="0.85"/><text x="423" y="144" text-anchor="start" fill="#202020" font-size="16">offers 20</text><rect x="515" y="120" width="125" height="36" fill="#ff8059" stroke="#202020" stroke-width="2" opacity="0.7"/><text x="523" y="144" text-anchor="start" fill="#202020" font-size="16">packing 25</text><rect x="640" y="120" width="25" height="36" fill="#ff8059" stroke="#202020" stroke-width="2" opacity="0.55"/><path d="M652.5 160 L652.5 176" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="662.5" y="192" text-anchor="start" fill="#a5a29c" font-size="16">payment 5</text><path d="M640 52 L640 230" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="632" y="226" text-anchor="end" fill="#f5c76a" font-size="16">contribution −5 an order</text></svg></figure>
+      <p>What is left after the costs that come with each order is the <b>contribution</b>: here, minus ₹5. As a share of revenue that is a <b>contribution margin</b> of −5%; as a share of the ₹400 basket, −1.25%. Both are used, so always check the denominator. Swiggy reports Instamart’s contribution margin as a percentage of <b>gross order value</b> (GOV), the value of baskets at full price <span class="tag">public</span>. <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a> did the same sum for one cup of tea and found ₹2.25 left over.</p>
+      <details class="trace"><summary>Go deeper: what counts as a cost of each order</summary><p>A cost belongs in the contribution if it rises and falls with orders: delivery pay, discounts the company funds, packing, payment fees, and for a dark-store model the cost of picking and packing in the store. Rent on the store, technology, head-office salaries and brand advertising are fixed for the month. Swiggy’s definition for quick commerce is adjusted revenue less delivery and other charges, platform-funded discounts, the cost of fulfilment services and other variable costs, as a percentage of GOV (shareholders’ letter, PDF page 18). Companies draw the line in slightly different places, which is one reason two companies’ contribution margins are rarely comparable to the decimal point.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The next step</p>
+      <h2>How many orders pay the rent?</h2>
+      <p>Fixed costs of ₹40 cr a month are covered only when contribution per order × orders reaches ₹40 cr. At ₹5 an order that takes 8 crore orders a month, eight times today’s volume. At ₹20 it takes 2 crore. At minus ₹5, no number of orders is enough <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 334" role="img" aria-label="Bars to scale showing the orders a month Teesta needs to cover 40 crore of fixed costs: 8 crore orders at 5 rupees of contribution each, 4 crore at 10, 2 crore at 20, and 1 crore, today's volume, at 40; at minus 5 rupees no volume is enough"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">orders a month to cover ₹40 cr fixed costs · 70 px = 1 crore</text><text x="40" y="100" text-anchor="start" fill="#f1eee8" font-size="16">+₹5 an order</text><rect x="200" y="76" width="560" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="750" y="99" text-anchor="end" fill="#202020" font-size="16">8 crore orders</text><text x="40" y="152" text-anchor="start" fill="#f1eee8" font-size="16">+₹10 an order</text><rect x="200" y="128" width="280" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="470" y="151" text-anchor="end" fill="#202020" font-size="16">4 crore orders</text><text x="40" y="204" text-anchor="start" fill="#f1eee8" font-size="16">+₹20 an order</text><rect x="200" y="180" width="140" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="350" y="203" text-anchor="start" fill="#f1eee8" font-size="16">2 crore orders</text><text x="40" y="256" text-anchor="start" fill="#f1eee8" font-size="16">+₹40 an order</text><rect x="200" y="232" width="70" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="280" y="255" text-anchor="start" fill="#f1eee8" font-size="16">1 crore</text><text x="40" y="308" text-anchor="start" fill="#ec6a94" font-size="16">−₹5 an order</text><text x="200" y="308" text-anchor="start" fill="#ec6a94" font-size="16">never: each order adds to the loss</text><path d="M270 50 L270 278" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="278" y="62" text-anchor="start" fill="#f5c76a" font-size="16">Teesta today: 1 crore</text></svg></figure>
+      <p>So the order of events matters: first make each order earn something (<b>contribution breakeven</b>), then grow until the contributions cover fixed costs (<b>EBITDA breakeven</b>). This is <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a>’s operating leverage, starting below zero.</p>
+      <span class="eq">orders needed = fixed costs ÷ contribution per order = ₹40 cr ÷ ₹5 = 8 crore a month</span>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>“We’ll make it up on volume”</h2>
+      <p>Growth is often sold as the cure for losses. That is true only when each order makes money. Losing ₹5 an order, doubling orders to 2 crore adds ₹5 cr to the monthly loss; making ₹10 an order, the same doubling cuts it by ₹10 cr <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 414" role="img" aria-label="Gold bars to the left of zero: losing 5 rupees an order, the monthly loss grows from 45 to 50 to 60 crore as orders rise from 1 to 2 to 4 crore; making 10 rupees an order, it shrinks from 30 to 20 to zero"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">operating result a month, ₹ crore · 8 px = ₹1 cr</text><path d="M700 44 L700 378" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="700" y="398" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="40" y="74" text-anchor="start" fill="#f1eee8" font-size="16" font-weight="600">losing ₹5 an order</text><text x="40" y="108" text-anchor="start" fill="#a5a29c" font-size="16">1 crore orders</text><rect x="340" y="86" width="360" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="332" y="108" text-anchor="end" fill="#f5c76a" font-size="16">−45</text><text x="40" y="148" text-anchor="start" fill="#a5a29c" font-size="16">2 crore orders</text><rect x="300" y="126" width="400" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="292" y="148" text-anchor="end" fill="#f5c76a" font-size="16">−50</text><text x="40" y="188" text-anchor="start" fill="#a5a29c" font-size="16">4 crore orders</text><rect x="220" y="166" width="480" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="212" y="188" text-anchor="end" fill="#f5c76a" font-size="16">−60</text><text x="40" y="238" text-anchor="start" fill="#f1eee8" font-size="16" font-weight="600">making ₹10 an order</text><text x="40" y="272" text-anchor="start" fill="#a5a29c" font-size="16">1 crore orders</text><rect x="460" y="250" width="240" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="452" y="272" text-anchor="end" fill="#f5c76a" font-size="16">−30</text><text x="40" y="312" text-anchor="start" fill="#a5a29c" font-size="16">2 crore orders</text><rect x="540" y="290" width="160" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="532" y="312" text-anchor="end" fill="#f5c76a" font-size="16">−20</text><text x="40" y="352" text-anchor="start" fill="#a5a29c" font-size="16">4 crore orders</text><text x="692" y="352" text-anchor="end" fill="#f5c76a" font-size="16">breakeven</text></svg></figure>
+      <p>This is why a loss-maker’s shareholders’ letter talks about contribution margin first and growth second. Swiggy’s Q4 FY26 letter says that in quick commerce it chose “to prioritize margin integrity over vanity volume”, cutting low-value orders even though volume growth slowed <span class="tag">public</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">What actually happens</p>
+      <h2>Cash burn and runway</h2>
+      <p>A loss is an accounting number; what keeps a company alive is cash. Teesta’s <b>cash burn</b> is the cash that leaves each month: the ₹45 cr operating loss plus ₹5 cr of capex for new dark stores, ₹50 cr in all. It has ₹600 cr in the bank. Its <b>runway</b>, how long the cash lasts at this pace, is 600 ÷ 50 = 12 months <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 236" role="img" aria-label="Teesta's 600 crore of cash drawn as twelve 50 crore blocks, each one month's burn of 45 crore operating loss plus 5 crore capex, so the cash lasts 12 months"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore · 1 px = ₹1 cr</text><text x="40" y="74" text-anchor="start" fill="#a5a29c" font-size="16">a month</text><rect x="170" y="52" width="45" height="32" fill="#ff8059" stroke="#202020" stroke-width="2"/><rect x="215" y="52" width="5" height="32" fill="#ff8059" stroke="#202020" stroke-width="2" opacity="0.6"/><text x="232" y="74" text-anchor="start" fill="#ff8059" font-size="16">burn 50 = loss 45 + capex 5</text><text x="40" y="140" text-anchor="start" fill="#a5a29c" font-size="16">in bank</text><rect x="170" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="220" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2" opacity="0.85"/><rect x="270" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="320" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2" opacity="0.85"/><rect x="370" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="420" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2" opacity="0.85"/><rect x="470" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="520" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2" opacity="0.85"/><rect x="570" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="620" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2" opacity="0.85"/><rect x="670" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="720" y="116" width="50" height="40" fill="#76d5c1" stroke="#202020" stroke-width="2" opacity="0.85"/><text x="195" y="182" text-anchor="middle" fill="#a5a29c" font-size="16">1</text><text x="295" y="182" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><text x="445" y="182" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><text x="595" y="182" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><text x="745" y="182" text-anchor="middle" fill="#a5a29c" font-size="16">12</text><text x="170" y="214" text-anchor="start" fill="#f1eee8" font-size="16">cash 600 lasts 12 months</text></svg></figure>
+      <p>Runway is the clock every loss-maker races. Before it reaches zero the company must reach breakeven, cut costs, or raise money, and money raised in a hurry comes on the investors’ terms. Companies define burn differently: some start from EBITDA, some from operating cash flow, some leave out working capital or leases. Read the definition before you divide.</p>
+      <span class="eq">runway (months) = cash ÷ monthly burn = 600 ÷ 50 = 12</span>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Burn and runway calculator</h2>
+      <p>Teesta’s next three years, month by month <span class="tag">example</span>. Set how much each order earns after its own costs, how fast orders grow, what the month’s fixed costs and capex add up to, and how much cash Teesta starts with. Orders start at 1 crore a month. Each bar is the cash left at the end of a quarter; rose bars are a shortfall Teesta would have to raise.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Pick a situation</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="still">Today, standing still</button>
+            <button type="button" class="secondary" data-p="grow">Grow at a loss per order</button>
+            <button type="button" class="secondary" data-p="fix">Fix the order, then grow</button>
+            <button type="button" class="secondary" data-p="ipo">IPO cash, same losses</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Set the business</p>
+          <div class="dl-grid">
+            <div><div class="control"><label for="cpo">Contribution per order: <output id="cpo-o"></output></label><input id="cpo" type="range" min="-20" max="20" step="1" value="-5"></div>
+            <div class="control"><label for="gro">Order growth: <output id="gro-o"></output></label><input id="gro" type="range" min="0" max="8" step="0.5" value="3"></div></div>
+            <div><div class="control"><label for="fix">Fixed costs and capex: <output id="fix-o"></output></label><input id="fix" type="range" min="20" max="80" step="5" value="45"></div>
+            <div class="control"><label for="cash">Cash today: <output id="cash-o"></output></label><input id="cash" type="range" min="100" max="2000" step="50" value="600"></div></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Watch the cash</p>
+          <div class="readouts" id="readouts"></div>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 760 600" role="img" aria-label="Teesta's cash at the end of each quarter for three years, as horizontal bars from zero: teal while cash is left, rose when it has run out"></svg></div>
+          <p class="lights-key">teal: cash left at the end of the quarter · rose: shortfall to raise · ₹ crore</p>
+          <details class="trace"><summary>Show the working, month by month</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions</summary><p>Month 1 has 1 crore orders; orders then grow by the same percentage every month. Contribution per order stays fixed for all 36 months, so the monthly result is contribution per order × orders − fixed costs and capex. Burn is that result with the sign flipped; it ignores interest earned on cash, working capital, tax and any change in prices or costs as Teesta grows. Runway is counted to the day the cash reaches zero within a month, assuming the month’s burn is spread evenly. The cash keeps going below zero after that to show how much Teesta would need to raise. A real company would cut costs or raise money long before; none of that is modelled.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>An IPO buys time, not profit</h2>
+      <p>Teesta lists. Its IPO raises ₹1,000 cr, but only ₹600 cr is a <b>fresh issue</b>: new shares whose money goes to the company. The other ₹400 cr is an <b>offer for sale</b> (OFS): early investors sell existing shares, and the money goes to them <span class="tag">example</span>. Teesta’s runway doubles from 12 months to 24, not to 32.</p>
+      <figure><svg viewBox="0 0 800 228" role="img" aria-label="Cash bars on one scale: Teesta has 600 crore, 12 months of burn; a 1,000 crore IPO adds only its 600 crore fresh issue, taking cash to 1,200 crore and 24 months; the 400 crore offer for sale goes to the selling shareholders"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">cash, ₹ crore · 1 px = ₹2.5 cr</text><text x="40" y="76" text-anchor="start" fill="#a5a29c" font-size="16">before</text><rect x="190" y="52" width="240" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="200" y="75" text-anchor="start" fill="#202020" font-size="16">cash 600</text><text x="440" y="75" text-anchor="start" fill="#f1eee8" font-size="16">12 months</text><text x="40" y="136" text-anchor="start" fill="#a5a29c" font-size="16">after the IPO</text><rect x="190" y="112" width="240" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="200" y="135" text-anchor="start" fill="#202020" font-size="16">cash 600</text><rect x="430" y="112" width="240" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2" opacity="0.7"/><text x="440" y="135" text-anchor="start" fill="#202020" font-size="16">fresh issue 600</text><text x="680" y="135" text-anchor="start" fill="#f1eee8" font-size="16">24 months</text><text x="40" y="196" text-anchor="start" fill="#a5a29c" font-size="16">not in its bank</text><rect x="670" y="172" width="160" height="34" fill="#a5a29c" stroke="#202020" stroke-width="2"/><text x="680" y="195" text-anchor="start" fill="#202020" font-size="16">sale 400</text><text x="660" y="195" text-anchor="end" fill="#a5a29c" font-size="16">to the sellers</text></svg></figure>
+      <p>Run the lab’s “IPO cash, same losses” preset: with a minus ₹5 contribution and fast growth, even ₹1,200 cr runs out in under two years. New money resets the clock; only better unit economics stop it. The new shares also dilute existing owners (<a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a>). Swiggy’s IPO was 40% fresh issue and 60% OFS; the panels below read its prospectus.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The offer document</p>
+      <h2>Draft, red herring, prospectus</h2>
+      <p>An Indian IPO goes through three versions of one document. The <b>draft red herring prospectus</b> (DRHP) is filed with SEBI and the exchanges for comments. The <b>red herring prospectus</b> (RHP) is the version investors bid on: everything except the final price. The <b>prospectus</b> adds the price once bidding closes. Swiggy took SEBI’s confidential “pre-filing” route, so its first public draft was an updated DRHP <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 234" role="img" aria-label="Swiggy's offer documents on a time line drawn to scale: a confidential pre-filed draft on 26 April 2024, the public updated draft on 26 September after SEBI's review, the red herring prospectus on 28 October, and bids and the final prospectus on 6 to 8 November"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Swiggy, 2024 · 3.2 px = 1 day</text><path d="M100 150 L727.2 150" stroke="#a5a29c" stroke-width="1.5" fill="none"/><path d="M116 145 L116 155" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="116" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">May</text><path d="M215.2 145 L215.2 155" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="215.2" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">Jun</text><path d="M311.2 145 L311.2 155" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="311.2" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">Jul</text><path d="M410.4 145 L410.4 155" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="410.4" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">Aug</text><path d="M509.6 145 L509.6 155" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="509.6" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">Sep</text><path d="M605.6 145 L605.6 155" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="605.6" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">Oct</text><path d="M704.8 145 L704.8 155" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="704.8" y="206" text-anchor="middle" fill="#a5a29c" font-size="16">Nov</text><circle cx="100" cy="150" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="100" y="180" text-anchor="start" fill="#c3b8ff" font-size="16">pre-filed DRHP</text><circle cx="589.6" cy="150" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M589.6 142 L589.6 116" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="589.6" y="108" text-anchor="middle" fill="#c3b8ff" font-size="16">updated DRHP-I</text><circle cx="692" cy="150" r="6" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="692" y="180" text-anchor="middle" fill="#c3b8ff" font-size="16">RHP</text><circle cx="727.2" cy="150" r="6" fill="#f5c76a" stroke="#202020" stroke-width="2"/><path d="M727.2 142 L727.2 76" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="733.2" y="68" text-anchor="end" fill="#f5c76a" font-size="16">bids, prospectus</text><text x="344.8" y="136" text-anchor="middle" fill="#a5a29c" font-size="16">SEBI reviews the draft</text></svg></figure>
+      <p>Swiggy’s pre-filed draft is dated 26 April 2024; the updated DRHP-I, published after SEBI’s and the exchanges’ observations, 26 September; the RHP, 28 October. Bids ran from 6 to 8 November, and the prospectus, dated 8 November, fixed the price at ₹390 a share <span class="tag">public</span>. Versions differ: between the updated draft and the RHP, the fresh issue grew from ₹3,750 cr to ₹4,499 cr and the shares on sale fell from 18.53 crore to 17.51 crore.</p>
+      <details class="trace"><summary>Go deeper: sources for the dates</summary><p>RHP, “Definitions and Abbreviations” (pre-filed DRHP of 26 April 2024 under Chapter IIA of the SEBI ICDR Regulations, and the UDRHP-I filed after SEBI’s observations) and the cover page (bid dates); the monitoring agency’s report (issue period 6–8 November 2024, prospectus dated 8 November 2024, issue size ₹1,13,274.27 million: fresh ₹44,990 million, OFS ₹68,284.27 million). UDRHP-I cover: fresh issue up to ₹37,500 million, offer for sale up to 185,286,265 shares. Shares offered for sale in the RHP: 175,087,863 (RHP cover and “Objects of the Offer”). ₹68,284.27 million ÷ 175,087,863 = ₹390.00, the price on the cover of the prospectus dated 8 November 2024.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Where to look</p>
+      <h2>Seven places in 536 pages</h2>
+      <p>Nobody reads an RHP cover to cover; Swiggy’s runs to 536 printed pages <span class="tag">public</span>. Read the cover first: the fresh issue, the OFS and each seller’s average cost. Then go to the sections that answer an investor’s questions, highlighted below at their true lengths.</p>
+      <figure><svg viewBox="0 0 800 316" role="img" aria-label="Swiggy's red herring prospectus drawn as a 536-page bar, with the sections to read highlighted at their true lengths: risk factors from page 33, capital structure from 92, objects of the issue from 142, the basis for the price and KPIs from 162, restated financials from 279, management's discussion from 359 and litigation from 394"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Swiggy's RHP, 536 printed pages · 1.25 px = 1 page</text><rect x="60" y="150" width="670" height="40" fill="#3b3936"/><rect x="100" y="150" width="47.5" height="40" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M123.75 146 L123.75 126" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="123.75" y="120" text-anchor="middle" fill="#c3b8ff" font-size="16">risk factors</text><rect x="173.75" y="150" width="62.5" height="40" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M205 194 L205 202" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="205" y="220" text-anchor="middle" fill="#c3b8ff" font-size="16">capital structure</text><rect x="236.25" y="150" width="25" height="40" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M248.75 146 L248.75 86" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="248.75" y="80" text-anchor="middle" fill="#c3b8ff" font-size="16">objects of the issue</text><rect x="261.25" y="150" width="20" height="40" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M271.25 146 L271.25 126" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="275.25" y="120" text-anchor="start" fill="#c3b8ff" font-size="16">price basis, KPIs</text><rect x="407.5" y="150" width="97.5" height="40" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M456.25 194 L456.25 244" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="456.25" y="262" text-anchor="middle" fill="#c3b8ff" font-size="16">restated financials</text><rect x="507.5" y="150" width="40" height="40" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M527.5 146 L527.5 126" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="527.5" y="120" text-anchor="middle" fill="#c3b8ff" font-size="16">MD&amp;A</text><rect x="551.25" y="150" width="8.75" height="40" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><path d="M555.62 194 L555.62 202" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="559.62" y="220" text-anchor="start" fill="#c3b8ff" font-size="16">litigation</text><text x="60" y="300" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="185" y="300" text-anchor="middle" fill="#a5a29c" font-size="16">p. 100</text><text x="310" y="300" text-anchor="middle" fill="#a5a29c" font-size="16">p. 200</text><text x="435" y="300" text-anchor="middle" fill="#a5a29c" font-size="16">p. 300</text><text x="560" y="300" text-anchor="middle" fill="#a5a29c" font-size="16">p. 400</text><text x="685" y="300" text-anchor="middle" fill="#a5a29c" font-size="16">p. 500</text></svg></figure>
+      <p><b>Risk factors</b> (page 33): read the first five, which the company chose to put first. <b>Capital structure</b> (92): who owns what, and at what cost. <b>Objects of the issue</b> (142): where the fresh money goes. <b>Basis for offer price</b> (162): EPS, return on net worth and the company’s own <b>key performance indicators</b> (KPIs). <b>Restated financials</b> (279): three years of accounts, recast on one consistent basis. <b>MD&amp;A</b> (359): management’s explanation of the numbers. <b>Litigation</b> (394): cases against the company and its directors. Page numbers are Swiggy’s.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Objects of the issue</p>
+      <h2>Who gets the money, and for what</h2>
+      <p>Swiggy’s IPO raised ₹11,327 cr. The company received the ₹4,499 cr fresh issue; the ₹6,828 cr OFS went to the selling shareholders <span class="tag">public</span>. The largest seller, MIH India Food Holdings B.V., offered up to 10.9 crore shares at an average cost of ₹131.15 each; Accel’s fund offered 1.06 crore at ₹11.17 <span class="tag">public</span>. At ₹390 they sold at about 3 and 35 times what they paid.</p>
+      <figure><svg viewBox="0 0 800 456" role="img" aria-label="Swiggy's 11,327 crore IPO split to scale into a 4,499 crore fresh issue and a 6,828 crore offer for sale, then the fresh issue split into its seven uses, each bar filled to show how much had been spent by 31 March 2026"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">₹ crore · top bar 1 px = ₹16.7 cr</text><rect x="60" y="44" width="269.94" height="36" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="70" y="68" text-anchor="start" fill="#202020" font-size="16">fresh issue 4,499</text><rect x="329.94" y="44" width="409.71" height="36" fill="#a5a29c" stroke="#202020" stroke-width="2"/><text x="339.94" y="68" text-anchor="start" fill="#202020" font-size="16">offer for sale 6,828</text><text x="40" y="124" text-anchor="start" fill="#a5a29c" font-size="16">where the 4,499 goes · 1 px = ₹3.3 cr</text><text x="40" y="161" text-anchor="start" fill="#f1eee8" font-size="16">repay debt</text><rect x="240" y="140" width="49.44" height="28" fill="none" stroke="#ec6a94" stroke-width="2"/><rect x="240" y="140" width="49.44" height="28" fill="#ec6a94"/><text x="299.44" y="161" text-anchor="start" fill="#a5a29c" font-size="16">165 of 165</text><text x="40" y="201" text-anchor="start" fill="#f1eee8" font-size="16">dark stores</text><rect x="240" y="180" width="226.62" height="28" fill="none" stroke="#ff8059" stroke-width="2"/><rect x="240" y="180" width="184.51" height="28" fill="#ff8059"/><text x="476.62" y="201" text-anchor="start" fill="#a5a29c" font-size="16">615 of 755</text><text x="40" y="241" text-anchor="start" fill="#f1eee8" font-size="16">dark store rent</text><rect x="240" y="220" width="126.99" height="28" fill="none" stroke="#ec6a94" stroke-width="2"/><rect x="240" y="220" width="45.09" height="28" fill="#ec6a94"/><text x="376.99" y="241" text-anchor="start" fill="#a5a29c" font-size="16">150 of 423</text><text x="40" y="281" text-anchor="start" fill="#f1eee8" font-size="16">tech and cloud</text><rect x="240" y="260" width="211.02" height="28" fill="none" stroke="#ff8059" stroke-width="2"/><rect x="240" y="260" width="142.56" height="28" fill="#ff8059"/><text x="461.02" y="281" text-anchor="start" fill="#a5a29c" font-size="16">475 of 703</text><text x="40" y="321" text-anchor="start" fill="#f1eee8" font-size="16">brand marketing</text><rect x="240" y="300" width="334.59" height="28" fill="none" stroke="#ff8059" stroke-width="2"/><rect x="240" y="300" width="330.82" height="28" fill="#ff8059"/><text x="584.59" y="321" text-anchor="start" fill="#a5a29c" font-size="16">1,103 of 1,115</text><text x="40" y="361" text-anchor="start" fill="#f1eee8" font-size="16">deals and general</text><rect x="240" y="340" width="359.03" height="28" fill="none" stroke="#ff8059" stroke-width="2"/><rect x="240" y="340" width="341.12" height="28" fill="#ff8059"/><text x="609.03" y="361" text-anchor="start" fill="#a5a29c" font-size="16">1,137 of 1,197</text><text x="40" y="401" text-anchor="start" fill="#f1eee8" font-size="16">issue costs</text><rect x="240" y="380" width="42.01" height="28" fill="none" stroke="#ff8059" stroke-width="2"/><rect x="240" y="380" width="42.01" height="28" fill="#ff8059"/><text x="292.01" y="401" text-anchor="start" fill="#a5a29c" font-size="16">140 of 140</text><text x="240" y="438" text-anchor="start" fill="#a5a29c" font-size="16">solid: spent by 31 March 2026</text></svg></figure>
+      <p>Each use of the fresh issue is fixed in the RHP, and an independent <b>monitoring agency</b> (here, Crisil Ratings) reports every quarter on how much has been spent. By 31 March 2026 Swiggy had used ₹3,785 cr of the ₹4,499 cr, with no deviation from the stated objects <span class="tag">public</span>. Watch the vaguest line, “funding inorganic growth through unidentified acquisitions and general corporate purposes”: ₹1,197 cr, 27% of the fresh issue, not tied to any named use.</p>
+      <details class="trace"><summary>Go deeper: the figures and the rules</summary><p>Amounts from the monitoring agency’s report for the quarter ended 31 March 2026 (Crisil Ratings, approved by Swiggy’s board on 8 May 2026), pages 6–8, converted from ₹ million: debt repayment at Scootsy 164.80 (fully used); dark stores 755.40 (615.05 used); dark store lease payments 423.30 (150.30); technology and cloud 703.40 (475.21); brand marketing 1,115.30 (1,102.72); acquisitions and general corporate purposes 1,196.78 (1,137.07); issue expenses 140.02 (140.02). The report notes that the general corporate purposes and unidentified acquisitions together do not exceed 35% of gross proceeds, and neither alone exceeds 25%. It also notes that dark store lease payments ran slightly behind the prospectus’s schedule (₹150.30 cr used by the end of FY26 against ₹154.60 cr planned) because of delays in invoice submission and processing, with the balance to be used in the next quarter. Sellers’ costs are from the RHP cover; each “up to” number of shares was the maximum offered.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Risk factors and restated financials</p>
+      <h2>Losses in every year since incorporation</h2>
+      <p>Swiggy’s first risk factor reads: “We have incurred net losses in each year since incorporation and have negative cash flows from operations” <span class="tag">public</span>. Below it, the RHP prints three years of restated accounts. Here they are with the two years audited since listing.</p>
+      <figure><svg viewBox="0 0 800 294" role="img" aria-label="Swiggy's loss as a share of revenue drawn to scale: 63.6 percent in FY22, 50.6 in FY23 and 20.9 in FY24 from the restated accounts in the prospectus, then 20.5 in FY25 and 18.0 in FY26 after listing, while the rupee loss in FY26, 4,154 crore, was the largest of the five years"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">loss as % of revenue from operations · 7 px = 1%</text><text x="40" y="72" text-anchor="start" fill="#f1eee8" font-size="16">FY22</text><rect x="160" y="50" width="445.27" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="615.27" y="72" text-anchor="start" fill="#f5c76a" font-size="16">63.6% · ₹3,629 cr</text><text x="40" y="116" text-anchor="start" fill="#f1eee8" font-size="16">FY23</text><rect x="160" y="94" width="353.98" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="523.98" y="116" text-anchor="start" fill="#f5c76a" font-size="16">50.6% · ₹4,179 cr</text><text x="40" y="160" text-anchor="start" fill="#f1eee8" font-size="16">FY24</text><rect x="160" y="138" width="146.27" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="316.27" y="160" text-anchor="start" fill="#f5c76a" font-size="16">20.9% · ₹2,350 cr</text><path d="M40 174 L760 174" stroke="#57534f" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="760" y="166" text-anchor="end" fill="#a5a29c" font-size="16">listed November 2024</text><text x="40" y="218" text-anchor="start" fill="#f1eee8" font-size="16">FY25</text><rect x="160" y="196" width="143.29" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="313.29" y="218" text-anchor="start" fill="#f5c76a" font-size="16">20.5% · ₹3,117 cr</text><text x="40" y="262" text-anchor="start" fill="#f1eee8" font-size="16">FY26</text><rect x="160" y="240" width="126.14" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="296.14" y="262" text-anchor="start" fill="#f5c76a" font-size="16">18.0% · ₹4,154 cr</text></svg></figure>
+      <p>Read both lines of the label. The loss as a share of revenue fell from 64% to 18%: the business is growing faster than its losses. But the rupee loss in FY26 was the largest of the five years, while Instamart, its quick-commerce arm, lost ₹3,511 cr at the Adjusted EBITDA level as it expanded. Because it had no record of profits, SEBI’s rules required at least 75% of the IPO to go to <b>qualified institutional buyers</b> (QIBs: mutual funds, insurers, foreign funds), with no more than 10% for retail investors <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: the eligibility rule, and what “restated” means</summary><p>Regulation 6(1) of the SEBI ICDR Regulations lets a company list with an ordinary book if, among other tests, it had an average operating profit of at least ₹15 cr over the three preceding years. Swiggy did not, so it listed under Regulation 6(2), which the RHP quotes: the issuer “undertakes to allot at least seventy-five per cent of the net offer to qualified institutional buyers and to refund the full subscription money if it fails to do so” (RHP, “Other Regulatory and Statutory Disclosures – Eligibility for the Offer”, pages 409–410). Restated financials recast each past year with the same accounting policies and correct errors in the year they belong to, so the three years are comparable. FY22–FY24 losses (₹3,628.90 cr, ₹4,179.31 cr, ₹2,350.24 cr) and revenue (₹5,704.90 cr, ₹8,264.60 cr, ₹11,247.39 cr) are from RHP risk factor 1, page 33; FY25 and FY26 from the audited FY26 results.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The KPIs section</p>
+      <h2>The company’s own yardsticks</h2>
+      <p>The RHP’s KPIs are numbers the company chose, approved by its audit committee and certified by an accountant, but they are not in the audited accounts. For a loss-maker the most useful is contribution margin by segment. Instamart’s went from −32.3% of GOV in FY22 to −6.0% in FY24 in the RHP, and Swiggy’s letters track it since <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 368" role="img" aria-label="Gold bars to the left of a zero line: Instamart's contribution margin was minus 32.3 percent of gross order value in FY22, minus 23.6 in FY23, minus 6.0 in FY24, minus 5.6 in the fourth quarter of FY25, minus 1.8 in the fourth quarter of FY26 and minus 1.1 in March 2026; Swiggy guided zero by the first quarter of FY27"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Instamart contribution margin, % of GOV · 14 px = 1 point</text><text x="40" y="82" text-anchor="start" fill="#f1eee8" font-size="16">FY22</text><rect x="268.36" y="60" width="451.64" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="260.36" y="82" text-anchor="end" fill="#f5c76a" font-size="16">−32.3%</text><text x="40" y="126" text-anchor="start" fill="#f1eee8" font-size="16">FY23</text><rect x="390.3" y="104" width="329.7" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="382.3" y="126" text-anchor="end" fill="#f5c76a" font-size="16">−23.6%</text><text x="40" y="170" text-anchor="start" fill="#f1eee8" font-size="16">FY24</text><rect x="635.86" y="148" width="84.14" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="627.86" y="170" text-anchor="end" fill="#f5c76a" font-size="16">−6.0%</text><text x="40" y="214" text-anchor="start" fill="#f1eee8" font-size="16">Q4 FY25</text><rect x="641.6" y="192" width="78.4" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="633.6" y="214" text-anchor="end" fill="#f5c76a" font-size="16">−5.6%</text><text x="40" y="258" text-anchor="start" fill="#f1eee8" font-size="16">Q4 FY26</text><rect x="694.8" y="236" width="25.2" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="686.8" y="258" text-anchor="end" fill="#f5c76a" font-size="16">−1.8%</text><text x="40" y="302" text-anchor="start" fill="#f1eee8" font-size="16">March 2026</text><rect x="704.6" y="280" width="15.4" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="696.6" y="302" text-anchor="end" fill="#f5c76a" font-size="16">−1.1%</text><path d="M720 44 L720 328" stroke="#f5c76a" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/><text x="720" y="350" text-anchor="end" fill="#f5c76a" font-size="16">zero: guided by Q1 FY27</text></svg></figure>
+      <p>A KPI is only as good as its definition. GOV counts baskets at full price, so a margin on GOV looks smaller than the same rupees on revenue. And Swiggy’s Adjusted EBITDA, −₹2,871 cr in FY26, leaves out ₹966 cr of employee share-based payments <span class="tag">public</span>: a real cost to shareholders, paid in new shares instead of cash (<a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a> covers adjusted numbers). Read the reconciliation to the audited loss before quoting any “adjusted” figure.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Reading a loss-maker and its offer</h2>
+      <div class="field-grid">
+        <div><b>Unit economics</b><span>Revenue per order, variable cost per order, contribution margin, and which denominator (revenue or GOV)</span><em>THIS PART · PART 16</em></div>
+        <div><b>Path to profit</b><span>Contribution breakeven first, then EBITDA breakeven; fixed costs ÷ contribution per unit</span><em>THIS PART · PART 8</em></div>
+        <div><b>Cash</b><span>Burn (and its definition), cash and liquid investments, runway in months, the next likely raise</span><em>THIS PART · PART 13</em></div>
+        <div><b>The offer</b><span>Fresh issue vs OFS, sellers’ cost of acquisition, objects of the issue, monitoring agency reports</span><em>THIS PART · PART 21</em></div>
+        <div><b>The risks</b><span>The first five risk factors, restated losses, litigation, and how many shares employees’ options add</span><em>THIS PART · PART 20</em></div>
+        <div><b>The price</b><span>No P/E: compare EV/Sales or value per user with peers, and ask what growth the price assumes</span><em>PART 14 · PART 25</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Swiggy’s FY26 cash and runway</h2>
+      <p>Swiggy Ltd, year to 31 March 2026, from its audited consolidated results and Q4 FY26 shareholders’ letter, filed with the exchanges on 9 May 2026, and its Annual Report 2025-26 <span class="tag">public</span>. Swiggy publishes its own “cash burn” and “consolidated cash balance”, which includes deposits and liquid investments as well as the balance sheet’s cash. PDF pages below are the shareholders’ letter’s.</p>
+      <figure><svg viewBox="0 0 800 320" role="img" aria-label="Swiggy's FY26 cash bridge to scale: it started with 6,695 crore, burned 3,302 crore and put 670 crore into working capital, then raised 9,931 crore in a QIP and 2,399 crore from selling its Rapido stake, ending with 15,053 crore"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">FY26, Swiggy's own cash measure, ₹ crore · 1 px = ₹25 cr</text><text x="40" y="72" text-anchor="start" fill="#f1eee8" font-size="16">opening cash</text><rect x="160" y="50" width="267.8" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="168" y="72" text-anchor="start" fill="#202020" font-size="16">6,695</text><text x="40" y="116" text-anchor="start" fill="#f1eee8" font-size="16">cash burn</text><rect x="295.72" y="94" width="132.08" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="287.72" y="116" text-anchor="end" fill="#ff8059" font-size="16">−3,302</text><text x="40" y="160" text-anchor="start" fill="#f1eee8" font-size="16">working capital</text><rect x="268.92" y="138" width="26.8" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="260.92" y="160" text-anchor="end" fill="#ff8059" font-size="16">−670</text><text x="40" y="204" text-anchor="start" fill="#f1eee8" font-size="16">QIP raised</text><rect x="268.92" y="182" width="397.24" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="276.92" y="204" text-anchor="start" fill="#202020" font-size="16">+9,931</text><text x="40" y="248" text-anchor="start" fill="#f1eee8" font-size="16">Rapido sale</text><rect x="666.16" y="226" width="95.96" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="674.16" y="248" text-anchor="start" fill="#202020" font-size="16">+2,399</text><text x="40" y="292" text-anchor="start" fill="#f1eee8" font-size="16">closing cash</text><rect x="160" y="270" width="602.12" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="168" y="292" text-anchor="start" fill="#202020" font-size="16">15,053</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th>Working or note</th><th>Value</th><th class="pg">PDF page</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue from operations</td><td class="wk">consolidated, FY26; ₹15,227 cr in FY25</td><td class="val">₹23,053 cr</td><td class="pg">22</td></tr>
+          <tr><td>Loss for the year</td><td class="wk">FY26; ₹3,117 cr in FY25; EPS −₹16.87</td><td class="val">₹4,154 cr</td><td class="pg">22</td></tr>
+          <tr><td>Adjusted EBITDA</td><td class="wk">company measure, before ESOP cost; Q4 −₹652 cr</td><td class="val">−₹2,871 cr</td><td class="pg">16</td></tr>
+          <tr><td>Cash burn</td><td class="wk">company measure, before working capital; Q4 ₹606 cr</td><td class="val">₹3,302 cr</td><td class="pg">16</td></tr>
+          <tr><td>Operating cash flow − capex</td><td class="wk">−2,898 − 919, from the cash flow statement</td><td class="val">−₹3,817 cr</td><td class="pg">24</td></tr>
+          <tr><td>Money raised</td><td class="wk">QIP, December 2025, net of costs</td><td class="val">₹9,931 cr</td><td class="pg">16</td></tr>
+          <tr><td>Consolidated cash balance</td><td class="wk">31 Mar 2026; balance sheet cash and equivalents ₹2,747 cr</td><td class="val">₹15,053 cr</td><td class="pg">15, 23</td></tr>
+          <tr><td>Instamart contribution</td><td class="wk">% of GOV, Q4 FY26; −1.1% in March 2026</td><td class="val">−1.8%</td><td class="pg">4</td></tr>
+          <tr><td>Runway at FY26 burn</td><td class="wk">15,053 ÷ 3,302; arithmetic, not a forecast</td><td class="val">4.6 years</td><td class="pg">—</td></tr>
+        </tbody>
+      </table></div>
+      <p>Read it as Teesta at scale. Swiggy burned about ₹3,300 cr in FY26 by its own measure, or ₹3,800 cr counting working capital and all capex, and raised ₹9,931 cr, so its cash more than doubled. At the FY26 pace that cash would last about four and a half years; at the Q4 pace (₹606 cr a quarter) about six. Its letter guides Instamart to contribution breakeven by Q1 FY27 <span class="tag">public</span>, the step this page puts first.</p>
+      <details class="trace"><summary>Go deeper: how Swiggy builds its cash burn</summary><p>From the shareholders’ letter, PDF page 16: Adjusted EBITDA −2,871 + treasury income 301 − capex 911 + loan movement 63 + other items 116 = cash burn −3,302. Then working capital −670, QIP proceeds 9,931 and the sale of its Rapido stake 2,399: change in cash +8,358, from 6,695 to 15,053. The cash flow statement (page 24) shows net cash used in operating activities ₹2,898 cr and purchases of property, plant, equipment and intangibles ₹919 cr. Adjusted EBITDA reconciles to the audited loss by adding back finance costs, depreciation, share-based payments (₹966 cr), exceptional items and the associate’s loss, and deducting other income and Ind AS 116 rent. The FY26 loss of ₹4,154 cr is also in the exchange filing (<a href="https://nsearchives.nseindia.com/corporate/ixbrl/INTEGRATED_FILING_INDAS_156482_09052026120912_iXBRL_WEB.html">NSE, integrated filing, 9 May 2026</a>) and the <a href="https://www.swiggy.com/corporate/wp-content/uploads/2026/07/annual-report-2025-26.pdf">Annual Report 2025-26</a>, PDF page 118. Total comprehensive loss was smaller, ₹2,808 cr, because of a ₹1,350 cr fair-value gain on equity investments.</p></details>
+      <p class="source-note">Real figures are frozen at FY2026: Swiggy’s <a href="https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf">Q4 FY26 shareholders’ letter and audited results</a> (9 May 2026), <a href="https://www.swiggy.com/corporate/wp-content/uploads/2026/07/annual-report-2025-26.pdf">Annual Report 2025-26</a>, <a href="https://www.swiggy.com/corporate/wp-content/uploads/2024/10/Swiggy-Limited-RHP-Final-Filing-Version-October-28-2024.pdf">red herring prospectus</a> (28 October 2024) and <a href="https://www.swiggy.com/corporate/wp-content/uploads/2026/05/SE_Monitoring-Agency-Report_Signed.pdf">monitoring agency report</a> to 31 March 2026. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before any verdict</h2>
+      <ol class="checks">
+        <li><b>Does each unit make money?</b> Contribution per order, its trend, and whether it is measured on revenue or GOV.</li>
+        <li><b>How long is the runway?</b> Cash and liquid investments divided by burn, using a burn that includes capex and working capital.</li>
+        <li><b>What is the path to profit?</b> Contribution breakeven first, then the volume that covers fixed costs, and whether growth is helping or hurting on the way.</li>
+        <li><b>In an IPO, who gets the money?</b> Fresh issue against OFS, what the sellers paid, and how vague the objects are.</li>
+      </ol>
+      <p>That completes the sector parts. Stage 7 puts the series together, starting with finding companies worth this much reading: Part 36, “Screening for ideas”, builds filters that find candidates without falling into value traps and survivorship bias.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A loss-maker is a race between its cash and its unit economics: growth helps only once each order earns something, new money only buys time, and in an IPO, only the fresh issue reaches the company.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',TEALC='#76d5c1',ROSEC='#ec6a94';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    const inr=v=>{const n=Math.round(v);return (n<0?'−':'')+Math.abs(n).toLocaleString('en-IN');};
+    // ---- Burn and runway lab: Teesta Fresh Ltd (fictional). 36 months; orders start at 1 crore a month.
+    const MONTHS=36, ORDERS0=1;
+    const ids=['cpo','gro','fix','cash'];
+    const sgn=v=>(v<0?'−':'+');
+    const FMT={cpo:v=>sgn(v)+'₹'+Math.abs(v)+' an order',gro:v=>v+'% a month',fix:v=>'₹'+v+' cr a month',cash:v=>'₹'+inr(v)+' cr'};
+    const PRESETS={
+      still:{v:{cpo:-5,gro:0,fix:45,cash:600},t:'Today, standing still: burn is ₹50 cr every month (₹45 cr of fixed costs and capex plus ₹5 cr lost on 1 crore orders). ₹600 cr lasts exactly 12 months.'},
+      grow:{v:{cpo:-5,gro:6,fix:45,cash:600},t:'Grow at a loss per order: orders rise 6% a month, and every extra order adds ₹5 to the loss. The cash runs out sooner than standing still.'},
+      fix:{v:{cpo:10,gro:6,fix:45,cash:600},t:'Fix the order, then grow: at +₹10 an order, growth shrinks the burn every month. Cash bottoms out near ₹22 cr and the month’s result turns positive in month 27, when orders pass 4.5 crore.'},
+      ipo:{v:{cpo:-5,gro:6,fix:45,cash:1200},t:'IPO cash, same losses: a ₹600 cr fresh issue doubles the cash, but with each order still losing ₹5, it runs out in under two years.'}};
+    const labConfig={format:v=>inr(v)};
+    function simulate(c,g,F,cash0){
+      let cash=cash0, runway=null, be=null;
+      const rows=[];
+      for(let m=1;m<=MONTHS;m++){
+        const orders=ORDERS0*Math.pow(1+g/100,m-1);
+        const contribution=c*orders, burn=F-contribution, prev=cash;
+        cash=prev-burn;
+        if(runway===null&&cash<0&&burn>0) runway=(m-1)+prev/burn;
+        if(be===null&&burn<=0) be=m;
+        rows.push({m,orders,contribution,burn,cash});
+      }
+      return {rows,runway,be,low:Math.min(...rows.map(q=>q.cash)),end:cash};
+    }
+    function niceStep(span){const raw=span/4,p=Math.pow(10,Math.floor(Math.log10(raw))),n=raw/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p;}
+    function draw(){
+      const v={}; ids.forEach(id=>{v[id]=+$(id).value;$(id+'-o').textContent=FMT[id](v[id]);});
+      const r=simulate(v.cpo,v.gro,v.fix,v.cash);
+      const q=r.rows.filter(x=>x.m%3===0);
+      let lo=Math.min(0,...q.map(x=>x.cash)), hi=Math.max(0,...q.map(x=>x.cash));
+      const step=niceStep(Math.max(hi-lo,400));
+      lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step; if(hi===lo) hi=lo+step;
+      const X0=110,XEND=700,k=(XEND-X0)/(hi-lo),sx=x=>X0+(x-lo)*k,zx=sx(0);
+      const pitch=36,top=12;
+      let s='';
+      q.forEach((row,i)=>{const y=top+i*pitch,neg=row.cash<0,w=Math.abs(row.cash)*k;
+        s+=T(20,y+20,'M'+row.m,'start',neg?ROSEC:MUTC);
+        s+=`<rect data-v="${row.cash.toFixed(2)}" x="${(neg?zx-w:zx).toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="24" fill="${neg?ROSEC:TEALC}"/>`;});
+      const yAx=top+q.length*pitch;
+      s+=`<path d="M${zx.toFixed(2)} ${top-6} L${zx.toFixed(2)} ${yAx}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      const nt=Math.round((hi-lo)/step);
+      for(let t=0;t<=nt;t++){const val=lo+step*t;s+=`<text class="tick" data-v="${val}" x="${sx(val).toFixed(2)}" y="${yAx+22}" text-anchor="${t==0?'start':(t==nt?'end':'middle')}" fill="${MUTC}" font-size="16">${labConfig.format(val)}</text>`;}
+      s+=T(20,yAx+50,'₹ crore, cash at the end of each quarter','start',MUTC);
+      $('labChart').setAttribute('viewBox',`0 0 760 ${yAx+66}`);
+      $('labChart').innerHTML=s;
+      const r1=r.rows[0];
+      const run=r.runway===null?'over 36 months':r.runway.toFixed(1)+' months';
+      const ro=[[run,r.runway===null?'ok':'bad','cash lasts'],
+        ['₹'+inr(r1.burn)+' cr',r1.burn>0?'bad':'ok','burn in month 1'],
+        [r.be?'month '+r.be:'not in 3 years',r.be?'ok':'bad','burn turns to surplus'],
+        ['₹'+inr(r.low)+' cr',r.low<0?'bad':'ok','lowest cash']];
+      $('readouts').innerHTML=ro.map(([a,c,b])=>`<div><b class="${c}">${a}</b><span>${b}</span></div>`).join('');
+      const rows=[['Month 1','orders 1.00 crore × contribution ₹'+v.cpo+' = ₹'+inr(r1.contribution)+' cr'],
+        ['Month 1 burn','fixed costs and capex '+inr(v.fix)+' − contribution '+inr(r1.contribution)+' = '+inr(r1.burn)],
+        ['Simple runway',r1.burn>0?'cash '+inr(v.cash)+' ÷ month-1 burn '+inr(r1.burn)+' = '+(v.cash/r1.burn).toFixed(1)+' months':'no burn in month 1'],
+        ['Breakeven orders',v.cpo>0?inr(v.fix)+' ÷ '+v.cpo+' = '+(v.fix/v.cpo).toFixed(2)+' crore a month':'never: contribution is not positive']];
+      r.rows.forEach(x=>rows.push(['M'+x.m,'orders '+x.orders.toFixed(2)+' cr · burn '+inr(x.burn)+' · cash '+inr(x.cash)]));
+      $('ledger').innerHTML=rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:r.rows.every(x=>Number.isFinite(x.cash)),inputs:v,runway:r.runway,breakeven:r.be,low:r.low,end:r.end,burn1:r1.burn,cash:r.rows.map(x=>x.cash),quarterCash:q.map(x=>x.cash)};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];ids.forEach(id=>$(id).value=p.v[id]);draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

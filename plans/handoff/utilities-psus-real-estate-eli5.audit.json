@@ -1,0 +1,1158 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": [
+      "https://ntpc.co.in/sites/default/files/annual-report/complete-reports/Annual%20Report%202025-26%20%283%29.pdf",
+      "https://nsearchives.nseindia.com/corporate/9425178051_27052026175637_Transcript_NTPC_Earnings_Call_Q4_FY26.pdf",
+      "https://www.dlf.in/annual_docket/Annual-report-2025-26.pdf",
+      "https://cercind.gov.in/regulations/notification-2024.pdf"
+    ],
+    "title": "Topic part (series plan row 34): Utilities, PSUs and real estate",
+    "author": "primary sources as listed",
+    "verified_date": "2026-11-23",
+    "duration_or_sections": "topic-only, no single source",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "PDFs downloaded and text-extracted (pdftotext); pages located by printed footer",
+    "beginning_middle_ending_evidence": "n/a (topic)",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa34/dl"
+    ],
+    "limitations": [
+      "RERA Act central text not opened (India Code/MoHUA unreachable); 70% rule quoted via Haryana RERA directions",
+      "Companies Act 51% government-company definition not verified, so not stated",
+      "NTPC investor presentation not found; regulated equity from the exchange-filed call transcript"
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Regulated utility profit follows regulated equity, not revenue (NTPC FY26 revenue -2.67%, PAT +17.88%)",
+      "kind": "claim",
+      "locator": "topic",
+      "check_needed": "yes",
+      "destination": "p1-problem"
+    },
+    {
+      "id": "I2",
+      "item": "Two-part tariff: capacity charge recovers AFC (ROE, interest, depreciation, O&M, IWC); energy charge recovers fuel",
+      "kind": "mechanism",
+      "locator": "CERC Regs 14-16",
+      "check_needed": "yes",
+      "destination": "p2-building-block"
+    },
+    {
+      "id": "I3",
+      "item": "Normative 70:30 debt-equity; equity above 30% treated as normative loan; actual if below",
+      "kind": "definition",
+      "locator": "CERC Reg 18",
+      "check_needed": "yes",
+      "destination": "p3-regulated-equity"
+    },
+    {
+      "id": "I4",
+      "item": "NTPC regulated equity 90,902 -> 94,631 cr",
+      "kind": "number",
+      "locator": "call transcript",
+      "check_needed": "yes",
+      "destination": "p3, p16"
+    },
+    {
+      "id": "I5",
+      "item": "Base ROE 15.5% thermal; 16.5% storage hydro; new: 15% transmission, 17% storage hydro; MCLR+350bp cap 14%",
+      "kind": "number",
+      "locator": "CERC Reg 30",
+      "check_needed": "yes",
+      "destination": "p4-rate (go deeper), p11"
+    },
+    {
+      "id": "I6",
+      "item": "ROE grossed up: base/(1-t); trued up annually",
+      "kind": "mechanism",
+      "locator": "CERC Reg 31",
+      "check_needed": "yes",
+      "destination": "p4-rate"
+    },
+    {
+      "id": "I7",
+      "item": "Fuel pass-through: revenue swings with coal price, profit does not",
+      "kind": "mechanism",
+      "locator": "CERC Reg 16 + example",
+      "check_needed": "no",
+      "destination": "p5-fuel"
+    },
+    {
+      "id": "I8",
+      "item": "NAPAF 85% (83% old coal/lignite); capacity charge pro rata below; peak/off-peak split; incentives",
+      "kind": "mechanism",
+      "locator": "CERC Regs 62, 70",
+      "check_needed": "yes",
+      "destination": "p6-availability"
+    },
+    {
+      "id": "I9",
+      "item": "Key-metric card per sector with calculators",
+      "kind": "lab",
+      "locator": "plan row",
+      "check_needed": "no",
+      "destination": "p7-lab"
+    },
+    {
+      "id": "I10",
+      "item": "NTPC government stake 51.10%, unchanged; under Ministry of Power",
+      "kind": "number",
+      "locator": "AR p.165",
+      "check_needed": "yes",
+      "destination": "p8-psu-owner"
+    },
+    {
+      "id": "I11",
+      "item": "DIPAM floor: higher of 30% PAT or 4% net worth (was 5%); NBFC CPSEs 30% PAT",
+      "kind": "number",
+      "locator": "DIPAM OM 18 Nov 2024 + FAQ",
+      "check_needed": "yes",
+      "destination": "p9-dividend-floor"
+    },
+    {
+      "id": "I12",
+      "item": "Divestment via OFS: cash to government, no dilution; free float rises",
+      "kind": "mechanism",
+      "locator": "example",
+      "check_needed": "no",
+      "destination": "p10-divestment"
+    },
+    {
+      "id": "I13",
+      "item": "Policy risk: five-year tariff periods; 2019-24 and 2024-29 thermal 15.5%",
+      "kind": "claim",
+      "locator": "CERC 2019 & 2024 Reg 1, 30",
+      "check_needed": "yes",
+      "destination": "p11-policy"
+    },
+    {
+      "id": "I14",
+      "item": "Pre-sales; DLF revenue recognised at point in time on handover",
+      "kind": "mechanism",
+      "locator": "DLF AR p.370",
+      "check_needed": "yes",
+      "destination": "p12-timing"
+    },
+    {
+      "id": "I15",
+      "item": "Customer advances = contract liabilities; RERA 70% separate account",
+      "kind": "definition",
+      "locator": "DLF notes; Haryana RERA directions",
+      "check_needed": "yes",
+      "destination": "p13-advances"
+    },
+    {
+      "id": "I16",
+      "item": "Collections fund construction; net debt/net cash; DLF zero gross debt in development",
+      "kind": "mechanism",
+      "locator": "DLF AR pp.148-149",
+      "check_needed": "yes",
+      "destination": "p14-cash"
+    },
+    {
+      "id": "I17",
+      "item": "Misconception: revenue = this year sales (DLF bookings -5.1%, revenue from sales -4.0%, collections +14.8%, advances +39.0%)",
+      "kind": "misconception",
+      "locator": "DLF AR",
+      "check_needed": "yes",
+      "destination": "p15-mistake"
+    },
+    {
+      "id": "I18",
+      "item": "NTPC real-report box: adjusted PAT 19,530, dividend income 2,264, dividend 9/share, payout 37.7%, receivables 68 days, bills 100%",
+      "kind": "number",
+      "locator": "AR + call",
+      "check_needed": "yes",
+      "destination": "p16-ntpc"
+    },
+    {
+      "id": "I19",
+      "item": "DLF real-report box: bookings 20,143, collections 13,517, revenue 8,194, property revenue 6,508, contract liabilities 22,069, net cash 14,155, JV share 1,793, dividend 8",
+      "kind": "number",
+      "locator": "DLF AR",
+      "check_needed": "yes",
+      "destination": "p17-dlf"
+    },
+    {
+      "id": "I20",
+      "item": "Hand-off to Part 35 Loss-making companies and IPOs",
+      "kind": "context",
+      "locator": "series",
+      "check_needed": "no",
+      "destination": "p18-so-what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I1",
+      "claim": "NTPC standalone FY26 revenue 1,65,493.74 cr (-2.67%), fuel 88,605.04 (-8.71%), PAT 23,162.22 (+17.88%)",
+      "verdict": "Supported",
+      "as_of": "31 Mar 2026",
+      "evidence_url": "https://ntpc.co.in/sites/default/files/annual-report/complete-reports/Annual%20Report%202025-26%20%283%29.pdf",
+      "locator": "MD&A key financial highlights, printed p.143",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I2",
+      "claim": "Two-part tariff; AFC components",
+      "verdict": "Supported",
+      "as_of": "in force FY26",
+      "evidence_url": "https://cercind.gov.in/regulations/notification-2024.pdf",
+      "locator": "Regs 14, 15, 16 (pp.33-34)",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I3",
+      "claim": "70:30, excess equity normative loan",
+      "verdict": "Supported",
+      "as_of": "in force FY26",
+      "evidence_url": "https://cercind.gov.in/regulations/notification-2024.pdf",
+      "locator": "Reg 18(1), (3) pp.35-36",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Regulated equity 94,631 cr (90,902 FY25); adjusted PAT 19,530 (18,016); dividend income 2,264",
+      "verdict": "Supported",
+      "as_of": "31 Mar 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/9425178051_27052026175637_Transcript_NTPC_Earnings_Call_Q4_FY26.pdf",
+      "locator": "PDF p.7",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "Base ROE rates",
+      "verdict": "Supported",
+      "as_of": "in force FY26; unchanged by 1st and 2nd amendments",
+      "evidence_url": "https://cercind.gov.in/regulations/notification-2024.pdf",
+      "locator": "Reg 30 p.58; amendments https://cercind.gov.in/Regulations/GZ-197.pdf https://cercind.gov.in/regulations/206-GAZ.pdf",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I6",
+      "claim": "Gross-up formula and true-up",
+      "verdict": "Supported",
+      "as_of": "in force FY26",
+      "evidence_url": "https://cercind.gov.in/regulations/notification-2024.pdf",
+      "locator": "Reg 31 pp.59-61",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I8",
+      "claim": "NAPAF 85%/83%, capacity charge formula, 20/80 peak split, 4/20 hours, incentive up to 1% AFC",
+      "verdict": "Supported",
+      "as_of": "in force FY26",
+      "evidence_url": "https://cercind.gov.in/regulations/notification-2024.pdf",
+      "locator": "Reg 62 pp.107-110, Reg 70(A) p.127",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "President of India 4,95,53,46,251 shares, 51.10%, change 0.00; CPSU under Ministry of Power",
+      "verdict": "Supported",
+      "as_of": "31 Mar 2026",
+      "evidence_url": "https://ntpc.co.in/sites/default/files/annual-report/complete-reports/Annual%20Report%202025-26%20%283%29.pdf",
+      "locator": "printed p.165; notes",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Min dividend higher of 30% PAT or 4% net worth; 2016: 5%; NBFC CPSEs 30% PAT; OM 18 Nov 2024 supersedes 27 May 2016",
+      "verdict": "Supported",
+      "as_of": "18 Nov 2024",
+      "evidence_url": "https://dipam.gov.in/dipam_docs/capitalMgmtDoc/FAQs%20of%20Revised%20CRG%20(1).pdf",
+      "locator": "FAQ Q5; OM https://dipam.gov.in/dipam_docs/capitalMgmtDoc/OM%20of%20DIPAM%20on%20Revised%20%20Guidelines%20on%20Capotal%20Restructuring%20of%20CPSEs.pdf",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I11b",
+      "claim": "NTPC policy: DIPAM dividend is only a minimum benchmark; CERC norms may affect margins and payout",
+      "verdict": "Supported",
+      "as_of": "current policy",
+      "evidence_url": "https://ntpc.co.in/sites/default/files/policy-documents/Dividend-Distribution-Policy.pdf",
+      "locator": "Sections B, C.2.2",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "2019 regs 1.4.2019-31.3.2024, thermal 15.5%; 2024 regs to 31.3.2029",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://cercind.gov.in/2019/regulation/Tariff%20Regulations-2019.pdf",
+      "locator": "2019 Reg 1(2), Reg 30(2); 2024 Reg 1(2)",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "DLF revenue from real-estate units recognised at point in time when control passes on completion",
+      "verdict": "Supported",
+      "as_of": "FY26",
+      "evidence_url": "https://www.dlf.in/annual_docket/Annual-report-2025-26.pdf",
+      "locator": "printed p.370",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "70% of amounts realised from allottees in separate scheduled-bank account for construction and land cost, withdrawals in proportion to completion",
+      "verdict": "Supported (as quoted in state directions; central Act text not opened: India Code unreachable)",
+      "as_of": "2 Mar 2020",
+      "evidence_url": "https://www.haryanarera.gov.in/regulations/Directions_regarding_Compliance_of_Section_4_2_l_D.pdf",
+      "locator": "Directions paras 2, 8",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Net cash 14,155 cr; zero gross debt in development business; dividend Rs 8 (~1,980 cr); net worth 45,473; RONW 10%",
+      "verdict": "Supported",
+      "as_of": "31 Mar 2026",
+      "evidence_url": "https://www.dlf.in/annual_docket/Annual-report-2025-26.pdf",
+      "locator": "MD&A pp.148-149",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Bookings 20,143 vs 21,223; collections 13,517 vs 11,773; sale of property 6,507.73 vs 6,780.92; contract liabilities 15,874.31 -> 22,069.36",
+      "verdict": "Supported",
+      "as_of": "31 Mar 2026",
+      "evidence_url": "https://www.dlf.in/annual_docket/Annual-report-2025-26.pdf",
+      "locator": "pp.11-12, 412-413",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I18",
+      "claim": "Dividend interim 5.50 + final 3.50; total 8,727 cr computed; total equity 1,74,865.25; receivables 30,780.39; bills realised 100%",
+      "verdict": "Supported",
+      "as_of": "31 Mar 2026",
+      "evidence_url": "https://ntpc.co.in/sites/default/files/annual-report/complete-reports/Annual%20Report%202025-26%20%283%29.pdf",
+      "locator": "pp.142, 143, 161, 194, 196, 247",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I19",
+      "claim": "Revenue from ops 8,194.02 (7,993.66); net profit 4,414.68 incl. JV share 1,792.83; DCCDL is a joint venture",
+      "verdict": "Supported",
+      "as_of": "31 Mar 2026",
+      "evidence_url": "https://www.dlf.in/annual_docket/Annual-report-2025-26.pdf",
+      "locator": "p.357; notes",
+      "page_use": "stated with public tag"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "Revenue fell; profit rose 18%"
+    },
+    {
+      "id": "p2",
+      "heading": "A tariff built from costs plus a return"
+    },
+    {
+      "id": "p3",
+      "heading": "Regulated equity: 30% of the approved cost"
+    },
+    {
+      "id": "p4",
+      "heading": "15.5% after tax, grossed up"
+    },
+    {
+      "id": "p5",
+      "heading": "Fuel is passed straight through"
+    },
+    {
+      "id": "p6",
+      "heading": "Availability: the number that earns the return"
+    },
+    {
+      "id": "p7",
+      "heading": "A key-metric card for each sector"
+    },
+    {
+      "id": "p8",
+      "heading": "When the government is the biggest owner"
+    },
+    {
+      "id": "p9",
+      "heading": "The dividend floor: 30% or 4%"
+    },
+    {
+      "id": "p10",
+      "heading": "Divestment moves shares, not company cash"
+    },
+    {
+      "id": "p11",
+      "heading": "The rules reset every five years"
+    },
+    {
+      "id": "p12",
+      "heading": "Bookings now, revenue at handover"
+    },
+    {
+      "id": "p13",
+      "heading": "Customer advances: money held for buyers"
+    },
+    {
+      "id": "p14",
+      "heading": "Collections and net debt tell the story"
+    },
+    {
+      "id": "p15",
+      "heading": "Revenue is not this year’s sales"
+    },
+    {
+      "id": "p16",
+      "heading": "Which numbers to read, by sector"
+    },
+    {
+      "id": "p17",
+      "heading": "NTPC, FY2026: regulated equity to dividend"
+    },
+    {
+      "id": "p18",
+      "heading": "DLF, FY2026: bookings, advances, net cash"
+    },
+    {
+      "id": "p19",
+      "heading": "Questions before any verdict"
+    }
+  ],
+  "fictional_companies": {
+    "Chambal Power Ltd": "approved cost 10,000; regulated equity 3,000; loan 7,000; base ROE 15.5%; tax 25%; AFC 2,200 = ROE 620 + interest 630 (9%) + depreciation 500 (5%) + O&M 350 (3.5%) + IWC 100 (1%); fuel 3,300; revenue 5,500; PAT 465; net worth 4,000; government 60%; 100 crore shares; OFS 9 crore at Rs48 = 432; DIPAM floor 160",
+    "Mahanadi Homes Ltd": "bookings FY23 1,000, FY24 1,200, FY25 1,500, FY26 2,000; pay 20/30/30/20, handover in year 3; cost 60% spent 10/20/20/10; FY26 revenue 1,000, collections 1,410, construction 840, surplus 570, advances 2,110 (960+750+400), opening net debt 500 -> net cash 70; profit before overheads/tax 400"
+  },
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": "see page Go deeper box under the lab",
+    "units": {
+      "money": "Rs crore",
+      "availability": "% of year"
+    },
+    "independent_calculation_method": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa34/scripts/labtest.py (own Python formulas, compared with window.labResults in Chromium)",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": {
+          "eq": 3000,
+          "av": 90,
+          "pat": 465,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 465.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.0,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 465,
+          "util_roe": 0.155,
+          "psu_floor": 160,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "preset: Plant outage, 78% available",
+        "inputs": {
+          "eq": 3000,
+          "av": 78,
+          "pat": 465,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 329.1176,
+          "util_roe": 0.109706,
+          "psu_floor": 160.0,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 329.1176,
+          "util_roe": 0.109706,
+          "psu_floor": 160,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "preset: PSU profit slump",
+        "inputs": {
+          "eq": 3000,
+          "av": 78,
+          "pat": 250,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 329.1176,
+          "util_roe": 0.109706,
+          "psu_floor": 160.0,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 329.1176,
+          "util_roe": 0.109706,
+          "psu_floor": 160,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "psu",
+        "pass_": true
+      },
+      {
+        "case": "preset: Record bookings year",
+        "inputs": {
+          "eq": 3000,
+          "av": 78,
+          "pat": 250,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 329.1176,
+          "util_roe": 0.109706,
+          "psu_floor": 160.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 329.1176,
+          "util_roe": 0.109706,
+          "psu_floor": 160,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "re",
+        "pass_": true
+      },
+      {
+        "case": "preset: Base case",
+        "inputs": {
+          "eq": 3000,
+          "av": 90,
+          "pat": 465,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 465.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.0,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 465,
+          "util_roe": 0.155,
+          "psu_floor": 160,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/min/min/min",
+        "inputs": {
+          "eq": 1000,
+          "av": 70,
+          "pat": 200,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 160.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 160,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/min/min/max",
+        "inputs": {
+          "eq": 1000,
+          "av": 70,
+          "pat": 200,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 160.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 160,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/min/max/min",
+        "inputs": {
+          "eq": 1000,
+          "av": 70,
+          "pat": 1000,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 300.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 300,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/min/max/max",
+        "inputs": {
+          "eq": 1000,
+          "av": 70,
+          "pat": 1000,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 300.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 57.9412,
+          "util_roe": 0.057941,
+          "psu_floor": 300,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/max/min/min",
+        "inputs": {
+          "eq": 1000,
+          "av": 100,
+          "pat": 200,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 155.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 155,
+          "util_roe": 0.155,
+          "psu_floor": 160,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/max/min/max",
+        "inputs": {
+          "eq": 1000,
+          "av": 100,
+          "pat": 200,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 155.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 155,
+          "util_roe": 0.155,
+          "psu_floor": 160,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/max/max/min",
+        "inputs": {
+          "eq": 1000,
+          "av": 100,
+          "pat": 1000,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 155.0,
+          "util_roe": 0.155,
+          "psu_floor": 300.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 155,
+          "util_roe": 0.155,
+          "psu_floor": 300,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes min/max/max/max",
+        "inputs": {
+          "eq": 1000,
+          "av": 100,
+          "pat": 1000,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 155.0,
+          "util_roe": 0.155,
+          "psu_floor": 300.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 155,
+          "util_roe": 0.155,
+          "psu_floor": 300,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/min/min/min",
+        "inputs": {
+          "eq": 6000,
+          "av": 70,
+          "pat": 200,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 160.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 160,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/min/min/max",
+        "inputs": {
+          "eq": 6000,
+          "av": 70,
+          "pat": 200,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 160.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 160,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/min/max/min",
+        "inputs": {
+          "eq": 6000,
+          "av": 70,
+          "pat": 1000,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 300.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 300,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/min/max/max",
+        "inputs": {
+          "eq": 6000,
+          "av": 70,
+          "pat": 1000,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 300.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 347.6471,
+          "util_roe": 0.057941,
+          "psu_floor": 300,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/max/min/min",
+        "inputs": {
+          "eq": 6000,
+          "av": 100,
+          "pat": 200,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 930.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 930,
+          "util_roe": 0.155,
+          "psu_floor": 160,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/max/min/max",
+        "inputs": {
+          "eq": 6000,
+          "av": 100,
+          "pat": 200,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 930.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 930,
+          "util_roe": 0.155,
+          "psu_floor": 160,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/max/max/min",
+        "inputs": {
+          "eq": 6000,
+          "av": 100,
+          "pat": 1000,
+          "bk": 500
+        },
+        "expected": {
+          "util_pat": 930.0,
+          "util_roe": 0.155,
+          "psu_floor": 300.0,
+          "re_collections": 1110.0,
+          "re_advances": 1810.0,
+          "re_netDebt": 80.0
+        },
+        "observed": {
+          "util_pat": 930,
+          "util_roe": 0.155,
+          "psu_floor": 300,
+          "re_collections": 1110,
+          "re_advances": 1810,
+          "re_netDebt": 80
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "extremes max/max/max/max",
+        "inputs": {
+          "eq": 6000,
+          "av": 100,
+          "pat": 1000,
+          "bk": 4000
+        },
+        "expected": {
+          "util_pat": 930.0,
+          "util_roe": 0.155,
+          "psu_floor": 300.0,
+          "re_collections": 1810.0,
+          "re_advances": 2510.0,
+          "re_netDebt": -270.0
+        },
+        "observed": {
+          "util_pat": 930,
+          "util_roe": 0.155,
+          "psu_floor": 300,
+          "re_collections": 1810,
+          "re_advances": 2510,
+          "re_netDebt": -270
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "boundary: av=85, pat≈533",
+        "inputs": {
+          "eq": 3000,
+          "av": 85,
+          "pat": 535,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 465.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 465,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "util",
+        "pass_": true
+      },
+      {
+        "case": "tab psu",
+        "inputs": {
+          "eq": 3000,
+          "av": 85,
+          "pat": 535,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 465.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 465,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "psu",
+        "pass_": true
+      },
+      {
+        "case": "tab re",
+        "inputs": {
+          "eq": 3000,
+          "av": 85,
+          "pat": 535,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 465.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 465,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "re",
+        "pass_": true
+      },
+      {
+        "case": "tab util",
+        "inputs": {
+          "eq": 3000,
+          "av": 85,
+          "pat": 535,
+          "bk": 2000
+        },
+        "expected": {
+          "util_pat": 465.0,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410.0,
+          "re_advances": 2110.0,
+          "re_netDebt": -70.0
+        },
+        "observed": {
+          "util_pat": 465,
+          "util_roe": 0.155,
+          "psu_floor": 160.5,
+          "re_collections": 1410,
+          "re_advances": 2110,
+          "re_netDebt": -70
+        },
+        "sector": "util",
+        "pass_": true
+      }
+    ],
+    "invariants": {
+      "util profit = 15.5% x equity when availability >= 85%": true,
+      "util base AFC = 2,200 on 10,000 cost": true,
+      "psu rules cross at 13.33% ROE": true,
+      "re revenue independent of FY26 bookings": true,
+      "utility PAT positive at all slider corners": true
+    },
+    "tolerance": "relative 1e-6",
+    "axis_and_clipping": "fixed axis per sector (0-5,000 / 0-1,000 / 0-4,000); no bar exceeds its axis within slider ranges; overflow marker coded"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render.py 0 errors (defaults, 4 presets, 16 slider corners)",
+      "independent lab test 25/25 pass",
+      "card lint 0/0"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa34/shots"
+    ],
+    "screenshot_review": "all desktop and phone panels inspected; fixed: tab selected state invisible (site CSS !important), calculator note crowding, a dividend-chart label crossed by a line, waterfall footer wording",
+    "coverage_review": "every inventory row found on page",
+    "semantic_review": "done by author; unverified statements removed (Companies Act 51% rule; operating-better-than-norms claim replaced with Reg 30/62 incentives)",
+    "artifact_sha256": "4ef7e37b567b64c5d2605a11ee0d777e8b5655966fa4a3e4cd7db364d7dd6b4d",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 17,
+        "panels": 19,
+        "notes": 0
+      },
+      "artifact_sha256": "4ef7e37b567b64c5d2605a11ee0d777e8b5655966fa4a3e4cd7db364d7dd6b4d",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/v34/explainers/utilities-psus-real-estate-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief: do not publish)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  },
+  "card": {
+    "path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa34/card.svg",
+    "lint": "0 errors, 0 warnings"
+  }
+}

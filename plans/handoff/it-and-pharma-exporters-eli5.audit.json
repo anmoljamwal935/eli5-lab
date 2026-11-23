@@ -1,0 +1,791 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w02.htm",
+    "title": "Part 31: Exporters: IT services and pharma (topic request, series part)",
+    "author": "Series plan; primary filings as listed",
+    "verified_date": "2026-11-22",
+    "duration_or_sections": "topic-only; plan row covers constant currency, rupee, TCV, USFDA",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "primary documents downloaded to scratch dl/ (SEC EDGAR, sunpharma.com, NSE archive, fda.gov)",
+    "beginning_middle_ending_evidence": "full documents read via text extraction",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa31/dl"
+    ],
+    "limitations": [
+      "infosys.com and NSE API blocked; Infosys figures read from the same releases filed with the SEC (6-K) and 20-F",
+      "Sun press release read from sunpharma.com (NSE copy not located); transcript from NSE archive",
+      "Sun FY26 annual report not read; Halol revenue share not found"
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Exporter reported growth mixes business growth and exchange rate",
+      "kind": "mechanism",
+      "source_locator": "plan row",
+      "check_needed": false,
+      "destination": "p1"
+    },
+    {
+      "id": "I2",
+      "item": "Constant-currency growth: this year at last year’s rates",
+      "kind": "definition",
+      "source_locator": "plan row",
+      "check_needed": true,
+      "destination": "p2"
+    },
+    {
+      "id": "I3",
+      "item": "Effects multiply: (1+g)(1+r)−1",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "p2"
+    },
+    {
+      "id": "I4",
+      "item": "Cross-currency layer: euro/pound vs dollar",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "p3"
+    },
+    {
+      "id": "I5",
+      "item": "Rupee move lifts margin because rupee costs do not move (operating leverage)",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "p4"
+    },
+    {
+      "id": "I6",
+      "item": "Infosys sensitivity ≈0.44 pts margin per 1% rupee move",
+      "kind": "number",
+      "source_locator": "20-F",
+      "check_needed": true,
+      "destination": "p4,p11"
+    },
+    {
+      "id": "I7",
+      "item": "Hedging with forwards dampens swings both ways",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "p5,lab"
+    },
+    {
+      "id": "I8",
+      "item": "Rupee slider lab",
+      "kind": "lab",
+      "source_locator": "plan row",
+      "check_needed": false,
+      "destination": "lab"
+    },
+    {
+      "id": "I9",
+      "item": "Sun Q4 US: dollars −1.1%, rupees +4.5%",
+      "kind": "number",
+      "source_locator": "Sun release",
+      "check_needed": true,
+      "destination": "p7"
+    },
+    {
+      "id": "I10",
+      "item": "Sun EM constant currency vs reported",
+      "kind": "number",
+      "source_locator": "Sun transcript",
+      "check_needed": true,
+      "destination": "p7,p12"
+    },
+    {
+      "id": "I11",
+      "item": "Deal wins: TCV, net new vs renewal, multi-year, terminable",
+      "kind": "definition",
+      "source_locator": "topic",
+      "check_needed": true,
+      "destination": "p8,p11"
+    },
+    {
+      "id": "I12",
+      "item": "Pharma plants and pending approvals",
+      "kind": "context",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "p9"
+    },
+    {
+      "id": "I13",
+      "item": "Form 483, NAI/VAI/OAI, warning letter, import alert",
+      "kind": "definition",
+      "source_locator": "FDA",
+      "check_needed": true,
+      "destination": "p10"
+    },
+    {
+      "id": "I14",
+      "item": "Infosys FY26 figures",
+      "kind": "number",
+      "source_locator": "6-K, 20-F",
+      "check_needed": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I15",
+      "item": "Sun FY26 figures and Halol timeline",
+      "kind": "number",
+      "source_locator": "Sun filings, FDA",
+      "check_needed": true,
+      "destination": "p12"
+    },
+    {
+      "id": "I16",
+      "item": "Field guide of metrics",
+      "kind": "context",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "fg"
+    },
+    {
+      "id": "I17",
+      "item": "Hand-off to Part 32",
+      "kind": "context",
+      "source_locator": "series",
+      "check_needed": false,
+      "destination": "p13"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I2",
+      "claim": "Infosys CC definition: current period revenues in local currencies converted to US$ at prior period rates",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w02.htm",
+      "locator": "Ex 99.2 notes (c)",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "FY26 revenue $20,158 mn (FY25 $19,277 mn); +4.6% reported; +3.1% cc; Q4 $5,040 mn +6.6% / +4.1% cc",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w02.htm",
+      "locator": "Key highlights; IFRS income statement",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Ind AS revenue ₹178,650 cr vs ₹162,990 cr (+9.6%)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w03.htm",
+      "locator": "Statement of consolidated audited results",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Operating margin 20.3% reported, 21.0% adjusted (Labour Codes $143 mn), FY25 21.1%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w02.htm",
+      "locator": "Reconciliation table",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Large deal TCV $14.9 bn, 55% net new; FCF $3,733 mn; FY27 guidance 1.5–3.5% cc, margin 20–22%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000106749126000014/exv99w02.htm",
+      "locator": "Headline and guidance",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Average rates FY26/FY25: USD ₹88.57/84.56 (rupee −4.7%); EUR $1.16/1.07 (USD −8.4%)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000119312526270520/infy-20260331.htm",
+      "locator": "Item 5",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I6",
+      "claim": "Every 1 pt rupee/dollar move affected incremental operating margin ≈0.44%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000119312526270520/infy-20260331.htm",
+      "locator": "Item 3 risk factors; Item 18",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Revenue: North America 56.1%, Europe 32.1%, RoW 8.9%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000119312526270520/infy-20260331.htm",
+      "locator": "Item 3",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I7",
+      "claim": "Infosys uses forward and option contracts; may not be adequate",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000119312526270520/infy-20260331.htm",
+      "locator": "Item 3",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "RPO $13,709 mn, 49.7% within a year; FY25 $12,258 mn; contracts generally terminable with penalty",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000119312526270520/infy-20260331.htm",
+      "locator": "Item 18 revenue note",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Segment profitability lower on investment in talent, AI, sales & marketing, partly offset by pricing, productivity, onsite mix, currency",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.sec.gov/Archives/edgar/data/1067491/000119312526270520/infy-20260331.htm",
+      "locator": "Item 5",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I9",
+      "claim": "Sun Q4 US formulations $459 mn lower by 1.1%; ₹41,997.1 mn vs ₹40,204.1 mn; rates 91.49 vs 86.62",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://sunpharma.com/wp-content/uploads/2026/05/Press-Release-Sun-Pharma-Q4FY26-Financial-Result.pdf",
+      "locator": "US Formulations; sales table",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Sun FY26 sales ₹582,201 mn +11.9%; EBITDA margin 30.3%; US FY26 $1,904 mn, ₹168,242.2 mn vs ₹162,402.8 mn; ANDAs 552 approved, 122 pending",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://sunpharma.com/wp-content/uploads/2026/05/Press-Release-Sun-Pharma-Q4FY26-Financial-Result.pdf",
+      "locator": "Highlights; sales table; R&D update",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "EM FY26 $1,265 mn +13.6%, cc 8.2%; Q4 +17.4%, cc 6.5%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/SUNSEC_29052026195722_SEintimationTranscript.pdf",
+      "locator": "Aalok Shanghvi remarks",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Management cannot predict FDA re-audit timing at Halol",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/SUNSEC_29052026195722_SEintimationTranscript.pdf",
+      "locator": "Q&A, Vishal Manchanda",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "Halol inspected 26 Apr–9 May 2022; WL 320-23-08 15 Dec 2022 amended 16 Oct 2023; Import Alert 66-40 7 Dec 2022; FDA may withhold approvals",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/warning-letters/sun-pharmaceutical-industries-ltd-636199-10162023",
+      "locator": "letter body",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Halol Form 483 13 Jun 2025, 8 observations, Obs 1 repeat from Dec 2022 WL",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.fda.gov/media/187479/download",
+      "locator": "Form 483 pages 1–19",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Halol classified OAI; under import alert barring shortage exemptions",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://sunpharma.com/wp-content/uploads/2025/09/SEIntimationHalolUpdate.pdf",
+      "locator": "Sun intimation 9 Sep 2025",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Halol still listed on IA 66-40 (published date 12/07/2022) in 12 Nov 2026 revision",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.accessdata.fda.gov/cms_ia/importalert_189.html",
+      "locator": "firm list",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "Form 483 not a final Agency determination",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-references/fda-form-483-frequently-asked-questions",
+      "locator": "Q: implications",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "NAI/VAI/OAI definitions; classification letter usually within 45–90 days",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-classification-database",
+      "locator": "definitions",
+      "page_use": "stated with public tag"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Halol share of FY26 sales",
+      "verdict": "Unverifiable (not stated in documents read)",
+      "as_of": "FY2026 (year to 31 Mar 2026); read 2026-11-22",
+      "evidence_url": "—",
+      "locator": "tagged not public",
+      "page_use": "stated with public tag"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p1",
+      "heading": "Earned in dollars, reported in rupees"
+    },
+    {
+      "id": "p2",
+      "heading": "Constant currency: last year’s rates, this year’s business"
+    },
+    {
+      "id": "p3",
+      "heading": "Why even the dollar figure moves"
+    },
+    {
+      "id": "p4",
+      "heading": "The rupee moves profit more than revenue"
+    },
+    {
+      "id": "p5",
+      "heading": "Hedges smooth the swing, both ways"
+    },
+    {
+      "id": "lab",
+      "heading": "Move the rupee yourself"
+    },
+    {
+      "id": "p7",
+      "heading": "Dollar sales fell; rupee sales rose"
+    },
+    {
+      "id": "p8",
+      "heading": "A deal win is not this year’s revenue"
+    },
+    {
+      "id": "p9",
+      "heading": "Every US pill comes from an inspected plant"
+    },
+    {
+      "id": "p10",
+      "heading": "From a Form 483 to an import alert"
+    },
+    {
+      "id": "fg",
+      "heading": "Which numbers to read, by business"
+    },
+    {
+      "id": "p11",
+      "heading": "Infosys: three growth rates, one year"
+    },
+    {
+      "id": "p12",
+      "heading": "Sun Pharma: currency and the Halol plant"
+    },
+    {
+      "id": "p13",
+      "heading": "Questions before any verdict"
+    }
+  ],
+  "example_companies": {
+    "Narmada Infotech Ltd": "FY25 $500 mn at ₹80 = ₹4,000 cr; dollar costs $175 mn (₹1,400 cr); rupee costs ₹1,760 cr (44%); op profit ₹840 cr (21%). FY26 base: cc +5%, ₹84 → revenue ₹4,410 cr (+10.25%), op profit ₹1,018.5 cr (23.1%). Same work at ₹84: profit 970 (+15.5%), margin 23.1%; at ₹76: 710. Half of $325 mn net dollars hedged at ₹80: ±₹65 cr → 905/775. Deal: $300 mn TCV over 5 yrs, $200 mn renewal ($40 mn/yr), $100 mn net new; $60 mn/yr billed. Euro client €100 mn ($107→$116 mn at real Infosys avg rates).",
+    "Tapti Pharma Ltd": "US sales $200 mn: plant A injectables 60, B tablets 90, C creams 50; 20 pending approvals, 8 from plant A; import alert at A removes $60 mn (30%)."
+  },
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "all revenue in dollars",
+      "both cost types grow with constant-currency growth; no wage rise",
+      "hedge sells share of FY26 net dollars at ₹80; P&L counted in operating profit"
+    ],
+    "units": {
+      "growth": "%",
+      "money": "₹ crore; $ mn × rate ÷ 10"
+    },
+    "independent_calculation_method": "closed-form algebra in labcheck.py (op = (1+g)(2600(1+r) − 1760)), compared with window.labResults via Playwright",
+    "cases": [
+      {
+        "case": "default",
+        "inputs": [
+          5,
+          5,
+          0
+        ],
+        "expected": {
+          "ccG": 5,
+          "repG": 10.25,
+          "fxEff": 5.25,
+          "opG": 21.25,
+          "opHG": 21.25,
+          "rev": 4410.0,
+          "op": 1018.5,
+          "hedge": -0.0,
+          "opH": 1018.5,
+          "margin": 23.095,
+          "marginH": 23.095
+        },
+        "observed": {
+          "ccG": 5,
+          "repG": 10.25,
+          "fxEff": 5.25,
+          "opG": 21.25,
+          "opHG": 21.25,
+          "rev": 4410,
+          "op": 1018.5,
+          "hedge": -0.0,
+          "opH": 1018.5,
+          "margin": 23.095,
+          "marginH": 23.095
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset weak",
+        "inputs": [
+          5,
+          5,
+          0
+        ],
+        "expected": {
+          "ccG": 5,
+          "repG": 10.25,
+          "fxEff": 5.25,
+          "opG": 21.25,
+          "opHG": 21.25,
+          "rev": 4410.0,
+          "op": 1018.5,
+          "hedge": -0.0,
+          "opH": 1018.5,
+          "margin": 23.095,
+          "marginH": 23.095
+        },
+        "observed": {
+          "ccG": 5,
+          "repG": 10.25,
+          "fxEff": 5.25,
+          "opG": 21.25,
+          "opHG": 21.25,
+          "rev": 4410,
+          "op": 1018.5,
+          "hedge": -0.0,
+          "opH": 1018.5,
+          "margin": 23.095,
+          "marginH": 23.095
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset strong",
+        "inputs": [
+          5,
+          -5,
+          0
+        ],
+        "expected": {
+          "ccG": 5,
+          "repG": -0.25,
+          "fxEff": -5.25,
+          "opG": -11.25,
+          "opHG": -11.25,
+          "rev": 3990.0,
+          "op": 745.5,
+          "hedge": 0.0,
+          "opH": 745.5,
+          "margin": 18.684,
+          "marginH": 18.684
+        },
+        "observed": {
+          "ccG": 5,
+          "repG": -0.25,
+          "fxEff": -5.25,
+          "opG": -11.25,
+          "opHG": -11.25,
+          "rev": 3990,
+          "op": 745.5,
+          "hedge": 0,
+          "opH": 745.5,
+          "margin": 18.684,
+          "marginH": 18.684
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset hedged",
+        "inputs": [
+          5,
+          5,
+          50
+        ],
+        "expected": {
+          "ccG": 5,
+          "repG": 10.25,
+          "fxEff": 5.25,
+          "opG": 21.25,
+          "opHG": 13.125,
+          "rev": 4410.0,
+          "op": 1018.5,
+          "hedge": -68.25,
+          "opH": 950.25,
+          "margin": 23.095,
+          "marginH": 21.548
+        },
+        "observed": {
+          "ccG": 5,
+          "repG": 10.25,
+          "fxEff": 5.25,
+          "opG": 21.25,
+          "opHG": 13.125,
+          "rev": 4410,
+          "op": 1018.5,
+          "hedge": -68.25,
+          "opH": 950.25,
+          "margin": 23.095,
+          "marginH": 21.548
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset flat",
+        "inputs": [
+          5,
+          0,
+          50
+        ],
+        "expected": {
+          "ccG": 5,
+          "repG": 5.0,
+          "fxEff": 0.0,
+          "opG": 5.0,
+          "opHG": 5.0,
+          "rev": 4200.0,
+          "op": 882.0,
+          "hedge": 0.0,
+          "opH": 882.0,
+          "margin": 21.0,
+          "marginH": 21.0
+        },
+        "observed": {
+          "ccG": 5,
+          "repG": 5.0,
+          "fxEff": 0.0,
+          "opG": 5.0,
+          "opHG": 5.0,
+          "rev": 4200,
+          "op": 882,
+          "hedge": 0,
+          "opH": 882,
+          "margin": 21,
+          "marginH": 21
+        },
+        "pass_": true
+      },
+      {
+        "case": "all min",
+        "inputs": [
+          -5,
+          -10,
+          0
+        ],
+        "expected": {
+          "ccG": -5,
+          "repG": -14.5,
+          "fxEff": -9.5,
+          "opG": -34.405,
+          "opHG": -34.405,
+          "rev": 3420.0,
+          "op": 551.0,
+          "hedge": 0.0,
+          "opH": 551.0,
+          "margin": 16.111,
+          "marginH": 16.111
+        },
+        "observed": {
+          "ccG": -5,
+          "repG": -14.5,
+          "fxEff": -9.5,
+          "opG": -34.405,
+          "opHG": -34.405,
+          "rev": 3420,
+          "op": 551,
+          "hedge": 0,
+          "opH": 551,
+          "margin": 16.111,
+          "marginH": 16.111
+        },
+        "pass_": true
+      },
+      {
+        "case": "all max",
+        "inputs": [
+          15,
+          15,
+          100
+        ],
+        "expected": {
+          "ccG": 15,
+          "repG": 32.25,
+          "fxEff": 17.25,
+          "opG": 68.393,
+          "opHG": 15.0,
+          "rev": 5290.0,
+          "op": 1414.5,
+          "hedge": -448.5,
+          "opH": 966.0,
+          "margin": 26.739,
+          "marginH": 18.261
+        },
+        "observed": {
+          "ccG": 15,
+          "repG": 32.25,
+          "fxEff": 17.25,
+          "opG": 68.393,
+          "opHG": 15.0,
+          "rev": 5290,
+          "op": 1414.5,
+          "hedge": -448.5,
+          "opH": 966.0,
+          "margin": 26.739,
+          "marginH": 18.261
+        },
+        "pass_": true
+      },
+      {
+        "case": "min growth, max rupee, full hedge",
+        "inputs": [
+          -5,
+          15,
+          100
+        ],
+        "expected": {
+          "ccG": -5,
+          "repG": 9.25,
+          "fxEff": 14.25,
+          "opG": 39.107,
+          "opHG": -5.0,
+          "rev": 4370.0,
+          "op": 1168.5,
+          "hedge": -370.5,
+          "opH": 798.0,
+          "margin": 26.739,
+          "marginH": 18.261
+        },
+        "observed": {
+          "ccG": -5,
+          "repG": 9.25,
+          "fxEff": 14.25,
+          "opG": 39.107,
+          "opHG": -5.0,
+          "rev": 4370,
+          "op": 1168.5,
+          "hedge": -370.5,
+          "opH": 798,
+          "margin": 26.739,
+          "marginH": 18.261
+        },
+        "pass_": true
+      },
+      {
+        "case": "max growth, strong rupee, full hedge",
+        "inputs": [
+          15,
+          -10,
+          100
+        ],
+        "expected": {
+          "ccG": 15,
+          "repG": 3.5,
+          "fxEff": -11.5,
+          "opG": -20.595,
+          "opHG": 15.0,
+          "rev": 4140.0,
+          "op": 667.0,
+          "hedge": 299.0,
+          "opH": 966.0,
+          "margin": 16.111,
+          "marginH": 23.333
+        },
+        "observed": {
+          "ccG": 15,
+          "repG": 3.5,
+          "fxEff": -11.5,
+          "opG": -20.595,
+          "opHG": 15.0,
+          "rev": 4140,
+          "op": 667.0,
+          "hedge": 299.0,
+          "opH": 966.0,
+          "margin": 16.111,
+          "marginH": 23.333
+        },
+        "pass_": true
+      }
+    ],
+    "invariants": [
+      "flat rupee: reported = cc, margin 21%, hedge 0",
+      "same work at ₹84: profit 970; half hedged 905; at ₹76 half hedged 775",
+      "default: revenue 4,410, profit 1,018.5"
+    ],
+    "tolerance": 1e-06,
+    "axis_and_clipping": "one % scale, zero-anchored, nice steps of 5/10/20/25/50, chart extends to data; value labels for negative bars sit right of zero; check_render passed defaults, presets, all-min/all-max"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "labcheck.py ALL PASS (9 cases + invariants)",
+      "card lint 0 errors, 3 warnings: stone #d9d4cc is the series exchange-rate colour (Part 22 extra)"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa31/shots"
+    ],
+    "screenshot_inspection": "all desktop and 390px shots inspected: no clipped labels after fixes (Infosys 9.6% label, FY26-ends label, lab value labels); wide figures scroll sideways on phones per series CSS; lab chart narrowed to 640 for readability",
+    "coverage_review": "every inventory row found on page",
+    "semantic_review": "removed unverified claims (most 483s end VAI; market overreacts); quotes checked verbatim",
+    "artifact_sha256": "d82888e9e9454fab9bfbba117137efb2e735072631cd721fb0b62e41b035e01a",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 12,
+        "panels": 14,
+        "notes": 2
+      },
+      "artifact_sha256": "d82888e9e9454fab9bfbba117137efb2e735072631cd721fb0b62e41b035e01a",
+      "artifact_path": "/home/user/eli5-lab/.claude/worktrees/fa31/explainers/it-and-pharma-exporters-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (branch pushed only)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

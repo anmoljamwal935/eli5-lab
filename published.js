@@ -1,5 +1,125 @@
 window.PUBLISHED = [
   {
+    "id": "loss-makers-and-ipos-eli5",
+    "title": "Loss-making companies and IPOs",
+    "category": "Monetary Architecture",
+    "minutes": 19,
+    "summary": "Part 35: unit economics, cash burn and runway, and reading an IPO prospectus",
+    "bullets": [
+      "When a company has no profit, check that each order makes money, then count the months of cash",
+      "In an IPO only the fresh issue reaches the company; the offer for sale pays the sellers"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "UNIT ECONOMICS",
+      "BURN",
+      "RUNWAY",
+      "RHP"
+    ],
+    "file": "explainers/loss-makers-and-ipos-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Cash at the end of each quarter for three years: losing money on every order while growing, the teal bars shrink and turn into rose shortfalls below zero, while a line for a startup that makes money on each order dips but stays above zero\"><path d=\"M24 58H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"26.0\" y=\"35.5\" width=\"15\" height=\"22.5\" fill=\"#76d5c1\"/><rect x=\"48.5\" y=\"43.2\" width=\"15\" height=\"14.8\" fill=\"#76d5c1\"/><rect x=\"71.0\" y=\"51.1\" width=\"15\" height=\"6.9\" fill=\"#76d5c1\"/><rect x=\"93.5\" y=\"58.0\" width=\"15\" height=\"1.2\" fill=\"#ec6a94\"/><rect x=\"116.0\" y=\"58.0\" width=\"15\" height=\"9.6\" fill=\"#ec6a94\"/><rect x=\"138.5\" y=\"58.0\" width=\"15\" height=\"18.2\" fill=\"#ec6a94\"/><rect x=\"161.0\" y=\"58.0\" width=\"15\" height=\"27.2\" fill=\"#ec6a94\"/><rect x=\"183.5\" y=\"58.0\" width=\"15\" height=\"36.7\" fill=\"#ec6a94\"/><rect x=\"206.0\" y=\"58.0\" width=\"15\" height=\"46.7\" fill=\"#ec6a94\"/><rect x=\"228.5\" y=\"58.0\" width=\"15\" height=\"57.2\" fill=\"#ec6a94\"/><rect x=\"251.0\" y=\"58.0\" width=\"15\" height=\"68.6\" fill=\"#ec6a94\"/><rect x=\"273.5\" y=\"58.0\" width=\"15\" height=\"80.8\" fill=\"#ec6a94\"/><polyline points=\"33.5,33.1 56.0,38.0 78.5,42.5 101.0,46.5 123.5,50.1 146.0,53.0 168.5,55.2 191.0,56.6 213.5,56.9 236.0,56.0 258.5,53.6 281.0,49.5\" fill=\"none\" stroke=\"#f5c76a\" stroke-width=\"2\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">RUNWAY</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 35</text><text x=\"24\" y=\"128\" fill=\"#ec6a94\">CASH RUNS OUT</text></g></svg>",
+    "part": 35
+  },
+  {
+    "id": "utilities-psus-real-estate-eli5",
+    "title": "Utilities, PSUs and real estate",
+    "category": "Monetary Architecture",
+    "minutes": 22,
+    "summary": "Part 34: regulated returns, government owners, and cash before revenue",
+    "bullets": [
+      "A regulated utility earns a set return on approved equity, so profit tracks equity, not sales",
+      "Developers collect years before revenue: read bookings, collections, customer advances and net debt"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "REGULATED EQUITY",
+      "PSU DIVIDEND",
+      "PRE-SALES"
+    ],
+    "file": "explainers/utilities-psus-real-estate-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three small bar stacks: a utility tariff whose thin gold top slice is the regulated return, a company 51 percent owned by the government, and a developer whose bookings and customer advances stand far taller than its revenue\"><path d=\"M24 135H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"40\" y=\"78\" width=\"44\" height=\"57\" fill=\"#ff8059\"/><rect x=\"40\" y=\"61.6\" width=\"44\" height=\"16.4\" fill=\"#ff8059\" fill-opacity=\"0.55\"/><rect x=\"40\" y=\"50.7\" width=\"44\" height=\"10.9\" fill=\"#ec6a94\"/><rect x=\"40\" y=\"40\" width=\"44\" height=\"10.7\" fill=\"#f5c76a\"/><rect x=\"138\" y=\"86.5\" width=\"44\" height=\"48.5\" fill=\"#f5c76a\"/><rect x=\"138\" y=\"40\" width=\"44\" height=\"46.5\" fill=\"#f5c76a\" fill-opacity=\"0.4\"/><path d=\"M130 86.5H190\" stroke=\"#f1eee8\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\" fill=\"none\"/><rect x=\"228\" y=\"51\" width=\"20\" height=\"84\" fill=\"#76d5c1\"/><rect x=\"252\" y=\"93\" width=\"20\" height=\"42\" fill=\"#76d5c1\" fill-opacity=\"0.5\"/><rect x=\"276\" y=\"46.4\" width=\"20\" height=\"88.6\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"26\" fill=\"#c3b8ff\">PART 34</text></g></svg>",
+    "part": 34
+  },
+  {
+    "id": "cyclicals-eli5",
+    "title": "Cyclicals",
+    "category": "Monetary Architecture",
+    "minutes": 19,
+    "summary": "Part 33: cement, steel and autos, where a high P/E can be the bargain",
+    "bullets": [
+      "Judge a cyclical per tonne and over a whole cycle: mid-cycle earnings, EV per tonne of capacity",
+      "The P/E paradox: the lowest P/E comes at the peak, the highest near the bottom (Tata Steel 3.93 in FY22, 56.29 in FY25)"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CAPACITY",
+      "PER TONNE",
+      "MID-CYCLE EPS",
+      "P/E PARADOX"
+    ],
+    "file": "explainers/cyclicals-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A cyclical company over eight years: gold EPS bars rise and fall around a dashed mid-cycle line, and the lavender trailing P/E bars below are shortest in the best years and longest near the bottom\"><path d=\"M54 74 H280\" stroke=\"#57534f\"/><path d=\"M54 86 H280\" stroke=\"#57534f\"/><rect x=\"60\" y=\"55.4\" width=\"18\" height=\"18.6\" fill=\"#f5c76a\"/><rect x=\"60\" y=\"86\" width=\"18\" height=\"16.0\" fill=\"#c3b8ff\"/><rect x=\"88\" y=\"72.2\" width=\"18\" height=\"1.8\" fill=\"#f5c76a\"/><rect x=\"88\" y=\"86\" width=\"18\" height=\"52.0\" fill=\"#c3b8ff\"/><rect x=\"116\" y=\"74.0\" width=\"18\" height=\"4.7\" fill=\"#f5c76a\"/><rect x=\"144\" y=\"65.3\" width=\"18\" height=\"8.7\" fill=\"#f5c76a\"/><rect x=\"144\" y=\"86\" width=\"18\" height=\"46.2\" fill=\"#c3b8ff\"/><rect x=\"172\" y=\"44.8\" width=\"18\" height=\"29.2\" fill=\"#f5c76a\"/><rect x=\"172\" y=\"86\" width=\"18\" height=\"16.1\" fill=\"#c3b8ff\"/><rect x=\"200\" y=\"27.5\" width=\"18\" height=\"46.5\" fill=\"#f5c76a\"/><rect x=\"200\" y=\"86\" width=\"18\" height=\"9.4\" fill=\"#c3b8ff\"/><rect x=\"228\" y=\"36.4\" width=\"18\" height=\"37.6\" fill=\"#f5c76a\"/><rect x=\"228\" y=\"86\" width=\"18\" height=\"9.6\" fill=\"#c3b8ff\"/><rect x=\"256\" y=\"55.4\" width=\"18\" height=\"18.6\" fill=\"#f5c76a\"/><rect x=\"256\" y=\"86\" width=\"18\" height=\"19.5\" fill=\"#c3b8ff\"/><path d=\"M54 55.4 H280\" stroke=\"#f1eee8\" stroke-dasharray=\"3 3\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 33</text><text x=\"24\" y=\"140\" fill=\"#a5a29c\">P/E</text><text x=\"24\" y=\"40\" fill=\"#a5a29c\">EPS</text></g></svg>",
+    "part": 33
+  },
+  {
+    "id": "consumer-companies-eli5",
+    "title": "Consumer companies",
+    "category": "Monetary Architecture",
+    "minutes": 20,
+    "summary": "Part 32: split consumer growth into volume, price and mix, and stores",
+    "bullets": [
+      "Split sales growth into volume, price and mix; price can hide in grams and promotions",
+      "Retail growth is old stores plus new ones; high consumer P/Es assume long, steady growth"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "VOLUME",
+      "PRICE",
+      "MIX",
+      "P/E"
+    ],
+    "file": "explainers/consumer-companies-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Sales drawn as an area, packs sold times average price: last year's rectangle, a teal strip on the right for more packs and a pale strip on top for higher prices and richer mix\"><rect x=\"40\" y=\"31.1\" width=\"192\" height=\"88.9\" fill=\"#76d5c1\" fill-opacity=\"0.22\"/><rect x=\"232\" y=\"31.1\" width=\"7.7\" height=\"88.9\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"27\" width=\"199.7\" height=\"4.1\" fill=\"#f1eee8\"/><path d=\"M40 120H280\" stroke=\"#57534f\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"52\" y=\"52\" fill=\"#c3b8ff\">PART 32</text><text x=\"40\" y=\"138\" fill=\"#a5a29c\">VOLUME × PRICE</text></g></svg>",
+    "part": 32
+  },
+  {
+    "id": "it-and-pharma-exporters-eli5",
+    "title": "Exporters: IT services and pharma",
+    "category": "Monetary Architecture",
+    "minutes": 18,
+    "summary": "Part 31: constant currency, rupee swings, deal wins and FDA inspections",
+    "bullets": [
+      "Judge an exporter on constant-currency growth; a weaker rupee lifts margins because rupee costs stay put",
+      "TCV is a multi-year pipeline, and one failed FDA inspection can switch off a plant's US sales"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CONSTANT CURRENCY",
+      "RUPEE",
+      "MARGIN",
+      "TCV",
+      "USFDA"
+    ],
+    "file": "explainers/it-and-pharma-exporters-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three bars stepping up on one scale: growth in constant currency in teal, the same plus a slice from other currencies in dollars, and a longer bar in rupees where a stone slice from the weaker rupee is larger than the business growth itself\"><rect x=\"24\" y=\"34\" width=\"77.5\" height=\"18\" fill=\"#76d5c1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"24\" y=\"62\" width=\"77.5\" height=\"18\" fill=\"#76d5c1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"101.5\" y=\"62\" width=\"37.5\" height=\"18\" fill=\"#d9d4cc\" opacity=\"0.55\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"24\" y=\"90\" width=\"77.5\" height=\"18\" fill=\"#76d5c1\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"101.5\" y=\"90\" width=\"37.5\" height=\"18\" fill=\"#d9d4cc\" opacity=\"0.55\" stroke=\"#202020\" stroke-width=\"1\"/><rect x=\"139\" y=\"90\" width=\"125\" height=\"18\" fill=\"#d9d4cc\" stroke=\"#202020\" stroke-width=\"1\"/><path d=\"M24 28V114\" stroke=\"#57534f\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"136\" fill=\"#c3b8ff\">PART 31</text><text x=\"296\" y=\"136\" text-anchor=\"end\" fill=\"#a5a29c\">CC VS RUPEES</text></g></svg>",
+    "part": 31
+  },
+  {
     "id": "nbfcs-and-insurers-eli5",
     "title": "NBFCs and insurers",
     "category": "Monetary Architecture",
