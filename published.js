@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "loss-makers-and-ipos-eli5",
+    "title": "Loss-making companies and IPOs",
+    "category": "Monetary Architecture",
+    "minutes": 19,
+    "summary": "Part 35: unit economics, cash burn and runway, and reading an IPO prospectus",
+    "bullets": [
+      "When a company has no profit, check that each order makes money, then count the months of cash",
+      "In an IPO only the fresh issue reaches the company; the offer for sale pays the sellers"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "UNIT ECONOMICS",
+      "BURN",
+      "RUNWAY",
+      "RHP"
+    ],
+    "file": "explainers/loss-makers-and-ipos-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Cash at the end of each quarter for three years: losing money on every order while growing, the teal bars shrink and turn into rose shortfalls below zero, while a line for a startup that makes money on each order dips but stays above zero\"><path d=\"M24 58H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"26.0\" y=\"35.5\" width=\"15\" height=\"22.5\" fill=\"#76d5c1\"/><rect x=\"48.5\" y=\"43.2\" width=\"15\" height=\"14.8\" fill=\"#76d5c1\"/><rect x=\"71.0\" y=\"51.1\" width=\"15\" height=\"6.9\" fill=\"#76d5c1\"/><rect x=\"93.5\" y=\"58.0\" width=\"15\" height=\"1.2\" fill=\"#ec6a94\"/><rect x=\"116.0\" y=\"58.0\" width=\"15\" height=\"9.6\" fill=\"#ec6a94\"/><rect x=\"138.5\" y=\"58.0\" width=\"15\" height=\"18.2\" fill=\"#ec6a94\"/><rect x=\"161.0\" y=\"58.0\" width=\"15\" height=\"27.2\" fill=\"#ec6a94\"/><rect x=\"183.5\" y=\"58.0\" width=\"15\" height=\"36.7\" fill=\"#ec6a94\"/><rect x=\"206.0\" y=\"58.0\" width=\"15\" height=\"46.7\" fill=\"#ec6a94\"/><rect x=\"228.5\" y=\"58.0\" width=\"15\" height=\"57.2\" fill=\"#ec6a94\"/><rect x=\"251.0\" y=\"58.0\" width=\"15\" height=\"68.6\" fill=\"#ec6a94\"/><rect x=\"273.5\" y=\"58.0\" width=\"15\" height=\"80.8\" fill=\"#ec6a94\"/><polyline points=\"33.5,33.1 56.0,38.0 78.5,42.5 101.0,46.5 123.5,50.1 146.0,53.0 168.5,55.2 191.0,56.6 213.5,56.9 236.0,56.0 258.5,53.6 281.0,49.5\" fill=\"none\" stroke=\"#f5c76a\" stroke-width=\"2\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"28\" fill=\"#76d5c1\">RUNWAY</text><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 35</text><text x=\"24\" y=\"128\" fill=\"#ec6a94\">CASH RUNS OUT</text></g></svg>",
+    "part": 35
+  },
+  {
     "id": "utilities-psus-real-estate-eli5",
     "title": "Utilities, PSUs and real estate",
     "category": "Monetary Architecture",
