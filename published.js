@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "cyclicals-eli5",
+    "title": "Cyclicals",
+    "category": "Monetary Architecture",
+    "minutes": 19,
+    "summary": "Part 33: cement, steel and autos, where a high P/E can be the bargain",
+    "bullets": [
+      "Judge a cyclical per tonne and over a whole cycle: mid-cycle earnings, EV per tonne of capacity",
+      "The P/E paradox: the lowest P/E comes at the peak, the highest near the bottom (Tata Steel 3.93 in FY22, 56.29 in FY25)"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CAPACITY",
+      "PER TONNE",
+      "MID-CYCLE EPS",
+      "P/E PARADOX"
+    ],
+    "file": "explainers/cyclicals-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A cyclical company over eight years: gold EPS bars rise and fall around a dashed mid-cycle line, and the lavender trailing P/E bars below are shortest in the best years and longest near the bottom\"><path d=\"M54 74 H280\" stroke=\"#57534f\"/><path d=\"M54 86 H280\" stroke=\"#57534f\"/><rect x=\"60\" y=\"55.4\" width=\"18\" height=\"18.6\" fill=\"#f5c76a\"/><rect x=\"60\" y=\"86\" width=\"18\" height=\"16.0\" fill=\"#c3b8ff\"/><rect x=\"88\" y=\"72.2\" width=\"18\" height=\"1.8\" fill=\"#f5c76a\"/><rect x=\"88\" y=\"86\" width=\"18\" height=\"52.0\" fill=\"#c3b8ff\"/><rect x=\"116\" y=\"74.0\" width=\"18\" height=\"4.7\" fill=\"#f5c76a\"/><rect x=\"144\" y=\"65.3\" width=\"18\" height=\"8.7\" fill=\"#f5c76a\"/><rect x=\"144\" y=\"86\" width=\"18\" height=\"46.2\" fill=\"#c3b8ff\"/><rect x=\"172\" y=\"44.8\" width=\"18\" height=\"29.2\" fill=\"#f5c76a\"/><rect x=\"172\" y=\"86\" width=\"18\" height=\"16.1\" fill=\"#c3b8ff\"/><rect x=\"200\" y=\"27.5\" width=\"18\" height=\"46.5\" fill=\"#f5c76a\"/><rect x=\"200\" y=\"86\" width=\"18\" height=\"9.4\" fill=\"#c3b8ff\"/><rect x=\"228\" y=\"36.4\" width=\"18\" height=\"37.6\" fill=\"#f5c76a\"/><rect x=\"228\" y=\"86\" width=\"18\" height=\"9.6\" fill=\"#c3b8ff\"/><rect x=\"256\" y=\"55.4\" width=\"18\" height=\"18.6\" fill=\"#f5c76a\"/><rect x=\"256\" y=\"86\" width=\"18\" height=\"19.5\" fill=\"#c3b8ff\"/><path d=\"M54 55.4 H280\" stroke=\"#f1eee8\" stroke-dasharray=\"3 3\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"296\" y=\"28\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 33</text><text x=\"24\" y=\"140\" fill=\"#a5a29c\">P/E</text><text x=\"24\" y=\"40\" fill=\"#a5a29c\">EPS</text></g></svg>",
+    "part": 33
+  },
+  {
     "id": "consumer-companies-eli5",
     "title": "Consumer companies",
     "category": "Monetary Architecture",
