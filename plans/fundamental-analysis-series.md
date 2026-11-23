@@ -332,6 +332,24 @@ Sector parts do not use Ramu Chai. Each builds its own fictional company with cl
 
 **Godavari General (Part 30).** Earned premium 1,000, claims 730 (73%), costs 300 (30%), combined ratio 103%, underwriting loss 30; float 2,000 at 7.5% = 150; PBT 120.
 
+**Narmada Infotech Ltd (Part 31, IT exporter).** FY25: $500 mn at ₹80 = ₹4,000 cr; dollar costs $175 mn (₹1,400 cr), rupee costs ₹1,760 cr, operating profit ₹840 cr (21.0%). FY26: constant currency +5%, rupee ₹84 → revenue ₹4,410 cr (+10.25%), profit ₹1,018.5 cr (23.1%). Same work at ₹84: 970; at ₹76: 710; half of $325 mn net dollars hedged at ₹80 moves profit ±₹65 cr (905 / 775). Deal: $300 mn TCV over 5 years = $200 mn renewal + $100 mn net new, billed $60 mn a year.
+
+**Tapti Pharma Ltd (Part 31).** US sales $200 mn from plants A (injectables) 60, B 90, C 50; 20 products pending approval, 8 from plant A; an import alert at A removes $60 mn (30%).
+
+**Krishna Consumer Ltd (Part 32, soaps and detergents).** FY25: 80 cr regular packs at ₹10 + 10 cr premium at ₹20 = ₹1,000 cr. FY26: regular +2%, premium +20%, prices +3% → ₹1,087.68 cr (+8.77%) = volume +4.0% (+₹40 cr), mix +1.54% (+₹16 cr), price +3% (+₹31.68 cr). Rural 30 / urban 60 cr packs; FY26 rural +8%, urban +2%. P/E illustration at a 10.5% discount rate: 45.4× ≈ 8.5% growth for ever; 7.5% → 30.8×; zero → 9.5×.
+
+**Sabarmati Mart Ltd (Part 32, supermarkets).** FY25: 100 stores × 25,000 sq ft = 2.5 mn sq ft, sales ₹8,000 cr (₹32,000 a sq ft). FY26: like-for-like +8% (₹8,640 cr) + 20 new stores for half a year at 75% maturity (+₹600 cr) = ₹9,240 cr (+15.5%). Sales per sq ft: ₹30,800 on closing area, ₹33,600 on average area, ₹34,560 old stores only.
+
+**Betwa Cement Ltd (Part 33).** Mid-cycle: 10 MTPA at 80% = 8 MT at ₹5,000 a tonne; variable cost ₹3,500 a tonne; fixed ₹400 cr; EBITDA ₹1,000 a tonne (₹800 cr); depreciation 300; net debt 1,000 at 10%; PBT 400; PAT 300; 10 crore shares, EPS ₹30; price ₹450 (15×), EV ₹5,500 cr = ₹5,500 a tonne against ₹7,000 for a new plant. Eight-year cycle EPS 30, 2.96, −7.50, 14.10, 47.10, 75.00, 60.71, 30; prices 369, 338, 402, 501, 585, 542, 450, 450; trailing P/E 12.3, 113.9, n/m, 35.6, 12.4, 7.2, 7.4, 15.0.
+
+**Chambal Power Ltd (Part 34, regulated generator and PSU).** Approved cost ₹10,000 cr → regulated equity 3,000, loans 7,000; 15.5% return after 25% tax. Fixed cost 2,200 = return 620 + interest 630 + depreciation 500 + O&M 350 + working-capital interest 100; fuel 3,300; revenue 5,500; profit 465. Net worth 4,000; government 60% of 100 crore shares; OFS 9 crore at ₹48 = ₹432 cr; dividend floor ₹160 cr; at 78% availability profit 329.
+
+**Mahanadi Homes Ltd (Part 34, developer).** Bookings FY23–26: 1,000 / 1,200 / 1,500 / 2,000; buyers pay 20/30/30/20 over four years; revenue at handover in year 3; construction 60% of price spent 10/20/20/10. FY26: revenue 1,000, collections 1,410, construction 840, advances 2,110, net debt 500 → net cash 70.
+
+**Teesta Fresh Ltd (Part 35, quick-delivery grocery).** 1 crore orders a month, basket ₹400, keeps ₹100; per-order costs 105 (rider 55, offers 20, packing 25, payment 5) → contribution −₹5. Fixed costs ₹40 cr a month, capex ₹5 cr → burn ₹50 cr; cash ₹600 cr → 12 months. IPO ₹1,000 cr = ₹600 cr fresh + ₹400 cr OFS → 24 months.
+
+Names used so far (never reuse): Ramu Chai, Pahadi Leaf, Masala Brew, Ramu Family Holdings, Pipal Bank, Sahyadri Finance, Kaveri Life, Godavari General, Narmada Infotech, Tapti Pharma, Krishna Consumer, Sabarmati Mart, Betwa Cement, Chambal Power, Mahanadi Homes, Teesta Fresh.
+
 ### Lab layout rule (owner feedback on Part 15, 9 Nov 2026)
 
 A longer page is fine; a crowded one is not.

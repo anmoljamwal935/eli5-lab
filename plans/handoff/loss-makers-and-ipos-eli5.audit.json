@@ -1,0 +1,955 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf",
+    "title": "Topic part: Loss-making companies and IPOs (Part 35, Fundamental analysis, from scratch)",
+    "author": "topic-only; primary sources: Swiggy Ltd filings",
+    "verified_date": "2026-11-22",
+    "duration_or_sections": "topic request; sources listed",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "PDFs downloaded and text-extracted with pdftotext; NSE iXBRL parsed",
+    "beginning_middle_ending_evidence": "full PDFs read at cited pages: letter 42 pp, RHP 541 pp (sections), MA report 30 pp, AR 189 pp (P&L page)",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa35/dl"
+    ],
+    "limitations": "Consolidated ICDR text on sebi.gov.in not opened; Reg 6 rule cited as quoted in RHP. FY26 annual report consolidated FS PDF is scanned; P&L read from annual-report-2025-26.pdf instead."
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "P/E meaningless for loss-makers; ask unit economics, burn, runway",
+      "kind": "context",
+      "source_locator": "plan row",
+      "check_needed": false,
+      "destination": "p01"
+    },
+    {
+      "id": "I2",
+      "item": "Unit economics: revenue and variable cost per order, contribution",
+      "kind": "definition",
+      "source_locator": "plan row",
+      "check_needed": false,
+      "destination": "p02"
+    },
+    {
+      "id": "I3",
+      "item": "Contribution margin; denominator revenue vs GOV",
+      "kind": "definition",
+      "source_locator": "Swiggy letter p18",
+      "check_needed": false,
+      "destination": "p02"
+    },
+    {
+      "id": "I4",
+      "item": "Breakeven volume = fixed costs / contribution per order; contribution then EBITDA breakeven",
+      "kind": "mechanism",
+      "source_locator": "plan row",
+      "check_needed": false,
+      "destination": "p03"
+    },
+    {
+      "id": "I5",
+      "item": "Misconception: growth fixes losses (only if contribution positive)",
+      "kind": "misconception",
+      "source_locator": "Swiggy letter p12-13",
+      "check_needed": false,
+      "destination": "p04"
+    },
+    {
+      "id": "I6",
+      "item": "Cash burn definition; runway = cash / burn; burn definitions vary",
+      "kind": "definition",
+      "source_locator": "plan row",
+      "check_needed": false,
+      "destination": "p05"
+    },
+    {
+      "id": "I7",
+      "item": "Lab: burn and runway calculator",
+      "kind": "mechanism",
+      "source_locator": "plan row",
+      "check_needed": false,
+      "destination": "lab"
+    },
+    {
+      "id": "I8",
+      "item": "Fresh issue vs OFS; only fresh reaches company; IPO buys time",
+      "kind": "definition",
+      "source_locator": "RHP p142",
+      "check_needed": false,
+      "destination": "p07,p10"
+    },
+    {
+      "id": "I9",
+      "item": "DRHP / RHP / prospectus; pre-filing route; versions differ",
+      "kind": "definition",
+      "source_locator": "RHP definitions; UDRHP-I cover",
+      "check_needed": false,
+      "destination": "p08"
+    },
+    {
+      "id": "I10",
+      "item": "Where to look in an RHP: cover, risk factors, capital structure, objects, basis for price/KPIs, restated financials, MD&A, litigation",
+      "kind": "context",
+      "source_locator": "RHP TOC",
+      "check_needed": false,
+      "destination": "p09,fg"
+    },
+    {
+      "id": "I11",
+      "item": "Objects of the issue, monitoring agency, GCP/acquisition cap",
+      "kind": "claim",
+      "source_locator": "MA report p6-8",
+      "check_needed": true,
+      "destination": "p10"
+    },
+    {
+      "id": "I12",
+      "item": "Sellers' cost of acquisition",
+      "kind": "number",
+      "source_locator": "RHP cover",
+      "check_needed": true,
+      "destination": "p10"
+    },
+    {
+      "id": "I13",
+      "item": "Risk factor 1 and restated losses FY22-24",
+      "kind": "number",
+      "source_locator": "RHP p33",
+      "check_needed": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I14",
+      "item": "Loss-making issuer: Reg 6(2), >=75% QIB, <=10% retail",
+      "kind": "claim",
+      "source_locator": "RHP p409-410",
+      "check_needed": true,
+      "destination": "p11"
+    },
+    {
+      "id": "I15",
+      "item": "KPIs section: company-chosen, audit committee approved; QC contribution margin path",
+      "kind": "number",
+      "source_locator": "RHP p164-166; letter p4,13",
+      "check_needed": true,
+      "destination": "p12"
+    },
+    {
+      "id": "I16",
+      "item": "Adjusted EBITDA excludes ESOP cost",
+      "kind": "claim",
+      "source_locator": "letter p16",
+      "check_needed": true,
+      "destination": "p12,p14"
+    },
+    {
+      "id": "I17",
+      "item": "Swiggy FY26: revenue, loss, burn, cash, QIP, runway",
+      "kind": "number",
+      "source_locator": "letter p15,16,22-24; NSE; AR p118",
+      "check_needed": true,
+      "destination": "p14"
+    },
+    {
+      "id": "I18",
+      "item": "Dilution from new shares (recap Part 21)",
+      "kind": "context",
+      "source_locator": "series",
+      "check_needed": false,
+      "destination": "p07"
+    },
+    {
+      "id": "I19",
+      "item": "Hand-off to Part 36",
+      "kind": "context",
+      "source_locator": "series",
+      "check_needed": false,
+      "destination": "p15"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I17",
+      "claim": "FY26 revenue from operations ₹23,053 cr; loss ₹4,154 cr; EPS −₹16.87",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf p22; https://nsearchives.nseindia.com/corporate/ixbrl/INTEGRATED_FILING_INDAS_156482_09052026120912_iXBRL_WEB.html; https://www.swiggy.com/corporate/wp-content/uploads/2026/07/annual-report-2025-26.pdf PDF p118",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "Adjusted EBITDA −₹2,871 cr; cash burn ₹3,302 cr; QIP net ₹9,931 cr; Rapido ₹2,399 cr; cash 6,695→15,053",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf p16",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "CFO −2,898; PP&E purchase 919; cash & equivalents 2,747",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf p23-24",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "QC CM −1.8% Q4FY26, −1.1% Mar-26; peak −5.6% Q4FY25; breakeven guided Q1FY27",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf p4,13",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "QC CM −32.26% FY22, −23.55% FY23, −6.01% FY24 (% of GOV)",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2024/10/Swiggy-Limited-RHP-Final-Filing-Version-October-28-2024.pdf printed p166",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "Risk factor 1 text; losses FY22 3,628.90, FY23 4,179.31, FY24 2,350.24 cr; revenue 5,704.90, 8,264.60, 11,247.39",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2024/10/Swiggy-Limited-RHP-Final-Filing-Version-October-28-2024.pdf printed p33",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "Did not meet Reg 6(1)(b); Reg 6(2): >=75% QIB, <=15% NIB, <=10% retail",
+      "verdict": "Supported (as quoted in RHP; consolidated ICDR text on sebi.gov.in not opened)",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2024/10/Swiggy-Limited-RHP-Final-Filing-Version-October-28-2024.pdf printed p409-410",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I8",
+      "claim": "Fresh ₹44,990 mn, OFS ₹68,284.27 mn, total ₹1,13,274.27 mn",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/SE_Monitoring-Agency-Report_Signed.pdf p5",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Object costs and utilisation to 31 Mar 2026; total used 37,851.73 mn; no deviation; lease delay note",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/SE_Monitoring-Agency-Report_Signed.pdf p6-9",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I9",
+      "claim": "Pre-filed DRHP 26 Apr 2024; UDRHP-I 26 Sep 2024 (fresh ₹37,500 mn, OFS 185,286,265 sh); RHP 28 Oct 2024; bids 6-8 Nov; prospectus 8 Nov 2024 at ₹390",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2024/10/Swiggy-Limited-RHP-Final-Filing-Version-October-28-2024.pdf; https://www.swiggy.com/corporate/wp-content/uploads/2024/10/Swiggy-Limited-UDRHP-I-Filing-Version-v2-September-26-2024.pdf; https://www.swiggy.com/corporate/wp-content/uploads/2025/01/Swiggy-Limited-Prospectus-Final-filing-version-1.pdf; https://www.swiggy.com/corporate/wp-content/uploads/2026/05/SE_Monitoring-Agency-Report_Signed.pdf",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "MIH India Food Holdings up to 109,096,540 sh at ₹131.15; Accel India IV up to 10,572,706 at ₹11.17",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2024/10/Swiggy-Limited-RHP-Final-Filing-Version-October-28-2024.pdf cover",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Share-based payments ₹966 cr added back in Adjusted EBITDA",
+      "verdict": "Supported",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf p16",
+      "correction_or_attribution": "tagged public on page"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Instamart Adjusted EBITDA FY26 = −896−849−908−858 = −3,511 cr",
+      "verdict": "Supported (sum of quarters)",
+      "as_of": "FY2026 / filings as dated",
+      "evidence_url": "https://www.swiggy.com/corporate/wp-content/uploads/2026/05/Q4-FY2026-Shareholder-letter.pdf p7",
+      "correction_or_attribution": "tagged public on page"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p00",
+      "heading": "hero"
+    },
+    {
+      "id": "p01",
+      "heading": "No profit, so P/E is silent"
+    },
+    {
+      "id": "p02",
+      "heading": "Unit economics: one order, in rupees"
+    },
+    {
+      "id": "p03",
+      "heading": "How many orders pay the rent?"
+    },
+    {
+      "id": "p04",
+      "heading": "“We’ll make it up on volume”"
+    },
+    {
+      "id": "p05",
+      "heading": "Cash burn and runway"
+    },
+    {
+      "id": "p06",
+      "heading": "Burn and runway calculator"
+    },
+    {
+      "id": "p07",
+      "heading": "An IPO buys time, not profit"
+    },
+    {
+      "id": "p08",
+      "heading": "Draft, red herring, prospectus"
+    },
+    {
+      "id": "p09",
+      "heading": "Seven places in 536 pages"
+    },
+    {
+      "id": "p10",
+      "heading": "Who gets the money, and for what"
+    },
+    {
+      "id": "p11",
+      "heading": "Losses in every year since incorporation"
+    },
+    {
+      "id": "p12",
+      "heading": "The company’s own yardsticks"
+    },
+    {
+      "id": "p13",
+      "heading": "Reading a loss-maker and its offer (field guide)"
+    },
+    {
+      "id": "p14",
+      "heading": "Swiggy’s FY26 cash and runway"
+    },
+    {
+      "id": "p15",
+      "heading": "Questions before any verdict"
+    }
+  ],
+  "teaching_company": {
+    "name": "Teesta Fresh Ltd (example)",
+    "orders_per_month_crore": 1,
+    "basket_rs": 400,
+    "revenue_per_order_rs": 100,
+    "variable_cost_per_order_rs": {
+      "rider": 55,
+      "offers": 20,
+      "packing_handling": 25,
+      "payment": 5,
+      "total": 105
+    },
+    "contribution_per_order_rs": -5,
+    "fixed_costs_cr_month": 40,
+    "ebitda_cr_month": -45,
+    "capex_cr_month": 5,
+    "burn_cr_month": 50,
+    "cash_cr": 600,
+    "runway_months": 12,
+    "ipo": {
+      "total": 1000,
+      "fresh": 600,
+      "ofs": 400,
+      "runway_after": 24
+    }
+  },
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "orders start at 1 crore/month, grow g%/month",
+      "contribution per order fixed",
+      "burn = fixed costs and capex − c × orders",
+      "runway interpolated within the month",
+      "no interest, working capital, tax"
+    ],
+    "units": {
+      "cpo": "₹ per order",
+      "gro": "% a month",
+      "fix": "₹ cr a month",
+      "cash": "₹ cr"
+    },
+    "independent_calculation_method": "separate Python model with closed-form cumulative cross-check (scripts/labcheck.py), compared with window.labResults via Playwright",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": [
+          -5,
+          3,
+          45,
+          600
+        ],
+        "expected": {
+          "runway": "11.79",
+          "breakeven": null,
+          "low": -1336.38,
+          "end": -1336.38
+        },
+        "observed": {
+          "runway": "11.79",
+          "breakeven": null,
+          "low": -1336.38,
+          "end": -1336.38
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset still",
+        "inputs": [
+          -5,
+          0,
+          45,
+          600
+        ],
+        "expected": {
+          "runway": "12.00",
+          "breakeven": null,
+          "low": -1200.0,
+          "end": -1200.0
+        },
+        "observed": {
+          "runway": "12.00",
+          "breakeven": null,
+          "low": -1200,
+          "end": -1200
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset grow",
+        "inputs": [
+          -5,
+          6,
+          45,
+          600
+        ],
+        "expected": {
+          "runway": "11.55",
+          "breakeven": null,
+          "low": -1615.6,
+          "end": -1615.6
+        },
+        "observed": {
+          "runway": "11.55",
+          "breakeven": null,
+          "low": -1615.6,
+          "end": -1615.6
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset fix",
+        "inputs": [
+          10,
+          6,
+          45,
+          600
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": 27,
+          "low": 21.56,
+          "end": 171.21
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": 27,
+          "low": 21.56,
+          "end": 171.21
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset ipo",
+        "inputs": [
+          -5,
+          6,
+          45,
+          1200
+        ],
+        "expected": {
+          "runway": "21.89",
+          "breakeven": null,
+          "low": -1015.6,
+          "end": -1015.6
+        },
+        "observed": {
+          "runway": "21.89",
+          "breakeven": null,
+          "low": -1015.6,
+          "end": -1015.6
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/min/min",
+        "inputs": [
+          -20,
+          0,
+          20,
+          100
+        ],
+        "expected": {
+          "runway": "2.50",
+          "breakeven": null,
+          "low": -1340.0,
+          "end": -1340.0
+        },
+        "observed": {
+          "runway": "2.50",
+          "breakeven": null,
+          "low": -1340,
+          "end": -1340
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/min/max",
+        "inputs": [
+          -20,
+          0,
+          20,
+          2000
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": null,
+          "low": 560.0,
+          "end": 560.0
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": null,
+          "low": 560,
+          "end": 560
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/max/min",
+        "inputs": [
+          -20,
+          0,
+          80,
+          100
+        ],
+        "expected": {
+          "runway": "1.00",
+          "breakeven": null,
+          "low": -3500.0,
+          "end": -3500.0
+        },
+        "observed": {
+          "runway": "1.00",
+          "breakeven": null,
+          "low": -3500,
+          "end": -3500
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/min/max/max",
+        "inputs": [
+          -20,
+          0,
+          80,
+          2000
+        ],
+        "expected": {
+          "runway": "20.00",
+          "breakeven": null,
+          "low": -1600.0,
+          "end": -1600.0
+        },
+        "observed": {
+          "runway": "20.00",
+          "breakeven": null,
+          "low": -1600,
+          "end": -1600
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/min/min",
+        "inputs": [
+          -20,
+          8,
+          20,
+          100
+        ],
+        "expected": {
+          "runway": "2.42",
+          "breakeven": null,
+          "low": -4362.04,
+          "end": -4362.04
+        },
+        "observed": {
+          "runway": "2.42",
+          "breakeven": null,
+          "low": -4362.04,
+          "end": -4362.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/min/max",
+        "inputs": [
+          -20,
+          8,
+          20,
+          2000
+        ],
+        "expected": {
+          "runway": "25.24",
+          "breakeven": null,
+          "low": -2462.04,
+          "end": -2462.04
+        },
+        "observed": {
+          "runway": "25.24",
+          "breakeven": null,
+          "low": -2462.04,
+          "end": -2462.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/max/min",
+        "inputs": [
+          -20,
+          8,
+          80,
+          100
+        ],
+        "expected": {
+          "runway": "1.00",
+          "breakeven": null,
+          "low": -6522.04,
+          "end": -6522.04
+        },
+        "observed": {
+          "runway": "1.00",
+          "breakeven": null,
+          "low": -6522.04,
+          "end": -6522.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme min/max/max/max",
+        "inputs": [
+          -20,
+          8,
+          80,
+          2000
+        ],
+        "expected": {
+          "runway": "16.76",
+          "breakeven": null,
+          "low": -4622.04,
+          "end": -4622.04
+        },
+        "observed": {
+          "runway": "16.76",
+          "breakeven": null,
+          "low": -4622.04,
+          "end": -4622.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/min/min",
+        "inputs": [
+          20,
+          0,
+          20,
+          100
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 100.0,
+          "end": 100.0
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 100,
+          "end": 100
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/min/max",
+        "inputs": [
+          20,
+          0,
+          20,
+          2000
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 2000.0,
+          "end": 2000.0
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 2000,
+          "end": 2000
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/max/min",
+        "inputs": [
+          20,
+          0,
+          80,
+          100
+        ],
+        "expected": {
+          "runway": "1.67",
+          "breakeven": null,
+          "low": -2060.0,
+          "end": -2060.0
+        },
+        "observed": {
+          "runway": "1.67",
+          "breakeven": null,
+          "low": -2060,
+          "end": -2060
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/min/max/max",
+        "inputs": [
+          20,
+          0,
+          80,
+          2000
+        ],
+        "expected": {
+          "runway": "33.33",
+          "breakeven": null,
+          "low": -160.0,
+          "end": -160.0
+        },
+        "observed": {
+          "runway": "33.33",
+          "breakeven": null,
+          "low": -160,
+          "end": -160
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/min/min",
+        "inputs": [
+          20,
+          8,
+          20,
+          100
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 100.0,
+          "end": 3122.04
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 100,
+          "end": 3122.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/min/max",
+        "inputs": [
+          20,
+          8,
+          20,
+          2000
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 2000.0,
+          "end": 5022.04
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 2000,
+          "end": 5022.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/max/min",
+        "inputs": [
+          20,
+          8,
+          80,
+          100
+        ],
+        "expected": {
+          "runway": "1.68",
+          "breakeven": 20,
+          "low": -591.07,
+          "end": 962.04
+        },
+        "observed": {
+          "runway": "1.68",
+          "breakeven": 20,
+          "low": -591.07,
+          "end": 962.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme max/max/max/max",
+        "inputs": [
+          20,
+          8,
+          80,
+          2000
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": 20,
+          "low": 1308.93,
+          "end": 2862.04
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": 20,
+          "low": 1308.93,
+          "end": 2862.04
+        },
+        "pass_": true
+      },
+      {
+        "case": "boundary (0, 4, 45, 600)",
+        "inputs": [
+          0,
+          4,
+          45,
+          600
+        ],
+        "expected": {
+          "runway": "13.33",
+          "breakeven": null,
+          "low": -1020.0,
+          "end": -1020.0
+        },
+        "observed": {
+          "runway": "13.33",
+          "breakeven": null,
+          "low": -1020,
+          "end": -1020
+        },
+        "pass_": true
+      },
+      {
+        "case": "boundary (20, 0, 20, 100)",
+        "inputs": [
+          20,
+          0,
+          20,
+          100
+        ],
+        "expected": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 100.0,
+          "end": 100.0
+        },
+        "observed": {
+          "runway": "none",
+          "breakeven": 1,
+          "low": 100,
+          "end": 100
+        },
+        "pass_": true
+      },
+      {
+        "case": "boundary (9, 0, 45, 100)",
+        "inputs": [
+          9,
+          0,
+          45,
+          100
+        ],
+        "expected": {
+          "runway": "2.78",
+          "breakeven": null,
+          "low": -1196.0,
+          "end": -1196.0
+        },
+        "observed": {
+          "runway": "2.78",
+          "breakeven": null,
+          "low": -1196,
+          "end": -1196
+        },
+        "pass_": true
+      }
+    ],
+    "invariants": [
+      "closed-form cash at month 36 equals iterated",
+      "no NaN/Infinity in chart, ledger, readouts"
+    ],
+    "tolerance": 1e-06,
+    "axis_and_clipping": "zero placed by one scale function, nice ticks spanning min/max of quarter-end cash; no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "independent lab check 24/24 pass",
+      "card lint 0 errors"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa35/shots"
+    ],
+    "screenshot_inspection": "all desktop and 390px panels inspected; fixed collisions in svg 2-3, trimmed svg 4 height, capped lab chart width; phone figures scroll inside figure only",
+    "coverage_review": "each inventory row found on page",
+    "semantic_review": "done by author; facts re-checked against PDFs",
+    "artifact_sha256": "bba8cef03b1bc2b06ee09446f2923671cf8a14528c34f358f6f0a93126ebb6f8",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 13,
+        "panels": 15,
+        "notes": 0
+      },
+      "artifact_sha256": "bba8cef03b1bc2b06ee09446f2923671cf8a14528c34f358f6f0a93126ebb6f8",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/v35/explainers/loss-makers-and-ipos-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief: do not publish)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

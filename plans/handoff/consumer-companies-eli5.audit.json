@@ -1,0 +1,660 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": null,
+    "title": "Topic request: Part 32 Consumer companies (series plan row)",
+    "author": "n/a",
+    "verified_date": "2026-11-22",
+    "duration_or_sections": "topic-only; primary sources listed in claims",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "topic inventory from primary filings",
+    "beginning_middle_ending_evidence": "n/a (no single source)",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa32/dl/hul/ar.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa32/dl/dmart/ar.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa32/dl/bhav/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa32/dl/tcpl/agm.pdf"
+    ],
+    "limitations": "HUL gives rural/urban only qualitatively; DMart does not define its annualisation of sales per sq ft; segment UVGs given in words."
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Growth splits into volume, price and mix",
+      "kind": "definition",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P1"
+    },
+    {
+      "id": 2,
+      "item": "Sales = packs × average price (area); growth multiplies",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P2"
+    },
+    {
+      "id": 3,
+      "item": "Mix: trading up lifts average price at constant prices",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P3"
+    },
+    {
+      "id": 4,
+      "item": "Grammage: price per kg changes behind fixed price points",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P4"
+    },
+    {
+      "id": 5,
+      "item": "Rural vs urban demand: drivers and disclosure",
+      "kind": "context",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P5"
+    },
+    {
+      "id": 6,
+      "item": "Lab: split Krishna growth into volume, mix, price",
+      "kind": "example",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P6 lab"
+    },
+    {
+      "id": 7,
+      "item": "Price cuts can slow sales while volume accelerates (and inflation flatters sales)",
+      "kind": "misconception",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P7"
+    },
+    {
+      "id": 8,
+      "item": "Why consumer P/Es run high: returns on new money, discount rate, runway (Part 26 logic)",
+      "kind": "mechanism",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P8"
+    },
+    {
+      "id": 9,
+      "item": "High P/E is fragile; HUL EPS up, P/E down FY22-26",
+      "kind": "example",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P9"
+    },
+    {
+      "id": 10,
+      "item": "Retail: LFL vs new stores; store additions need capital",
+      "kind": "definition",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P10"
+    },
+    {
+      "id": 11,
+      "item": "Sales per sq ft depends on the denominator",
+      "kind": "misconception",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P11"
+    },
+    {
+      "id": 12,
+      "item": "Field guide of consumer and retail metrics",
+      "kind": "context",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P12"
+    },
+    {
+      "id": 13,
+      "item": "HUL FY26 figures: sales, USG, UVG, segments, margins, EPS, P/E, ROCE, dividend",
+      "kind": "number",
+      "source_locator": "topic",
+      "check_needed": true,
+      "destination": "P13"
+    },
+    {
+      "id": 14,
+      "item": "HUL rural/urban commentary (qualitative)",
+      "kind": "claim",
+      "source_locator": "topic",
+      "check_needed": true,
+      "destination": "P13"
+    },
+    {
+      "id": 15,
+      "item": "TCPL FY26 segment revenue vs volume growth",
+      "kind": "number",
+      "source_locator": "topic",
+      "check_needed": true,
+      "destination": "P13"
+    },
+    {
+      "id": 16,
+      "item": "DMart FY26: revenue, stores, area, LFL, rev/sqft, bills, margins, PAT, P/E",
+      "kind": "number",
+      "source_locator": "topic",
+      "check_needed": true,
+      "destination": "P14"
+    },
+    {
+      "id": 17,
+      "item": "Which EPS: HUL total EPS includes demerger gain (Part 7 trap)",
+      "kind": "misconception",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P9 go-deeper"
+    },
+    {
+      "id": 18,
+      "item": "Hand-off to Part 33 Cyclicals",
+      "kind": "context",
+      "source_locator": "topic",
+      "check_needed": false,
+      "destination": "P15"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": 13,
+      "claim": "HUL consolidated sale of products and services 63,763 (FY25 60,573)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "pp. 18, 410",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL USG 5%, UVG 4%, EBITDA margin 23.6%, dividend 41 (19+22)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 78",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL Home Care high-single-digit UVG, USG 4%, price reductions",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 21",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL B&W USG 6% balanced volume and price",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 25",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL Personal Care USG 4% led by price increases (palm)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 29",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL Foods USG 5%, mid-single-digit UVG",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 33",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL rural revival after favourable monsoon; urban moderation",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 83",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL contracted price 75,718 less discounts 11,955",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 410",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL consolidated revenue 64,468; materials 20,981; purchases 11,113; inventory change -429",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 364",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL consolidated EPS continuing 45.25 (FY25 45.36); total 64.01",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 417",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL demerger gain 4,611 cr, effective 1 Dec 2025",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 443",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL track record EPS FY22-26 37.77/43.07/43.74/45.36/45.25",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "p. 18",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 13,
+      "claim": "HUL BSE year-end prices 2,048.85/2,558.75/2,268.25/2,259.35/2,055.80; mcap 4,83,029; ROCE 110.9% standalone",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.hul.co.in/files/annual-report-2025-26-single-page.pdf",
+      "locator": "pp. 19, 245",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "DMart revenue 66,968.03 (57,789.81), +15.88%; EPS 49.54 standalone, 45.65 consolidated; rev/sqft 33,422 (33,896); bills 39.8 (35.3) crore; 500 stores, 20.58 mn sq ft",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/Attachhis/b496eda6-102e-4914-9a09-ce1e7f66c8b9.pdf",
+      "locator": "p. 40",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "DMart KPIs: stores 415->500, area 17.20->20.58, LFL 8.1% (FY25 8.4%), LFL definition 24 months",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/Attachhis/b496eda6-102e-4914-9a09-ce1e7f66c8b9.pdf",
+      "locator": "p. 11 (bbox-checked chart order)",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "DMart inventory turnover 11.00; RoNW 13.50%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/Attachhis/b496eda6-102e-4914-9a09-ce1e7f66c8b9.pdf",
+      "locator": "p. 41",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "DMart standalone P&L: purchases 58,216.11; inventory change -824.99; PAT 3,223.93",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/Attachhis/b496eda6-102e-4914-9a09-ce1e7f66c8b9.pdf",
+      "locator": "p. 133",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "DMart EBITDA 5,255 cr",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.bseindia.com/xml-data/corpfiling/Attachhis/b496eda6-102e-4914-9a09-ce1e7f66c8b9.pdf",
+      "locator": "highlights page; recomputed from p. 133 = 5,255.22",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 16,
+      "claim": "NSE closes 30 Mar 2026: DMART 3,956.80, HINDUNILVR 2,055.20; 31 Mar 2026 no session (bhavcopy 404)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260330_F_0000.csv.zip",
+      "locator": "bhavcopy rows",
+      "page_use": "stated as public with page cited"
+    },
+    {
+      "inventory_id": 15,
+      "claim": "TCPL India Packaged Beverages +6% revenue/+3% volume; India Foods +18%/+12%; RTD +10%/+20%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (year to 31 March 2026)",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "locator": "slides 22-24",
+      "page_use": "stated as public with page cited"
+    }
+  ],
+  "panels": [
+    {
+      "id": "P1",
+      "heading": "Same growth, two different years"
+    },
+    {
+      "id": "P2",
+      "heading": "Sales are an area: packs × price"
+    },
+    {
+      "id": "P3",
+      "heading": "Trading up lifts the average price"
+    },
+    {
+      "id": "P4",
+      "heading": "Price can hide in the grams"
+    },
+    {
+      "id": "P5",
+      "heading": "Two Indias, two speeds of demand"
+    },
+    {
+      "id": "P6",
+      "heading": "Split Krishna’s growth yourself"
+    },
+    {
+      "id": "P7",
+      "heading": "Slower sales, stronger demand"
+    },
+    {
+      "id": "P8",
+      "heading": "Steady demand, high returns, long runway"
+    },
+    {
+      "id": "P9",
+      "heading": "A high P/E has far to fall"
+    },
+    {
+      "id": "P10",
+      "heading": "A retailer grows two ways"
+    },
+    {
+      "id": "P11",
+      "heading": "Sales per square foot, and which feet"
+    },
+    {
+      "id": "P12",
+      "heading": "Twelve consumer numbers, one card each"
+    },
+    {
+      "id": "P13",
+      "heading": "Hindustan Unilever, FY2026: the numbers"
+    },
+    {
+      "id": "P14",
+      "heading": "DMart, FY2026: stores, feet and bills"
+    },
+    {
+      "id": "P15",
+      "heading": "Questions before buying a consumer company"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "FY25 80 cr regular packs at Rs10, 10 cr premium at Rs20",
+      "one price change on both packs",
+      "pack sizes fixed"
+    ],
+    "units": {
+      "effects": "Rs crore",
+      "growth": "%"
+    },
+    "independent_calculation_method": "separate Python script tools/labcheck.py recomputes packs, sales, effects and % from slider values and compares with window.labResults; invariants: effects sum to total change; (1+vol)(1+mix)(1+price)-1 = total growth",
+    "cases": [
+      [
+        "defaults",
+        [
+          2,
+          20,
+          3
+        ],
+        8.768,
+        8.768,
+        4.0,
+        1.538,
+        87.68,
+        87.68,
+        "PASS"
+      ],
+      [
+        "preset Krishna FY26",
+        [
+          2,
+          20,
+          3
+        ],
+        8.768,
+        8.768,
+        4.0,
+        1.538,
+        87.68,
+        87.68,
+        "PASS"
+      ],
+      [
+        "preset Costs passed on",
+        [
+          0,
+          0,
+          8
+        ],
+        8.0,
+        8.0,
+        0.0,
+        0.0,
+        80.0,
+        80,
+        "PASS"
+      ],
+      [
+        "preset Price cuts",
+        [
+          8,
+          10,
+          -3
+        ],
+        5.148,
+        5.148,
+        8.222,
+        0.164,
+        51.48,
+        51.48,
+        "PASS"
+      ],
+      [
+        "preset Trading up",
+        [
+          -4,
+          30,
+          0
+        ],
+        2.8,
+        2.8,
+        -0.222,
+        3.029,
+        28.0,
+        28,
+        "PASS"
+      ],
+      [
+        "extreme ---",
+        [
+          -10,
+          -10,
+          -5
+        ],
+        -14.5,
+        -14.5,
+        -10.0,
+        0.0,
+        -145.0,
+        -145,
+        "PASS"
+      ],
+      [
+        "extreme --+",
+        [
+          -10,
+          -10,
+          10
+        ],
+        -1.0,
+        -1.0,
+        -10.0,
+        0.0,
+        -10.0,
+        -10.0,
+        "PASS"
+      ],
+      [
+        "extreme -+-",
+        [
+          -10,
+          40,
+          -5
+        ],
+        -5.0,
+        -5.0,
+        -4.444,
+        4.651,
+        -50.0,
+        -50,
+        "PASS"
+      ],
+      [
+        "extreme -++",
+        [
+          -10,
+          40,
+          10
+        ],
+        10.0,
+        10.0,
+        -4.444,
+        4.651,
+        100.0,
+        100,
+        "PASS"
+      ],
+      [
+        "extreme +--",
+        [
+          15,
+          -10,
+          -5
+        ],
+        4.5,
+        4.5,
+        12.222,
+        -1.98,
+        45.0,
+        45,
+        "PASS"
+      ],
+      [
+        "extreme +-+",
+        [
+          15,
+          -10,
+          10
+        ],
+        21.0,
+        21.0,
+        12.222,
+        -1.98,
+        210.0,
+        210,
+        "PASS"
+      ],
+      [
+        "extreme ++-",
+        [
+          15,
+          40,
+          -5
+        ],
+        14.0,
+        14.0,
+        17.778,
+        1.887,
+        140.0,
+        140,
+        "PASS"
+      ],
+      [
+        "extreme +++",
+        [
+          15,
+          40,
+          10
+        ],
+        32.0,
+        32.0,
+        17.778,
+        1.887,
+        320.0,
+        320,
+        "PASS"
+      ]
+    ],
+    "invariants": [
+      "volE+mixE+priceE = tot",
+      "multiplicative decomposition"
+    ],
+    "tolerance": "1e-9 absolute",
+    "axis_and_clipping": "fixed axis -160..320 Rs cr covers all slider extremes (min -145, max +320)"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render 0 errors",
+      "lab independent check ALL PASS (13 cases)",
+      "card lint 0 errors 0 warnings"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa32/shots"
+    ],
+    "screenshot_review": "all desktop and 390px panels inspected; fixed lab label clipping at max, number formatting, P/E label placement, wording",
+    "coverage_review": "every inventory row found on page",
+    "semantic_review": "done by author; no material factual error found in the checks performed",
+    "artifact_sha256": "fabfdcdc51ccb236895604ad60ec1239d214471f1eceaac9ae759aea6b3002ed",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 13,
+        "panels": 15,
+        "notes": 0
+      },
+      "artifact_sha256": "fabfdcdc51ccb236895604ad60ec1239d214471f1eceaac9ae759aea6b3002ed",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/v32/explainers/consumer-companies-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief forbids publishing)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

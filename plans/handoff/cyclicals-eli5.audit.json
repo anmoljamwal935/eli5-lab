@@ -1,0 +1,1171 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+    "title": "Topic part: Cyclicals (Part 33, Fundamental analysis, from scratch)",
+    "author": "primary filings: UltraTech Cement, Tata Steel, NSE",
+    "verified_date": "2026-11-23",
+    "duration_or_sections": "topic-only; series plan row 33",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "PDF text (pdftotext) of company reports; Tata Steel section PDFs retrieved via WebFetch because tatasteel.com refuses direct downloads",
+    "beginning_middle_ending_evidence": "n/a (topic, not a single source)",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/dl"
+    ],
+    "limitations": [
+      "Tata Steel full 2025-26 report (>10 MB) not opened; its Financial Highlights and ratios section PDF and results releases were used",
+      "UltraTech EV per tonne and expansion cost per tonne are my arithmetic and rough (non-cement businesses, mixed project types)"
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Cyclical demand can be postponed; supply arrives in lumps; utilisation swings",
+      "kind": "mechanism",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P1"
+    },
+    {
+      "id": "I2",
+      "item": "Fixed costs make profit swing more than volume (operating leverage)",
+      "kind": "mechanism",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P1,P2"
+    },
+    {
+      "id": "I3",
+      "item": "Cement per-tonne P&L: realisation, cost per tonne, EBITDA per tonne",
+      "kind": "definition",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P2,P9"
+    },
+    {
+      "id": "I4",
+      "item": "EV per tonne of capacity vs replacement cost",
+      "kind": "definition",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P3,P9"
+    },
+    {
+      "id": "I5",
+      "item": "Steel: spread on world prices; EBITDA per tonne; volumes steady",
+      "kind": "mechanism",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P4"
+    },
+    {
+      "id": "I6",
+      "item": "Autos: volumes, utilisation, dealer stock, commodity costs, rates",
+      "kind": "context",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "Field guide"
+    },
+    {
+      "id": "I7",
+      "item": "Normalised (mid-cycle) earnings: mid-cycle margin or cycle average",
+      "kind": "definition",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P5,lab"
+    },
+    {
+      "id": "I8",
+      "item": "P/E paradox: buy at a high P/E near the bottom, sell at a low P/E near the top",
+      "kind": "misconception",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P6,lab,P10"
+    },
+    {
+      "id": "I9",
+      "item": "Trailing vs normalised P/E; valuing on peak earnings is the mistake",
+      "kind": "misconception",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P7,lab"
+    },
+    {
+      "id": "I10",
+      "item": "Debt magnifies the cycle; capacity built at the top",
+      "kind": "claim",
+      "locator": "plan row 33",
+      "check_needed": true,
+      "destination": "P7,lab,P10"
+    },
+    {
+      "id": "I11",
+      "item": "UltraTech FY26 capacity, utilisation, per-tonne costs, EV/tonne, P/E history",
+      "kind": "number",
+      "locator": "plan row 33",
+      "check_needed": true,
+      "destination": "P9"
+    },
+    {
+      "id": "I12",
+      "item": "Tata Steel FY21-FY26 EPS, price, P/E, net debt",
+      "kind": "number",
+      "locator": "plan row 33",
+      "check_needed": true,
+      "destination": "P4,P10"
+    },
+    {
+      "id": "I13",
+      "item": "Hand-off to Part 34 Utilities, PSUs and real estate",
+      "kind": "context",
+      "locator": "plan row 33",
+      "check_needed": false,
+      "destination": "P11"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I11",
+      "claim": "UltraTech grey cement capacity 196.8 MTPA at FY26; 205.5 MTPA incl. 5.4 overseas after April 2026 (8.7 MTPA added)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "pp. 42, 27, 198",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "India capacity utilisation 77% (FY25 78%); installed 191.36 MTPA; production 143.83 MT; total sales 154.25 MT",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "p. 192",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Consolidated net turnover 87,384 cr; standalone energy 1,229/t (1,322), materials 653/t (624), freight 1,146/t (1,195)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "p. 193",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Consolidated EBITDA/t 1,279/1,052/1,141/979/1,141 FY22-26; normalised EPS 196.46/175.63/243.05/205.30/277.62; grey sales 92.53..151.09 MT",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "pp. 44-45",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Market cap 31 Mar 2026 NSE 3,16,633 cr",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "p. 267",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Borrowings 15,018.82 + 7,761.84; cash 354.48; bank 1,029.87; current investments 3,735.62; NCI 4,088.90",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "p. 462",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Plan: invest 16,000 cr to add 37 MTPA, reach 242.5 MTPA by FY2027-28",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "p. 18 (chairman letter)",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Normalised profit excludes one-off tax gains (footnotes)",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf",
+      "locator": "p. 189",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Group basic EPS 8.65 (FY26), 2.74 (FY25); P/E 22.17, 56.29",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.tatasteel.com/investors/integrated-report-2025-26/pdf/Financial%20Highlights.pdf",
+      "locator": "pp. F2, F33",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Group EPS FY24 -3.62, P/E NA",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.tatasteel.com/investors/integrated-report-2024-25/pdf/Tata-Steel-IR-2024-25-financial-highlights.pdf",
+      "locator": "pp. F2-F3",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Group EPS FY23 7.17, P/E 14.57; FY22 restated 33.24",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.tatasteel.com/investors/integrated-report-2022-23/pdfs/TataSteel-IR23_Financial-highlights.pdf",
+      "locator": "pp. F2-F3",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Group EPS FY22 332.35, FY21 63.78 (Rs10 shares); P/E 3.93, 12.73",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.tatasteel.com/investors/integrated-report-2021-22/pdf/financialhighlights.pdf",
+      "locator": "pp. 270-271",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "Consolidated EBITDA/t 10,900 FY26, 8,335 FY25; deliveries 31.97, 30.96; India EBITDA/t 15,213; UK EBITDA loss GBP217m; net debt 80,144, 2.3x",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.tatasteel.com/media/25700/4qfy2026-press-release.pdf",
+      "locator": "pp. 1-2",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "EBITDA/t 7,962 FY24, 11,358 FY23; deliveries 29.39, 28.79; FY24 PAT -4,910 incl. 7,814 exceptional; net debt 77,550",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.tatasteel.com/media/20673/4qpr.pdf",
+      "locator": "p. 1",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "EBITDA 63,830, EBITDA/t 21,626 FY22, 10,838 FY21; deliveries 29.52, 28.50; net debt 51,049, 0.80x; Kalinganagar 5 MTPA expansion",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://www.tatasteel.com/media/15577/4qfy22-press-release.pdf",
+      "locator": "p. 1",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "NSE closes: TATASTEEL 1,307.20 (31-3-22, Rs10), 104.50, 155.85, 154.24, 191.86; ULTRACEMCO 6,602.30, 7,622.15, 9,749.15, 11,509.55, 10,745.00",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 March 2026) unless stated",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_<DDMMYYYY>.csv (files for 31032022, 31032023, 28032024, 28032025, 30032026 as fetched by the Part 26 session)",
+      "locator": "EQ rows",
+      "page_use": "public tag, figures as printed or arithmetic shown"
+    }
+  ],
+  "panels": [
+    {
+      "id": "P1",
+      "heading": "Demand grows smoothly, plants arrive in lumps",
+      "visual": "capacity vs demand bars, 1.7 px/MT"
+    },
+    {
+      "id": "P2",
+      "heading": "Price per tonne minus cost per tonne",
+      "visual": "stacked per-tonne bars, 0.09 px/Rs"
+    },
+    {
+      "id": "P3",
+      "heading": "EV per tonne of capacity",
+      "visual": "stacked EV/t bars vs plant cost, 0.07 px/Rs"
+    },
+    {
+      "id": "P4",
+      "heading": "Steel earns a spread on world prices",
+      "visual": "Tata Steel EBITDA/t bars, 0.026 px/Rs"
+    },
+    {
+      "id": "P5",
+      "heading": "Judge the cycle, not the year",
+      "visual": "EPS bars with mid-cycle line, 2.6 px/Rs"
+    },
+    {
+      "id": "P6",
+      "heading": "P/E is highest at the bottom",
+      "visual": "aligned EPS and P/E strips"
+    },
+    {
+      "id": "P7",
+      "heading": "Ride a full cycle",
+      "visual": "lab"
+    },
+    {
+      "id": "P8",
+      "heading": "Cheap on trailing, dear on normalised",
+      "visual": "P/E bars, 22 px/1x"
+    },
+    {
+      "id": "P9",
+      "heading": "Eight things to read in a cyclical",
+      "visual": "field guide"
+    },
+    {
+      "id": "P10",
+      "heading": "UltraTech, FY2026: capacity and the tonne",
+      "visual": "table + EBITDA/t bars with P/E"
+    },
+    {
+      "id": "P11",
+      "heading": "Tata Steel, FY21 to FY26: the paradox",
+      "visual": "aligned EPS/P/E strips + table"
+    },
+    {
+      "id": "P12",
+      "heading": "Questions before buying a cyclical",
+      "visual": "so what + hand-off"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "8-year cycle shape 0,-0.7,-1,-0.4,0.4,1,0.7,0",
+      "capacity 10 MTPA, mid 80% at Rs5,000/t, variable Rs3,500/t, fixed Rs400 cr, depreciation Rs300 cr, interest 10% of net debt, tax 25% symmetric, 10 cr shares",
+      "price = 15 x mid EPS + (next EPS - mid EPS) x years slider"
+    ],
+    "units": {
+      "eps": "Rs/share",
+      "price": "Rs/share",
+      "ebitda_per_tonne": "Rs/t"
+    },
+    "independent_calculation_method": "scripts/model.py (separate Python), compared with window.labResults via Playwright in scripts/labcheck.py",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": [
+          500,
+          10,
+          1000,
+          3
+        ],
+        "expected": {
+          "N": 30.0,
+          "minEPS": -7.5,
+          "maxEPS": 75.0,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -17.0,
+          "rd": 45.41
+        },
+        "observed": {
+          "N": 30,
+          "minEPS": -7.5,
+          "maxEPS": 75,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -17.0,
+          "rd": 45.41
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset base",
+        "inputs": [
+          500,
+          10,
+          1000,
+          3
+        ],
+        "expected": {
+          "N": 30.0,
+          "minEPS": -7.5,
+          "maxEPS": 75.0,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -17.0,
+          "rd": 45.41
+        },
+        "observed": {
+          "N": 30,
+          "minEPS": -7.5,
+          "maxEPS": 75,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -17.0,
+          "rd": 45.41
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset gentle",
+        "inputs": [
+          200,
+          5,
+          1000,
+          3
+        ],
+        "expected": {
+          "N": 30.0,
+          "minEPS": 13.125,
+          "maxEPS": 48.375,
+          "minPrice": 399.375,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -7.81,
+          "rd": 17.69
+        },
+        "observed": {
+          "N": 30,
+          "minEPS": 13.125,
+          "maxEPS": 48.375,
+          "minPrice": 399.375,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -7.81,
+          "rd": 17.69
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset steel",
+        "inputs": [
+          1000,
+          15,
+          2000,
+          3
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 140.625,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -34.53,
+          "rd": 140.13
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 140.625,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -34.53,
+          "rd": 140.13
+        },
+        "pass_": true
+      },
+      {
+        "case": "preset flat",
+        "inputs": [
+          0,
+          0,
+          1000,
+          3
+        ],
+        "expected": {
+          "N": 30.0,
+          "minEPS": 30.0,
+          "maxEPS": 30.0,
+          "minPrice": 450.0,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 30,
+          "minEPS": 30,
+          "maxEPS": 30,
+          "minPrice": 450,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0000",
+        "inputs": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": 37.5,
+          "maxEPS": 37.5,
+          "minPrice": 562.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": 37.5,
+          "maxEPS": 37.5,
+          "minPrice": 562.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0001",
+        "inputs": [
+          0,
+          0,
+          0,
+          4
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": 37.5,
+          "maxEPS": 37.5,
+          "minPrice": 562.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": 37.5,
+          "maxEPS": 37.5,
+          "minPrice": 562.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0010",
+        "inputs": [
+          0,
+          0,
+          2000,
+          0
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": 22.5,
+          "maxEPS": 22.5,
+          "minPrice": 337.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": 22.5,
+          "maxEPS": 22.5,
+          "minPrice": 337.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0011",
+        "inputs": [
+          0,
+          0,
+          2000,
+          4
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": 22.5,
+          "maxEPS": 22.5,
+          "minPrice": 337.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": 22.5,
+          "maxEPS": 22.5,
+          "minPrice": 337.5,
+          "cheap": 1,
+          "dear": 1,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0100",
+        "inputs": [
+          0,
+          15,
+          0,
+          0
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": 20.625,
+          "maxEPS": 54.375,
+          "minPrice": 562.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": 20.625,
+          "maxEPS": 54.375,
+          "minPrice": 562.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0101",
+        "inputs": [
+          0,
+          15,
+          0,
+          4
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": 20.625,
+          "maxEPS": 54.375,
+          "minPrice": 495.0,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -7.75,
+          "rd": 17.65
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": 20.625,
+          "maxEPS": 54.375,
+          "minPrice": 495,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -7.75,
+          "rd": 17.65
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0110",
+        "inputs": [
+          0,
+          15,
+          2000,
+          0
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": 5.625,
+          "maxEPS": 39.375,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": 5.625,
+          "maxEPS": 39.375,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 0111",
+        "inputs": [
+          0,
+          15,
+          2000,
+          4
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": 5.625,
+          "maxEPS": 39.375,
+          "minPrice": 270.0,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -12.28,
+          "rd": 30.43
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": 5.625,
+          "maxEPS": 39.375,
+          "minPrice": 270,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -12.28,
+          "rd": 30.43
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1000",
+        "inputs": [
+          1000,
+          0,
+          0,
+          0
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": -22.5,
+          "maxEPS": 97.5,
+          "minPrice": 562.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": -22.5,
+          "maxEPS": 97.5,
+          "minPrice": 562.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1001",
+        "inputs": [
+          1000,
+          0,
+          0,
+          4
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": -22.5,
+          "maxEPS": 97.5,
+          "minPrice": 322.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -23.0,
+          "rd": 72.03
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": -22.5,
+          "maxEPS": 97.5,
+          "minPrice": 322.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -23.0,
+          "rd": 72.03
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1010",
+        "inputs": [
+          1000,
+          0,
+          2000,
+          0
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": -37.5,
+          "maxEPS": 82.5,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": -37.5,
+          "maxEPS": 82.5,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1011",
+        "inputs": [
+          1000,
+          0,
+          2000,
+          4
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": -37.5,
+          "maxEPS": 82.5,
+          "minPrice": 97.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -33.23,
+          "rd": 139.13
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": -37.5,
+          "maxEPS": 82.5,
+          "minPrice": 97.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -33.23,
+          "rd": 139.13
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1100",
+        "inputs": [
+          1000,
+          15,
+          0,
+          0
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": -28.125,
+          "maxEPS": 125.625,
+          "minPrice": 562.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": -28.125,
+          "maxEPS": 125.625,
+          "minPrice": 562.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1101",
+        "inputs": [
+          1000,
+          15,
+          0,
+          4
+        ],
+        "expected": {
+          "N": 37.5,
+          "minEPS": -28.125,
+          "maxEPS": 125.625,
+          "minPrice": 300.0,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -29.67,
+          "rd": 104.84
+        },
+        "observed": {
+          "N": 37.5,
+          "minEPS": -28.125,
+          "maxEPS": 125.625,
+          "minPrice": 300,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -29.67,
+          "rd": 104.84
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1110",
+        "inputs": [
+          1000,
+          15,
+          2000,
+          0
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0.0,
+          "rd": 0.0
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 337.5,
+          "cheap": 6,
+          "dear": 3,
+          "rc": 0,
+          "rd": 0
+        },
+        "pass_": true
+      },
+      {
+        "case": "extreme 1111",
+        "inputs": [
+          1000,
+          15,
+          2000,
+          4
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 75.0,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -41.28,
+          "rd": 211.23
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 75,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -41.28,
+          "rd": 211.23
+        },
+        "pass_": true
+      },
+      {
+        "case": "mid 250/7/500/1.5",
+        "inputs": [
+          250,
+          7,
+          500,
+          1.5
+        ],
+        "expected": {
+          "N": 33.75,
+          "minEPS": 12.1875,
+          "maxEPS": 57.9375,
+          "minPrice": 473.906,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -4.7,
+          "rd": 10.08
+        },
+        "observed": {
+          "N": 33.75,
+          "minEPS": 12.1875,
+          "maxEPS": 57.9375,
+          "minPrice": 473.906,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -4.7,
+          "rd": 10.08
+        },
+        "pass_": true
+      },
+      {
+        "case": "mid 750/12/1750/2.5",
+        "inputs": [
+          750,
+          12,
+          1750,
+          2.5
+        ],
+        "expected": {
+          "N": 24.375,
+          "minEPS": -27.375,
+          "maxEPS": 89.625,
+          "minPrice": 236.25,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -23.23,
+          "rd": 70.66
+        },
+        "observed": {
+          "N": 24.375,
+          "minEPS": -27.375,
+          "maxEPS": 89.625,
+          "minPrice": 236.25,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -23.23,
+          "rd": 70.66
+        },
+        "pass_": true
+      },
+      {
+        "case": "mid 1000/15/2000/4",
+        "inputs": [
+          1000,
+          15,
+          2000,
+          4
+        ],
+        "expected": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 75.0,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -41.28,
+          "rd": 211.23
+        },
+        "observed": {
+          "N": 22.5,
+          "minEPS": -43.125,
+          "maxEPS": 110.625,
+          "minPrice": 75,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -41.28,
+          "rd": 211.23
+        },
+        "pass_": true
+      },
+      {
+        "case": "mid 50/1/250/0.5",
+        "inputs": [
+          50,
+          1,
+          250,
+          0.5
+        ],
+        "expected": {
+          "N": 35.625,
+          "minEPS": 31.5375,
+          "maxEPS": 39.7875,
+          "minPrice": 532.331,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -0.27,
+          "rd": 0.54
+        },
+        "observed": {
+          "N": 35.625,
+          "minEPS": 31.5375,
+          "maxEPS": 39.7875,
+          "minPrice": 532.331,
+          "cheap": 6,
+          "dear": 3,
+          "rc": -0.27,
+          "rd": 0.54
+        },
+        "pass_": true
+      }
+    ],
+    "invariants": [
+      "share price > 0 on the full grid of slider steps (21x16x9x9): 0 non-positive",
+      "No cycle preset: EPS 30 every year, P/E 15"
+    ],
+    "tolerance": "relative 1e-6",
+    "axis_and_clipping": "dynamic nice-step axes including zero; no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "0 errors; screenshots in /tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots\nbrowser checks only; still look at every screenshot, and test lab numbers independently\n",
+      "labcheck: 25 cases pass, 0 fails"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-00.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-01.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-02.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-03.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-04.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-05.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-06.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-07.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-08.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-09.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-10.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-11.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/desktop-12.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-00.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-01.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-02.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-03.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-04.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-05.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-06.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-07.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-08.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-09.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-10.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-11.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/shots/phone-12.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/myshots-lab-desk.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/myshots-lab-phone.png",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/card.png"
+    ],
+    "screenshot_inspection": "all desktop and phone shots looked at; fixed EV label clipping, P/E label overlap, negative EBITDA/t sign, verdict wording, year-cell wrapping",
+    "coverage_review": "every inventory row found on the page",
+    "semantic_review": "done by author; no material factual error found in the checks performed",
+    "card": {
+      "path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa33/card.svg",
+      "lint": "0 errors, 0 warnings"
+    },
+    "artifact_sha256": "acc06939e35652596139cd55ff4cb0ddc9b0bf268173c8d8aad2152c9f6cdfb5",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 11,
+        "panels": 12,
+        "notes": 1
+      },
+      "artifact_sha256": "acc06939e35652596139cd55ff4cb0ddc9b0bf268173c8d8aad2152c9f6cdfb5",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/v33/explainers/cyclicals-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief: do not publish)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
