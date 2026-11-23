@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "consumer-companies-eli5",
+    "title": "Consumer companies",
+    "category": "Monetary Architecture",
+    "minutes": 20,
+    "summary": "Part 32: split consumer growth into volume, price and mix, and stores",
+    "bullets": [
+      "Split sales growth into volume, price and mix; price can hide in grams and promotions",
+      "Retail growth is old stores plus new ones; high consumer P/Es assume long, steady growth"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "VOLUME",
+      "PRICE",
+      "MIX",
+      "P/E"
+    ],
+    "file": "explainers/consumer-companies-eli5.html",
+    "date": "2026-11-23",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Sales drawn as an area, packs sold times average price: last year's rectangle, a teal strip on the right for more packs and a pale strip on top for higher prices and richer mix\"><rect x=\"40\" y=\"31.1\" width=\"192\" height=\"88.9\" fill=\"#76d5c1\" fill-opacity=\"0.22\"/><rect x=\"232\" y=\"31.1\" width=\"7.7\" height=\"88.9\" fill=\"#76d5c1\"/><rect x=\"40\" y=\"27\" width=\"199.7\" height=\"4.1\" fill=\"#f1eee8\"/><path d=\"M40 120H280\" stroke=\"#57534f\" fill=\"none\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"52\" y=\"52\" fill=\"#c3b8ff\">PART 32</text><text x=\"40\" y=\"138\" fill=\"#a5a29c\">VOLUME × PRICE</text></g></svg>",
+    "part": 32
+  },
+  {
     "id": "it-and-pharma-exporters-eli5",
     "title": "Exporters: IT services and pharma",
     "category": "Monetary Architecture",
