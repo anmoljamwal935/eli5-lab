@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cyclicals — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (realisation, sales, tonnes sold) | coral #ff8059 = money going out (costs per tonne, a new plant's cost) | gold #f5c76a = what belongs to shareholders (EBITDA, profit, EPS)
+       rose #ec6a94 = what is owed (net debt) | lavender #c3b8ff = the market's view (share price, P/E, EV)
+       Part 33 extra: grey #8a8680 = capacity (plants that could run); light coral #ffb59c = fixed cost per tonne. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .rep tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    /* Lab layout: one column of numbered steps (as in Part 15) */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab .dl-chart{max-width:640px}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;min-width:0;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+    .dashlab .dash td.val{white-space:nowrap}
+    .dashlab .dash td.now{white-space:nowrap;color:var(--fg);font-weight:600}
+    .dashlab details.trace{margin-top:16px}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}.eli5-study-container table.rep{min-width:0}.rep td.wk{display:none}.rep th.wk{display:none}}
+    .dashlab .dash td.wk,.dashlab .dash th.wk{white-space:nowrap}
+    .dashlab .dash tr.hi td{color:var(--fg)}
+    .dashlab .dash td:first-child,.dashlab .dash th{white-space:nowrap}
+    .dashlab .verdict{margin:14px 0 0;font-size:15px;line-height:1.55;color:var(--fg)}
+    @media (max-width:700px){.dashlab .dash td.wk,.dashlab .dash th.wk{display:none}.rep td.pg,.rep th.pg{display:none}}
+  </style>
+</head>
+<body data-series-id="cyclicals-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 19 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Cyclicals</h1>
+      <p class="lede">Cement, steel and car makers sell things buyers can put off, from plants that cost almost as much to run half empty as full. Their profit swings with the cycle, so judge them per tonne and across a whole cycle, and expect the P/E to point the wrong way.</p>
+      <p class="source-note">Built from UltraTech Cement’s Integrated and Sustainability Report 2025-26, Tata Steel’s Integrated Report &amp; Annual Accounts 2025-26 with the financial highlights of its 2021-22, 2022-23 and 2024-25 reports and its full-year results releases, and NSE closing prices · <a href="https://www.ultratechcement.com/content/dam/ultratechcementwebsite/pdf/financials/annual-reports/integrated-and-sustainability-report-2025-26-single-page.pdf">Read the source ↗</a> · <a href="https://www.tatasteel.com/investors/integrated-report-2025-26/pdf/Financial%20Highlights.pdf">Tata Steel ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a> warned that a cyclical’s P/E is lowest at the peak, <a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a> showed how fixed costs magnify a change in sales, <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> read Tata Steel’s debt, and <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> built enterprise value (EV). <a href="the-economy-around-the-company-eli5.html" data-series-link="the-economy-around-the-company-eli5">Part 22</a> split businesses into defensive and cyclical, and <a href="relative-valuation-eli5.html" data-series-link="relative-valuation-eli5">Part 26</a> drew P/E bands. This part does not use Ramu Chai. Its teaching company is <b>Betwa Cement Ltd</b>, a fictional cement maker with 10 million tonnes a year of capacity. Facts carry a tag: <span class="tag">public</span> is from UltraTech’s or Tata Steel’s own reports or NSE prices, <span class="tag">example</span> is a made-up number for Betwa. All amounts are ₹ crore (cr); MT is million tonnes and MTPA million tonnes a year. Real figures are frozen at FY2026. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: price per tonne, tonnes sold</span>
+        <span><i style="background:#ff8059"></i>money going out: costs per tonne</span>
+        <span><i style="background:#ffb59c"></i>fixed cost per tonne</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: EBITDA, EPS</span>
+        <span><i style="background:#ec6a94"></i>what is owed: net debt</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, P/E, EV</span>
+        <span><i style="background:#8a8680"></i>capacity</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Demand grows smoothly, plants arrive in lumps</h2>
+      <p>Buyers can put off a flat, a car or a factory, so demand for cement, steel and cars swings with incomes and interest rates (<a href="the-economy-around-the-company-eli5.html" data-series-link="the-economy-around-the-company-eli5">Part 22</a>). Supply swings too. Take a made-up cement region <span class="tag">example</span>: demand grows about 6% a year, but a new plant adds millions of tonnes at once and takes years to build.</p>
+      <figure><svg viewBox="0 0 800 350" role="img" aria-label="Eight years of a fictional cement region: demand rises smoothly from 64 to 95 million tonnes while capacity jumps from 80 to 100 to 120 in lumps, so the share of plants in use saws between 76 and 90 percent"><rect x="110" y="134" width="50" height="136" fill="#8a8680" opacity="0.45"/><rect x="110" y="161.2" width="50" height="108.8" fill="#76d5c1"/><text x="135" y="124" text-anchor="middle" fill="#f1eee8" font-size="16">80%</text><text x="135" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y1</text><rect x="192" y="134" width="50" height="136" fill="#8a8680" opacity="0.45"/><rect x="192" y="154.4" width="50" height="115.6" fill="#76d5c1"/><text x="217" y="124" text-anchor="middle" fill="#f1eee8" font-size="16">85%</text><text x="217" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y2</text><rect x="274" y="134" width="50" height="136" fill="#8a8680" opacity="0.45"/><rect x="274" y="147.6" width="50" height="122.4" fill="#76d5c1"/><text x="299" y="124" text-anchor="middle" fill="#f1eee8" font-size="16">90%</text><text x="299" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y3</text><rect x="356" y="100" width="50" height="170" fill="#8a8680" opacity="0.45"/><rect x="356" y="140.8" width="50" height="129.2" fill="#76d5c1"/><text x="381" y="90" text-anchor="middle" fill="#f1eee8" font-size="16">76%</text><text x="381" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y4</text><rect x="438" y="100" width="50" height="170" fill="#8a8680" opacity="0.45"/><rect x="438" y="134" width="50" height="136" fill="#76d5c1"/><text x="463" y="90" text-anchor="middle" fill="#f1eee8" font-size="16">80%</text><text x="463" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y5</text><rect x="520" y="100" width="50" height="170" fill="#8a8680" opacity="0.45"/><rect x="520" y="125.5" width="50" height="144.5" fill="#76d5c1"/><text x="545" y="90" text-anchor="middle" fill="#f1eee8" font-size="16">85%</text><text x="545" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y6</text><rect x="602" y="100" width="50" height="170" fill="#8a8680" opacity="0.45"/><rect x="602" y="117" width="50" height="153" fill="#76d5c1"/><text x="627" y="90" text-anchor="middle" fill="#f1eee8" font-size="16">90%</text><text x="627" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y7</text><rect x="684" y="66" width="50" height="204" fill="#8a8680" opacity="0.45"/><rect x="684" y="108.5" width="50" height="161.5" fill="#76d5c1"/><text x="709" y="56" text-anchor="middle" fill="#f1eee8" font-size="16">79%</text><text x="709" y="294" text-anchor="middle" fill="#a5a29c" font-size="16">Y8</text><path d="M100 270 L744 270" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="20" y="40" fill="#a5a29c" font-size="16">share of plants used</text><text x="381" y="66" text-anchor="middle" fill="#f1eee8" font-size="16">+20 MT</text><text x="703" y="32" text-anchor="end" fill="#f1eee8" font-size="16">+20 MT</text><rect x="20" y="318" width="14" height="14" fill="#8a8680" opacity="0.45"/><text x="42" y="331" fill="#a5a29c" font-size="16">capacity</text><rect x="140" y="318" width="14" height="14" fill="#76d5c1"/><text x="162" y="331" fill="#a5a29c" font-size="16">tonnes demanded</text><text x="780" y="331" text-anchor="end" fill="#a5a29c" font-size="16">1.7 px = 1 million tonnes</text></svg></figure>
+      <p>When plants run near full, prices firm and every company orders a new plant. They tend to arrive together: here the region jumps from 80 to 100 MT of capacity in Y4, the share of plants in use (<b>capacity utilisation</b>) drops from 90% to 76%, and prices soften until demand catches up. Because a plant costs nearly as much to run half empty as full, profit swings far more than tonnes do (<a href="margins-and-operating-leverage-eli5.html" data-series-link="margins-and-operating-leverage-eli5">Part 8</a>’s operating leverage).</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Cement: the tonne</p>
+      <h2>Price per tonne minus cost per tonne</h2>
+      <p>Cement companies report per tonne. <b>Realisation</b> is the net price received per tonne. Betwa sells 8 MT in a middling year at ₹5,000 a tonne <span class="tag">example</span>. Fuel, power, limestone and freight cost ₹3,500 a tonne; staff and upkeep are ₹400 cr whatever it sells, ₹500 a tonne at 8 MT. That leaves <b>EBITDA per tonne</b> of ₹1,000, ₹800 cr in all.</p>
+      <figure><svg viewBox="0 0 800 334" role="img" aria-label="One tonne of Betwa cement in three years on one rupee scale: at the trough it sells for 4,500 rupees and keeps 429 as EBITDA, at mid-cycle 5,000 and 1,000, at the peak 5,500 and 1,556, because the fixed cost per tonne falls as more tonnes are sold"><text x="20" y="50" fill="#a5a29c" font-size="16">Y3 · 70% used</text><rect x="210" y="30" width="315" height="30" fill="#ff8059"/><text x="218" y="51" fill="#202020" font-size="16">variable 3,500</text><rect x="525" y="30" width="51.4" height="30" fill="#ffb59c"/><rect x="576.4" y="30" width="38.6" height="30" fill="#f5c76a"/><text x="623" y="51" fill="#f1eee8" font-size="16">₹4,500</text><text x="529" y="82" fill="#a5a29c" font-size="16">fixed 571 · EBITDA 429</text><text x="20" y="128" fill="#a5a29c" font-size="16">Y1 · 80% used</text><rect x="210" y="108" width="315" height="30" fill="#ff8059"/><text x="218" y="129" fill="#202020" font-size="16">variable 3,500</text><rect x="525" y="108" width="45" height="30" fill="#ffb59c"/><rect x="570" y="108" width="90" height="30" fill="#f5c76a"/><text x="668" y="129" fill="#f1eee8" font-size="16">₹5,000</text><text x="529" y="160" fill="#a5a29c" font-size="16">fixed 500 · EBITDA 1,000</text><text x="20" y="206" fill="#a5a29c" font-size="16">Y6 · 90% used</text><rect x="210" y="186" width="315" height="30" fill="#ff8059"/><text x="218" y="207" fill="#202020" font-size="16">variable 3,500</text><rect x="525" y="186" width="40" height="30" fill="#ffb59c"/><rect x="565" y="186" width="140" height="30" fill="#f5c76a"/><text x="713" y="207" fill="#f1eee8" font-size="16">₹5,500</text><text x="529" y="238" fill="#a5a29c" font-size="16">fixed 444 · EBITDA 1,556</text><path d="M210 262 L750.0 262" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M210 262 L210 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="210" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><path d="M300 262 L300 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="300" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">1,000</text><path d="M390 262 L390 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="390" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">2,000</text><path d="M480 262 L480 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="480" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">3,000</text><path d="M570 262 L570 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="570" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">4,000</text><path d="M660 262 L660 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="660" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">5,000</text><path d="M750 262 L750 268" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="750" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">6,000</text><text x="20" y="316" fill="#a5a29c" font-size="16">₹ per tonne · 0.09 px = ₹1</text><rect x="330" y="304" width="14" height="14" fill="#ff8059"/><text x="350" y="316" fill="#a5a29c" font-size="16">variable</text><rect x="430" y="304" width="14" height="14" fill="#ffb59c"/><text x="450" y="316" fill="#a5a29c" font-size="16">fixed</text><rect x="510" y="304" width="14" height="14" fill="#f5c76a"/><text x="530" y="316" fill="#a5a29c" font-size="16">EBITDA</text></svg></figure>
+      <p>In a bad year (Y3) the price drops 10% and the plants run at 70%: fixed costs are spread over fewer tonnes and EBITDA per tonne falls 57%, to ₹429. In a good year (Y6) price is up 10% at 90% use, and it rises 56%, to ₹1,556. A 10% move in price becomes a 57% move in profit per tonne, and earnings per share move further still once depreciation and interest, which do not shrink, are taken off.</p>
+      <details class="trace"><summary>Go deeper: Betwa’s mid-cycle year</summary>
+        <p>Every number is <span class="tag">example</span>. Capacity 10 MTPA; sales 8 MT (80% use) at ₹5,000 a tonne; variable costs ₹3,500 a tonne; fixed cash costs ₹400 cr. EBITDA = 8 × (5,000 − 3,500) ÷ 10 − 400 = ₹800 cr (1 MT × ₹1,000 a tonne = ₹100 cr). Depreciation ₹300 cr; net debt ₹1,000 cr at 10%, so interest ₹100 cr; profit before tax ₹400 cr; tax 25%; profit after tax ₹300 cr; 10 crore shares, so EPS ₹30. At 15 times that, the share price is ₹450 and the market cap ₹4,500 cr.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Cement: valuing capacity</p>
+      <h2>EV per tonne of capacity</h2>
+      <p>Profit swings; capacity does not. So cement analysts divide <b>enterprise value</b> (<a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a>: market cap plus debt minus cash) by capacity. At ₹450 a share Betwa’s EV is ₹4,500 cr + ₹1,000 cr = ₹5,500 cr, or ₹5,500 per tonne of yearly capacity (₹550 cr per MTPA) <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 362" role="img" aria-label="Betwa's enterprise value per tonne of capacity: 4,375 rupees at the trough share price, 5,500 at mid-cycle and 6,850 at the peak price, each made of the shares in lavender and net debt in rose, all below the 7,000 rupees a tonne a new plant would cost"><text x="20" y="51" fill="#a5a29c" font-size="16">trough price (Y2)</text><rect x="230" y="30" width="236.3" height="30" fill="#c3b8ff"/><text x="238" y="51" fill="#202020" font-size="16">shares 3,375</text><rect x="466.2" y="30" width="70" height="30" fill="#ec6a94"/><text x="544.2" y="51" fill="#f1eee8" font-size="16">₹4,375</text><text x="20" y="109" fill="#a5a29c" font-size="16">mid-cycle</text><rect x="230" y="88" width="315" height="30" fill="#c3b8ff"/><text x="238" y="109" fill="#202020" font-size="16">shares 4,500</text><rect x="545" y="88" width="70" height="30" fill="#ec6a94"/><text x="623" y="109" fill="#f1eee8" font-size="16">₹5,500</text><text x="20" y="167" fill="#a5a29c" font-size="16">peak price (Y5)</text><rect x="230" y="146" width="409.5" height="30" fill="#c3b8ff"/><text x="238" y="167" fill="#202020" font-size="16">shares 5,850</text><rect x="639.5" y="146" width="70" height="30" fill="#ec6a94"/><text x="717.5" y="167" fill="#f1eee8" font-size="16">₹6,850</text><text x="20" y="239" fill="#a5a29c" font-size="16">build a new plant</text><rect x="230" y="218" width="490" height="30" fill="#ff8059"/><text x="238" y="239" fill="#202020" font-size="16">₹7,000 a tonne</text><path d="M230 290 L720.0 290" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M230 290 L230 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="230" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><path d="M300 290 L300 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="300" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">1,000</text><path d="M370 290 L370 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="370" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">2,000</text><path d="M440 290 L440 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="440" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">3,000</text><path d="M510 290 L510 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="510" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">4,000</text><path d="M580 290 L580 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="580" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">5,000</text><path d="M650 290 L650 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="650" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">6,000</text><path d="M720 290 L720 296" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="720" y="314" text-anchor="middle" fill="#a5a29c" font-size="16">7,000</text><text x="20" y="344" fill="#a5a29c" font-size="16">₹ of enterprise value per tonne of capacity · 0.07 px = ₹1</text></svg></figure>
+      <p>Compare it with what a new plant would cost, ₹7,000 a tonne here <span class="tag">example</span>. Below that, buying an existing company is cheaper than building, and fewer rivals build; well above it, new plants get ordered. Cement acquisitions are often priced this way. Capacity is not all equal, though: location, limestone, freight distance and age all change what a tonne can earn, so read EV per tonne next to EBITDA per tonne.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Steel: the spread</p>
+      <h2>Steel earns a spread on world prices</h2>
+      <p>A steelmaker buys iron ore and coking coal and sells steel, and all three are priced in world markets. Its EBITDA per tonne is roughly the gap between the steel price and those raw materials, less the cost of turning one into the other. Tata Steel’s group EBITDA per tonne delivered doubled in FY22, then fell back <span class="tag">public</span>.</p>
+      <figure><svg viewBox="0 0 800 314" role="img" aria-label="Tata Steel's consolidated EBITDA per tonne: 10,838 rupees in FY21, 21,626 in FY22, then 11,358, 7,962, 8,335 and 10,900 in FY26"><text x="30" y="44" fill="#a5a29c" font-size="16">FY21</text><rect x="110" y="24" width="281.8" height="28" fill="#f5c76a"/><text x="399.8" y="44" fill="#f1eee8" font-size="16">₹10,838</text><text x="30" y="86" fill="#a5a29c" font-size="16">FY22</text><rect x="110" y="66" width="562.3" height="28" fill="#f5c76a"/><text x="680.3" y="86" fill="#f1eee8" font-size="16">₹21,626</text><text x="30" y="128" fill="#a5a29c" font-size="16">FY23</text><rect x="110" y="108" width="295.3" height="28" fill="#f5c76a"/><text x="413.3" y="128" fill="#f1eee8" font-size="16">₹11,358</text><text x="30" y="170" fill="#a5a29c" font-size="16">FY24</text><rect x="110" y="150" width="207" height="28" fill="#f5c76a"/><text x="325" y="170" fill="#f1eee8" font-size="16">₹7,962</text><text x="30" y="212" fill="#a5a29c" font-size="16">FY25</text><rect x="110" y="192" width="216.7" height="28" fill="#f5c76a"/><text x="334.7" y="212" fill="#f1eee8" font-size="16">₹8,335</text><text x="30" y="254" fill="#a5a29c" font-size="16">FY26</text><rect x="110" y="234" width="283.4" height="28" fill="#f5c76a"/><text x="401.4" y="254" fill="#f1eee8" font-size="16">₹10,900</text><text x="30" y="296" fill="#a5a29c" font-size="16">₹ per tonne delivered, Tata Steel group · 0.026 px = ₹1</text></svg></figure>
+      <p>Tonnes hardly moved: group deliveries were 28.50 MT in FY21, 29.52 MT in FY22, 28.79 MT in FY23, 29.39 MT in FY24, 30.96 MT in FY25 and 31.97 MT in FY26 <span class="tag">public</span>. The swing came from the spread, not the volume. The group also mixes very different businesses: in FY26 India earned ₹15,213 a tonne, while the UK made an EBITDA loss of £217 million <span class="tag">public</span>, so read the segments as well as the total.</p>
+      <details class="trace"><summary>Go deeper: where these numbers come from</summary>
+        <p>Tata Steel’s full-year results press releases print reported EBITDA per tonne and deliveries for the group and for India: FY22 and FY21 in the release of 3 May 2022, FY24 and FY23 in that of 29 May 2024, FY26 and FY25 in that of 15 May 2026. India means Tata Steel standalone plus Neelachal Ispat Nigam on the release’s own pro forma basis. The figures are as printed in each release; later reports restate some years for mergers.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Normalised earnings</p>
+      <h2>Judge the cycle, not the year</h2>
+      <p>Run Betwa through an eight-year cycle (the lab’s default settings). Its plants, people and market share never change, yet EPS goes from −₹7.50 to ₹75 <span class="tag">example</span>. Which year is the “real” Betwa? None of them. Analysts instead estimate <b>normalised</b>, or <b>mid-cycle</b>, earnings: what the company earns in an ordinary year.</p>
+      <figure><svg viewBox="0 0 800 360" role="img" aria-label="Betwa's EPS over eight years: 30, 3.0, minus 7.5, 14.1, 47.1, 75.0, 60.7 and 30 rupees, swinging around a dashed mid-cycle line at 30 rupees"><rect x="120" y="172" width="46" height="78" fill="#f5c76a"/><text x="143" y="164" text-anchor="middle" fill="#f1eee8" font-size="16">30.0</text><text x="143" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y1</text><rect x="200" y="242.3" width="46" height="7.7" fill="#f5c76a"/><text x="223" y="234.3" text-anchor="middle" fill="#f1eee8" font-size="16">3.0</text><text x="223" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y2</text><rect x="280" y="250" width="46" height="19.5" fill="#f5c76a"/><text x="303" y="289.5" text-anchor="middle" fill="#f1eee8" font-size="16">−7.5</text><text x="303" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y3</text><rect x="360" y="213.3" width="46" height="36.7" fill="#f5c76a"/><text x="383" y="205.3" text-anchor="middle" fill="#f1eee8" font-size="16">14.1</text><text x="383" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y4</text><rect x="440" y="127.5" width="46" height="122.5" fill="#f5c76a"/><text x="463" y="119.5" text-anchor="middle" fill="#f1eee8" font-size="16">47.1</text><text x="463" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y5</text><rect x="520" y="55" width="46" height="195" fill="#f5c76a"/><text x="543" y="47" text-anchor="middle" fill="#f1eee8" font-size="16">75.0</text><text x="543" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y6</text><rect x="600" y="92.1" width="46" height="157.9" fill="#f5c76a"/><text x="623" y="84.1" text-anchor="middle" fill="#f1eee8" font-size="16">60.7</text><text x="623" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y7</text><rect x="680" y="172" width="46" height="78" fill="#f5c76a"/><text x="703" y="164" text-anchor="middle" fill="#f1eee8" font-size="16">30.0</text><text x="703" y="312" text-anchor="middle" fill="#a5a29c" font-size="16">Y8</text><path d="M108 250 L738 250" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M108 172 L738 172" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="6 5"/><text x="20" y="177" fill="#f1eee8" font-size="16">mid ₹30</text><text x="20" y="255" fill="#a5a29c" font-size="16">₹0</text><text x="20" y="344" fill="#a5a29c" font-size="16">EPS, ₹ a share · 2.6 px = ₹1</text></svg></figure>
+      <p>There are two common ways. <b>Mid-cycle margin</b>: an ordinary price and utilisation, here ₹1,000 a tonne on 8 MT, giving EPS ₹30. <b>Cycle average</b>: the mean of a full cycle’s EPS, here ₹31.55, a little higher because good years sell more tonnes at better prices. Either needs at least one whole cycle of history, adjusted for capacity added since.</p>
+      <p class="note">Normalised earnings are a judgement, not a figure in the accounts. If an industry adds capacity faster than demand for years, yesterday’s mid-cycle margin is too high; if it consolidates, too low.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The P/E paradox</p>
+      <h2>P/E is highest at the bottom</h2>
+      <p>Betwa’s share price moves less than its profit, because the market values an ordinary year and looks ahead (the lab’s pricing rule). Divide each year-end price by that year’s EPS, the <b>trailing P/E</b>, and the gold and lavender bars mirror each other <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 486" role="img" aria-label="Betwa's eight years: the gold EPS bars on top are tallest in years 5 to 7, while the lavender trailing P/E bars hanging below are shortest in exactly those years, 12.4, 7.2 and 7.4, and longest or not meaningful around the loss in year 3"><rect x="120" y="95" width="46" height="45" fill="#f5c76a"/><rect x="120" y="214" width="46" height="49.2" fill="#c3b8ff"/><text x="143" y="283.2" text-anchor="middle" fill="#f1eee8" font-size="16">12.3</text><text x="143" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y1</text><rect x="200" y="135.6" width="46" height="4.4" fill="#f5c76a"/><rect x="200" y="214" width="46" height="160" fill="#c3b8ff"/><text x="223" y="394" text-anchor="middle" fill="#f1eee8" font-size="16">113.9 ▾</text><text x="223" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y2</text><rect x="280" y="140" width="46" height="11.2" fill="#f5c76a"/><text x="303" y="234" text-anchor="middle" fill="#f1eee8" font-size="16">n/m</text><text x="303" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y3</text><rect x="360" y="118.8" width="46" height="21.1" fill="#f5c76a"/><rect x="360" y="214" width="46" height="142.2" fill="#c3b8ff"/><text x="383" y="376.2" text-anchor="middle" fill="#f1eee8" font-size="16">35.6</text><text x="383" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y4</text><rect x="440" y="69.3" width="46" height="70.7" fill="#f5c76a"/><rect x="440" y="214" width="46" height="49.7" fill="#c3b8ff"/><text x="463" y="283.7" text-anchor="middle" fill="#f1eee8" font-size="16">12.4</text><text x="463" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y5</text><rect x="520" y="27.5" width="46" height="112.5" fill="#f5c76a"/><rect x="520" y="214" width="46" height="28.9" fill="#c3b8ff"/><text x="543" y="262.9" text-anchor="middle" fill="#f1eee8" font-size="16">7.2</text><text x="543" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y6</text><rect x="600" y="48.9" width="46" height="91.1" fill="#f5c76a"/><rect x="600" y="214" width="46" height="29.6" fill="#c3b8ff"/><text x="623" y="263.6" text-anchor="middle" fill="#f1eee8" font-size="16">7.4</text><text x="623" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y7</text><rect x="680" y="95" width="46" height="45" fill="#f5c76a"/><rect x="680" y="214" width="46" height="60" fill="#c3b8ff"/><text x="703" y="294" text-anchor="middle" fill="#f1eee8" font-size="16">15.0</text><text x="703" y="434" text-anchor="middle" fill="#a5a29c" font-size="16">Y8</text><path d="M108 140 L738 140" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M108 214 L738 214" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="20" y="60" fill="#a5a29c" font-size="16">EPS</text><text x="20" y="84" fill="#a5a29c" font-size="16">1.5 px = ₹1</text><text x="20" y="250" fill="#a5a29c" font-size="16">trailing</text><text x="20" y="274" fill="#a5a29c" font-size="16">P/E</text><text x="20" y="470" fill="#a5a29c" font-size="16">P/E bars: 4 px = 1×, cut at 40 (▾)</text></svg></figure>
+      <p>The P/E is 7.2 in Y6, the best year, just before profit falls: the stock looks cheapest at the top. It is 113.9 in Y2 and meaningless in the Y3 loss, just before the recovery: it looks dearest at the bottom. Buy at Y3’s ₹402 and sell two years later at ₹585, and you make 45%; buy at Y6’s ₹542 and sell at ₹450, and you lose 17%. That is <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a>’s trap two over a whole cycle.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Ride a full cycle</h2>
+      <p>Set how far Betwa’s price per tonne and utilisation swing, how much it owes, and how far ahead the market looks <span class="tag">example</span>. Watch trailing EPS swing around the mid-cycle line, the share price lead it, and the trailing P/E point the wrong way.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Set the cycle</p>
+          <div class="dl-grid">
+            <div class="dl-col">
+              <div class="control"><label for="dp">Price swing, peak to mid-cycle: <output id="dp-o"></output></label><input id="dp" type="range" min="0" max="1000" step="50" value="500"></div>
+              <div class="control"><label for="du">Utilisation swing: <output id="du-o"></output></label><input id="du" type="range" min="0" max="15" step="1" value="10"></div>
+            </div>
+            <div class="dl-col">
+              <div class="control"><label for="nd">Net debt: <output id="nd-o"></output></label><input id="nd" type="range" min="0" max="2000" step="250" value="1000"></div>
+              <div class="control"><label for="ky">Years of boom or bust the market prices in: <output id="ky-o"></output></label><input id="ky" type="range" min="0" max="4" step="0.5" value="3"></div>
+            </div>
+          </div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="base">Betwa’s cycle</button>
+            <button type="button" class="secondary" data-p="gentle">Gentle cement cycle</button>
+            <button type="button" class="secondary" data-p="steel">Steel-style boom and bust</button>
+            <button type="button" class="secondary" data-p="flat">No cycle</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Trailing EPS against mid-cycle EPS</p>
+          <div class="dl-chart lab-chart"><svg id="labChart" viewBox="0 0 640 340" role="img" aria-label="Betwa's EPS in each of the eight years as gold bars on one rupee scale, with a dashed line at mid-cycle EPS, updated by the sliders"></svg></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Share price and trailing P/E</p>
+          <div class="dl-chart lab-chart"><svg id="priceChart" viewBox="0 0 640 340" role="img" aria-label="Betwa's year-end share price in each of the eight years as lavender bars from zero, with the trailing P/E beside each, updated by the sliders"></svg></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Buy at the top or the bottom?</p>
+          <div class="table-wrap"><table class="dash" id="dash"></table></div>
+          <p class="verdict" id="verdict"></p>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>Eight years make one cycle, then it repeats. Each year price and utilisation move by the slider swing times a fixed shape: 0, −0.7, −1, −0.4, +0.4, +1, +0.7, 0, so Y3 is the trough and Y6 the peak, and both swings average zero. Capacity 10 MTPA; mid-cycle 80% use at ₹5,000 a tonne; variable cost ₹3,500 a tonne; fixed cash costs ₹400 cr; depreciation ₹300 cr; interest 10% of net debt; tax 25%, with a loss earning a 25% tax credit; 10 crore shares; no dividends, no growth, no new plants. Mid-cycle EPS is EPS at 80% and ₹5,000. The share price at each year end = 15 × mid-cycle EPS + (next year’s EPS − mid-cycle EPS) × the years slider: the market pays its usual multiple for an ordinary year, plus or minus next year’s extra profit or shortfall, extended for that many years. It is a teaching rule, not a forecast of how any real share trades. Returns are price only, two years after buying.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Cheap on trailing, dear on normalised</h2>
+      <p>The mistake is to price peak profit as if it would last. In Betwa’s best year the trailing P/E is 7.2, but its price is 18.1 times mid-cycle EPS, dearer than its usual 15. In the loss year there is no P/E at all, yet the price is only 13.4 times mid-cycle EPS: cheaper than usual <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 322" role="img" aria-label="At Betwa's peak year 6 the trailing P/E is 7.2 but the P/E on mid-cycle earnings is 18.1; in loss year 3 the trailing P/E is not meaningful but the P/E on mid-cycle earnings is 13.4"><text x="20" y="46" fill="#a5a29c" font-size="16">Y6 · trailing</text><rect x="230" y="26" width="159" height="28" fill="#c3b8ff" opacity="0.55"/><text x="397" y="46" fill="#f1eee8" font-size="16">7.2×</text><text x="20" y="96" fill="#a5a29c" font-size="16">Y6 · normalised</text><rect x="230" y="76" width="397.6" height="28" fill="#c3b8ff"/><text x="635.6" y="96" fill="#f1eee8" font-size="16">18.1×</text><text x="20" y="162" fill="#a5a29c" font-size="16">Y3 · trailing</text><text x="230" y="162" fill="#f1eee8" font-size="16">n/m: a loss year</text><text x="20" y="212" fill="#a5a29c" font-size="16">Y3 · normalised</text><rect x="230" y="192" width="295" height="28" fill="#c3b8ff"/><text x="533" y="212" fill="#f1eee8" font-size="16">13.4×</text><path d="M230 250 L780 250" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M230 250 L230 256" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="230" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><path d="M340 250 L340 256" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="340" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><path d="M450 250 L450 256" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="450" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><path d="M560 250 L560 256" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="560" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">15</text><path d="M670 250 L670 256" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="670" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">20</text><path d="M780 250 L780 256" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="780" y="274" text-anchor="middle" fill="#a5a29c" font-size="16">25</text><text x="20" y="304" fill="#a5a29c" font-size="16">P/E · 22 px = 1× · normalised = price ÷ mid-cycle EPS ₹30</text></svg></figure>
+      <p>Debt makes it worse. Interest is fixed, so the more a cyclical borrows, the deeper its losses at the bottom (try the lab’s debt slider). Companies tend to borrow to build at the top, when cash is plentiful and the plants are full, and the new capacity then arrives into the downturn. And a cyclical’s P/E in any one year says little next to a steady business’s, like the consumer companies of Part 32, “Consumer companies”.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Eight things to read in a cyclical</h2>
+      <div class="field-grid">
+        <div><b>Capacity and utilisation</b><span>Tonnes a year the plants can make, and the share actually made. High use means prices can rise; new capacity coming means they may not.</span><em>MD&amp;A · BUSINESS PERFORMANCE</em></div>
+        <div><b>Per-tonne P&amp;L (cement)</b><span>Realisation, then power and fuel, raw materials and freight per tonne, and EBITDA per tonne.</span><em>MD&amp;A · COST HIGHLIGHTS</em></div>
+        <div><b>EV per tonne</b><span>Enterprise value ÷ capacity. Compare with the cost of a new plant and with acquisition prices.</span><em>YOUR ARITHMETIC</em></div>
+        <div><b>Spread and EBITDA per tonne (steel)</b><span>Steel price less iron ore and coking coal; deliveries in tonnes; India and Europe separately.</span><em>RESULTS PRESS RELEASE</em></div>
+        <div><b>Autos: volumes and stock</b><span>Monthly unit sales, plant utilisation, dealer stock in days, and steel and aluminium costs. Demand follows loan rates, fuel prices and new models.</span><em>MONTHLY SALES FILINGS · MD&amp;A</em></div>
+        <div><b>Mid-cycle EPS</b><span>An ordinary margin on ordinary volume, or the average of a full cycle. Value on this, not on one year.</span><em>THIS PART</em></div>
+        <div><b>Trailing vs normalised P/E</b><span>A very low trailing P/E with record margins is a warning; a loss with a falling price may be the opportunity.</span><em>PARTS 7 AND 26</em></div>
+        <div><b>Debt at the trough</b><span>Net debt ÷ EBITDA in a bad year, not a good one. Can the company survive the bottom without new equity?</span><em>PART 11</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>UltraTech, FY2026: capacity and the tonne</h2>
+      <p>UltraTech Cement, consolidated, year to 31 March 2026 <span class="tag">public</span>, from its Integrated and Sustainability Report 2025-26. Figures it prints are marked “printed”; the rest are my arithmetic on its statements, with the working shown.</p>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Metric</th><th class="wk">Working</th><th>Value</th><th class="pg">Page</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">CAPACITY</td></tr>
+          <tr><td>Grey cement capacity, 31 March 2026</td><td class="wk">printed, India and overseas</td><td class="val">196.8 MTPA</td><td class="pg">P. 42</td></tr>
+          <tr><td>After April 2026 additions</td><td class="wk">printed; 8.7 MTPA added</td><td class="val">205.5 MTPA</td><td class="pg">PP. 27, 198</td></tr>
+          <tr><td>India capacity utilisation</td><td class="wk">printed; 143.83 MT made on 191.36 MTPA</td><td class="val">77%</td><td class="pg">P. 192</td></tr>
+          <tr class="grp"><td colspan="4">PER TONNE</td></tr>
+          <tr><td>Sales volume</td><td class="wk">printed, all cement</td><td class="val">154.25 MT</td><td class="pg">P. 192</td></tr>
+          <tr><td>Net turnover per tonne</td><td class="wk">87,384 ÷ 154.25; includes ready-mix and other products</td><td class="val">≈ ₹5,665</td><td class="pg">P. 193</td></tr>
+          <tr><td>Energy cost per tonne</td><td class="wk">printed, standalone; FY25 ₹1,322</td><td class="val">₹1,229</td><td class="pg">P. 193</td></tr>
+          <tr><td>Freight per tonne</td><td class="wk">printed, standalone; FY25 ₹1,195</td><td class="val">₹1,146</td><td class="pg">P. 193</td></tr>
+          <tr><td>Input materials per tonne</td><td class="wk">printed, standalone; FY25 ₹624</td><td class="val">₹653</td><td class="pg">P. 193</td></tr>
+          <tr><td>EBITDA per tonne</td><td class="wk">printed; FY25 ₹979</td><td class="val">₹1,141</td><td class="pg">P. 44</td></tr>
+          <tr class="grp"><td colspan="4">VALUE</td></tr>
+          <tr><td>Market cap, 31 March 2026</td><td class="wk">printed, NSE</td><td class="val">₹3,16,633 cr</td><td class="pg">P. 267</td></tr>
+          <tr><td>Enterprise value</td><td class="wk">3,16,633 + borrowings 22,780.66 − cash, bank and current investments 5,119.97</td><td class="val">₹3,34,294 cr</td><td class="pg">P. 462</td></tr>
+          <tr><td>EV per tonne of capacity</td><td class="wk">3,34,294 cr ÷ 196.8 MTPA</td><td class="val">≈ ₹16,986</td><td class="pg">—</td></tr>
+          <tr><td>Planned expansion</td><td class="wk">₹16,000 cr for 37 MTPA, by FY2028</td><td class="val">≈ ₹4,324 a tonne</td><td class="pg">P. 18</td></tr>
+        </tbody>
+      </table></div>
+      <figure><svg viewBox="0 0 800 288" role="img" aria-label="UltraTech's consolidated EBITDA per tonne for FY22 to FY26: 1,279, 1,052, 1,141, 979 and 1,141 rupees; its P/E on 31 March was highest, 56.1 and 43.4, in the two weakest years"><text x="30" y="44" fill="#a5a29c" font-size="16">FY22</text><rect x="110" y="24" width="460.4" height="28" fill="#f5c76a"/><text x="578.4" y="44" fill="#f1eee8" font-size="16">₹1,279</text><rect x="640" y="30" width="16" height="16" fill="#c3b8ff"/><text x="664" y="44" fill="#f1eee8" font-size="16">P/E 33.6</text><text x="30" y="88" fill="#a5a29c" font-size="16">FY23</text><rect x="110" y="68" width="378.7" height="28" fill="#f5c76a"/><text x="496.7" y="88" fill="#f1eee8" font-size="16">₹1,052</text><rect x="640" y="74" width="16" height="16" fill="#c3b8ff"/><text x="664" y="88" fill="#f1eee8" font-size="16">P/E 43.4</text><text x="30" y="132" fill="#a5a29c" font-size="16">FY24</text><rect x="110" y="112" width="410.8" height="28" fill="#f5c76a"/><text x="528.8" y="132" fill="#f1eee8" font-size="16">₹1,141</text><rect x="640" y="118" width="16" height="16" fill="#c3b8ff"/><text x="664" y="132" fill="#f1eee8" font-size="16">P/E 40.1</text><text x="30" y="176" fill="#a5a29c" font-size="16">FY25</text><rect x="110" y="156" width="352.4" height="28" fill="#f5c76a"/><text x="470.4" y="176" fill="#f1eee8" font-size="16">₹979</text><rect x="640" y="162" width="16" height="16" fill="#c3b8ff"/><text x="664" y="176" fill="#f1eee8" font-size="16">P/E 56.1</text><text x="30" y="220" fill="#a5a29c" font-size="16">FY26</text><rect x="110" y="200" width="410.8" height="28" fill="#f5c76a"/><text x="528.8" y="220" fill="#f1eee8" font-size="16">₹1,141</text><rect x="640" y="206" width="16" height="16" fill="#c3b8ff"/><text x="664" y="220" fill="#f1eee8" font-size="16">P/E 38.7</text><text x="30" y="270" fill="#a5a29c" font-size="16">EBITDA per tonne · 0.36 px = ₹1</text><text x="780" y="270" text-anchor="end" fill="#a5a29c" font-size="16">price ÷ normalised EPS</text></svg></figure>
+      <p><b>Read it as a story.</b> UltraTech’s cycle is mild: EBITDA per tonne stayed between ₹979 and ₹1,279 over five years while grey cement sales grew from 92.53 MT to 151.09 MT <span class="tag">public</span>. Yet its P/E was highest in the two weakest years, and in FY26, as EBITDA per tonne recovered to ₹1,141, its P/E fell back to 38.7. The market priced UltraTech at roughly ₹17,000 of EV per tonne of capacity, about four times what its own plan spends per tonne of new capacity. That premium is the market paying for profit per tonne, scale and growth, not for the concrete and kilns.</p>
+      <details class="trace"><summary>Go deeper: the working and its limits</summary>
+        <p>P/E here is the NSE closing price on the last trading day of each year (₹6,602.30, ₹7,622.15, ₹9,749.15, ₹11,509.55 and ₹10,745.00) divided by UltraTech’s consolidated “normalised EPS” as printed on p. 44 (₹196.46, ₹175.63, ₹243.05, ₹205.30, ₹277.62). UltraTech’s normalised EPS leaves out one-off items such as the tax gains its ten-year table footnotes on p. 189; it is not the mid-cycle EPS of this page. Borrowings are ₹15,018.82 cr non-current plus ₹7,761.84 cr current; cash ₹354.48 cr, other bank balances ₹1,029.87 cr and current investments ₹3,735.62 cr (p. 462). Adding the ₹4,088.90 cr non-controlling interest would lift EV per tonne to about ₹17,194. EV also pays for ready-mix, building products and the overseas plants, and the expansion figure mixes new sites and additions at existing ones, so both per-tonne numbers are rough.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Tata Steel, FY21 to FY26: the paradox</h2>
+      <p>Tata Steel group, basic EPS and P/E as printed in its own reports’ financial highlights and ratios, and the NSE closing price on the last trading day of each year <span class="tag">public</span>. Per-share figures are on today’s ₹1 shares: Tata Steel split each ₹10 share into ten in 2022.</p>
+      <figure><svg viewBox="0 0 800 466" role="img" aria-label="Tata Steel group basic EPS from FY21 to FY26, 6.38, 33.24, 7.17, minus 3.62, 2.74 and 8.65 rupees, above its printed P/E, 12.73, 3.93, 14.57, not available, 56.29 and 22.17: the lowest P/E came at the peak and the highest near the bottom"><rect x="140" y="127" width="56" height="23" fill="#f5c76a"/><text x="168" y="119" text-anchor="middle" fill="#f1eee8" font-size="16">6.38</text><rect x="140" y="222" width="56" height="33.1" fill="#c3b8ff"/><text x="168" y="275.1" text-anchor="middle" fill="#f1eee8" font-size="16">12.73</text><text x="168" y="418" text-anchor="middle" fill="#a5a29c" font-size="16">FY21</text><text x="168" y="444" text-anchor="middle" fill="#f1eee8" font-size="16">—</text><rect x="244" y="30.3" width="56" height="119.7" fill="#f5c76a"/><text x="272" y="22.3" text-anchor="middle" fill="#f1eee8" font-size="16">33.24</text><rect x="244" y="222" width="56" height="10.2" fill="#c3b8ff"/><text x="272" y="252.2" text-anchor="middle" fill="#f1eee8" font-size="16">3.93</text><text x="272" y="418" text-anchor="middle" fill="#a5a29c" font-size="16">FY22</text><text x="272" y="444" text-anchor="middle" fill="#f1eee8" font-size="16">₹131</text><rect x="348" y="124.2" width="56" height="25.8" fill="#f5c76a"/><text x="376" y="116.2" text-anchor="middle" fill="#f1eee8" font-size="16">7.17</text><rect x="348" y="222" width="56" height="37.9" fill="#c3b8ff"/><text x="376" y="279.9" text-anchor="middle" fill="#f1eee8" font-size="16">14.57</text><text x="376" y="418" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><text x="376" y="444" text-anchor="middle" fill="#f1eee8" font-size="16">₹104</text><rect x="452" y="150" width="56" height="13" fill="#f5c76a"/><text x="480" y="181" text-anchor="middle" fill="#f1eee8" font-size="16">−3.62</text><text x="480" y="242" text-anchor="middle" fill="#f1eee8" font-size="16">NA</text><text x="480" y="418" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><text x="480" y="444" text-anchor="middle" fill="#f1eee8" font-size="16">₹156</text><rect x="556" y="140.1" width="56" height="9.9" fill="#f5c76a"/><text x="584" y="132.1" text-anchor="middle" fill="#f1eee8" font-size="16">2.74</text><rect x="556" y="222" width="56" height="146.4" fill="#c3b8ff"/><text x="584" y="388.4" text-anchor="middle" fill="#f1eee8" font-size="16">56.29</text><text x="584" y="418" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><text x="584" y="444" text-anchor="middle" fill="#f1eee8" font-size="16">₹154</text><rect x="660" y="118.9" width="56" height="31.1" fill="#f5c76a"/><text x="688" y="110.9" text-anchor="middle" fill="#f1eee8" font-size="16">8.65</text><rect x="660" y="222" width="56" height="57.6" fill="#c3b8ff"/><text x="688" y="299.6" text-anchor="middle" fill="#f1eee8" font-size="16">22.17</text><text x="688" y="418" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><text x="688" y="444" text-anchor="middle" fill="#f1eee8" font-size="16">₹192</text><path d="M128 150 L728 150" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M128 222 L728 222" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="20" y="70" fill="#a5a29c" font-size="16">EPS ₹</text><text x="20" y="94" fill="#a5a29c" font-size="16">3.6 px = ₹1</text><text x="20" y="262" fill="#a5a29c" font-size="16">P/E</text><text x="20" y="286" fill="#a5a29c" font-size="16">2.6 px = 1×</text><text x="20" y="444" fill="#a5a29c" font-size="16">price</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Year</th><th>EPS</th><th>Price</th><th>P/E</th><th>A year on</th></tr></thead>
+        <tbody>
+          <tr><td>FY21</td><td class="val">₹6.38</td><td class="val">—</td><td class="val">12.73</td><td class="val">—</td></tr>
+          <tr><td>FY22</td><td class="val">₹33.24</td><td class="val">₹130.72</td><td class="val">3.93</td><td class="val">−20.1%</td></tr>
+          <tr><td>FY23</td><td class="val">₹7.17</td><td class="val">₹104.50</td><td class="val">14.57</td><td class="val">+49.1%</td></tr>
+          <tr><td>FY24</td><td class="val">−₹3.62</td><td class="val">₹155.85</td><td class="val">NA</td><td class="val">−1.0%</td></tr>
+          <tr><td>FY25</td><td class="val">₹2.74</td><td class="val">₹154.24</td><td class="val">56.29</td><td class="val">+24.4%</td></tr>
+          <tr><td>FY26</td><td class="val">₹8.65</td><td class="val">₹191.86</td><td class="val">22.17</td><td class="val">—</td></tr>
+        </tbody>
+      </table></div>
+      <ol class="checks">
+        <li><b>The lowest P/E came at the peak.</b> In FY22, record EBITDA of ₹63,830 cr gave EPS of ₹33.24 and a P/E of 3.93. A year later EPS was ₹7.17 and the price 20% lower.</li>
+        <li><b>The highest came near the bottom.</b> FY24 was a loss (it includes ₹7,814 cr of exceptional items) and FY25’s P/E was 56.29. Buying at those “expensive” prices did better than buying at 3.93.</li>
+        <li><b>Normalise with care.</b> Average EPS over FY21–FY26 is ₹9.09; on that, FY26’s ₹191.86 is 21.1 times, close to the printed 22.17, while FY22’s ₹130.72 was 14.4 times, not 3.93. That average uses hindsight: in FY22 nobody knew the next four years.</li>
+        <li><b>Watch the debt through the cycle.</b> Net debt was ₹51,049 cr in FY22 (0.8× EBITDA) and ₹80,144 cr in FY26 (2.3×), after years of capital spending that included the 5 MTPA Kalinganagar expansion.</li>
+      </ol>
+      <details class="trace"><summary>Go deeper: sources and arithmetic</summary>
+        <p>EPS and P/E: FY21 and FY22 from the 2021-22 report (pp. 270–271; FY21 EPS ₹63.78 and FY22 ₹332.35 on ₹10 shares, divided by 10 here), FY22 restated as ₹33.24 and FY23 from the 2022-23 report (pp. F2–F3), FY24 and FY25 from the 2024-25 report (pp. F2–F3), FY26 from the 2025-26 report (pp. F2, F33). The reports define P/E as market price per share ÷ basic EPS. Prices: NSE closes on 31 March 2022 (₹1,307.20 before the split), 31 March 2023, 28 March 2024, 28 March 2025 and 30 March 2026. Price changes leave out dividends. EBITDA, exceptional items and net debt: results releases of 3 May 2022, 29 May 2024 and 15 May 2026. The six-year average is (6.378 + 33.24 + 7.17 − 3.62 + 2.74 + 8.65) ÷ 6 = ₹9.09.</p>
+      </details>
+      <p class="source-note">Real figures are frozen at FY2026: UltraTech Cement’s Integrated and Sustainability Report 2025-26 (printed pages as cited), Tata Steel’s Integrated Report &amp; Annual Accounts 2025-26, 2024-25, 2022-23 and 2021-22 (financial highlights and ratios) and full-year results releases, and NSE closing prices. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before buying a cyclical</h2>
+      <ol class="checks">
+        <li><b>Where are we in the cycle?</b> Utilisation, prices per tonne and the capacity being built across the industry, not just this company.</li>
+        <li><b>What does an ordinary year earn?</b> Mid-cycle EBITDA per tonne on normal volume, checked against a full cycle of history.</li>
+        <li><b>What am I paying for that?</b> Price ÷ mid-cycle EPS, and EV per tonne against the cost of new capacity.</li>
+        <li><b>Can it survive the bottom?</b> Debt and interest against trough EBITDA.</li>
+        <li><b>Is the P/E telling me the cycle, or value?</b> A record year at a P/E of 4 is usually the cycle talking.</li>
+      </ol>
+      <p>Cyclicals have profits nobody controls. Part 34, “Utilities, PSUs and real estate”, turns to the opposite: power companies whose return is set by a regulator’s formula, companies the government owns, and property developers whose sales arrive years before their profit.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A cyclical earns its money per tonne and over a whole cycle: value it on capacity and on what an ordinary year earns, and read a very low P/E at the top, or a very high one at the bottom, as the cycle talking, not value.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- Betwa Cement lab (fictional). Every output is computed here from the four sliders.
+    const CAP=10, U0=80, P0=5000, VAR=3500, FIX=400, DEP=300, RATE=0.10, TAX=0.25, SHARES=10, MULT=15;
+    const SHAPE=[0,-0.7,-1,-0.4,0.4,1,0.7,0];
+    function yearOf(usePct,price,nd){
+      const tonnes=CAP*usePct/100, ebitda=tonnes*(price-VAR)/10-FIX, pbt=ebitda-DEP-RATE*nd, pat=pbt*(1-TAX);
+      return {use:usePct,price,tonnes,ebitda,ebt:ebitda*10/tonnes,pbt,pat,eps:pat/SHARES};
+    }
+    function compute(dp,du,nd,ky){
+      const mid=yearOf(U0,P0,nd), N=mid.eps;
+      const ys=SHAPE.map(s=>yearOf(U0+du*s,P0+dp*s,nd));
+      ys.forEach((y,i)=>{const nx=ys[(i+1)%8].eps;y.sp=MULT*N+ky*(nx-N);y.pe=y.eps>0?y.sp/y.eps:null;y.pen=y.sp/N;});
+      const avg=ys.reduce((a,y)=>a+y.eps,0)/8;
+      let cheap=0,dear=0;ys.forEach((y,i)=>{if(y.eps>ys[cheap].eps)cheap=i;if(y.eps<ys[dear].eps)dear=i;});
+      const ret=i=>100*(ys[(i+2)%8].sp/ys[i].sp-1);
+      return {N,avg,ys,cheap,dear,rc:ret(cheap),rd:ret(dear),mid};
+    }
+    const PRESETS={
+      base:{v:[500,10,1000,3],t:'Betwa’s cycle: price ±₹500 a tonne and utilisation ±10 points. EPS runs from −₹7.50 to ₹75 around a mid-cycle ₹30; the lowest trailing P/E, 7.2, comes in the best year.'},
+      gentle:{v:[200,5,1000,3],t:'Gentle cement cycle: small swings, like UltraTech’s recent years. EPS stays positive, but the P/E is still lowest in the best year and highest in the worst.'},
+      steel:{v:[1000,15,2000,3],t:'Steel-style boom and bust, with more debt: three loss years at the bottom, a huge peak, and trailing P/Es of 4.7 and 4.1 in the two best years, just before the share price falls by more than half.'},
+      flat:{v:[0,0,1000,3],t:'No cycle: every year earns the mid-cycle ₹30, the share price stays at ₹450 and the trailing P/E is 15 every year. Here trailing and normalised earnings agree, and timing does not matter.'}};
+    const labConfig={format:v=>(v<0?'−':'')+Math.abs(v)};
+    const r1=v=>(v<0?'−':'')+Math.abs(v).toFixed(1), rs=v=>(v<0?'−₹':'₹')+Math.abs(v).toFixed(2), r0=v=>(v<0?'−':'')+Math.round(Math.abs(v)).toLocaleString('en-IN'), rm=v=>(v<0?'−₹':'₹')+Math.round(Math.abs(v)).toLocaleString('en-IN');
+    const pc=v=>Math.abs(v).toFixed(1)+'% '+(v>=0?'higher':'lower');
+    function niceStep(span){for(const s of [5,10,20,25,50,100,200,250,500]) if(span/s<=6) return s; return 1000;}
+    function axis(lo,hi,X0,X1,y,fmt){
+      const step=niceStep(hi-lo), a=Math.floor(lo/step)*step, b=Math.max(step,Math.ceil(hi/step)*step);
+      const sx=v=>X0+(v-a)*(X1-X0)/(b-a); let g='';
+      for(let t=a;t<=b+1e-9;t+=step) g+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${y}" text-anchor="middle" fill="${MUTC}" font-size="16">${fmt(t)}</text>`;
+      return {sx,g};
+    }
+    function draw(){
+      const dp=+$('dp').value, du=+$('du').value, nd=+$('nd').value, ky=+$('ky').value, r=compute(dp,du,nd,ky);
+      $('dp-o').textContent='±₹'+dp.toLocaleString('en-IN')+' a tonne'; $('du-o').textContent='±'+du+' points'; $('nd-o').textContent='₹'+nd.toLocaleString('en-IN')+' cr'; $('ky-o').textContent=ky.toFixed(1)+' years';
+      // chart 1: EPS bars, one rupee scale, value column on the right
+      const X0=70,X1=460,eps=r.ys.map(y=>y.eps), lo=Math.min(0,...eps), hi=Math.max(r.N,...eps);
+      const A=axis(lo,hi,X0,X1,322,labConfig.format), z=A.sx(0), xn=A.sx(r.N);
+      let g=T(X0,20,'EPS, ₹ a share','start',MUTC)+T(630,20,'EPS','end',MUTC);
+      r.ys.forEach((y,i)=>{const yy=36+i*34,e=A.sx(y.eps),x=Math.min(z,e),w=Math.abs(e-z);
+        g+=T(14,yy+19,'Y'+(i+1),'start',MUTC)+`<rect data-v="${y.eps.toFixed(3)}" x="${x.toFixed(2)}" y="${yy}" width="${w.toFixed(2)}" height="24" fill="#f5c76a"/>`+T(630,yy+19,rs(y.eps),'end');});
+      g+=`<path d="M${z.toFixed(1)} 30 L${z.toFixed(1)} 306" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      g+=`<path d="M${xn.toFixed(1)} 30 L${xn.toFixed(1)} 306" stroke="${FGC}" stroke-width="2" fill="none" stroke-dasharray="6 5"/>`;
+      g+=T(480,20,'mid '+rs(r.N),'start',FGC);
+      g+=A.g; $('labChart').innerHTML=g;
+      // chart 2: share price bars from zero, trailing P/E on the right
+      const px=r.ys.map(y=>y.sp), B=axis(0,Math.max(...px),X0,X1,322,v=>'₹'+v), z2=B.sx(0);
+      let h=T(X0,20,'share price','start',MUTC)+T(630,20,'P/E','end',MUTC);
+      r.ys.forEach((y,i)=>{const yy=36+i*34,e=B.sx(y.sp);
+        h+=T(14,yy+19,'Y'+(i+1),'start',MUTC)+`<rect data-v="${y.sp.toFixed(3)}" x="${z2.toFixed(2)}" y="${yy}" width="${(e-z2).toFixed(2)}" height="24" fill="#c3b8ff"/>`+T(e+6,yy+19,'₹'+Math.round(y.sp))+T(630,yy+19,y.pe===null?'n/m':y.pe.toFixed(1),'end');});
+      h+=B.g; $('priceChart').innerHTML=h;
+      // table
+      const rows=r.ys.map((y,i)=>{const tag=i===r.cheap&&dp+du>0?' ◆':(i===r.dear&&dp+du>0?' ▲':'');
+        return `<tr${tag?' class="hi"':''}><td>Y${i+1}${tag}</td><td class="wk">₹${r0(y.price)}</td><td class="wk">${r1(y.use)}%</td><td class="val">${rm(y.ebt)}</td><td class="val">${rs(y.eps)}</td><td class="val">₹${Math.round(y.sp)}</td><td class="val">${y.pe===null?'n/m':y.pe.toFixed(1)}</td><td class="val">${y.pen.toFixed(1)}</td></tr>`;}).join('');
+      $('dash').innerHTML='<thead><tr><th>Year</th><th class="wk">Price a tonne</th><th class="wk">Used</th><th>EBITDA/t</th><th>EPS</th><th>Share</th><th>P/E</th><th>Mid P/E</th></tr></thead><tbody>'+rows+'</tbody>';
+      const c=r.ys[r.cheap], d=r.ys[r.dear];
+      $('verdict').innerHTML = dp+du===0
+        ? 'With no cycle every year looks the same: trailing P/E 15, and buying in any year gives the same result.'
+        : `◆ Buy in Y${r.cheap+1}, the best year (trailing P/E ${c.pe===null?'n/m':c.pe.toFixed(1)}), at ₹${Math.round(c.sp)}: two years later the price is ${pc(r.rc)}. ▲ Buy in Y${r.dear+1}, the worst year (trailing P/E ${d.pe===null?'n/m, a loss':d.pe.toFixed(1)}), at ₹${Math.round(d.sp)}: two years later it is ${pc(r.rd)}.`+(ky===0?' With 0 years priced in, the share price never moves; only the P/E does.':'');
+      const t=r.ys[2], L=[
+        ['Mid-cycle EBITDA = 8 MT × (5,000 − 3,500) ÷ 10 − 400','₹'+r0(r.mid.ebitda)+' cr'],
+        ['Mid-cycle EPS = (EBITDA − 300 − 10% × '+r0(nd)+') × 75% ÷ 10',rs(r.N)],
+        ['Average EPS over the eight years',rs(r.avg)],
+        ['Trough (Y3): '+r1(t.use)+'% use, '+r1(t.tonnes)+' MT at ₹'+r0(t.price),'EBITDA '+r1(t.ebitda)+' cr'],
+        ['Y3 EPS = ('+r1(t.ebitda)+' − 300 − '+r0(RATE*nd)+') × 75% ÷ 10',rs(t.eps)],
+        ['Share price = 15 × mid-cycle EPS + (next EPS − mid EPS) × '+ky.toFixed(1),'Y3: ₹'+t.sp.toFixed(1)],
+        ['Trailing P/E = price ÷ that year’s EPS','n/m when EPS ≤ 0'],
+        ['P/E on mid = price ÷ mid-cycle EPS','Y3: '+t.pen.toFixed(1)]];
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:r.ys.every(y=>[y.eps,y.sp,y.pen,y.ebt].every(Number.isFinite)&&y.sp>0)&&Number.isFinite(r.N),
+        N:r.N,avg:r.avg,eps:r.ys.map(y=>y.eps),price:r.ys.map(y=>y.sp),pe:r.ys.map(y=>y.pe),pen:r.ys.map(y=>y.pen),ebt:r.ys.map(y=>y.ebt),cheap:r.cheap,dear:r.dear,rc:r.rc,rd:r.rd};
+    }
+    ['dp','du','nd','ky'].forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{const p=PRESETS[b.dataset.p];['dp','du','nd','ky'].forEach((id,i)=>$(id).value=p.v[i]);draw();$('msg').textContent=p.t;}));
+    draw();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
