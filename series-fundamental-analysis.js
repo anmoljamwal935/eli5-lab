@@ -46,7 +46,7 @@
     { id: 'consumer-companies-eli5', track: 'business', title: 'Consumer companies', blurb: 'Volume vs price growth, rural demand, and why consumer P/Es run high', file: 'consumer-companies-eli5.html' },
     { id: 'cyclicals-eli5', track: 'business', title: 'Cyclicals', blurb: 'Cement, steel and autos: buying at a high P/E and selling at a low one', file: 'cyclicals-eli5.html' },
     { id: 'utilities-psus-real-estate-eli5', track: 'business', title: 'Utilities, PSUs and real estate', blurb: 'Regulated returns, government owners, and pre-sales', file: 'utilities-psus-real-estate-eli5.html' },
-    { id: 'loss-makers-and-ipos-eli5', track: 'business', title: 'Loss-making companies and IPOs', blurb: 'Reading a DRHP, unit economics, cash burn and runway' },
+    { id: 'loss-makers-and-ipos-eli5', track: 'business', title: 'Loss-making companies and IPOs', blurb: 'Reading a DRHP, unit economics, cash burn and runway', file: 'loss-makers-and-ipos-eli5.html' },
     { id: 'screening-for-ideas-eli5', track: 'value', title: 'Screening for ideas', blurb: 'Building filters that find candidates without falling into traps' },
     { id: 'one-company-start-to-finish-eli5', track: 'business', title: 'One company, start to finish', blurb: 'A full analysis of one real company, ending in a one-page thesis' },
     { id: 'portfolio-taxes-costs-eli5', track: 'value', title: 'Portfolio, taxes and costs', blurb: 'Position sizing, when to sell, and what tax and costs take from returns' }
