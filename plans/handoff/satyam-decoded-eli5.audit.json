@@ -1,0 +1,578 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "topic-only bonus; primary documents listed in inventory",
+    "title": "Satyam, decoded",
+    "author": "n/a",
+    "verified_date": "2026-11-24",
+    "language": "en",
+    "capture_mode": "primary documents downloaded (PDF->pdftotext) or fetched; SEC HTML exhibits read via fetch quotes (EDGAR blocks undeclared automated clients)",
+    "limitations": [
+      "Raju letter: BSE/NSE copy not opened; filed text read from Satyam 6-K exhibit 99.2 on EDGAR (quoted lines) and SEBI 2014 order quotation",
+      "Satyam original FY2008 annual report not on BSE archive; FY2008 figures from \"as published\" column of the 2008-09 restated report (note 39)",
+      "SAT decisions on PW order (appeals 6,7,190,191/2018) not opened: sat.gov.in returned 503",
+      "Special Court judgment of 9 Apr 2015 and criminal appeal orders not opened; sentences not stated",
+      "No document after SEBI order of 30 Nov 2023 confirmed"
+    ]
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Letter of 7 Jan 2009: cash 5,040 of 5,361 fictitious; accrued interest 376; liability 1,230; debtors 490 of 2,651",
+      "kind": "number",
+      "source_locator": "https://www.sec.gov/Archives/edgar/data/1106056/000114554909000025/u00107exv99w2.htm (6-K ex.99.2, quoted lines via fetch) + SEBI 2014 order p.1-3",
+      "check_needed": true,
+      "destination": "P01"
+    },
+    {
+      "id": "I2",
+      "item": "Q2 FY09: revenue 2,700 vs 2,112; margin 649 (24%) vs 61 (3%); +588 cash",
+      "kind": "number",
+      "source_locator": "https://www.sec.gov/Archives/edgar/data/1106056/000114554909000025/u00107exv99w2.htm",
+      "check_needed": true,
+      "destination": "P02"
+    },
+    {
+      "id": "I3",
+      "item": "Fictitious invoices by year FY04-H1 FY09 (4,782.75 total) and margins",
+      "kind": "number",
+      "source_locator": "https://www.sebi.gov.in/sebi_data/attachdocs/1405419346107.pdf pp.24-27",
+      "check_needed": true,
+      "destination": "P03"
+    },
+    {
+      "id": "I4",
+      "item": "Forensic totals: fictitious revenue 53,528m, interest 8,998m (Apr 2002-Sep 2008)",
+      "kind": "number",
+      "source_locator": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf note 3.3 pp.62-64",
+      "check_needed": true,
+      "destination": "P03,P08"
+    },
+    {
+      "id": "I5",
+      "item": "CFO/PAT FY2008 as published 1,412.9/1,715.7 = 0.82",
+      "kind": "number",
+      "source_locator": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf CFS p.44, P&L p.43",
+      "check_needed": true,
+      "destination": "P04, lab"
+    },
+    {
+      "id": "I6",
+      "item": "Interest booked 270.0, received 62.4, accrued 272.5 (real 0.4)",
+      "kind": "number",
+      "source_locator": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf sch.14 p.56, CFS p.45-46, sch.8 p.54",
+      "check_needed": true,
+      "destination": "P05, lab, P15"
+    },
+    {
+      "id": "I7",
+      "item": "FD reported vs real 2004-2008 (USD)",
+      "kind": "number",
+      "source_locator": "SEC complaint 1:11-cv-00672 para 27",
+      "check_needed": true,
+      "destination": "P06"
+    },
+    {
+      "id": "I8",
+      "item": "Two sets of BoB statements; $10.8m vs $379.6m at 30 Sep 2008",
+      "kind": "claim",
+      "source_locator": "https://www.sebi.gov.in/sebi_data/attachdocs/1405419346107.pdf paras 22-27",
+      "check_needed": true,
+      "destination": "P06"
+    },
+    {
+      "id": "I9",
+      "item": "Cash 4,461.7 = 50.6% of assets 8,822.2; borrowings 23.7; unrecorded loans 7,201m; 37 companies 12,304m",
+      "kind": "number",
+      "source_locator": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf BS p.42, note 3.3(f), note 6.1",
+      "check_needed": true,
+      "destination": "P07"
+    },
+    {
+      "id": "I10",
+      "item": "Debtors 2,223.4 (~100 days); gross 2,365.4 of which 571.9 fictitious",
+      "kind": "number",
+      "source_locator": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf BS, sch.6, CFS note (iii)",
+      "check_needed": true,
+      "destination": "P08"
+    },
+    {
+      "id": "I11",
+      "item": "Maytas: 100% Properties + 51% Infra, US$1.6bn (1.3+0.3), 16 Dec 2008; called off 17 Dec; ADS 12.55->5.70->8.55",
+      "kind": "number",
+      "source_locator": "6-K 0001145549-08-002076 ex.99.1, 99.2; SEC complaint para 17",
+      "check_needed": true,
+      "destination": "P09"
+    },
+    {
+      "id": "I12",
+      "item": "Pledges: 6.29 cr pledged, 5.50 invoked, 5.06 sold 23 Dec-7 Jan; 2.25x; 402.80 -> 179; NSE 178.95 -> 41.05",
+      "kind": "number",
+      "source_locator": "https://www.sebi.gov.in/sebi_data/attachdocs/1405419346107.pdf paras 119,125,127",
+      "check_needed": true,
+      "destination": "P10"
+    },
+    {
+      "id": "I13",
+      "item": "PW: unqualified FY05-08; non-reliance 13 Jan 2009; confirmations via client; SEC $6m",
+      "kind": "claim",
+      "source_locator": "SEC 34-64184; https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf note 3.7(ii)",
+      "check_needed": true,
+      "destination": "P11, P14"
+    },
+    {
+      "id": "I14",
+      "item": "CLB suspension 9 Jan 2009; 6 govt nominees; Venturbay 13 Apr 2009, Rs58, 31% then 42.67%",
+      "kind": "number",
+      "source_locator": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf notes 3.1, 3.7, 4, 5",
+      "check_needed": true,
+      "destination": "P13"
+    },
+    {
+      "id": "I15",
+      "item": "Restated FY2009 loss 79,352m; prior period 62,428m; signed 29 Sep 2010",
+      "kind": "number",
+      "source_locator": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf P&L p.43",
+      "check_needed": true,
+      "destination": "P13"
+    },
+    {
+      "id": "I16",
+      "item": "Merger into Tech Mahindra effective 24 Jun 2013, 2 for 17",
+      "kind": "number",
+      "source_locator": "Tech Mahindra AR 2013-14 (BSE 5327550314.pdf)",
+      "check_needed": true,
+      "destination": "P13"
+    },
+    {
+      "id": "I17",
+      "item": "SEBI 2014 / SAT 2017 / SEBI 2018 / SAT 2023 / SEBI 30 Nov 2023 (restraint to 14 Jul 2028; individual disgorgement; effect per SC)",
+      "kind": "claim",
+      "source_locator": "SEBI orders 1405419346107, nov-2018/1541165887415, dec-2023/1701382168274",
+      "check_needed": true,
+      "destination": "P14"
+    },
+    {
+      "id": "I18",
+      "item": "SEBI 10 Jan 2018 PW order: 2 yrs firms, 3 yrs partners, Rs13.09 cr + 12%",
+      "kind": "claim",
+      "source_locator": "SEBI jan-2018/1515605211594 para 205",
+      "check_needed": true,
+      "destination": "P14"
+    },
+    {
+      "id": "I19",
+      "item": "Special Court judgment 9 Apr 2015 (quoted in SC 14 May 2018); sentences not stated (judgment not opened)",
+      "kind": "claim",
+      "source_locator": "SEBI-hosted SC judgment may-2018/1526621992592",
+      "check_needed": true,
+      "destination": "P14"
+    },
+    {
+      "id": "I20",
+      "item": "SEC v Satyam $10m (consent, without admitting or denying)",
+      "kind": "number",
+      "source_locator": "SEC complaint + final judgment",
+      "check_needed": true,
+      "destination": "P14"
+    },
+    {
+      "id": "I21",
+      "item": "Ramu Chai canonical: interest 4 on cash 40, received 4; CFO 58, PAT 50",
+      "kind": "example",
+      "source_locator": "plans/fundamental-analysis-series.md",
+      "check_needed": false,
+      "destination": "lab"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I1",
+      "claim": "Letter of 7 Jan 2009: cash 5,040 of 5,361 fictitious; accrued interest 376; liability 1,230; debtors 490 of 2,651",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.sec.gov/Archives/edgar/data/1106056/000114554909000025/u00107exv99w2.htm (6-K ex.99.2, quoted lines via fetch) + SEBI 2014 order p.1-3"
+    },
+    {
+      "inventory_id": "I2",
+      "claim": "Q2 FY09: revenue 2,700 vs 2,112; margin 649 (24%) vs 61 (3%); +588 cash",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.sec.gov/Archives/edgar/data/1106056/000114554909000025/u00107exv99w2.htm"
+    },
+    {
+      "inventory_id": "I3",
+      "claim": "Fictitious invoices by year FY04-H1 FY09 (4,782.75 total) and margins",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.sebi.gov.in/sebi_data/attachdocs/1405419346107.pdf pp.24-27"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Forensic totals: fictitious revenue 53,528m, interest 8,998m (Apr 2002-Sep 2008)",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf note 3.3 pp.62-64"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "CFO/PAT FY2008 as published 1,412.9/1,715.7 = 0.82",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf CFS p.44, P&L p.43"
+    },
+    {
+      "inventory_id": "I6",
+      "claim": "Interest booked 270.0, received 62.4, accrued 272.5 (real 0.4)",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf sch.14 p.56, CFS p.45-46, sch.8 p.54"
+    },
+    {
+      "inventory_id": "I7",
+      "claim": "FD reported vs real 2004-2008 (USD)",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "SEC complaint 1:11-cv-00672 para 27"
+    },
+    {
+      "inventory_id": "I8",
+      "claim": "Two sets of BoB statements; $10.8m vs $379.6m at 30 Sep 2008",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.sebi.gov.in/sebi_data/attachdocs/1405419346107.pdf paras 22-27"
+    },
+    {
+      "inventory_id": "I9",
+      "claim": "Cash 4,461.7 = 50.6% of assets 8,822.2; borrowings 23.7; unrecorded loans 7,201m; 37 companies 12,304m",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf BS p.42, note 3.3(f), note 6.1"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "Debtors 2,223.4 (~100 days); gross 2,365.4 of which 571.9 fictitious",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf BS, sch.6, CFS note (iii)"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Maytas: 100% Properties + 51% Infra, US$1.6bn (1.3+0.3), 16 Dec 2008; called off 17 Dec; ADS 12.55->5.70->8.55",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "6-K 0001145549-08-002076 ex.99.1, 99.2; SEC complaint para 17"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Pledges: 6.29 cr pledged, 5.50 invoked, 5.06 sold 23 Dec-7 Jan; 2.25x; 402.80 -> 179; NSE 178.95 -> 41.05",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.sebi.gov.in/sebi_data/attachdocs/1405419346107.pdf paras 119,125,127"
+    },
+    {
+      "inventory_id": "I13",
+      "claim": "PW: unqualified FY05-08; non-reliance 13 Jan 2009; confirmations via client; SEC $6m",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "SEC 34-64184; https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf note 3.7(ii)"
+    },
+    {
+      "inventory_id": "I14",
+      "claim": "CLB suspension 9 Jan 2009; 6 govt nominees; Venturbay 13 Apr 2009, Rs58, 31% then 42.67%",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf notes 3.1, 3.7, 4, 5"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Restated FY2009 loss 79,352m; prior period 62,428m; signed 29 Sep 2010",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "https://www.bseindia.com/bseplus/AnnualReport/500376/5003760310.pdf P&L p.43"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "Merger into Tech Mahindra effective 24 Jun 2013, 2 for 17",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "Tech Mahindra AR 2013-14 (BSE 5327550314.pdf)"
+    },
+    {
+      "inventory_id": "I17",
+      "claim": "SEBI 2014 / SAT 2017 / SEBI 2018 / SAT 2023 / SEBI 30 Nov 2023 (restraint to 14 Jul 2028; individual disgorgement; effect per SC)",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "SEBI orders 1405419346107, nov-2018/1541165887415, dec-2023/1701382168274"
+    },
+    {
+      "inventory_id": "I18",
+      "claim": "SEBI 10 Jan 2018 PW order: 2 yrs firms, 3 yrs partners, Rs13.09 cr + 12%",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "SEBI jan-2018/1515605211594 para 205"
+    },
+    {
+      "inventory_id": "I19",
+      "claim": "Special Court judgment 9 Apr 2015 (quoted in SC 14 May 2018); sentences not stated (judgment not opened)",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "SEBI-hosted SC judgment may-2018/1526621992592"
+    },
+    {
+      "inventory_id": "I20",
+      "claim": "SEC v Satyam $10m (consent, without admitting or denying)",
+      "verdict": "Supported",
+      "as_of": "document date",
+      "evidence": "SEC complaint + final judgment"
+    },
+    {
+      "inventory_id": "I21",
+      "claim": "Ramu Chai canonical: interest 4 on cash 40, received 4; CFO 58, PAT 50",
+      "verdict": "n/a (example)",
+      "as_of": "document date",
+      "evidence": "plans/fundamental-analysis-series.md"
+    }
+  ],
+  "panels": [
+    {
+      "id": "P01",
+      "heading": "P01 The letter"
+    },
+    {
+      "id": "P02",
+      "heading": "P02 The quarter"
+    },
+    {
+      "id": "P03",
+      "heading": "P03 Years in the making"
+    },
+    {
+      "id": "P04",
+      "heading": "P04 Flag 1 profit and cash"
+    },
+    {
+      "id": "P05",
+      "heading": "P05 Flag 2 interest"
+    },
+    {
+      "id": "P06",
+      "heading": "P06 Flag 3 bank statements"
+    },
+    {
+      "id": "P07",
+      "heading": "P07 Flag 4 cash-rich"
+    },
+    {
+      "id": "P08",
+      "heading": "P08 Flag 5 debtors"
+    },
+    {
+      "id": "P09",
+      "heading": "P09 Flag 6 Maytas"
+    },
+    {
+      "id": "P10",
+      "heading": "P10 Flag 7 pledges"
+    },
+    {
+      "id": "P11",
+      "heading": "P11 Flag 8 auditor"
+    },
+    {
+      "id": "P12",
+      "heading": "P12 Field guide"
+    },
+    {
+      "id": "LAB",
+      "heading": "LAB Try it"
+    },
+    {
+      "id": "P13",
+      "heading": "P13 What followed"
+    },
+    {
+      "id": "P14",
+      "heading": "P14 Regulators and courts"
+    },
+    {
+      "id": "P15",
+      "heading": "P15 Real report"
+    },
+    {
+      "id": "P16",
+      "heading": "P16 So what"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "bank rate slider is an example",
+      "collection floor is a teaching rule",
+      "accrual rule fixed at 6 months",
+      "CFO/PAT floor 0.8 from Part 13"
+    ],
+    "units": {
+      "money": "Rs crore",
+      "rates": "percent"
+    },
+    "independent_calculation_method": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa-bonus/scripts/labcheck.py (separate Python expected values, compared with window.labResults in Chromium)",
+    "cases": [
+      [
+        "defaults",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "PASS"
+      ],
+      [
+        "preset pub",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "PASS"
+      ],
+      [
+        "preset real",
+        "yield 78.59% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "yield 78.59% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "PASS"
+      ],
+      [
+        "preset ramu",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 0",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 0",
+        "PASS"
+      ],
+      [
+        "satyam s5 r4 f50",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "PASS"
+      ],
+      [
+        "satyam s5 r4 f100",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "PASS"
+      ],
+      [
+        "satyam s5 r12 f50",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "PASS"
+      ],
+      [
+        "satyam s5 r12 f100",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "yield 121.03% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "PASS"
+      ],
+      [
+        "satyam s100 r4 f50",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "PASS"
+      ],
+      [
+        "satyam s100 r4 f100",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 3",
+        "PASS"
+      ],
+      [
+        "satyam s100 r12 f50",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "PASS"
+      ],
+      [
+        "satyam s100 r12 f100",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "yield 6.05% collected 23.11% months 12.11 cfo/pat 0.824 trips 2",
+        "PASS"
+      ],
+      [
+        "ramu s5 r4 f50",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "PASS"
+      ],
+      [
+        "ramu s5 r4 f100",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "PASS"
+      ],
+      [
+        "ramu s5 r12 f50",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "PASS"
+      ],
+      [
+        "ramu s5 r12 f100",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "yield 200.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "PASS"
+      ],
+      [
+        "ramu s100 r4 f50",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "PASS"
+      ],
+      [
+        "ramu s100 r4 f100",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 1",
+        "PASS"
+      ],
+      [
+        "ramu s100 r12 f50",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 0",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 0",
+        "PASS"
+      ],
+      [
+        "ramu s100 r12 f100",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 0",
+        "yield 10.00% collected 100.00% months 0.00 cfo/pat 1.160 trips 0",
+        "PASS"
+      ]
+    ],
+    "tolerance": "1e-6 relative",
+    "invariants": [
+      "trips match thresholds",
+      "axis starts at 0"
+    ],
+    "axis_and_clipping": "axis 0..nice ceiling of max bar; no clipping"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render 0 errors",
+      "labcheck 20/20 PASS",
+      "check_card 0 errors"
+    ],
+    "screenshots": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa-bonus/shots",
+    "coverage_review": "every inventory row mapped to a panel",
+    "semantic_review": "margin labels fixed to 2 decimals; pledge label reworded to SEBI figure; verdict chip colours fixed; page locators verified against PDF page offsets",
+    "artifact_sha256": "baf35504429686110a65e865058c0b0b5a8c3007f476827cb1680982e6db31f9",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 17,
+        "panels": 17,
+        "notes": 2
+      },
+      "artifact_sha256": "baf35504429686110a65e865058c0b0b5a8c3007f476827cb1680982e6db31f9",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/vb/explainers/satyam-decoded-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted (brief: do not publish)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}

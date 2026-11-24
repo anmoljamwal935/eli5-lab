@@ -1,0 +1,620 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+    "title": "Tata Consumer Products Integrated Annual Report 2025-26, AGM presentation FY26, NSE filings",
+    "author": "Tata Consumer Products Ltd; NSE",
+    "verified_date": "2026-11-24",
+    "section_count": "IAR 428 PDF pages (printed to p.509); AGM 29 slides",
+    "language": "en",
+    "caption_type": "n/a (documents)",
+    "capture_mode": "direct HTTP download, pdftotext -layout",
+    "beginning_middle_ending_evidence": "IAR printed pp.1-509 extracted incl. back cover; AGM slides 1-29",
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa37/dl/iar.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa37/dl/agm.pdf",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa37/dl/shp.xml",
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa37/dl/bhav0330.csv"
+    ],
+    "limitations": "Topic part; earnings-call transcript and press release figures attributed to Parts 18/22 rather than re-read."
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Order of the method: business → accounts → ratios → quality → people → economy → price",
+      "kind": "mechanism",
+      "source_locator": "series plan",
+      "check_needed": false,
+      "destination_panel": "p-method"
+    },
+    {
+      "id": "I2",
+      "item": "Link to stock-research-process-eli5 (six-step study)",
+      "kind": "context",
+      "source_locator": "brief",
+      "check_needed": false,
+      "destination_panel": "hero"
+    },
+    {
+      "id": "I3",
+      "item": "Four businesses 6,467/6,588/4,885/2,387; India 14,515.95 (71.5%)",
+      "kind": "number",
+      "source_locator": "AGM slide 7; IAR p.479",
+      "check_needed": true,
+      "destination_panel": "p-business"
+    },
+    {
+      "id": "I4",
+      "item": "Brand/reach claims; gross margin 42.85→41.57; ads & sales 6.56→6.04%",
+      "kind": "number",
+      "source_locator": "AGM slide 4; IAR pp.415,455,179",
+      "check_needed": true,
+      "destination_panel": "p-moat"
+    },
+    {
+      "id": "I5",
+      "item": "P&L: revenue 20,290.43 → EBITDA 2,791.80 → PAT 1,546.80; EPS 15.59; TCPL EBITDA 2,815",
+      "kind": "number",
+      "source_locator": "IAR p.415; AGM slide 8",
+      "check_needed": true,
+      "destination_panel": "p-pnl"
+    },
+    {
+      "id": "I6",
+      "item": "Goodwill 11,883.90 + intangibles 7,111.76 = 55% of 34,452.96; CFO 2,421.85, capex 448.57, FCF 1,973.28",
+      "kind": "number",
+      "source_locator": "IAR pp.414,417",
+      "check_needed": true,
+      "destination_panel": "p-balance"
+    },
+    {
+      "id": "I7",
+      "item": "ROE 7.08, ROCE 8.55/16.13/34.29, TCPL RoCE 41.87; net cash 926 vs 2,978; cover 15.8; cycle ~10 days",
+      "kind": "number",
+      "source_locator": "IAR pp.414-415,224,483; AGM slide 8",
+      "check_needed": true,
+      "destination_panel": "p-ratios"
+    },
+    {
+      "id": "I8",
+      "item": "Quality: receivables +32.0% vs sales +15.2%; other income+one-offs 8.5% of PBT; tax 24.6%; adj EPS 17.30 vs 15.59",
+      "kind": "number",
+      "source_locator": "IAR pp.414-415,444,453,456; AGM slide 8",
+      "check_needed": true,
+      "destination_panel": "p-quality"
+    },
+    {
+      "id": "I9",
+      "item": "Rights 2,980.57; acquisitions 1,809; CP repaid 1,164.49; finance cost 290.20→137.03; weighted shares +1.06%; dividend ₹10; 16% margin promise missed (13.9%)",
+      "kind": "number",
+      "source_locator": "IAR pp.417-418,456,177; AGM slide 8; Part 18",
+      "check_needed": true,
+      "destination_panel": "p-mgmt"
+    },
+    {
+      "id": "I10",
+      "item": "Promoters 33.83%, Tata Sons 28.68%, no pledge; 4/7 independent; unmodified opinion; KAM UK goodwill 2,184.50",
+      "kind": "number",
+      "source_locator": "NSE SHP; IAR pp.254,182,405,438",
+      "check_needed": true,
+      "destination_panel": "p-gov"
+    },
+    {
+      "id": "I11",
+      "item": "International +16% reported vs +9% cc; translation gain 908.17; FX sensitivity 5.46",
+      "kind": "number",
+      "source_locator": "AGM slides 6-7; IAR pp.177,415,467",
+      "check_needed": true,
+      "destination_panel": "p-economy"
+    },
+    {
+      "id": "I12",
+      "item": "FY26 close 1,014.80; market cap 100,421; P/E 65.1; band 54.4-89.0, avg 72.4; adjusted 58.7; Part 15 later price 1,086.30",
+      "kind": "number",
+      "source_locator": "NSE bhavcopy 2022-2026; IAR p.445",
+      "check_needed": true,
+      "destination_panel": "p-peband"
+    },
+    {
+      "id": "I13",
+      "item": "DCF/reverse DCF/scenarios: NOPAT 1,620.16; 212/376/656; weighted 405; MoS 284; implied 28.9%; differences between Parts 24/25/28",
+      "kind": "number",
+      "source_locator": "Parts 24,25,28 recomputed",
+      "check_needed": true,
+      "destination_panel": "p-value"
+    },
+    {
+      "id": "I14",
+      "item": "Lab: the full checklist (22 tests, each linked to its part), DCF, running thesis",
+      "kind": "mechanism",
+      "source_locator": "brief",
+      "check_needed": false,
+      "destination_panel": "lab"
+    },
+    {
+      "id": "I15",
+      "item": "One-page thesis, worked example, not a recommendation",
+      "kind": "claim",
+      "source_locator": "brief",
+      "check_needed": false,
+      "destination_panel": "p-thesis"
+    },
+    {
+      "id": "I16",
+      "item": "Source index with page numbers",
+      "kind": "context",
+      "source_locator": "brief",
+      "check_needed": false,
+      "destination_panel": "p-real"
+    },
+    {
+      "id": "I17",
+      "item": "Hand-off to Part 38 Portfolio, taxes and costs; Part 36 recap",
+      "kind": "context",
+      "source_locator": "series file",
+      "check_needed": false,
+      "destination_panel": "p-sowhat"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I3",
+      "claim": "AGM four businesses sum 20,327 before 37 eliminations; India revenue 14,515.95",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf ; https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "slide 7; Note 38 p.479",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I4",
+      "claim": "Gross margin, ads & sales charges 1,225.48; tea-cost quote",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "pp.415,455,179",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "P&L lines",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.415 (pdf p.329)",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I5",
+      "claim": "EBITDA 2,815, net cash 2,978, adjusted EPS 17.30, FY26 margin 13.9%",
+      "verdict": "Supported (management figures)",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "locator": "slide 8",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I6",
+      "claim": "Balance sheet and cash flow lines",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "pp.414,417",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I7",
+      "claim": "RoCE 41.87%",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.224 and p.483",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I8",
+      "claim": "Receivables 869.79→1,148.33; weighted shares 989,535,734 vs 979,195,536",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.414; Note 30 p.456",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I9",
+      "claim": "Rights 2,980.57, CP repaid 1,164.49, acquisitions 1,809.00",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "pp.417-418",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I9",
+      "claim": "Dividend ₹10 recommended",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "Board’s report p.177",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I9",
+      "claim": "16% margin by Q3 promise",
+      "verdict": "Attributed to Part 18 (Q1 FY26 transcript); not re-read in this run",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com (via Part 18)",
+      "locator": "Part 18 real-report box",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "Promoters 33.83%; FPI 20.79 (20.23+0.56); DII 24.19",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml",
+      "locator": "XBRL contexts",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "Tata Sons 28.68%; 7 directors incl. 4 independent; KAM UK goodwill 2,184.50",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "pp.254,182,405,438",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I10",
+      "claim": "Audit committee all independent",
+      "verdict": "Attributed to Part 19 (CG report p.243)",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.243 via Part 19",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "International +16% / +9% cc",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf",
+      "locator": "slides 6-7",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I11",
+      "claim": "Translation 908.17; FX sensitivity 5.46",
+      "verdict": "Supported (5.46 via Part 22, Note 36 p.467)",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "pp.415,467",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "Closes 777.40, 708.85, 1,096.20, 1,001.90, 1,014.80",
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_30032026.csv and 2022-2025 equivalents",
+      "locator": "TATACONSUM EQ rows",
+      "page_attribution": "page numbers cited inline"
+    },
+    {
+      "inventory_id": "I12",
+      "claim": "EPS 10.15, 13.02 (ten-year table p.175); 12.32 FY24 as printed (Part 26); 13.06, 15.59",
+      "verdict": "Supported / attributed",
+      "as_of": "FY2026 (31 Mar 2026); price 30 Mar 2026",
+      "evidence_url": "https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf",
+      "locator": "p.175; p.415",
+      "page_attribution": "page numbers cited inline"
+    }
+  ],
+  "panels": [
+    {
+      "id": "p-method",
+      "inventory": [
+        "I1"
+      ]
+    },
+    {
+      "id": "p-business",
+      "inventory": [
+        "I3"
+      ]
+    },
+    {
+      "id": "p-moat",
+      "inventory": [
+        "I4"
+      ]
+    },
+    {
+      "id": "p-pnl",
+      "inventory": [
+        "I5"
+      ]
+    },
+    {
+      "id": "p-balance",
+      "inventory": [
+        "I6"
+      ]
+    },
+    {
+      "id": "p-ratios",
+      "inventory": [
+        "I7"
+      ]
+    },
+    {
+      "id": "p-quality",
+      "inventory": [
+        "I8"
+      ]
+    },
+    {
+      "id": "p-mgmt",
+      "inventory": [
+        "I9"
+      ]
+    },
+    {
+      "id": "p-gov",
+      "inventory": [
+        "I10"
+      ]
+    },
+    {
+      "id": "p-economy",
+      "inventory": [
+        "I11"
+      ]
+    },
+    {
+      "id": "p-peband",
+      "inventory": [
+        "I12"
+      ]
+    },
+    {
+      "id": "p-value",
+      "inventory": [
+        "I13"
+      ]
+    },
+    {
+      "id": "lab",
+      "inventory": [
+        "I14"
+      ]
+    },
+    {
+      "id": "p-thesis",
+      "inventory": [
+        "I15"
+      ]
+    },
+    {
+      "id": "p-real",
+      "inventory": [
+        "I16"
+      ]
+    },
+    {
+      "id": "p-sowhat",
+      "inventory": [
+        "I17"
+      ]
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "Part 24 FCFF model",
+      "NOPAT0 = EBIT 2,165.12 × (1−25.17%)",
+      "net cash 2,978 (AGM)",
+      "98.956178 cr shares",
+      "price ₹1,014.80",
+      "implied growth: single rate FY27–36, first crossing on 0.5% grid then bisection",
+      "lights: Part 15 rule (good / within 20% / beyond)"
+    ],
+    "units": {
+      "value": "₹ a share",
+      "growth": "% a year",
+      "cash": "₹ crore"
+    },
+    "independent_calculation_method": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa37/scripts/verify_lab.py (plain Python from printed figures; denser 0.05% grid for implied growth)",
+    "cases": [
+      {
+        "case": "static checks (15 numbered rows)",
+        "expected": "values and lights as computed here",
+        "observed": "match",
+        "pass_": true
+      },
+      {
+        "case": "defaults",
+        "expected": "value 376.05 buy 263.23 implied 28.93 V2 r V3 r",
+        "observed": "value 376.05 buy 263.23 implied 28.93 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "preset bear",
+        "expected": "value 211.97 buy 148.38 implied 40.26 V2 r V3 r",
+        "observed": "value 211.97 buy 148.38 implied 40.26 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "preset base",
+        "expected": "value 376.05 buy 263.23 implied 28.93 V2 r V3 r",
+        "observed": "value 376.05 buy 263.23 implied 28.93 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "preset bull",
+        "expected": "value 656.04 buy 459.23 implied 25.57 V2 r V3 r",
+        "observed": "value 656.04 buy 459.23 implied 25.57 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "preset need",
+        "expected": "value 1019.25 buy 713.47 implied 28.93 V2 r V3 a",
+        "observed": "value 1019.25 buy 713.47 implied 28.93 V2 r V3 a",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/0/10/9",
+        "expected": "value 225.94 buy 158.16 implied None V2 r V3 r",
+        "observed": "value 225.94 buy 158.16 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/0/10/15",
+        "expected": "value 133.51 buy 93.46 implied None V2 r V3 r",
+        "observed": "value 133.51 buy 93.46 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/0/60/9",
+        "expected": "value 301.58 buy 211.11 implied 17.11 V2 a V3 r",
+        "observed": "value 301.58 buy 211.11 implied 17.11 V2 a V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/0/60/15",
+        "expected": "value 151.22 buy 105.85 implied 35.31 V2 r V3 r",
+        "observed": "value 151.22 buy 105.85 implied 35.31 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/35/10/9",
+        "expected": "value 236.38 buy 165.46 implied None V2 r V3 r",
+        "observed": "value 236.38 buy 165.46 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/35/10/15",
+        "expected": "value 11.38 buy 7.97 implied None V2 r V3 r",
+        "observed": "value 11.38 buy 7.97 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/35/60/9",
+        "expected": "value 884.05 buy 618.84 implied 17.11 V2 a V3 r",
+        "observed": "value 884.05 buy 618.84 implied 17.11 V2 a V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 0/35/60/15",
+        "expected": "value 287.79 buy 201.45 implied 35.31 V2 r V3 r",
+        "observed": "value 287.79 buy 201.45 implied 35.31 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/0/10/9",
+        "expected": "value 215.86 buy 151.11 implied None V2 r V3 r",
+        "observed": "value 215.86 buy 151.11 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/0/10/15",
+        "expected": "value -91.93 buy 0.00 implied None V2 r V3 r",
+        "observed": "value -91.93 buy 0.00 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/0/60/9",
+        "expected": "value 1029.70 buy 720.79 implied 17.11 V2 a V3 a",
+        "observed": "value 1029.70 buy 720.79 implied 17.11 V2 a V3 a",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/0/60/15",
+        "expected": "value 383.72 buy 268.61 implied 35.31 V2 r V3 r",
+        "observed": "value 383.72 buy 268.61 implied 35.31 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/35/10/9",
+        "expected": "value 262.68 buy 183.87 implied None V2 r V3 r",
+        "observed": "value 262.68 buy 183.87 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/35/10/15",
+        "expected": "value -639.57 buy 0.00 implied None V2 r V3 r",
+        "observed": "value -639.57 buy 0.00 implied None V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/35/60/9",
+        "expected": "value 3641.53 buy 2549.07 implied 17.11 V2 a V3 g",
+        "observed": "value 3641.53 buy 2549.07 implied 17.11 V2 a V3 g",
+        "pass_": true
+      },
+      {
+        "case": "sliders 35/35/60/15",
+        "expected": "value 996.11 buy 697.28 implied 35.31 V2 r V3 r",
+        "observed": "value 996.11 buy 697.28 implied 35.31 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "base, margin 60%",
+        "expected": "value 376.05 buy 150.42 implied 28.93 V2 r V3 r",
+        "observed": "value 376.05 buy 150.42 implied 28.93 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "base, margin 0%",
+        "expected": "value 376.05 buy 376.05 implied 28.93 V2 r V3 r",
+        "observed": "value 376.05 buy 376.05 implied 28.93 V2 r V3 r",
+        "pass_": true
+      },
+      {
+        "case": "copy rule lights (base, margin 0%)",
+        "expected": "g11 a1 r5 none 5",
+        "observed": "g11 a1 r5 none 5",
+        "pass_": true
+      }
+    ],
+    "invariants": [
+      "buy below = max(0, value×(1−margin))",
+      "V3 light: g if price≤buy-below, a if ≤value, else r",
+      "value with g1=g2=implied equals price"
+    ],
+    "tolerance": "value/buy-below relative 1e-6; implied growth 0.01 pt; static rows 1e-9",
+    "axis_and_clipping": "axis from floor(min(0,value)/step)·step to ceil(max(price,value)/step)·step; no clipping; negative values drawn left of zero"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "check_render.py 0 errors (defaults, 4 presets, 16 slider combos)",
+      "independent lab script ALL PASS",
+      "card lint 0/0"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa37/shots"
+    ],
+    "coverage_review": "every inventory row mapped to a panel; checked by reading the page",
+    "semantic_review": "figures cross-checked against IAR text extraction and AGM; consistency with Parts 15, 24, 25, 26, 28 and Part 36 noted on page",
+    "artifact_sha256": "ab26da825633772ce9ecb8a8447948dcd3042eddf98ddbd67af1246db7668258",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 16,
+        "panels": 16,
+        "notes": 1
+      },
+      "artifact_sha256": "ab26da825633772ce9ecb8a8447948dcd3042eddf98ddbd67af1246db7668258",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/v37/explainers/one-company-start-to-finish-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not-attempted",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
