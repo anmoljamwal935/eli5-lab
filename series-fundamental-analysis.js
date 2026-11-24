@@ -48,7 +48,7 @@
     { id: 'utilities-psus-real-estate-eli5', track: 'business', title: 'Utilities, PSUs and real estate', blurb: 'Regulated returns, government owners, and pre-sales', file: 'utilities-psus-real-estate-eli5.html' },
     { id: 'loss-makers-and-ipos-eli5', track: 'business', title: 'Loss-making companies and IPOs', blurb: 'Reading a DRHP, unit economics, cash burn and runway', file: 'loss-makers-and-ipos-eli5.html' },
     { id: 'screening-for-ideas-eli5', track: 'value', title: 'Screening for ideas', blurb: 'Building filters that find candidates without falling into traps', file: 'screening-for-ideas-eli5.html' },
-    { id: 'one-company-start-to-finish-eli5', track: 'business', title: 'One company, start to finish', blurb: 'A full analysis of one real company, ending in a one-page thesis' },
+    { id: 'one-company-start-to-finish-eli5', track: 'business', title: 'One company, start to finish', blurb: 'A full analysis of one real company, ending in a one-page thesis', file: 'one-company-start-to-finish-eli5.html' },
     { id: 'portfolio-taxes-costs-eli5', track: 'value', title: 'Portfolio, taxes and costs', blurb: 'Position sizing, when to sell, and what tax and costs take from returns' }
   ],
   bonus: { id: 'satyam-decoded-eli5', title: 'Satyam, decoded', blurb: 'The 2009 fraud read through the red flags from Part 20' }
