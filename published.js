@@ -1,5 +1,31 @@
 window.PUBLISHED = [
   {
+    "id": "one-company-start-to-finish-eli5",
+    "title": "One company, start to finish",
+    "category": "Monetary Architecture",
+    "minutes": 26,
+    "summary": "Part 37: one real company, Tata Consumer, through every test, ending in a thesis",
+    "bullets": [
+      "Run the series' tests in order on TCPL's FY2026 filings, from business and moat to cash, governance and the price",
+      "A 22-item checklist lab writes a one-page thesis as you mark it; a worked example, not a recommendation"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "BUSINESS",
+      "ACCOUNTS",
+      "RATIOS",
+      "QUALITY",
+      "PEOPLE",
+      "PRICE"
+    ],
+    "file": "explainers/one-company-start-to-finish-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Twenty-two checks as small good, watch and weak shapes in six groups, five left hollow for judgement, above a gold bar of weighted value about two-fifths the length of the lavender price bar\"><circle cx=\"30.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"40.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"51.0\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><circle cx=\"61.5\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><path d=\"M25.0 63 H66.5\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><path d=\"M79.0 48.2 L83.8 55.8 L74.2 55.8 Z\" fill=\"#f87171\"/><path d=\"M89.5 48.2 L94.3 55.8 L84.7 55.8 Z\" fill=\"#f87171\"/><circle cx=\"100.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"110.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"121.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M74.0 63 H126.0\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"138.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M149.0 48.2 L153.8 55.8 L144.2 55.8 Z\" fill=\"#f87171\"/><circle cx=\"159.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M170.0 47.2 L174.8 52 L170.0 56.8 L165.2 52 Z\" fill=\"#f5c76a\"/><path d=\"M133.5 63 H175.0\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"187.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"198.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"208.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"219.0\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><circle cx=\"229.5\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><path d=\"M182.5 63 H234.5\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"247.0\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><path d=\"M242.0 63 H252.0\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"264.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M275.0 48.2 L279.8 55.8 L270.2 55.8 Z\" fill=\"#f87171\"/><path d=\"M285.5 48.2 L290.3 55.8 L280.7 55.8 Z\" fill=\"#f87171\"/><path d=\"M259.5 63 H290.5\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><rect x=\"26\" y=\"82\" width=\"97.2\" height=\"12\" fill=\"#f5c76a\"/><rect x=\"26\" y=\"100\" width=\"243.6\" height=\"12\" fill=\"#c3b8ff\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"26\" y=\"136\" fill=\"#a5a29c\">VALUE VS PRICE</text><text x=\"294\" y=\"30\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 37</text></g></svg>",
+    "part": 37
+  },
+  {
     "id": "screening-for-ideas-eli5",
     "title": "Screening for ideas",
     "category": "Monetary Architecture",
