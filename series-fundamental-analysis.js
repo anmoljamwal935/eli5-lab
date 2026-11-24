@@ -51,5 +51,5 @@
     { id: 'one-company-start-to-finish-eli5', track: 'business', title: 'One company, start to finish', blurb: 'A full analysis of one real company, ending in a one-page thesis', file: 'one-company-start-to-finish-eli5.html' },
     { id: 'portfolio-taxes-costs-eli5', track: 'value', title: 'Portfolio, taxes and costs', blurb: 'Position sizing, when to sell, and what tax and costs take from returns', file: 'portfolio-taxes-costs-eli5.html' }
   ],
-  bonus: { id: 'satyam-decoded-eli5', title: 'Satyam, decoded', blurb: 'The 2009 fraud read through the red flags from Part 20' }
+  bonus: { id: 'satyam-decoded-eli5', title: 'Satyam, decoded', blurb: 'The 2009 fraud read through the red flags from Part 20', file: 'satyam-decoded-eli5.html' }
 });
