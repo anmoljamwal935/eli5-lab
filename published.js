@@ -1,5 +1,27 @@
 window.PUBLISHED = [
   {
+    "id": "satyam-decoded-eli5",
+    "title": "Satyam, decoded",
+    "category": "Monetary Architecture",
+    "minutes": 32,
+    "summary": "Bonus: the 2009 fraud read through Part 20's red flags",
+    "bullets": [
+      "Fake profits came with fake cash, so most ratio checks passed",
+      "Interest never received, a founders' deal and pledges gave it away"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FAKE INVOICES",
+      "FAKE CASH",
+      "UNPAID INTEREST"
+    ],
+    "file": "explainers/satyam-decoded-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Four of Satyam’s balances at March 2008 as bars: a thin real part in teal and a long fictitious part in red\"><rect x=\"24\" y=\"38\" width=\"25.8\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"49.8\" y=\"38\" width=\"60.7\" height=\"14\" fill=\"#f87171\"/><rect x=\"24\" y=\"60\" width=\"0\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"24\" y=\"60\" width=\"248.1\" height=\"14\" fill=\"#f87171\"/><rect x=\"24\" y=\"82\" width=\"134.5\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"158.5\" y=\"82\" width=\"42.9\" height=\"14\" fill=\"#f87171\"/><rect x=\"24\" y=\"104\" width=\"0\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"24\" y=\"104\" width=\"20.4\" height=\"14\" fill=\"#f87171\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"30\" fill=\"#f87171\">FICTITIOUS</text><text x=\"296\" y=\"30\" text-anchor=\"end\" fill=\"#76d5c1\">REAL</text><text x=\"24\" y=\"136\" fill=\"#f5c76a\">BONUS</text></g></svg>"
+  },
+  {
     "id": "portfolio-taxes-costs-eli5",
     "title": "Portfolio, taxes and costs",
     "category": "Monetary Architecture",
