@@ -1,0 +1,880 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": null,
+    "title": "Topic-only series part: Portfolio, taxes and costs (Part 38)",
+    "author": "n/a (topic request; built from primary sources)",
+    "verified_date": "2026-11-24",
+    "sections": 15,
+    "language": "en",
+    "capture_mode": "primary documents downloaded and text-extracted",
+    "source_paths": [
+      "fa38/dl/256436.pdf (Finance (No. 2) Act 2024, No. 15 of 2024, gazette 16 Aug 2024)",
+      "fa38/dl/fa2025.pdf (Finance Act 2025, No. 7 of 2025, gazette 29 Mar 2025)",
+      "fa38/dl/265620.pdf (Income-tax Act 2025, No. 30 of 2025, gazette 21 Aug 2025)",
+      "fa38/dl/indiabudget.gov.in_budget2024-25_doc_memo.pdf",
+      "fa38/dl/memo2025.pdf",
+      "fa38/dl/www.indiabudget.gov.in_doc_memo.pdf (Finance Bill 2026 memo, used only to note what later changed)",
+      "fa38/dl/nse-levies.html (NSE SEBI fees, STT and other levies, updated 17/04/2026)",
+      "fa38/dl/FA73061.pdf (NSE circular 27 Feb 2026)",
+      "fa38/dl2/cons.pdf (TCPL IAR 2025-26 consolidated statements)"
+    ],
+    "limitations": [
+      "incometaxindia.gov.in pages returned 403 (Akamai) so the 1961 Act's consolidated text was not opened; FY2026 rules taken from the amending Acts themselves",
+      "Finance Act 2026 as enacted not opened; post-April 2026 statements limited to the Income-tax Act 2025 text and NSE's published STT table",
+      "GST on exchange/SEBI charges: NSE lists 18% on brokers' services only; extension to pass-through charges stated on page as contract-note practice"
+    ]
+  },
+  "inventory": [
+    {
+      "id": 1,
+      "item": "Position sizing from the bear-case downside (Part 28 range)",
+      "kind": "mechanism",
+      "check": false,
+      "panel": "P2 position sizing; lab step 5"
+    },
+    {
+      "id": 2,
+      "item": "When to sell: thesis broken, better idea, valuation stretched; not because price moved",
+      "kind": "mechanism",
+      "check": false,
+      "panel": "P3 when to sell"
+    },
+    {
+      "id": 3,
+      "item": "Switching hurdle: costs and tax of selling",
+      "kind": "mechanism",
+      "check": false,
+      "panel": "P4 better idea"
+    },
+    {
+      "id": 4,
+      "item": "Biases: anchoring, confirmation, loss aversion, overconfidence",
+      "kind": "definition",
+      "check": false,
+      "panel": "P5 field guide"
+    },
+    {
+      "id": 5,
+      "item": "STT 0.1% buy and sell on delivery",
+      "kind": "number",
+      "check": true,
+      "panel": "P6 costs"
+    },
+    {
+      "id": 6,
+      "item": "Stamp duty 0.015% buy, delivery",
+      "kind": "number",
+      "check": true,
+      "panel": "P6 costs"
+    },
+    {
+      "id": 7,
+      "item": "Exchange transaction charge, SEBI fee",
+      "kind": "number",
+      "check": true,
+      "panel": "P6 costs"
+    },
+    {
+      "id": 8,
+      "item": "GST 18% on brokerage",
+      "kind": "number",
+      "check": true,
+      "panel": "P6 costs"
+    },
+    {
+      "id": 9,
+      "item": "Brokerage varies by broker (example 0.1%)",
+      "kind": "example",
+      "check": false,
+      "panel": "P6 costs; lab"
+    },
+    {
+      "id": 10,
+      "item": "STCG 20% from 23 Jul 2024",
+      "kind": "number",
+      "check": true,
+      "panel": "P7 gains; P11 rules"
+    },
+    {
+      "id": 11,
+      "item": "LTCG 12.5% above Rs 1.25 lakh, aggregate",
+      "kind": "number",
+      "check": true,
+      "panel": "P7 gains; P11 rules"
+    },
+    {
+      "id": 12,
+      "item": "Holding period: listed >12 months = long-term",
+      "kind": "claim",
+      "check": true,
+      "panel": "P7; P9 surprise"
+    },
+    {
+      "id": 13,
+      "item": "4% health and education cess; surcharge cap 15%",
+      "kind": "number",
+      "check": true,
+      "panel": "P7"
+    },
+    {
+      "id": 14,
+      "item": "Dividends taxed at slab since DDT removed (FA 2020)",
+      "kind": "claim",
+      "check": true,
+      "panel": "P8 dividends"
+    },
+    {
+      "id": 15,
+      "item": "TDS 10% on dividends above Rs 10,000 (FA 2025)",
+      "kind": "number",
+      "check": true,
+      "panel": "P8; P12 real report"
+    },
+    {
+      "id": 16,
+      "item": "Buyback taxed as dividend from 1 Oct 2024",
+      "kind": "claim",
+      "check": true,
+      "panel": "P8"
+    },
+    {
+      "id": 17,
+      "item": "STT not deductible from gains; loss set-off and 8-year carry forward",
+      "kind": "claim",
+      "check": true,
+      "panel": "P6/P7 go deeper"
+    },
+    {
+      "id": 18,
+      "item": "Income-tax Act 2025 in force 1 Apr 2026; ss.196/198 same rates; F&O STT up from 1 Apr 2026",
+      "kind": "context",
+      "check": true,
+      "panel": "P11 frozen at FY2026"
+    },
+    {
+      "id": 19,
+      "item": "After-tax return and position-size calculator",
+      "kind": "mechanism",
+      "check": false,
+      "panel": "P8 lab"
+    },
+    {
+      "id": 20,
+      "item": "TCPL dividend Rs 8.25 paid in FY26; Rs 10 recommended",
+      "kind": "number",
+      "check": true,
+      "panel": "P12 real report"
+    },
+    {
+      "id": 21,
+      "item": "Series close: stages, map, bonus Satyam, decoded",
+      "kind": "context",
+      "check": false,
+      "panel": "P14 looking back"
+    }
+  ],
+  "claims": [
+    {
+      "id": 10,
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": "https://egazette.gov.in/WriteReadData/2024/256436.pdf",
+      "passage": "s.29: section 111A ... at the rate of twenty per cent. for any transfer which takes place on or after the 23rd day of July, 2024"
+    },
+    {
+      "id": 11,
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": "https://egazette.gov.in/WriteReadData/2024/256436.pdf",
+      "passage": "s.31: 112A(2)(i) long-term capital gains exceeding one lakh twenty-five thousand rupees ... twelve and one-half per cent. ... on or after the 23rd day of July, 2024; limit applies on aggregate"
+    },
+    {
+      "id": 12,
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": "https://indiabudget.gov.in/budget2024-25/doc/memo.pdf",
+      "passage": "For all listed securities, the holding period is proposed to be 12 months (p.34); 2025 Act s.2(101) 'not more than twelve months' for listed securities"
+    },
+    {
+      "id": 13,
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": "https://thc.nic.in/Central%20Governmental%20Acts/Finance%20Act,%202025.pdf",
+      "passage": "s.2(11),(12) Health and Education Cess at four per cent.; Part III proviso surcharge on 111A/112/112A and dividend not exceeding fifteen per cent."
+    },
+    {
+      "id": 5,
+      "verdict": "Supported",
+      "as_of": "FY2026 (NSE page updated 17/04/2026)",
+      "evidence": "https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies",
+      "passage": "Purchase/Sale of an equity share ... delivery: 0.100 per cent (rates upto March 31, 2026 and w.e.f. April 1, 2026); memo 2024 p.45 confirms 0.1% both sides"
+    },
+    {
+      "id": 6,
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": "https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies",
+      "passage": "Transfer of Security other than debenture on delivery basis 0.015% Buyer; Finance Act 2019 amended Indian Stamp Act, from July 1, 2020"
+    },
+    {
+      "id": 7,
+      "verdict": "Supported",
+      "as_of": "FY2026; changed split 1 Mar 2026",
+      "evidence": "https://nsearchives.nseindia.com/content/circulars/FA73061.pdf",
+      "passage": "Cash Market existing Rs 297 each side + Rs 10 IPFT; revised 306.99 + 0.01 from March 1, 2026; SEBI fee Rs 10 per crore (NSE levies page)"
+    },
+    {
+      "id": 8,
+      "verdict": "Supported (brokerage); practice (pass-through charges)",
+      "as_of": "FY2026",
+      "evidence": "https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies",
+      "passage": "Stock brokers Services 18.00% (GST)"
+    },
+    {
+      "id": 14,
+      "verdict": "Supported",
+      "as_of": "FY2026",
+      "evidence": "https://indiabudget.gov.in/budget2024-25/doc/memo.pdf",
+      "passage": "DDT was done away with by the Finance Act, 2020 ... buy-back ... treated as dividend ... charged to income-tax at applicable rates"
+    },
+    {
+      "id": 15,
+      "verdict": "Supported",
+      "as_of": "from 1 Apr 2025",
+      "evidence": "https://www.indiabudget.gov.in/budget2025-26/doc/memo.pdf",
+      "passage": "Section 194 ... deduct ... income-tax at the rate of 10%; threshold Rs 5,000 -> Rs 10,000; Finance Act 2025 s.57 enacts it"
+    },
+    {
+      "id": 16,
+      "verdict": "Supported",
+      "as_of": "from 1 Oct 2024",
+      "evidence": "https://egazette.gov.in/WriteReadData/2024/256436.pdf",
+      "passage": "s.3(a): clause (22) ... with effect from 1st October 2024 ... (f) any payment by a company on purchase of its own shares"
+    },
+    {
+      "id": 17,
+      "verdict": "Supported for Income-tax Act 2025; 1961 text not opened, page attributes to 2025 Act",
+      "as_of": "from 1 Apr 2026",
+      "evidence": "https://egazette.gov.in/WriteReadData/2025/265620.pdf",
+      "passage": "s.72(3)(b) no deduction for STT; s.111 set-off and eight tax years"
+    },
+    {
+      "id": 18,
+      "verdict": "Supported",
+      "as_of": "1 Apr 2026",
+      "evidence": "https://egazette.gov.in/WriteReadData/2025/265620.pdf",
+      "passage": "s.1(3) come into force on the 1st April, 2026; s.196 20%; s.198 12.5% on LTCG exceeding Rs 125000; s.536 repeal; NSE table: options 0.15%, futures 0.05% w.e.f. 1 Apr 2026"
+    },
+    {
+      "id": 20,
+      "verdict": "Supported",
+      "as_of": "FY2026 (31 Mar 2026; board 8 May 2026)",
+      "evidence": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage": "Note 14(a)(vi): Dividend paid 816.34 cr; per share 8.25 (2025: 7.75); recommended final dividend Rs 10 per share; printed p.447"
+    }
+  ],
+  "panels": [
+    "hero",
+    "P1 problem",
+    "P2 position sizing",
+    "P3 when to sell",
+    "P4 better idea",
+    "P5 field guide biases",
+    "P6 costs",
+    "P7 tax on gains",
+    "P8 tax on dividends",
+    "P9 lab",
+    "P10 surprise",
+    "P11 common mistake",
+    "P12 frozen at FY2026",
+    "P13 real report",
+    "P14 so what",
+    "P15 looking back"
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": "resident individual, delivery trades on NSE, FY2026 rules, cess 4%, no surcharge/rebate/shortfall, loss untaxed, TDS credited",
+    "independent_method": "fa38/scripts/model.py (Python, separate from page JS) vs window.labResults via Playwright (fa38/scripts/verify.py)",
+    "tolerance": "max(0.01 rupee, 1e-6 relative)",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": {},
+        "expected": {
+          "shares": 2000,
+          "B": 104000,
+          "S": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxg": 0.0,
+          "div": 4000.0,
+          "taxd": 832.0,
+          "tds": 0,
+          "keep": 46593.91,
+          "ret": 44.7,
+          "ann": 27.93,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "observed": {
+          "shares": 2000,
+          "buyValue": 104000,
+          "sellValue": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxGain": 0,
+          "div": 4000,
+          "taxDiv": 832,
+          "tds": 0,
+          "keep": 46593.91,
+          "ret": 44.7,
+          "ann": 27.93,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "preset plan",
+        "inputs": {},
+        "expected": {
+          "shares": 2000,
+          "B": 104000,
+          "S": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxg": 0.0,
+          "div": 4000.0,
+          "taxd": 832.0,
+          "tds": 0,
+          "keep": 46593.91,
+          "ret": 44.7,
+          "ann": 27.93,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "observed": {
+          "shares": 2000,
+          "buyValue": 104000,
+          "sellValue": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxGain": 0,
+          "div": 4000,
+          "taxDiv": 832,
+          "tds": 0,
+          "keep": 46593.91,
+          "ret": 44.7,
+          "ann": 27.93,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "preset early",
+        "inputs": {
+          "months": 12
+        },
+        "expected": {
+          "shares": 2000,
+          "B": 104000,
+          "S": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxg": 9085.01,
+          "div": 4000.0,
+          "taxd": 832.0,
+          "tds": 0,
+          "keep": 37508.91,
+          "ret": 35.98,
+          "ann": 35.98,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "observed": {
+          "shares": 2000,
+          "buyValue": 104000,
+          "sellValue": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxGain": 9085.01,
+          "div": 4000,
+          "taxDiv": 832,
+          "tds": 0,
+          "keep": 37508.91,
+          "ret": 35.98,
+          "ann": 35.98,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "preset dear",
+        "inputs": {
+          "buy": 100,
+          "amount": 100000
+        },
+        "expected": {
+          "shares": 1000,
+          "B": 100000,
+          "S": 74000,
+          "costs": 400.62,
+          "gain": -26226.62,
+          "taxg": 0,
+          "div": 2000.0,
+          "taxd": 416.0,
+          "tds": 0,
+          "keep": -24816.62,
+          "ret": -24.76,
+          "ann": -17.27,
+          "pos": 10.0,
+          "maxpos": 3.58
+        },
+        "observed": {
+          "shares": 1000,
+          "buyValue": 100000,
+          "sellValue": 74000,
+          "costs": 400.62,
+          "gain": -26226.62,
+          "taxGain": 0,
+          "div": 2000,
+          "taxDiv": 416,
+          "tds": 0,
+          "keep": -24816.62,
+          "ret": -24.76,
+          "ann": -17.27,
+          "pos": 10,
+          "maxpos": 3.58
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "preset winner",
+        "inputs": {
+          "sell": 150,
+          "months": 36,
+          "amount": 200000
+        },
+        "expected": {
+          "shares": 3846,
+          "B": 199992,
+          "S": 576900,
+          "costs": 1751.77,
+          "gain": 375933.12,
+          "taxg": 32621.31,
+          "div": 7692.0,
+          "taxd": 1599.94,
+          "tds": 0,
+          "keep": 348626.99,
+          "ret": 173.91,
+          "ann": 39.92,
+          "pos": 20.0,
+          "maxpos": 13.16
+        },
+        "observed": {
+          "shares": 3846,
+          "buyValue": 199992,
+          "sellValue": 576900,
+          "costs": 1751.77,
+          "gain": 375933.12,
+          "taxGain": 32621.31,
+          "div": 7692,
+          "taxDiv": 1599.94,
+          "tds": 0,
+          "keep": 348626.99,
+          "ret": 173.91,
+          "ann": 39.92,
+          "pos": 20.0,
+          "maxpos": 13.16
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "all min",
+        "inputs": {
+          "buy": 30,
+          "sell": 30,
+          "months": 1,
+          "amount": 10000
+        },
+        "expected": {
+          "shares": 333,
+          "B": 9990,
+          "S": 9990,
+          "costs": 45.78,
+          "gain": -25.8,
+          "taxg": 0,
+          "div": 666.0,
+          "taxd": 138.53,
+          "tds": 0,
+          "keep": 481.69,
+          "ret": 4.81,
+          "ann": 75.73,
+          "pos": 1.0,
+          "maxpos": null
+        },
+        "observed": {
+          "shares": 333,
+          "buyValue": 9990,
+          "sellValue": 9990,
+          "costs": 45.78,
+          "gain": -25.8,
+          "taxGain": 0,
+          "div": 666,
+          "taxDiv": 138.53,
+          "tds": 0,
+          "keep": 481.69,
+          "ret": 4.81,
+          "ann": 75.73,
+          "pos": 1.0,
+          "maxpos": null
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "all max",
+        "inputs": {
+          "buy": 150,
+          "sell": 200,
+          "months": 60,
+          "amount": 500000
+        },
+        "expected": {
+          "shares": 3333,
+          "B": 499950,
+          "S": 666600,
+          "costs": 2660.33,
+          "gain": 165156.22,
+          "taxg": 5220.31,
+          "div": 6666.0,
+          "taxd": 1386.53,
+          "tds": 0,
+          "keep": 164048.83,
+          "ret": 32.74,
+          "ann": 5.83,
+          "pos": 49.99,
+          "maxpos": 2.83
+        },
+        "observed": {
+          "shares": 3333,
+          "buyValue": 499950,
+          "sellValue": 666600,
+          "costs": 2660.33,
+          "gain": 165156.22,
+          "taxGain": 5220.31,
+          "div": 6666,
+          "taxDiv": 1386.53,
+          "tds": 0,
+          "keep": 164048.83,
+          "ret": 32.74,
+          "ann": 5.83,
+          "pos": 49.99,
+          "maxpos": 2.83
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "loss short",
+        "inputs": {
+          "buy": 150,
+          "sell": 30,
+          "months": 6,
+          "amount": 500000
+        },
+        "expected": {
+          "shares": 3333,
+          "B": 499950,
+          "S": 99990,
+          "costs": 1404.6,
+          "gain": -400764.66,
+          "taxg": 0,
+          "div": 6666.0,
+          "taxd": 1386.53,
+          "tds": 0,
+          "keep": -396085.12,
+          "ret": -79.04,
+          "ann": -95.61,
+          "pos": 49.99,
+          "maxpos": 2.83
+        },
+        "observed": {
+          "shares": 3333,
+          "buyValue": 499950,
+          "sellValue": 99990,
+          "costs": 1404.6,
+          "gain": -400764.66,
+          "taxGain": 0,
+          "div": 6666,
+          "taxDiv": 1386.53,
+          "tds": 0,
+          "keep": -396085.12,
+          "ret": -79.04,
+          "ann": -95.61,
+          "pos": 49.99,
+          "maxpos": 2.83
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "steppers max",
+        "inputs": {
+          "slab": 30,
+          "dps": 10,
+          "brok": 0.5,
+          "used": 125000,
+          "port": 5000000,
+          "budget": 5
+        },
+        "expected": {
+          "shares": 2000,
+          "B": 104000,
+          "S": 148000,
+          "costs": 1763.53,
+          "gain": 42488.47,
+          "taxg": 5523.5,
+          "div": 20000,
+          "taxd": 6240.0,
+          "tds": 2000.0,
+          "keep": 50472.97,
+          "ret": 48.19,
+          "ann": 29.98,
+          "pos": 2.08,
+          "maxpos": 32.91
+        },
+        "observed": {
+          "shares": 2000,
+          "buyValue": 104000,
+          "sellValue": 148000,
+          "costs": 1763.53,
+          "gain": 42488.47,
+          "taxGain": 5523.5,
+          "div": 20000,
+          "taxDiv": 6240,
+          "tds": 2000,
+          "keep": 50472.97,
+          "ret": 48.19,
+          "ann": 29.98,
+          "pos": 2.08,
+          "maxpos": 32.91
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "steppers min",
+        "inputs": {
+          "slab": 0,
+          "dps": 0,
+          "brok": 0,
+          "used": 0,
+          "port": 200000,
+          "budget": 0.5
+        },
+        "expected": {
+          "shares": 2000,
+          "B": 104000,
+          "S": 148000,
+          "costs": 276.73,
+          "gain": 43975.27,
+          "taxg": 0.0,
+          "div": 0,
+          "taxd": 0.0,
+          "tds": 0,
+          "keep": 43723.27,
+          "ret": 41.99,
+          "ann": 26.33,
+          "pos": 52.0,
+          "maxpos": 3.29
+        },
+        "observed": {
+          "shares": 2000,
+          "buyValue": 104000,
+          "sellValue": 148000,
+          "costs": 276.73,
+          "gain": 43975.27,
+          "taxGain": 0,
+          "div": 0,
+          "taxDiv": 0,
+          "tds": 0,
+          "keep": 43723.27,
+          "ret": 41.99,
+          "ann": 26.33,
+          "pos": 52,
+          "maxpos": 3.29
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "LT, part exemption used, TDS",
+        "inputs": {
+          "buy": 52,
+          "sell": 150,
+          "months": 24,
+          "amount": 300000,
+          "used": 75000,
+          "dps": 4
+        },
+        "expected": {
+          "shares": 5769,
+          "B": 299988,
+          "S": 865350,
+          "costs": 2627.65,
+          "gain": 563899.69,
+          "taxg": 66806.96,
+          "div": 23076,
+          "taxd": 4799.81,
+          "tds": 2307.6,
+          "keep": 514203.58,
+          "ret": 171.0,
+          "ann": 64.62,
+          "pos": 30.0,
+          "maxpos": 13.16
+        },
+        "observed": {
+          "shares": 5769,
+          "buyValue": 299988,
+          "sellValue": 865350,
+          "costs": 2627.65,
+          "gain": 563899.69,
+          "taxGain": 66806.96,
+          "div": 23076,
+          "taxDiv": 4799.81,
+          "tds": 2307.6,
+          "keep": 514203.58,
+          "ret": 171.0,
+          "ann": 64.62,
+          "pos": 30.0,
+          "maxpos": 13.16
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "13 months",
+        "inputs": {
+          "months": 13
+        },
+        "expected": {
+          "shares": 2000,
+          "B": 104000,
+          "S": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxg": 0.0,
+          "div": 4000.0,
+          "taxd": 832.0,
+          "tds": 0,
+          "keep": 46593.91,
+          "ret": 44.7,
+          "ann": 40.64,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "observed": {
+          "shares": 2000,
+          "buyValue": 104000,
+          "sellValue": 148000,
+          "costs": 574.09,
+          "gain": 43677.91,
+          "taxGain": 0,
+          "div": 4000,
+          "taxDiv": 832,
+          "tds": 0,
+          "keep": 46593.91,
+          "ret": 44.7,
+          "ann": 40.64,
+          "pos": 10.4,
+          "maxpos": 13.16
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      },
+      {
+        "case": "buy below bear",
+        "inputs": {
+          "buy": 40
+        },
+        "expected": {
+          "shares": 2600,
+          "B": 104000,
+          "S": 192400,
+          "costs": 672.49,
+          "gain": 88023.91,
+          "taxg": 0.0,
+          "div": 5200.0,
+          "taxd": 1081.6,
+          "tds": 0,
+          "keep": 91845.91,
+          "ret": 88.1,
+          "ann": 52.38,
+          "pos": 10.4,
+          "maxpos": null
+        },
+        "observed": {
+          "shares": 2600,
+          "buyValue": 104000,
+          "sellValue": 192400,
+          "costs": 672.49,
+          "gain": 88023.91,
+          "taxGain": 0,
+          "div": 5200,
+          "taxDiv": 1081.6,
+          "tds": 0,
+          "keep": 91845.91,
+          "ret": 88.1,
+          "ann": 52.38,
+          "pos": 10.4,
+          "maxpos": null
+        },
+        "valid": true,
+        "pass_": true,
+        "diffs": []
+      }
+    ]
+  },
+  "verification": {
+    "render": "check_render.py 0 errors; desktop and 390px screenshots inspected (fa38/shots)",
+    "card": "check_card.py 0 errors, 0 warnings; rendered fa38/shots/card.png",
+    "coverage_review": "every inventory row located on page",
+    "artifact_sha256": "6f5c84c101907afa1de5e133344acfd44802adcab4b54839b30ff9ed0276c960",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 14,
+        "panels": 15,
+        "notes": 2
+      },
+      "artifact_sha256": "6f5c84c101907afa1de5e133344acfd44802adcab4b54839b30ff9ed0276c960",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/v38/explainers/portfolio-taxes-costs-eli5.html"
+    }
+  },
+  "publication": {
+    "status": "not published (brief: push branch only)"
+  }
+}

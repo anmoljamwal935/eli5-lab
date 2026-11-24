@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>One company, start to finish — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (capex, costs) | gold #f5c76a = what belongs to shareholders (profit, EPS, equity, dividends)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 15 and 37: traffic lights are a separate code (good / watch / weak): green #7bd88f ● , amber #ffb04d ◆ , red #ff6b6b ▲ ; always shape + colour, never colour alone. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .events button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:5.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    /* Part 15: dashboard tables and traffic lights */
+    .dash{min-width:0;font-size:14px}
+    .dash th,.dash td{padding:7px 8px;vertical-align:top}
+    .dash tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .dash td.line{font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .dash td.val{white-space:nowrap}
+    .dash th.ed::after{content:" ✎";color:var(--accent)}
+    .lt{display:inline-block;width:1.2em;font-weight:700}.lt.g{color:#7bd88f}.lt.a{color:#ffb04d}.lt.r{color:#ff6b6b}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .lab .picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .picks button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .picks button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    /* Part 15 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events,.dashlab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+    .dashlab .dash tr.grp td{padding:16px 10px 6px;border-bottom:0}
+    .dashlab .dash td.line{font:13px/1.4 var(--font-mono)}
+    .dashlab .lights-key{margin:12px 0 0}
+    .dashlab .dl-chart{max-width:560px;margin-top:18px}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:12px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab details.trace{margin-top:16px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab #msg:empty{display:none}
+    .dashlab .gi,.dashlab .nm-short{display:none}
+    @media (max-width:700px){.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash .line{display:none}.dashlab .gi{display:block;margin-top:2px;font:11px/1.4 var(--font-mono);color:var(--muted)}.dashlab .nm-full{display:none}.dashlab .nm-short{display:inline}.dashlab .dash td.val{font-size:14px}}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}}
+
+    /* Part 37: checklist lab */
+    .eli5-study-container .ck .mk{min-width:44px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-weight:700}
+    .eli5-study-container .ck .mk.g{color:#7bd88f !important;border-color:#7bd88f !important}.eli5-study-container .ck .mk.a{color:#ffb04d !important;border-color:#ffb04d !important}.eli5-study-container .ck .mk.r{color:#ff6b6b !important;border-color:#ff6b6b !important}
+    .ck td.you{text-align:right;white-space:nowrap}
+    .ck .hint{display:block;margin-top:3px;font-size:13px;line-height:1.4;color:var(--muted)}
+    .ck .pt{font:11px/1.4 var(--font-mono);letter-spacing:.04em;white-space:nowrap}
+    .dashlab .thesis p{margin:10px 0 0;font-size:15px;line-height:1.55}
+    .dashlab .thesis p b{color:var(--fg)}
+    .dashlab .dl-prog{max-width:640px;margin-top:6px}
+    .dashlab .mos{max-width:420px}
+    .dashlab .dl-chart.vchart{max-width:460px}
+    .tz{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;margin-top:22px;padding:1px}
+    .tz div{outline:1px solid var(--border);background:var(--surface);padding:16px 18px}
+    .tz b{display:block;font:11px/1.5 var(--font-mono);letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+    .tz span{display:block;margin-top:6px;font-size:15px;line-height:1.55;color:var(--fg)}
+    @media (max-width:700px){.eli5-study-container table.rep{min-width:0;font-size:13px}.eli5-study-container .rep td{padding:8px 4px}.rep td.val,.rep td.pg{white-space:normal}}
+    @media (max-width:700px){.ck .hint{font-size:12px}.ck .mk{min-width:40px;padding:6px 4px}.dashlab .dash td.you{padding-left:2px}}
+
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 37: one real company, Tata Consumer, through every test, ending in a thesis">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/one-company-start-to-finish-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="One company, start to finish">
+<meta property="og:description" content="Part 37: one real company, Tata Consumer, through every test, ending in a thesis">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/one-company-start-to-finish-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/one-company-start-to-finish-eli5.png?v=b2ad5efe">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="One company, start to finish">
+<meta property="article:published_time" content="2026-11-24">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="one-company-start-to-finish-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 26 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>One company, start to finish</h1>
+      <p class="lede">Thirty-six parts taught one test at a time. This one runs them in order on one real company, Tata Consumer Products, from what it sells to what its price assumes, and ends with a one-page thesis: a worked example of the method, not a view on the shares.</p>
+      <p class="source-note">Built from Tata Consumer Products’ Integrated Annual Report 2025-26 (audited consolidated statements, notes, board’s report, management discussion and governance report, printed pages as cited), its FY26 AGM presentation of 10 June 2026, its NSE shareholding filing for 31 March 2026 and NSE’s closing price of 30 March 2026, and the TCPL figures already worked out in Parts 15 to 28 · <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Part 36, “Screening for ideas”, built filters that find candidates and put TCPL through one: it passed on debt, growth, cash and pledges, and failed on ROCE and price. This part takes one candidate all the way through, using each earlier part once, in the series’ order, and linking back rather than re-teaching. The site’s separate study <a href="stock-research-process-eli5.html">How I research a stock: six checks before buying</a> gives the same journey as six short steps; this is the long version with every number filled in. Facts carry a tag: <span class="tag">public</span> is a figure from TCPL’s filings or the exchange, <span class="tag">example</span> is an assumption or a made-up number, and <span class="tag np">not public</span> is something TCPL does not say. All amounts are ₹ crore (cr), consolidated, for the year to 31 March 2026 (FY26), frozen there. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales, cash</span>
+        <span><i style="background:#ff8059"></i>money going out: costs, capex, acquisitions</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, returns, value</span>
+        <span><i style="background:#ec6a94"></i>what is owed: debt, interest</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price, multiples</span>
+        <span>checks: <b style="color:#7bd88f">● good</b> <b style="color:#ffb04d">◆ watch</b> <b style="color:#ff6b6b">▲ weak</b></span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The method</p>
+      <h2>Business first, price last</h2>
+      <p>The series is a route, and its order matters: understand the business, read its accounts, test the ratios, check that the profit is real, judge the people and the economy around them, and only then ask what the price assumes. Doing the price first tempts you to read everything after it as a defence of a number you already like.</p>
+      <figure><svg viewBox="0 0 800 226" role="img" aria-label="The 38 parts of the series as dots on one line, grouped into seven stages; the parts this page uses, Stages 2 to 5 and the consumer-company part, are filled, and Part 37 is marked"><path d="M40 80 L760 80" stroke="#57534f" stroke-width="2" fill="none"/><circle cx="40" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="59.5" cy="80" r="6" fill="#f1eee8"/><circle cx="78.9" cy="80" r="6" fill="#f1eee8"/><circle cx="98.4" cy="80" r="6" fill="#f1eee8"/><circle cx="117.8" cy="80" r="6" fill="#f1eee8"/><circle cx="137.3" cy="80" r="6" fill="#f1eee8"/><circle cx="156.8" cy="80" r="6" fill="#f1eee8"/><circle cx="176.2" cy="80" r="6" fill="#f1eee8"/><circle cx="195.7" cy="80" r="6" fill="#f1eee8"/><circle cx="215.1" cy="80" r="6" fill="#f1eee8"/><circle cx="234.6" cy="80" r="6" fill="#f1eee8"/><circle cx="254.1" cy="80" r="6" fill="#f1eee8"/><circle cx="273.5" cy="80" r="6" fill="#f1eee8"/><circle cx="293" cy="80" r="6" fill="#f1eee8"/><circle cx="312.4" cy="80" r="6" fill="#f1eee8"/><circle cx="331.9" cy="80" r="6" fill="#f1eee8"/><circle cx="351.4" cy="80" r="6" fill="#f1eee8"/><circle cx="370.8" cy="80" r="6" fill="#f1eee8"/><circle cx="390.3" cy="80" r="6" fill="#f1eee8"/><circle cx="409.7" cy="80" r="6" fill="#f1eee8"/><circle cx="429.2" cy="80" r="6" fill="#f1eee8"/><circle cx="448.6" cy="80" r="6" fill="#f1eee8"/><circle cx="468.1" cy="80" r="6" fill="#f1eee8"/><circle cx="487.6" cy="80" r="6" fill="#f1eee8"/><circle cx="507" cy="80" r="6" fill="#f1eee8"/><circle cx="526.5" cy="80" r="6" fill="#f1eee8"/><circle cx="545.9" cy="80" r="6" fill="#f1eee8"/><circle cx="565.4" cy="80" r="6" fill="#f1eee8"/><circle cx="584.9" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="604.3" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="623.8" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="643.2" cy="80" r="6" fill="#f1eee8"/><circle cx="662.7" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="682.2" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="701.6" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="721.1" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><circle cx="740.5" cy="80" r="9" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="760" cy="80" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><text x="34" y="132" text-anchor="start" fill="#a5a29c" font-size="16">Start</text><path d="M59.5 104 L137.3 104" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="98.4" y="156" text-anchor="middle" fill="#a5a29c" font-size="16">Accounts</text><path d="M156.8 104 L312.4 104" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="234.6" y="132" text-anchor="middle" fill="#a5a29c" font-size="16">Ratios</text><path d="M331.9 104 L448.6 104" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="390.3" y="156" text-anchor="middle" fill="#a5a29c" font-size="16">Business</text><path d="M468.1 104 L565.4 104" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="516.8" y="132" text-anchor="middle" fill="#a5a29c" font-size="16">Valuation</text><path d="M584.9 104 L701.6 104" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="643.2" y="156" text-anchor="middle" fill="#a5a29c" font-size="16">Sectors</text><path d="M721.1 104 L760 104" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="766" y="132" text-anchor="end" fill="#a5a29c" font-size="16">Together</text><text x="740.5" y="40" text-anchor="middle" fill="#c3b8ff" font-size="16">Part 37</text><circle cx="52" cy="196" r="6" fill="#f1eee8"/><text x="66" y="202" text-anchor="start" fill="#a5a29c" font-size="16">used on this page</text><circle cx="292" cy="196" r="6" fill="#202020" stroke="#57534f" stroke-width="2"/><text x="306" y="202" text-anchor="start" fill="#a5a29c" font-size="16">not used: other sectors, next steps</text></svg></figure>
+      <p>Each step below names the part that teaches it. The sector parts (29 to 35) are for banks, exporters, cyclicals and the rest; TCPL is a consumer company, so only <a href="consumer-companies-eli5.html" data-series-link="consumer-companies-eli5">Part 32</a> applies. The numbers come from one place: TCPL’s own filings, and where Parts 15 to 28 already worked a TCPL figure out, this page uses theirs and says where two parts differ.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The business</p>
+      <h2>What TCPL sells, to scale</h2>
+      <p>Tata Consumer Products sells tea, coffee, salt, pulses, spices, ready-to-cook food and water, in India and abroad. Its AGM presentation splits FY26 revenue into four businesses <span class="tag">public</span>: India Beverages ₹6,467 cr, India Foods ₹6,588 cr, International ₹4,885 cr (tea abroad and US coffee) and Non-branded ₹2,387 cr (plantations and instant coffee), which sum to ₹20,327 cr before ₹37 cr of sales between them (slide 7).</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="Two teal bars split at true proportions: TCPL sales by the four businesses in its AGM presentation, India Beverages 6,467, India Foods 6,588, International 4,885 and Non-branded 2,387 crore, and by where it sells, India 71.5 percent"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Four businesses, AGM slide 7 · ₹ cr</text><rect x="40" y="42" width="222.7" height="34" fill="#76d5c1" opacity="1" stroke="#202020" stroke-width="2"/><text x="42" y="100" text-anchor="start" fill="#f1eee8" font-size="16">India Beverages</text><text x="42" y="122" text-anchor="start" fill="#a5a29c" font-size="16">6,467</text><rect x="262.7" y="42" width="226.9" height="34" fill="#76d5c1" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="264.7" y="100" text-anchor="start" fill="#f1eee8" font-size="16">India Foods</text><text x="264.7" y="122" text-anchor="start" fill="#a5a29c" font-size="16">6,588</text><rect x="489.6" y="42" width="168.2" height="34" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="491.6" y="100" text-anchor="start" fill="#f1eee8" font-size="16">International</text><text x="491.6" y="122" text-anchor="start" fill="#a5a29c" font-size="16">4,885</text><rect x="657.8" y="42" width="82.2" height="34" fill="#76d5c1" opacity="0.3" stroke="#202020" stroke-width="2"/><text x="659.8" y="100" text-anchor="start" fill="#f1eee8" font-size="16">Non-branded</text><text x="659.8" y="122" text-anchor="start" fill="#a5a29c" font-size="16">2,387</text><text x="40" y="168" text-anchor="start" fill="#a5a29c" font-size="16">Where it sells · Note 38, p. 479</text><rect x="40" y="180" width="500.8" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="48" y="203" text-anchor="start" fill="#202020" font-size="16">India 14,515.95 · 71.5%</text><rect x="540.8" y="180" width="199.2" height="34" fill="#76d5c1" opacity="0.45" stroke="#202020" stroke-width="2"/><text x="548.8" y="240" text-anchor="start" fill="#f1eee8" font-size="16">abroad 5,774.48</text><text x="40" y="284" text-anchor="start" fill="#a5a29c" font-size="16">each bar: 700 px = its own total</text></svg></figure>
+      <p>The audited segment note groups the same sales differently, into India, International and Non-branded (Note 38, p. 477), so the two tables do not match line by line; <a href="business-model-eli5.html" data-series-link="business-model-eli5">Part 16</a> reconciles them. It names no single large customer, which is a gap in the disclosure, not proof there is none <span class="tag np">not public</span>. Growth in the India core of tea and salt was “led by volume”, the report says (p. 223), the split <a href="consumer-companies-eli5.html" data-series-link="consumer-companies-eli5">Part 32</a> teaches you to ask for.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The moat</p>
+      <h2>Is there a moat? Evidence, not adjectives</h2>
+      <p>TCPL calls Tata Salt the largest salt brand in India and Tata Tea the second-largest tea brand, and says it reaches 290 million Indian households through 4.5 million shops (AGM slide 4) <span class="tag">public</span>. Those are its claims; the slide does not say by what measure. <a href="industry-and-moats-eli5.html" data-series-link="industry-and-moats-eli5">Part 17</a> asks for tests that numbers can fail. Two are below: does the gross margin hold when tea and coffee costs move, and does it take ever more advertising to hold it?</p>
+      <figure><svg viewBox="0 0 800 308" role="img" aria-label="Bars on one scale of 10 pixels per point of sales: gross margin 42.85 percent in FY25 and 41.57 percent in FY26, and advertisement and sales charges 6.56 and 6.04 percent"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">share of sales, %</text><text x="40" y="86" text-anchor="start" fill="#a5a29c" font-size="16">gross margin</text><text x="188" y="67" text-anchor="end" fill="#a5a29c" font-size="16">FY25</text><rect x="200" y="46" width="428.5" height="28" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="638.5" y="67" text-anchor="start" fill="#f1eee8" font-size="16">42.85%</text><text x="188" y="103" text-anchor="end" fill="#a5a29c" font-size="16">FY26</text><rect x="200" y="82" width="415.7" height="28" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="625.7" y="103" text-anchor="start" fill="#f1eee8" font-size="16">41.57%</text><text x="40" y="182" text-anchor="start" fill="#a5a29c" font-size="16">ads and sales</text><text x="188" y="163" text-anchor="end" fill="#a5a29c" font-size="16">FY25</text><rect x="200" y="142" width="65.6" height="28" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="275.6" y="163" text-anchor="start" fill="#f1eee8" font-size="16">6.56%</text><text x="188" y="199" text-anchor="end" fill="#a5a29c" font-size="16">FY26</text><rect x="200" y="178" width="60.4" height="28" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="270.4" y="199" text-anchor="start" fill="#f1eee8" font-size="16">6.04%</text><path d="M200 232 L700 232" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="200" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="300" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="400" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">20</text><text x="500" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">30</text><text x="600" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">40</text><text x="700" y="256" text-anchor="middle" fill="#a5a29c" font-size="16">50</text><text x="40" y="288" text-anchor="start" fill="#a5a29c" font-size="16">10 px = 1 point of sales · FY25 vs FY26</text></svg></figure>
+      <p>Gross margin (revenue less materials, purchases and the stock change) slipped 1.28 points to 41.57% in a year the report describes tea cost inflation “mitigated through calibrated price increases” (p. 179). Advertisement and sales charges were ₹1,225.48 cr, a smaller share of sales than in FY25 (Note 28, p. 455) <span class="tag">public</span>. That is consistent with pricing power, not proof of it: one year, and a line that mixes advertising with other sales costs.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The profit and loss</p>
+      <h2>The P&amp;L in two bars</h2>
+      <p>Revenue from operations was ₹20,290.43 cr, up 15.2% <span class="tag">public</span>. Most of it goes on materials and goods bought for resale; what is left after staff and other costs is EBITDA of ₹2,791.80 cr, a 13.8% margin on this series’ definition (<a href="the-profit-and-loss-eli5.html" data-series-link="the-profit-and-loss-eli5">Part 3</a>). TCPL’s own EBITDA is ₹2,815 cr, 13.9%, because it counts some other income (AGM slide 8).</p>
+      <figure><svg viewBox="0 0 800 320" role="img" aria-label="TCPL’s FY26 P&L as two bars: revenue of 20,290 crore split into materials, staff, other costs and EBITDA of 2,792 crore; then EBITDA plus other income, zoomed, split into profit of 1,547 crore, depreciation and amortisation, tax, and a thin slice of interest, associates and one-offs"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Revenue ₹20,290.43 cr · 1 px ≈ ₹29 cr</text><rect x="40" y="42" width="409" height="34" fill="#ff8059" opacity="1" stroke="#202020" stroke-width="2"/><rect x="449" y="42" width="57.3" height="34" fill="#ff8059" opacity="0.6" stroke="#202020" stroke-width="2"/><rect x="506.3" y="42" width="137.4" height="34" fill="#ff8059" opacity="0.8" stroke="#202020" stroke-width="2"/><rect x="643.7" y="42" width="96.3" height="34" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="48" y="65" text-anchor="start" fill="#202020" font-size="16">materials 11,855.64</text><text x="453" y="98" text-anchor="start" fill="#f1eee8" font-size="16">staff 1,661</text><text x="643.7" y="120" text-anchor="end" fill="#f1eee8" font-size="16">other costs 3,981.99</text><text x="740" y="98" text-anchor="end" fill="#f5c76a" font-size="16">EBITDA</text><text x="40" y="172" text-anchor="start" fill="#f5c76a" font-size="16">EBITDA 2,791.80, zoomed</text><rect x="40" y="182" width="661" height="14" fill="#f5c76a" stroke="#202020" stroke-width="2"/><rect x="701" y="182" width="39" height="14" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="760" y="172" text-anchor="end" fill="#76d5c1" font-size="16">+ other income 164.75</text><rect x="40" y="206" width="366.2" height="34" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="48" y="229" text-anchor="start" fill="#202020" font-size="16">profit 1,546.80</text><rect x="406.2" y="206" width="148.4" height="34" fill="#ff8059" opacity="1" stroke="#202020" stroke-width="2"/><text x="414.2" y="229" text-anchor="start" fill="#202020" font-size="16">D&amp;A 626.68</text><rect x="554.6" y="206" width="126.7" height="34" fill="#ff8059" opacity="0.7" stroke="#202020" stroke-width="2"/><text x="562.6" y="229" text-anchor="start" fill="#202020" font-size="16">tax 535.28</text><rect x="681.3" y="206" width="32.4" height="34" fill="#ec6a94" opacity="1" stroke="#202020" stroke-width="2"/><rect x="713.8" y="206" width="21.5" height="34" fill="#ff8059" opacity="0.5" stroke="#202020" stroke-width="2"/><rect x="735.3" y="206" width="4.7" height="34" fill="#ff8059" opacity="0.3" stroke="#202020" stroke-width="2"/><text x="760" y="264" text-anchor="end" fill="#f1eee8" font-size="16">interest, associates, one-offs 247.79</text><text x="40" y="300" text-anchor="start" fill="#a5a29c" font-size="16">zoomed: 1 px ≈ ₹4.2 cr</text></svg></figure>
+      <p>Add other income of ₹164.75 cr, take off depreciation and amortisation of ₹626.68 cr, finance costs of ₹137.03 cr, net exceptional items of ₹20.06 cr, tax of ₹535.28 cr and a ₹90.70 cr loss from associates and joint ventures, and the profit for the year is ₹1,546.80 cr, of which ₹1,542.30 cr belongs to TCPL’s own shareholders: basic EPS ₹15.59 (P&amp;L, p. 415) <span class="tag">public</span>.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Balance sheet and cash</p>
+      <h2>What the profit sits on</h2>
+      <p>Total assets were ₹34,452.96 cr on 31 March 2026, and more than half of them were bought rather than built: goodwill of ₹11,883.90 cr and other intangible assets, mostly brands, of ₹7,111.76 cr (balance sheet, p. 414) <span class="tag">public</span>. <a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a> explains goodwill: the price paid for a company above the value of what it owned.</p>
+      <figure><svg viewBox="0 0 800 294" role="img" aria-label="Total assets of 34,453 crore with goodwill of 11,884 crore and other intangibles of 7,112 crore, 55 percent, drawn in coral; below, on its own scale, profit of 1,547 crore against operating cash of 2,422 crore split into free cash flow and capex"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Total assets ₹34,452.96 cr · 1 px ≈ ₹49 cr</text><rect x="40" y="42" width="241.5" height="34" fill="#ff8059" stroke="#202020" stroke-width="2"/><rect x="281.5" y="42" width="144.5" height="34" fill="#ff8059" opacity="0.55" stroke="#202020" stroke-width="2"/><rect x="425.9" y="42" width="314.1" height="34" fill="#57534f" stroke="#202020" stroke-width="2"/><text x="48" y="65" text-anchor="start" fill="#202020" font-size="16">goodwill 11,883.90</text><text x="289.5" y="65" text-anchor="start" fill="#202020" font-size="16">brands 7,111.76</text><text x="433.9" y="65" text-anchor="start" fill="#f1eee8" font-size="16">everything else 15,457</text><path d="M40 88 L425.9 88" stroke="#ff8059" stroke-width="2" fill="none"/><text x="40" y="112" text-anchor="start" fill="#ff8059" font-size="16">bought with acquisitions: 55% of assets</text><text x="40" y="166" text-anchor="start" fill="#a5a29c" font-size="16">The year’s cash · 1 px = ₹4 cr</text><rect x="40" y="178" width="386.7" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="48" y="199" text-anchor="start" fill="#202020" font-size="16">profit 1,546.80</text><rect x="40" y="216" width="493.3" height="30" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="48" y="237" text-anchor="start" fill="#202020" font-size="16">free cash 1,973.28</text><rect x="533.3" y="216" width="112.1" height="30" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="655.5" y="237" text-anchor="start" fill="#f1eee8" font-size="16">capex 448.57</text><text x="40" y="274" text-anchor="start" fill="#f1eee8" font-size="16">CFO 2,421.85 = 1.57 × profit</text></svg></figure>
+      <p>The cash flow statement (<a href="cash-flow-and-the-three-statements-eli5.html" data-series-link="cash-flow-and-the-three-statements-eli5">Part 5</a>) shows ₹2,421.85 cr of cash from operations, 1.57 times the year’s profit, and ₹448.57 cr spent on property, plant and intangibles, leaving free cash flow of ₹1,973.28 cr (p. 417) <span class="tag">public</span>. A business that turns profit into more cash than profit passes the first test of <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a>; part of the gap is ₹626.68 cr of D&amp;A, a cost that uses no cash this year.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The ratios</p>
+      <h2>Strong balance sheet, modest returns</h2>
+      <p><a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a> built TCPL’s dashboard; here are its verdicts in one place <span class="tag">public</span>. Safety is strong: borrowings of ₹2,120.31 cr sit against cash of ₹3,046.57 cr, so on the series’ strict definition TCPL has <b>net cash of ₹926 cr</b>, and EBIT covers interest 15.8 times (<a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a>). Working capital is light: about 10 days from paying suppliers to being paid (<a href="working-capital-cycle-eli5.html" data-series-link="working-capital-cycle-eli5">Part 12</a>). Returns are the weak spot, and they depend on what you divide by.</p>
+      <figure><svg viewBox="0 0 800 338" role="img" aria-label="Gold bars on one scale: ROE 7.08 percent, series ROCE 8.55 percent, 16.13 percent with goodwill taken out of capital, 34.29 percent with brands taken out too, and TCPL’s own reported RoCE of 41.87 percent on a tangible base"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">return on capital, %, FY26</text><text x="40" y="65" text-anchor="start" fill="#a5a29c" font-size="16">ROE, owners</text><rect x="250" y="44" width="85" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="345" y="65" text-anchor="start" fill="#f1eee8" font-size="16">7.08%</text><text x="40" y="109" text-anchor="start" fill="#a5a29c" font-size="16">ROCE, series</text><rect x="250" y="88" width="102.6" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="344.6" y="109" text-anchor="end" fill="#202020" font-size="16">8.55%</text><text x="40" y="153" text-anchor="start" fill="#a5a29c" font-size="16">less goodwill</text><rect x="250" y="132" width="193.6" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="435.6" y="153" text-anchor="end" fill="#202020" font-size="16">16.13%</text><text x="40" y="197" text-anchor="start" fill="#a5a29c" font-size="16">less brands too</text><rect x="250" y="176" width="411.5" height="30" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="653.5" y="197" text-anchor="end" fill="#202020" font-size="16">34.29%</text><text x="40" y="241" text-anchor="start" fill="#a5a29c" font-size="16">TCPL’s own RoCE</text><rect x="250" y="220" width="502.4" height="30" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="2"/><text x="744.4" y="241" text-anchor="end" fill="#202020" font-size="16">41.87%</text><path d="M250 264 L754 264" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="250" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="370" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="490" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">20</text><text x="610" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">30</text><text x="730" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">40</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">12 px = 1 point · same EBIT, smaller bases</text></svg></figure>
+      <p>The same EBIT of ₹2,165.12 cr earns 8.55% on all capital employed, 16.13% if goodwill is left out and 34.29% if brands are left out too. TCPL’s own RoCE of 41.87% (MD&amp;A, p. 224; ratio note, p. 483) starts from tangible net worth, so it is closest to the last bar. None is wrong (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>): the low ones ask whether the acquisitions earn their price; the high one says the underlying brands need little capital.</p>
+      <details class="trace"><summary>Go deeper: the working, and where parts differ</summary>
+        <p>ROE = owners’ profit 1,542.30 ÷ owners’ equity 21,787.53 = 7.08%. ROCE = 2,165.12 ÷ (total equity 23,188.86 + borrowings 2,120.31) = 8.55%; take out goodwill 11,883.90 → 16.13%; take out other intangibles 7,111.76 as well → 34.29%. Interest cover = 2,165.12 ÷ 137.03 = 15.8×. Cash cycle = inventory 108.6 + receivables 20.7 − payables 119.3 days ≈ 10 days, on year-end balances and 365 days. <b>Net cash differs between parts.</b> Parts 15, 20 and 24 use ₹926 cr, cash and cash equivalents less borrowings. Parts 25 and 28 use TCPL’s own ₹2,978 cr (AGM slide 8), which also counts other bank balances and current investments; <a href="the-balance-sheet-eli5.html" data-series-link="the-balance-sheet-eli5">Part 4</a> reconciled it. The valuation below uses ₹2,978 cr, to stay with Part 28; on ₹926 cr each value is about ₹21 a share lower. TCPL’s own “21 days” of working capital is for its India business on its own definition (AGM slide 10).</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Quality of earnings</p>
+      <h2>Is the profit real?</h2>
+      <p><a href="red-flags-eli5.html" data-series-link="red-flags-eli5">Part 20</a>’s checks, run on TCPL <span class="tag">public</span>: cash from operations grew with profit, and inventory fell. One line outran sales: trade receivables rose 32.0%, from ₹869.79 cr to ₹1,148.33 cr, against sales growth of 15.2%. Part 20 found TCPL’s own ratios, on average balances, nearly flat at 18 days, and no explanation in the report <span class="tag np">not public</span>.</p>
+      <figure><svg viewBox="0 0 800 338" role="img" aria-label="One-year growth bars from a zero line: sales up 15.2 percent, profit 20.2, operating cash 17.8, receivables 32.0 percent, and inventory down 2.0 percent"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">growth FY25 → FY26, %</text><text x="40" y="65" text-anchor="start" fill="#a5a29c" font-size="16">sales</text><rect x="260" y="44" width="182" height="30" fill="#76d5c1" opacity="1" stroke="#202020" stroke-width="2"/><text x="452" y="65" text-anchor="start" fill="#f1eee8" font-size="16">+15.2%</text><text x="40" y="109" text-anchor="start" fill="#a5a29c" font-size="16">profit</text><rect x="260" y="88" width="242.2" height="30" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="512.2" y="109" text-anchor="start" fill="#f1eee8" font-size="16">+20.2%</text><text x="40" y="153" text-anchor="start" fill="#a5a29c" font-size="16">operating cash</text><rect x="260" y="132" width="213.1" height="30" fill="#76d5c1" opacity="1" stroke="#202020" stroke-width="2"/><text x="483.1" y="153" text-anchor="start" fill="#f1eee8" font-size="16">+17.8%</text><text x="40" y="197" text-anchor="start" fill="#a5a29c" font-size="16">receivables</text><rect x="260" y="176" width="384.2" height="30" fill="#76d5c1" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="654.2" y="197" text-anchor="start" fill="#f1eee8" font-size="16">+32.0%</text><text x="40" y="241" text-anchor="start" fill="#a5a29c" font-size="16">inventory</text><rect x="235.6" y="220" width="24.4" height="30" fill="#ff8059" opacity="1" stroke="#202020" stroke-width="2"/><text x="270" y="241" text-anchor="start" fill="#f1eee8" font-size="16">-2.0%</text><path d="M260 36 L260 264" stroke="#a5a29c" stroke-width="1.5" fill="none"/><path d="M220 264 L680 264" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="260" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="380" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="500" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">20</text><text x="620" y="286" text-anchor="middle" fill="#a5a29c" font-size="16">30</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">12 px = 1 point · year-end balances</text></svg></figure>
+      <p>The rest is clean. Other income of ₹164.75 cr and net one-offs of ₹20.06 cr together are 8.5% of profit before tax. The tax rate was 24.6% against a 25.17% Indian rate. The auditor’s opinion is unmodified. The one gap to remember is between EPS figures (<a href="accounting-choices-eli5.html" data-series-link="accounting-choices-eli5">Part 6</a>): TCPL’s adjusted EPS of ₹17.30 (AGM slide 8) is 11% above the audited ₹15.59, because it adds back amortisation of the Capital Foods and Organic India brands.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Management</p>
+      <h2>Where the cash went, and what it bought</h2>
+      <p><a href="management-and-capital-allocation-eli5.html" data-series-link="management-and-capital-allocation-eli5">Part 18</a> followed the money <span class="tag">public</span>. In FY25 TCPL raised ₹2,980.57 cr, net, from a rights issue at ₹818 a share (<a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a>), paid ₹1,809.00 cr for subsidiaries (Capital Foods and Organic India) and repaid ₹1,164.49 cr of commercial paper raised for acquisition funding (cash flow, pp. 417–418).</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="On one scale: the FY25 rights issue of 2,981 crore net in teal against acquisitions of 1,809 crore and commercial paper repaid of 1,164 crore; below, finance costs falling from 290 crore in FY25 to 137 crore in FY26"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">FY25, ₹ cr · 1 px = ₹5 cr</text><text x="40" y="60" text-anchor="start" fill="#a5a29c" font-size="16">money in</text><rect x="170" y="40" width="596.1" height="32" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="178" y="62" text-anchor="start" fill="#202020" font-size="16">rights issue, net 2,980.57</text><text x="40" y="112" text-anchor="start" fill="#a5a29c" font-size="16">money out</text><rect x="170" y="92" width="361.8" height="32" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="178" y="114" text-anchor="start" fill="#202020" font-size="16">acquisitions 1,809</text><rect x="531.8" y="92" width="232.9" height="32" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="539.8" y="114" text-anchor="start" fill="#202020" font-size="16">debt repaid 1,164</text><text x="40" y="176" text-anchor="start" fill="#a5a29c" font-size="16">finance costs</text><text x="162" y="198" text-anchor="end" fill="#a5a29c" font-size="16">FY25</text><rect x="170" y="180" width="58" height="26" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="238" y="198" text-anchor="start" fill="#f1eee8" font-size="16">290.20</text><text x="162" y="236" text-anchor="end" fill="#a5a29c" font-size="16">FY26</text><rect x="170" y="218" width="27.4" height="26" fill="#ec6a94" stroke="#202020" stroke-width="2"/><text x="207.4" y="236" text-anchor="start" fill="#f1eee8" font-size="16">137.03</text><text x="40" y="284" text-anchor="start" fill="#a5a29c" font-size="16">same scale throughout</text></svg></figure>
+      <p>With the debt repaid, finance costs fell by ₹153 cr in FY26, which explains part of why profit grew faster than EBITDA: a financing choice, not operations. The new shares count too: weighted shares rose 1.06%, so EPS grew 19.4% while profit to owners grew 20.6% (Note 30, p. 456). Part 18 also checked a dated promise: a 16% EBITDA margin “by Q3” of FY26, discussed on the Q1 call, was not reached; the year closed at 13.9% (AGM slide 8). Dividends rose to ₹10 a share recommended for FY26 (p. 177).</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Governance</p>
+      <h2>Who owns it, and who checks</h2>
+      <p><a href="governance-and-ownership-eli5.html" data-series-link="governance-and-ownership-eli5">Part 19</a> read the filings <span class="tag">public</span>. Promoters hold 33.83%, Tata Sons alone 28.68%, with none of it pledged (NSE shareholding filing for 31 March 2026; annual report p. 254). Below half, the promoter cannot pass an ordinary resolution alone if everyone else votes against.</p>
+      <figure><svg viewBox="0 0 800 304" role="img" aria-label="A gold bar of TCPL ownership at true proportions: promoters 33.83 percent, of which Tata Sons 28.68, foreign portfolio investors 20.79, domestic institutions 24.19 and others 21.19; below, seven board seats with four independent directors filled"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Who owns it, 31 Mar 2026 · 7 px = 1%</text><rect x="40" y="40" width="236.8" height="34" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="46" y="98" text-anchor="start" fill="#f1eee8" font-size="16">promoters 33.83</text><rect x="276.8" y="40" width="145.5" height="34" fill="#f5c76a" opacity="0.7" stroke="#202020" stroke-width="2"/><text x="282.8" y="98" text-anchor="start" fill="#f1eee8" font-size="16">FPIs 20.79</text><rect x="422.3" y="40" width="169.3" height="34" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="428.3" y="98" text-anchor="start" fill="#f1eee8" font-size="16">DIIs 24.19</text><rect x="591.7" y="40" width="148.3" height="34" fill="#f5c76a" opacity="0.3" stroke="#202020" stroke-width="2"/><text x="597.7" y="98" text-anchor="start" fill="#f1eee8" font-size="16">others 21.19</text><path d="M40 112 L240.8 112" stroke="#f5c76a" stroke-width="3" fill="none"/><text x="40" y="136" text-anchor="start" fill="#f5c76a" font-size="16">Tata Sons alone 28.68%</text><text x="40" y="196" text-anchor="start" fill="#a5a29c" font-size="16">The board, 7 seats</text><circle cx="60" cy="230" r="14" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="104" cy="230" r="14" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="148" cy="230" r="14" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="192" cy="230" r="14" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><circle cx="236" cy="230" r="14" fill="#202020" stroke="#a5a29c" stroke-width="2"/><circle cx="280" cy="230" r="14" fill="#202020" stroke="#a5a29c" stroke-width="2"/><circle cx="324" cy="230" r="14" fill="#202020" stroke="#a5a29c" stroke-width="2"/><text x="370" y="236" text-anchor="start" fill="#f1eee8" font-size="16">4 independent · 57%</text><text x="40" y="284" text-anchor="start" fill="#a5a29c" font-size="16">promoter shares pledged: none</text></svg></figure>
+      <p>Four of the seven directors are independent (board’s report, p. 182), and the audit committee is all independent. Deloitte Haskins &amp; Sells LLP gave an unmodified opinion, with two key audit matters; the larger is the UK and Europe goodwill of ₹2,184.50 cr, tested because of “competitive pressures and decline in black tea demand” there (auditor’s report, p. 405). It was not impaired in FY26.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The economy</p>
+      <h2>Tea, coffee and the rupee</h2>
+      <p>Consumer staples are defensive: people keep buying salt and tea in a slowdown. TCPL’s exposures are on the cost side and abroad (<a href="the-economy-around-the-company-eli5.html" data-series-link="the-economy-around-the-company-eli5">Part 22</a>) <span class="tag">public</span>. International revenue grew 16% in rupees but 9% in constant currency (AGM slides 6–7): a weaker rupee added the rest. International margins fell on “an increase in coffee costs and the impact of U.S. tariffs” (p. 177).</p>
+      <figure><svg viewBox="0 0 800 252" role="img" aria-label="The International business on one scale: about 4,211 crore in FY25, and 4,885 crore in FY26, of which the constant-currency growth of 9 percent is teal and the extra from a weaker rupee lavender"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">International business, ₹ cr · 1 px ≈ ₹8 cr</text><text x="40" y="66" text-anchor="start" fill="#a5a29c" font-size="16">FY25</text><rect x="120" y="44" width="505.3" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="128" y="67" text-anchor="start" fill="#202020" font-size="16">about 4,211</text><text x="40" y="124" text-anchor="start" fill="#a5a29c" font-size="16">FY26</text><rect x="120" y="102" width="505.3" height="34" fill="#76d5c1" stroke="#202020" stroke-width="2"/><rect x="625.3" y="102" width="45.5" height="34" fill="#76d5c1" opacity="0.6" stroke="#202020" stroke-width="2"/><rect x="670.8" y="102" width="35.4" height="34" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="716.2" y="125" text-anchor="start" fill="#f1eee8" font-size="16">4,885</text><text x="625.3" y="160" text-anchor="middle" fill="#76d5c1" font-size="16">business +9%</text><text x="706.2" y="186" text-anchor="end" fill="#c3b8ff" font-size="16">rupee +7 pts</text><text x="40" y="232" text-anchor="start" fill="#a5a29c" font-size="16">+16% in rupees = +9% in local currency + the rupee</text></svg></figure>
+      <p>The FY25 figure of about ₹4,211 cr is this page’s estimate from the 16% <span class="tag">example</span>; TCPL gives only the rate. The same rupee lifted the value of the overseas businesses by ₹908.17 cr, booked in other comprehensive income, not profit (p. 415). The risk note puts the effect of a 5% currency move on profit before tax, through the instruments on the books, at only ₹5.46 cr (Note 36, p. 467).</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Price against its past</p>
+      <h2>What the market pays, and paid</h2>
+      <p>TCPL closed at <b>₹1,014.80</b> on NSE on 30 March 2026, the last trading day of FY26 <span class="tag">public</span>. On 98,95,61,780 shares (Note 14, p. 445) that is a market cap of ₹100,421 cr, and 65.1 times basic EPS of ₹15.59. <a href="relative-valuation-eli5.html" data-series-link="relative-valuation-eli5">Part 26</a> put that in TCPL’s own five-year band.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="TCPL’s year-end P/E from FY22 to FY26 as lavender dots: 76.6, 54.4, 89.0, 76.7 and 65.1, inside a shaded band from 54.4 to 89.0 with a dashed average of 72.4; a hollow dot marks 58.7 on adjusted EPS"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">P/E at each year-end close, basic EPS</text><rect x="100" y="88.6" width="660" height="120.9" fill="#c3b8ff" opacity="0.14"/><path d="M100 146.7 L760 146.7" stroke="#c3b8ff" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/><text x="760" y="138.7" text-anchor="end" fill="#c3b8ff" font-size="16">average 72.4</text><path d="M100 50 L100 260 L760 260" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="88" y="265" text-anchor="end" fill="#a5a29c" font-size="16">40</text><text x="88" y="195" text-anchor="end" fill="#a5a29c" font-size="16">60</text><text x="88" y="125" text-anchor="end" fill="#a5a29c" font-size="16">80</text><text x="88" y="55" text-anchor="end" fill="#a5a29c" font-size="16">100</text><polyline points="160,131.9 290,209.4 420,88.6 550,131.5 680,172.2" fill="none" stroke="#c3b8ff" stroke-width="2"/><circle cx="160" cy="131.9" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="160" y="115.9" text-anchor="middle" fill="#f1eee8" font-size="16">76.6</text><text x="160" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">FY22</text><circle cx="290" cy="209.4" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="290" y="235.4" text-anchor="middle" fill="#f1eee8" font-size="16">54.4</text><text x="290" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><circle cx="420" cy="88.6" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="420" y="72.6" text-anchor="middle" fill="#f1eee8" font-size="16">89.0</text><text x="420" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><circle cx="550" cy="131.5" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="550" y="115.5" text-anchor="middle" fill="#f1eee8" font-size="16">76.7</text><text x="550" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><circle cx="680" cy="172.2" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="694" y="178.2" text-anchor="start" fill="#f1eee8" font-size="16">65.1</text><text x="680" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><circle cx="680" cy="194.7" r="7" fill="#202020" stroke="#c3b8ff" stroke-width="2"/><text x="666" y="200.7" text-anchor="end" fill="#a5a29c" font-size="16">adjusted 58.7</text><text x="40" y="316" text-anchor="start" fill="#a5a29c" font-size="16">3.5 px = 1 point of P/E · band shaded</text></svg></figure>
+      <p>65.1 is below the five-year average of 72.4, so on its own history the FY26 price was not stretched. That is a comparison with itself: the whole band sits at 54 to 89 times earnings, so it says nothing about whether those multiples were ever justified. Part 15 used a later price, ₹1,086.30 on 6 November 2026, for a P/E of 69.7; this page stays at FY26’s close.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Value</p>
+      <h2>Three stories against one price</h2>
+      <p>The DCF of <a href="dcf-step-by-step-eli5.html" data-series-link="dcf-step-by-step-eli5">Part 24</a>, the reverse DCF of <a href="reverse-dcf-eli5.html" data-series-link="reverse-dcf-eli5">Part 25</a> and the scenarios of <a href="margin-of-safety-eli5.html" data-series-link="margin-of-safety-eli5">Part 28</a> all start from TCPL’s EBIT of ₹2,165.12 cr <span class="tag">public</span>. Parts 25 and 28 take tax at the 25.17% Indian rate, so NOPAT (operating profit after tax) is ₹1,620.16 cr, and discount at 12%, Part 23’s cost of equity with a beta of 1 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 382" role="img" aria-label="Bars on one rupee scale: Part 28’s bear, base and bull values for TCPL of 212, 376 and 656 rupees a share, the weighted value of 405 and a buy-below price of 284, against the FY26 closing price of 1,014.80 in lavender"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">₹ a share · Part 28’s three stories</text><text x="40" y="63" text-anchor="start" fill="#a5a29c" font-size="16">bear</text><rect x="200" y="42" width="106" height="30" fill="#f5c76a" opacity="0.5" stroke="#202020" stroke-width="2"/><text x="316" y="63" text-anchor="start" fill="#f1eee8" font-size="16">₹212</text><text x="40" y="105" text-anchor="start" fill="#a5a29c" font-size="16">base</text><rect x="200" y="84" width="188" height="30" fill="#f5c76a" opacity="0.75" stroke="#202020" stroke-width="2"/><text x="380" y="105" text-anchor="end" fill="#202020" font-size="16">₹376</text><text x="40" y="147" text-anchor="start" fill="#a5a29c" font-size="16">bull</text><rect x="200" y="126" width="328" height="30" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="520" y="147" text-anchor="end" fill="#202020" font-size="16">₹656</text><text x="40" y="203" text-anchor="start" fill="#a5a29c" font-size="16">weighted</text><rect x="200" y="182" width="202.5" height="30" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="2"/><text x="394.5" y="203" text-anchor="end" fill="#202020" font-size="16">₹405</text><text x="40" y="245" text-anchor="start" fill="#a5a29c" font-size="16">30% margin</text><rect x="200" y="224" width="142" height="30" fill="#f5c76a" opacity="0.35" stroke="#202020" stroke-width="2"/><text x="352" y="245" text-anchor="start" fill="#f1eee8" font-size="16">₹284</text><text x="40" y="287" text-anchor="start" fill="#a5a29c" font-size="16">FY26 price</text><rect x="200" y="266" width="507.4" height="30" fill="#c3b8ff" opacity="1" stroke="#202020" stroke-width="2"/><text x="699.4" y="287" text-anchor="end" fill="#202020" font-size="16">₹1,014.80</text><path d="M200 308 L750.0 308" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="200" y="330" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="325" y="330" text-anchor="middle" fill="#a5a29c" font-size="16">250</text><text x="450" y="330" text-anchor="middle" fill="#a5a29c" font-size="16">500</text><text x="575" y="330" text-anchor="middle" fill="#a5a29c" font-size="16">750</text><text x="700" y="330" text-anchor="middle" fill="#a5a29c" font-size="16">1000</text><text x="40" y="362" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹2 · price ÷ weighted value = 2.5</text></svg></figure>
+      <p>Part 28’s three stories, weighted 25/50/25, give ₹405 a share; with a 30% margin of safety a buyer would pay about ₹284. The FY26 price is 2.5 times the weighted value. Turned around, as Part 25 did: the price needs NOPAT to grow about 28.9% a year for ten years, with new money earning 40%, against FY26 EBIT growth of 15.3%. The market may be using a lower discount rate, or a longer runway; the model cannot say which.</p>
+      <details class="trace"><summary>Go deeper: where Parts 24, 25 and 28 differ</summary>
+        <p><b>Tax.</b> Part 24 uses the effective rate, ₹535.28 cr ÷ ₹2,172.78 cr = 24.6%, for NOPAT of ₹1,631.7 cr and FY26 free cash flow to the firm of ₹1,955.0 cr; Parts 25 and 28 use 25.17%, for ₹1,620.16 cr. The difference moves the implied growth by 0.1 point. <b>Net cash.</b> Part 24 uses ₹926 cr; Parts 25 and 28 use ₹2,978 cr: about ₹21 a share. <b>Return on new money.</b> 40% sits near TCPL’s own RoCE of 41.87%, which leaves goodwill out; on the series’ 8.55%, acquisitions would have to be counted as reinvestment, as Part 24 warned. <b>Price.</b> ₹1,014.80 at FY26’s close here and in Parts 25, 26 and 28; ₹1,086.30 in Part 15. Not modelled: the associates’ loss and the non-controlling interest. <a href="sum-of-the-parts-eli5.html" data-series-link="sum-of-the-parts-eli5">Part 27</a>’s sum of the parts is not used: TCPL’s segments are reported, but their separate values are not.</p>
+      </details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>The full checklist</h2>
+      <p>Twenty-two of the series’ tests for TCPL, in the order above, each linked to the part that teaches it. Every number is computed on this page from the filed figures <span class="tag">public</span>; the lines are this series’ rules of thumb <span class="tag">example</span>. Work down the list and give each check your own mark, then value the company and read the thesis your marks write.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Work down the checklist</p>
+          <div class="events">
+            <button type="button" class="secondary" id="useRule">Copy the rule’s light to every numbered check</button>
+            <button type="button" class="secondary" id="clearMarks">Clear my marks</button>
+          </div>
+          <div class="table-wrap"><table class="dash ck" id="ckA"></table></div>
+          <p class="lights-key"><span class="lt g">●</span>good: on the right side of the line <span class="lt a">◆</span>watch: within 20% of it <span class="lt r">▲</span>weak: further off · “you” cycles — → ● → ◆ → ▲</p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Value it</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="bear">Part 28’s bear</button>
+            <button type="button" class="secondary" data-p="base">Part 28’s base</button>
+            <button type="button" class="secondary" data-p="bull">Part 28’s bull</button>
+            <button type="button" class="secondary" data-p="need">What the price needs</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+          <div class="dl-grid">
+            <div class="dl-col">
+              <div class="control"><label for="g1">NOPAT growth, FY27–FY31: <output id="g1-o"></output></label><input id="g1" type="range" min="0" max="35" step="0.5" value="15"></div>
+              <div class="control"><label for="g2">NOPAT growth, FY32–FY36: <output id="g2-o"></output></label><input id="g2" type="range" min="0" max="35" step="0.5" value="10"></div>
+            </div>
+            <div class="dl-col">
+              <div class="control"><label for="roni">New money earns: <output id="roni-o"></output></label><input id="roni" type="range" min="10" max="60" step="1" value="40"></div>
+              <div class="control"><label for="r">Discount rate: <output id="r-o"></output></label><input id="r" type="range" min="9" max="15" step="0.5" value="12"></div>
+              <div class="steps mos"><span class="stl">Margin of safety</span><button type="button" class="secondary" data-ms="-1" aria-label="Lower the margin of safety">−</button><output id="ms-o" role="status"></output><button type="button" class="secondary" data-ms="1" aria-label="Raise the margin of safety">+</button></div>
+            </div>
+          </div>
+          <div class="dl-chart vchart"><svg id="labChart" viewBox="0 0 420 240" role="img" aria-label="Bars on one rupee scale for the value a share from your settings, the price you would pay after your margin of safety, and the FY26 closing price of 1,014.80"></svg></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Check the price</p>
+          <div class="table-wrap"><table class="dash ck" id="ckB"></table></div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Your one-page thesis so far</p>
+          <div class="dl-prog"><svg id="progSvg" viewBox="0 0 800 120" role="img" aria-label="Your marks on the twenty-two checks as shapes in six groups; unmarked checks are hollow"></svg></div>
+          <div class="thesis" id="thesis" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the lab</summary><p>The model is Part 24’s: free cash flow to the firm = NOPAT × (1 − growth ÷ return on new money), for FY27–FY36, then a terminal value growing at 5% (4% in the bear preset), discounted at your rate. NOPAT starts at ₹1,620.16 cr; net cash ₹2,978 cr is added and the sum divided by 98.956 crore shares. “What the price needs” solves for one growth rate for all ten years, as Part 25 did, at your return and discount rate; if no rate up to 60% reaches the price it says so. When growth is above the return on new money, reinvestment exceeds NOPAT and free cash flow is negative. Lights compare the unrounded number with the line. Counting lights treats every check as equal, which they are not.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The one-page thesis</p>
+      <h2>TCPL in one page, as a worked example</h2>
+      <p>Here is the page the method produces, written with the series’ rules of thumb rather than anyone’s judgement. The five hollow shapes are the checks a rule cannot answer; the lab leaves them to you.</p>
+      <figure><svg viewBox="0 0 800 180" role="img" aria-label="Twenty-two checks as shapes in six groups, business, numbers, quality, people, economy and price, each coloured by this page’s rule-of-thumb light, with five hollow ones left for the reader’s judgement"><circle cx="52" cy="50" r="11" fill="#7bd88f"/><circle cx="83" cy="50" r="11" fill="#7bd88f"/><circle cx="114" cy="50" r="10" fill="#202020" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 3"/><circle cx="145" cy="50" r="10" fill="#202020" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 3"/><path d="M40 78 L157 78" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="98.5" y="102" text-anchor="middle" fill="#a5a29c" font-size="16">Business</text><path d="M198 38 L211 61 L185 61 Z" fill="#ff6b6b" stroke="none"/><path d="M229 38 L242 61 L216 61 Z" fill="#ff6b6b" stroke="none"/><circle cx="260" cy="50" r="11" fill="#7bd88f"/><circle cx="291" cy="50" r="11" fill="#7bd88f"/><circle cx="322" cy="50" r="11" fill="#7bd88f"/><path d="M186 78 L334 78" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="260" y="102" text-anchor="middle" fill="#a5a29c" font-size="16">Numbers</text><circle cx="375" cy="50" r="11" fill="#7bd88f"/><path d="M406 38 L419 61 L393 61 Z" fill="#ff6b6b" stroke="none"/><circle cx="437" cy="50" r="11" fill="#7bd88f"/><path d="M468 37 L481 50 L468 63 L455 50 Z" fill="#ffb04d" stroke="none"/><path d="M363 78 L480 78" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="421.5" y="102" text-anchor="middle" fill="#a5a29c" font-size="16">Quality</text><circle cx="521" cy="50" r="11" fill="#7bd88f"/><circle cx="552" cy="50" r="11" fill="#7bd88f"/><circle cx="583" cy="50" r="11" fill="#7bd88f"/><circle cx="614" cy="50" r="10" fill="#202020" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 3"/><circle cx="645" cy="50" r="10" fill="#202020" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 3"/><path d="M509 78 L657 78" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="583" y="102" text-anchor="middle" fill="#a5a29c" font-size="16">People</text><circle cx="698" cy="50" r="10" fill="#202020" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 3"/><path d="M686 78 L710 78" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="698" y="102" text-anchor="middle" fill="#a5a29c" font-size="16">Economy</text><circle cx="751" cy="50" r="11" fill="#7bd88f"/><path d="M782 38 L795 61 L769 61 Z" fill="#ff6b6b" stroke="none"/><path d="M813 38 L826 61 L800 61 Z" fill="#ff6b6b" stroke="none"/><path d="M739 78 L825 78" stroke="#a5a29c" stroke-width="2" fill="none"/><text x="782" y="102" text-anchor="middle" fill="#a5a29c" font-size="16">Price</text><circle cx="52" cy="150" r="11" fill="#7bd88f"/><text x="72" y="156" text-anchor="start" fill="#f1eee8" font-size="16">good</text><path d="M152 137 L165 150 L152 163 L139 150 Z" fill="#ffb04d" stroke="none"/><text x="172" y="156" text-anchor="start" fill="#f1eee8" font-size="16">watch</text><path d="M262 138 L275 161 L249 161 Z" fill="#ff6b6b" stroke="none"/><text x="282" y="156" text-anchor="start" fill="#f1eee8" font-size="16">weak</text><circle cx="372" cy="150" r="10" fill="#202020" stroke="#a5a29c" stroke-width="2" stroke-dasharray="3 3"/><text x="392" y="156" text-anchor="start" fill="#f1eee8" font-size="16">your call</text></svg></figure>
+      <div class="tz">
+        <div><b>What it is</b><span>India’s salt and second-largest tea brand, by its own account, plus foods, US coffee and Tetley abroad: ₹20,290 cr of sales, 71.5% in India.</span></div>
+        <div><b>What the numbers say</b><span>Net cash, 15.8× interest cover and a 10-day cash cycle; ROE 7.1% and ROCE 8.6%, because ₹18,996 cr of goodwill and brands sit in the base.</span></div>
+        <div><b>Is the profit real?</b><span>Cash from operations 1.57× profit, small one-offs, a normal tax rate and an unmodified audit. One question: receivables up 32% on sales up 15%.</span></div>
+        <div><b>The people</b><span>Promoter 33.83%, nothing pledged, 4 of 7 directors independent. Acquisitions funded by a rights issue; a dated margin promise missed.</span></div>
+        <div><b>What the price assumes</b><span>65 times FY26 earnings, below its own average. On Part 28’s stories it is 2.5× the weighted value; it needs about 29% a year for a decade at 12%.</span></div>
+        <div><b>What would change the view</b><span>Returns on the acquired brands rising; gross margin holding through the next tea or coffee spike; receivables explained; a lower discount rate than 12% being defensible.</span></div>
+      </div>
+      <p class="note">This thesis is a worked example of the method, frozen at FY2026. It is not a view on whether to buy, hold or sell TCPL shares, and its assumptions (the 12% rate, the three stories, every line in the checklist) are teaching choices, not forecasts.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>Every figure, and where it sits</h2>
+      <p>Each TCPL number on this page, with its source, all for the year to 31 March 2026 <span class="tag">public</span>. Page numbers are the printed ones in the Integrated Annual Report 2025-26; slide numbers are from the AGM presentation of 10 June 2026.</p>
+      <figure><svg viewBox="0 0 800 216" role="img" aria-label="A ruler of the annual report’s 509 printed pages with the stretches this page cites marked: financial highlights near page 54, the board’s report, management discussion and governance report from page 176 to 257, and the auditor’s report, statements and notes from page 404 to 487"><text x="40" y="28" text-anchor="start" fill="#a5a29c" font-size="16">Integrated Annual Report 2025-26, printed pages</text><path d="M40 90 L760 90" stroke="#57534f" stroke-width="2" fill="none"/><path d="M40 84 L40 96" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="40" y="118" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><path d="M178.5 84 L178.5 96" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="178.5" y="118" text-anchor="middle" fill="#a5a29c" font-size="16">100</text><path d="M316.9 84 L316.9 96" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="316.9" y="118" text-anchor="middle" fill="#a5a29c" font-size="16">200</text><path d="M455.4 84 L455.4 96" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="455.4" y="118" text-anchor="middle" fill="#a5a29c" font-size="16">300</text><path d="M593.8 84 L593.8 96" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="593.8" y="118" text-anchor="middle" fill="#a5a29c" font-size="16">400</text><path d="M732.3 84 L732.3 96" stroke="#a5a29c" stroke-width="1.5" fill="none"/><text x="732.3" y="118" text-anchor="middle" fill="#a5a29c" font-size="16">500</text><rect x="114.8" y="76" width="4" height="28" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="114.8" y="62" text-anchor="start" fill="#f1eee8" font-size="16">highlights</text><rect x="283.7" y="76" width="18" height="28" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="301.7" y="150" text-anchor="end" fill="#f1eee8" font-size="16">board’s report</text><rect x="333.5" y="76" width="16.6" height="28" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="341.8" y="62" text-anchor="middle" fill="#f1eee8" font-size="16">MD&amp;A</text><rect x="359.8" y="76" width="36" height="28" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="377.8" y="150" text-anchor="middle" fill="#f1eee8" font-size="16">governance</text><rect x="599.4" y="76" width="4" height="28" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="601.4" y="62" text-anchor="end" fill="#f1eee8" font-size="16">auditor</text><rect x="613.2" y="76" width="5.5" height="28" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="583.2" y="150" text-anchor="start" fill="#f1eee8" font-size="16">statements</text><rect x="642.3" y="76" width="72" height="28" fill="#76d5c1" stroke="#202020" stroke-width="2"/><text x="714.3" y="62" text-anchor="end" fill="#f1eee8" font-size="16">notes</text><text x="40" y="196" text-anchor="start" fill="#a5a29c" font-size="16">teal: audited · lavender: management’s words</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Figure</th><th>Value</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="3">BUSINESS</td></tr>
+          <tr><td>Four businesses</td><td class="val">6,467 · 6,588 · 4,885 · 2,387</td><td class="pg">SLIDE 7</td></tr>
+          <tr><td>Revenue in India</td><td class="val">₹14,515.95 cr</td><td class="pg">NOTE 38 · P. 479</td></tr>
+          <tr><td>Reach</td><td class="val">290 mn households · 4.5 mn shops</td><td class="pg">SLIDE 4</td></tr>
+          <tr><td>Advertisement and sales charges</td><td class="val">₹1,225.48 cr</td><td class="pg">NOTE 28 · P. 455</td></tr>
+          <tr class="grp"><td colspan="3">STATEMENTS</td></tr>
+          <tr><td>Revenue, FY26 and FY25</td><td class="val">₹20,290.43 · ₹17,618.30 cr</td><td class="pg">P&amp;L · P. 415</td></tr>
+          <tr><td>Profit; owners’ share; basic EPS</td><td class="val">₹1,546.80 · ₹1,542.30 cr · ₹15.59</td><td class="pg">P&amp;L · P. 415</td></tr>
+          <tr><td>Goodwill; other intangibles; total assets</td><td class="val">₹11,883.90 · ₹7,111.76 · ₹34,452.96 cr</td><td class="pg">BALANCE SHEET · P. 414</td></tr>
+          <tr><td>Borrowings; cash and equivalents</td><td class="val">₹2,120.31 · ₹3,046.57 cr</td><td class="pg">P. 414</td></tr>
+          <tr><td>CFO; capex</td><td class="val">₹2,421.85 · ₹448.57 cr</td><td class="pg">CASH FLOW · P. 417</td></tr>
+          <tr><td>Rights issue, net; acquisitions (FY25)</td><td class="val">₹2,980.57 · ₹1,809.00 cr</td><td class="pg">PP. 417–418</td></tr>
+          <tr><td>Weighted shares, FY26 and FY25</td><td class="val">98,95,35,734 · 97,91,95,536</td><td class="pg">NOTE 30 · P. 456</td></tr>
+          <tr class="grp"><td colspan="3">MANAGEMENT’S FIGURES</td></tr>
+          <tr><td>EBITDA; net cash; adjusted EPS</td><td class="val">₹2,815 cr · ₹2,978 cr · ₹17.30</td><td class="pg">SLIDE 8</td></tr>
+          <tr><td>RoCE, TCPL’s definition</td><td class="val">41.87%</td><td class="pg">MD&amp;A · P. 224</td></tr>
+          <tr class="grp"><td colspan="3">PEOPLE AND PRICE</td></tr>
+          <tr><td>Promoters; Tata Sons</td><td class="val">33.83% · 28.68%</td><td class="pg">NSE SHP · P. 254</td></tr>
+          <tr><td>Board</td><td class="val">7 directors, 4 independent</td><td class="pg">P. 182</td></tr>
+          <tr><td>Key audit matter: UK goodwill</td><td class="val">₹2,184.50 cr</td><td class="pg">PP. 405, 438</td></tr>
+          <tr><td>Close, 30 March 2026; shares</td><td class="val">₹1,014.80 · 98,95,61,780</td><td class="pg">NSE · NOTE 14 · P. 445</td></tr>
+        </tbody>
+      </table></div>
+      <p>The audited statements are the facts; the slides are management’s figures, useful and checked against the statements where this page uses them. Two lines this page could not fill from the filings: any single customer’s share of sales, and why receivables rose so fast <span class="tag np">not public</span>.</p>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/INTEGRATED_ANNUAL_REPORT_F_Y_2025_26.pdf">Integrated Annual Report 2025-26</a> (printed pages as cited), its <a href="https://www.tataconsumer.com/sites/g/files/gfwrlq316/files/2026-06/TCPL-AGM-PRESENTATION-FOR-FY-2025-26.pdf">FY26 AGM presentation</a>, its <a href="https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml">NSE shareholding-pattern filing</a> for 31 March 2026, and <a href="https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_30032026.csv">NSE’s bhavcopy</a> for 30 March 2026. Valuation inputs beyond those are this series’ assumptions. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Using the method on your own company</h2>
+      <ol class="checks">
+        <li><b>Keep the order.</b> Business, accounts, ratios, quality, people, economy, then price. Write down what you think the business is worth to an owner before you look at the multiple.</li>
+        <li><b>Use the filings, and cite pages.</b> Every number here has a page. If a number has no page, find out whose it is.</li>
+        <li><b>Write the questions, not just the lights.</b> TCPL’s checklist ends with three questions: do acquired brands earn their price, why did receivables jump, and what discount rate makes the price reasonable.</li>
+        <li><b>Turn the price into a belief.</b> A reverse DCF says what you would have to believe; decide whether you do, and what would show you were wrong.</li>
+      </ol>
+      <p>A thesis says what one company might be worth. It does not say how much of your money it should get, when to sell, or what tax and costs take on the way. Part 38, “Portfolio, taxes and costs”, closes the series with those.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Run the tests in order, from the business to the price, cite a page for every number, and finish with what the price makes you believe: the checklist tells you where to dig, not whether to buy.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLDC='#f5c76a',LAVC='#c3b8ff';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- TCPL FY26, consolidated, ₹ crore, as printed (IAR 2025-26 pages in the real-report table). Every check below is computed from these.
+    const F={rev:20290.43,rev25:17618.30,mat:7788.16,stock:4108.23,chg:-40.75,emp:1661.00,oth:3981.99,da:626.68,fin:137.03,oi:164.75,
+      exc:-20.06,pbt:2172.78,pat:1546.80,cfo:2421.85,eq:23188.86,debt:2120.31,cash:3046.57,inv:3526.76,rec:1148.33,rec25:869.79,pay:3875.30,
+      owners:1542.30,ownEq:21787.53,eps:15.59,adjEps:17.30,pledgedPct:0,dirs:7,indep:4,wsh:989535734,wsh25:979195536,
+      ebit25:1781.66+290.20-193.25};
+    const PRICE=1014.80, SHARES=98.956178, NETCASH=2978, TAX=0.2517;
+    const PE5=[[777.40,10.15],[708.85,13.02],[1096.20,12.32],[1001.90,13.06],[1014.80,15.59]];
+    const mats=F.mat+F.stock+F.chg, ebitda=F.rev-mats-F.emp-F.oth, ebit=ebitda-F.da, nopat0=ebit*(1-TAX);
+    const ebitG=100*(ebit/F.ebit25-1);
+    const peAvg=PE5.reduce((s,[p,e])=>s+p/e,0)/5;
+    const P=(id,n)=>`<a class="pt" href="${id}.html" data-series-link="${id}">PART ${n}</a>`;
+    // rows: id, section, label, part link, value fn, display, line, dir (+1 higher is better, -1 lower), line text, hint
+    const ROWS=[
+      {id:'B1',t:'sales growth',sec:'biz',lab:'Sales growth',p:P('growth-worth-paying-for-eli5',9),v:()=>100*(F.rev/F.rev25-1),fmt:v=>v.toFixed(1)+'%',line:10,dir:1,lt:'≥ 10%'},
+      {id:'B2',t:'gross margin',sec:'biz',lab:'Gross margin',p:P('margins-and-operating-leverage-eli5',8),v:()=>100*(F.rev-mats)/F.rev,fmt:v=>v.toFixed(1)+'%',line:40,dir:1,lt:'≥ 40%'},
+      {id:'B3',t:'how it earns',sec:'biz',lab:'Can you say how each business earns?',p:P('business-model-eli5',16),judge:true,hint:'four businesses; no single customer named'},
+      {id:'B4',t:'the moat',sec:'biz',lab:'Is there a moat?',p:P('industry-and-moats-eli5',17),judge:true,hint:'brand claims, 4.5 mn shops; margin within 1.3 points'},
+      {id:'N1',t:'ROE',sec:'num',lab:'ROE',p:P('roe-roce-dupont-eli5',10),v:()=>100*F.owners/F.ownEq,fmt:v=>v.toFixed(1)+'%',line:15,dir:1,lt:'≥ 15%'},
+      {id:'N2',t:'ROCE',sec:'num',lab:'ROCE, all capital',p:P('roe-roce-dupont-eli5',10),v:()=>100*ebit/(F.eq+F.debt),fmt:v=>v.toFixed(1)+'%',line:15,dir:1,lt:'≥ 15%'},
+      {id:'N3',t:'net debt',sec:'num',lab:'Net debt ÷ EBITDA',p:P('how-much-debt-eli5',11),v:()=>(F.debt-F.cash)/ebitda,fmt:v=>v.toFixed(2)+'×',line:1,dir:-1,lt:'≤ 1×'},
+      {id:'N4',t:'interest cover',sec:'num',lab:'Interest cover',p:P('how-much-debt-eli5',11),v:()=>ebit/F.fin,fmt:v=>v.toFixed(1)+'×',line:5,dir:1,lt:'≥ 5×'},
+      {id:'N5',t:'cash cycle',sec:'num',lab:'Cash cycle',p:P('working-capital-cycle-eli5',12),v:()=>365*(F.inv/mats+F.rec/F.rev-F.pay/mats),fmt:v=>v.toFixed(0)+' days',line:60,dir:-1,lt:'≤ 60 days'},
+      {id:'Q1',t:'cash against profit',sec:'qual',lab:'CFO ÷ profit',p:P('free-cash-flow-eli5',13),v:()=>F.cfo/F.pat,fmt:v=>v.toFixed(2),line:1,dir:1,lt:'≥ 1'},
+      {id:'Q2',t:'receivables',sec:'qual',lab:'Receivables growth above sales',p:P('red-flags-eli5',20),v:()=>100*(F.rec/F.rec25-1)-100*(F.rev/F.rev25-1),fmt:v=>v.toFixed(1)+' pts',line:5,dir:-1,lt:'≤ 5 pts'},
+      {id:'Q3',t:'other income and one-offs',sec:'qual',lab:'Other income and one-offs ÷ PBT',p:P('red-flags-eli5',20),v:()=>100*(F.oi+Math.abs(F.exc))/F.pbt,fmt:v=>v.toFixed(1)+'%',line:15,dir:-1,lt:'≤ 15%'},
+      {id:'Q4',t:'adjusted EPS',sec:'qual',lab:'Adjusted EPS above basic',p:P('accounting-choices-eli5',6),v:()=>100*(F.adjEps/F.eps-1),fmt:v=>v.toFixed(1)+'%',line:10,dir:-1,lt:'≤ 10%'},
+      {id:'M1',t:'pledges',sec:'ppl',lab:'Promoter shares pledged',p:P('governance-and-ownership-eli5',19),v:()=>F.pledgedPct,fmt:v=>v.toFixed(0)+'%',line:0,dir:-1,lt:'none'},
+      {id:'M2',t:'independent directors',sec:'ppl',lab:'Independent directors',p:P('governance-and-ownership-eli5',19),v:()=>100*F.indep/F.dirs,fmt:v=>v.toFixed(0)+'%',line:50,dir:1,lt:'≥ 50%'},
+      {id:'M3',t:'dilution',sec:'ppl',lab:'Shares added in the year',p:P('corporate-actions-eli5',21),v:()=>100*(F.wsh/F.wsh25-1),fmt:v=>v.toFixed(2)+'%',line:2,dir:-1,lt:'≤ 2%'},
+      {id:'M4',t:'promises kept',sec:'ppl',lab:'Are promises kept?',p:P('management-and-capital-allocation-eli5',18),judge:true,hint:'16% margin by Q3 missed; double-digit growth met'},
+      {id:'M5',t:'acquisitions',sec:'ppl',lab:'Do acquisitions earn their price?',p:P('management-and-capital-allocation-eli5',18),judge:true,hint:'₹18,996 cr of goodwill and brands; ROCE 8.6%'},
+      {id:'E1',t:'outside shocks',sec:'econ',lab:'Can it ride out tea, coffee and the rupee?',p:P('the-economy-around-the-company-eli5',22),judge:true,hint:'price rises held margins; rupee added 7 points abroad'},
+      {id:'V1',t:'P/E against its past',sec:'price',lab:'P/E ÷ its 5-year average',p:P('relative-valuation-eli5',26),v:()=>(PRICE/F.eps)/peAvg,fmt:v=>v.toFixed(2),line:1,dir:-1,lt:'≤ 1'},
+      {id:'V2',t:'growth the price needs',sec:'price',lab:'Growth the price needs',p:P('reverse-dcf-eli5',25),v:()=>S.implied===null?Infinity:S.implied,fmt:v=>isFinite(v)?v.toFixed(1)+'%':'over 60%',line:+ebitG.toFixed(1),dir:-1,lt:'≤ FY26 EBIT growth '+ebitG.toFixed(1)+'%'},
+      {id:'V3',t:'price against your value',sec:'price',lab:'Price against your value',p:P('margin-of-safety-eli5',28),v:()=>S.value>0?PRICE/S.value:Infinity,fmt:v=>isFinite(v)?v.toFixed(2)+'×':'no value',special:true,lt:'≤ 1 − margin'}
+    ];
+    const SECS=[['biz','The business'],['num','The numbers'],['qual','Quality of earnings'],['ppl','Management and governance'],['econ','The economy'],['price','The price']];
+    const SYM={g:'●',a:'◆',r:'▲'}, NAME={g:'good',a:'watch',r:'weak'}, NEXT={'':'g',g:'a',a:'r',r:''};
+    const marks={}; ROWS.forEach(r=>marks[r.id]='');
+    const S={g1:.15,g2:.10,gt:.05,roni:.40,r:.12,mos:30,value:0,implied:null};
+    function valueShare(g1,g2,gt,roni,r){
+      let n=nopat0,pv=0,rows=[];
+      for(let t=1;t<=10;t++){const g=t<=5?g1:g2;n*=1+g;const fc=n*(1-g/roni);pv+=fc/Math.pow(1+r,t);rows.push([n,fc]);}
+      const tv=n*(1+gt)*(1-gt/roni)/(r-gt), pvtv=tv/Math.pow(1+r,10), ev=pv+pvtv;
+      return {v:(ev+NETCASH)/SHARES,pv,tv,pvtv,ev,rows};
+    }
+    function impliedGrowth(gt,roni,r){ // one growth rate for FY27-FY36; first crossing of the price on a 0.5% grid, then bisection
+      const f=g=>valueShare(g,g,gt,roni,r).v-PRICE;
+      let prev=-0.10;
+      if(f(prev)>=0) return null;
+      for(let g=-0.095;g<=0.6000001;g+=0.005){
+        if(f(g)>=0){let lo=prev,hi=g;for(let i=0;i<60;i++){const m=(lo+hi)/2;if(f(m)>=0)hi=m;else lo=m;}return 100*(lo+hi)/2;}
+        prev=g;}
+      return null;
+    }
+    function rule(row){
+      if(row.judge) return '';
+      const v=row.v();
+      if(row.special){if(!(S.value>0))return 'r';const bb=S.value*(1-S.mos/100);return PRICE<=bb+1e-9?'g':(PRICE<=S.value+1e-9?'a':'r');}
+      const ln=row.line,e=1e-9;
+      if(!isFinite(v)) return 'r';
+      if(row.dir>0) return v>=ln-e?'g':(v>=ln*0.8-e?'a':'r');
+      return v<=ln+e?'g':(v<=ln*1.2+e?'a':'r');
+    }
+    function rowHtml(row){
+      const rl=rule(row), mk=marks[row.id];
+      const val=row.judge?`<span class="hint">your call</span>`:`<span class="lt ${rl}" role="img" aria-label="rule says ${NAME[rl]}">${SYM[rl]}</span>${row.fmt(row.v())}`;
+      const gi=row.judge?`<span class="hint">${row.hint}</span>`:`<span class="gi">good if ${row.lt}</span>`;
+      return `<tr><td>${row.lab} ${row.p}${gi}</td><td class="val">${val}</td><td class="line">${row.judge?'':row.lt}</td>`+
+        `<td class="you"><button type="button" class="secondary mk ${mk}" data-mk="${row.id}" aria-label="Your mark for ${row.lab}: ${mk?NAME[mk]:'none'}">${mk?SYM[mk]:'—'}</button></td></tr>`;
+    }
+    function table(secs){
+      let h='<thead><tr><th>Check</th><th>TCPL</th><th class="line">Good if</th><th class="you">You</th></tr></thead><tbody>';
+      SECS.filter(([k])=>secs.includes(k)).forEach(([k,n])=>{h+=`<tr class="grp"><td colspan="4">${n.toUpperCase()}</td></tr>`;ROWS.filter(r=>r.sec===k).forEach(r=>h+=rowHtml(r));});
+      return h+'</tbody>';
+    }
+    const inr=v=>'₹'+Math.round(v).toLocaleString('en-IN');
+    const labConfig={format:v=>String(Math.round(v))};
+    function niceStep(span){const c=[50,100,200,250,500,1000,2000,2500,5000,10000,20000,25000,50000,100000];return c.find(s=>span/s<=3)||200000;}
+    function drawChart(){
+      const v=S.value, bb=Math.max(0,v*(1-S.mos/100));
+      const st=niceStep(Math.max(PRICE,v)-Math.min(0,v));
+      const lo=Math.floor(Math.min(0,v)/st)*st, hi=Math.ceil(Math.max(PRICE,v)/st)*st;
+      const X0=120,X1=396, sx=x=>X0+(x-lo)*(X1-X0)/(hi-lo), z=sx(0);
+      let s='';
+      const rows=[['your value',v,GOLDC,1],['buy below',bb,GOLDC,.45],['FY26 price',PRICE,LAVC,1]];
+      rows.forEach(([n,val,c,op],i)=>{const y=12+i*62,x=Math.min(z,sx(val)),w=Math.abs(sx(val)-z);
+        s+=T(14,y+19,n,'start',MUTC)+`<rect data-v="${val.toFixed(2)}" x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="26" fill="${c}" opacity="${op}"/>`;
+        s+=T(14,y+44,(n==='buy below'&&v<=0)?'no buy price':inr(val),'start',FGC);});
+      s+=`<path d="M${z.toFixed(2)} 6 L${z.toFixed(2)} 194" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      let ticks=[];for(let t=lo;t<=hi+1e-9;t+=st)ticks.push(t);
+      ticks.forEach((t,i)=>{s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="214" text-anchor="${i===0&&sx(t)<X0+20?'start':(i===ticks.length-1&&sx(t)>X1-20?'end':'middle')}" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;});
+      s+=T(14,236,'₹ a share','start',MUTC);
+      $('labChart').innerHTML=s;
+      return bb;
+    }
+    function shapeSvg(k,cx,cy){const s=11;
+      if(k==='g')return `<circle cx="${cx}" cy="${cy}" r="${s}" fill="#7bd88f"/>`;
+      if(k==='a')return `<path d="M${cx} ${cy-s-2} L${cx+s+2} ${cy} L${cx} ${cy+s+2} L${cx-s-2} ${cy} Z" fill="#ffb04d"/>`;
+      if(k==='r')return `<path d="M${cx} ${cy-s-1} L${cx+s+2} ${cy+s} L${cx-s-2} ${cy+s} Z" fill="#ff6b6b"/>`;
+      return `<circle cx="${cx}" cy="${cy}" r="${s-1}" fill="#202020" stroke="${MUTC}" stroke-width="2" stroke-dasharray="3 3"/>`;}
+    const SHORT={biz:'Business',num:'Numbers',qual:'Quality',ppl:'People',econ:'Economy',price:'Price'};
+    function drawProg(){
+      let s='',x=52;
+      SECS.forEach(([k])=>{const xs=x;ROWS.filter(r=>r.sec===k).forEach(r=>{s+=shapeSvg(marks[r.id],x,34);x+=31;});
+        s+=`<path d="M${xs-12} 62 L${x-19} 62" stroke="${MUTC}" stroke-width="2" fill="none"/>`+T((xs+x-31)/2,88,SHORT[k],'middle',MUTC);x+=22;});
+      $('progSvg').innerHTML=s;
+    }
+    function list(a){return a.length<=1?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];}
+    function thesis(bb){
+      const lower=s=>s.charAt(0).toLowerCase()+s.slice(1);
+      let h='';
+      SECS.forEach(([k,n])=>{const rs=ROWS.filter(r=>r.sec===k),done=rs.filter(r=>marks[r.id]);
+        if(!done.length){h+=`<p><b>${n}:</b> not checked yet.</p>`;return;}
+        const by=c=>done.filter(r=>marks[r.id]===c).map(r=>r.t);
+        const parts=[];['g','a','r'].forEach(c=>{const l=by(c);if(l.length)parts.push(NAME[c]+' on '+list(l));});
+        let t=`<p><b>${n}</b> (${done.length} of ${rs.length} checked): ${parts.join('; ')}.`;
+        if(k==='price') t+=` At ${'₹1,014.80'} the price is ${S.value>0?(PRICE/S.value).toFixed(1)+' times':'above'} your value of ${inr(S.value)} a share; ${S.implied===null?'no growth rate up to 60% a year justifies it on your return and discount rate':'it needs '+S.implied.toFixed(1)+'% a year for ten years on your return and discount rate, against FY26 EBIT growth of '+ebitG.toFixed(1)+'%'}.`;
+        h+=t+'</p>';});
+      const c={g:0,a:0,r:0,none:0};ROWS.forEach(r=>{c[marks[r.id]||'none']++;});
+      const over=ROWS.filter(r=>!r.judge&&marks[r.id]&&marks[r.id]!==rule(r)).map(r=>r.t);
+      h+=`<p><b>So far:</b> ${c.g} good, ${c.a} watch, ${c.r} weak, ${c.none} still to check, out of ${ROWS.length}.${over.length?' You overrode the rule on '+list(over)+'.':''} A checklist shows where to dig and what the price asks you to believe; it does not say buy or sell. A worked example of the method, frozen at FY2026. Educational, not a recommendation.</p>`;
+      $('thesis').innerHTML=h;
+      return c;
+    }
+    function draw(){
+      S.g1=+$('g1').value/100;S.g2=+$('g2').value/100;S.roni=+$('roni').value/100;S.r=+$('r').value/100;
+      $('g1-o').textContent=(+$('g1').value).toFixed(1)+'%';$('g2-o').textContent=(+$('g2').value).toFixed(1)+'%';
+      $('roni-o').textContent=$('roni').value+'%';$('r-o').textContent=(+$('r').value).toFixed(1)+'%';$('ms-o').textContent=S.mos+'%';
+      document.querySelector('[data-ms="-1"]').disabled=S.mos<=0;document.querySelector('[data-ms="1"]').disabled=S.mos>=60;
+      const m=valueShare(S.g1,S.g2,S.gt,S.roni,S.r);S.value=m.v;S.implied=impliedGrowth(S.gt,S.roni,S.r);
+      const bb=drawChart();
+      $('ckA').innerHTML=table(['biz','num','qual','ppl','econ']);$('ckB').innerHTML=table(['price']);
+      drawProg();const counts=thesis(bb);
+      const r1=m.rows[0],r5=m.rows[4],r10=m.rows[9];
+      const L=[['NOPAT, FY26','EBIT '+ebit.toFixed(2)+' × (1 − 25.17%) = '+nopat0.toFixed(2)],
+        ['FY27','NOPAT '+r1[0].toFixed(1)+' · FCFF '+r1[1].toFixed(1)],['FY31','NOPAT '+r5[0].toFixed(1)+' · FCFF '+r5[1].toFixed(1)],['FY36','NOPAT '+r10[0].toFixed(1)+' · FCFF '+r10[1].toFixed(1)],
+        ['PV of FY27–FY36 FCFF',inr(m.pv)+' cr'],['Terminal value at FY36','FCFF FY37 ÷ ('+(S.r*100).toFixed(1)+'% − '+(S.gt*100).toFixed(0)+'%) = '+inr(m.tv)+' cr'],
+        ['PV of terminal value',inr(m.pvtv)+' cr'+(m.ev>0?' ('+(100*m.pvtv/m.ev).toFixed(0)+'% of EV)':'')],['EV + net cash 2,978',inr(m.ev+NETCASH)+' cr'],
+        ['÷ 98.956 cr shares',inr(m.v)+' a share'],['Buy below ('+S.mos+'% margin)',inr(bb)],['FY26 price ÷ value',m.v>0?(PRICE/m.v).toFixed(2)+'×':'value below zero'],
+        ['Growth the price needs',S.implied===null?'none up to 60%':S.implied.toFixed(1)+'% a year, FY27–FY36']];
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      const rv={};ROWS.forEach(r=>{rv[r.id]={value:r.judge?null:r.v(),rule:rule(r)||null,mark:marks[r.id]||null};});
+      window.labResults={valid:Number.isFinite(m.v)&&Number.isFinite(m.ev)&&ROWS.every(r=>r.judge||r.special||r.id==='V2'||Number.isFinite(r.v())),
+        inputs:{g1:S.g1,g2:S.g2,gt:S.gt,roni:S.roni,r:S.r,mos:S.mos},nopat0,ebitda,ebit,ebitGrowth:ebitG,peAvg,
+        value:m.v,ev:m.ev,pvExplicit:m.pv,pvTerminal:m.pvtv,buyBelow:bb,priceToValue:m.v>0?PRICE/m.v:null,implied:S.implied,rows:rv,counts};
+    }
+    const PRESETS={
+      bear:{v:{g1:8,g2:6,roni:25,r:13},gt:.04,t:'Part 28’s bear: 8% then 6% growth, 4% after, new money earning 25%, a 13% discount rate. About ₹212 a share.'},
+      base:{v:{g1:15,g2:10,roni:40,r:12},gt:.05,t:'Part 28’s base: FY26’s 15% for five years, then 10%, 5% after, new money earning 40%, 12%. About ₹376 a share.'},
+      bull:{v:{g1:25,g2:12,roni:40,r:11},gt:.05,t:'Part 28’s bull: 25% then 12%, 5% after, 40% on new money, 11%. About ₹656 a share, still below the price.'},
+      need:{v:{g1:29,g2:29,roni:40,r:12},gt:.05,t:'What the price needs: Part 25’s answer, about 28.9% a year for all ten years at 40% and 12%, rounded here to the slider’s 29%.'}};
+    ['g1','g2','roni','r'].forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('[data-ms]').forEach(b=>b.addEventListener('click',()=>{S.mos=Math.min(60,Math.max(0,S.mos+5*(+b.dataset.ms)));draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{const p=PRESETS[bt.dataset.p];
+      Object.entries(p.v).forEach(([k,v])=>$(k).value=v);S.gt=p.gt;draw();$('msg').textContent=p.t;}));
+    document.addEventListener('click',e=>{const b=e.target.closest('[data-mk]');if(!b)return;const id=b.dataset.mk;marks[id]=NEXT[marks[id]];draw();
+      const nb=document.querySelector(`[data-mk="${id}"]`);if(nb)nb.focus();});
+    $('useRule').addEventListener('click',()=>{ROWS.forEach(r=>{if(!r.judge)marks[r.id]=rule(r);});draw();});
+    $('clearMarks').addEventListener('click',()=>{ROWS.forEach(r=>marks[r.id]='');draw();});
+    draw();
+
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

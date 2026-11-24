@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Portfolio, taxes and costs — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out (capex, costs) | gold #f5c76a = what belongs to shareholders (profit, EPS, equity, dividends)
+       rose #ec6a94 = what is owed (debt) | lavender #c3b8ff = the market's view (price, market cap, multiples)
+       Part 38: tax and costs are money going out (coral); what you keep, gains and dividends are gold; sale proceeds are teal. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .events button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:5.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    /* Part 15: dashboard tables and traffic lights */
+    .dash{min-width:0;font-size:14px}
+    .dash th,.dash td{padding:7px 8px;vertical-align:top}
+    .dash tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .dash td.line{font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .dash td.val{white-space:nowrap}
+    .dash th.ed::after{content:" ✎";color:var(--accent)}
+    .lt{display:inline-block;width:1.2em;font-weight:700}.lt.g{color:#7bd88f}.lt.a{color:#ffb04d}.lt.r{color:#ff6b6b}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .lab .picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .picks button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .picks button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    /* Part 15 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events,.dashlab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+    .dashlab .dash tr.grp td{padding:16px 10px 6px;border-bottom:0}
+    .dashlab .dash td.line{font:13px/1.4 var(--font-mono)}
+    .dashlab .lights-key{margin:12px 0 0}
+    .dashlab .dl-chart{max-width:560px;margin-top:18px}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:12px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab details.trace{margin-top:16px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab #msg:empty{display:none}
+    .dashlab .gi,.dashlab .nm-short{display:none}
+    @media (max-width:700px){.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash .line{display:none}.dashlab .gi{display:block;margin-top:2px;font:11px/1.4 var(--font-mono);color:var(--muted)}.dashlab .nm-full{display:none}.dashlab .nm-short{display:inline}.dashlab .dash td.val{font-size:14px}}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}}
+  
+    /* Part 38 additions */
+    .dashlab .dl-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin:0 0 16px;padding:1px}
+    .dashlab .dl-out div{outline:1px solid var(--border);padding:10px 12px;background:var(--surface)}
+    .dashlab .dl-out b{display:block;font-size:20px;font-weight:600;color:var(--fg)}
+    .dashlab .dl-out span{display:block;font:11px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--muted)}
+    .rates{font-size:14px}.rates td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rates td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    @media (max-width:700px){.lab-chart svg{min-width:480px}}
+    @media (max-width:700px){.eli5-study-container table.rates{min-width:0}.rates td,.rates th{padding:6px 5px}.rates td.wk{font-size:11px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 38: position sizing, when to sell, and what tax and costs take">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/portfolio-taxes-costs-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Portfolio, taxes and costs">
+<meta property="og:description" content="Part 38: position sizing, when to sell, and what tax and costs take">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/portfolio-taxes-costs-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/portfolio-taxes-costs-eli5.png?v=af0f9920">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Portfolio, taxes and costs">
+<meta property="article:published_time" content="2026-11-24">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="portfolio-taxes-costs-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 20 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Portfolio, taxes and costs</h1>
+      <p class="lede">A good analysis still has to become a good decision: how much to put in, when to get out, and how much of the gain you actually keep. Size each idea by how wrong it could go, sell for reasons about value rather than price, and count the tax and costs before you trade.</p>
+      <p class="source-note">Built from the Finance (No. 2) Act, 2024 and the Finance Act, 2025 as published in the Gazette of India, the Income-tax Act, 2025, the Government’s memoranda to the Finance Bills, NSE’s published levies and its transaction-charge circular, and Tata Consumer Products’ Integrated Annual Report 2025-26 · <a href="https://egazette.gov.in/WriteReadData/2024/256436.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="pb-dividends-ev-eli5.html" data-series-link="pb-dividends-ev-eli5">Part 14</a> explained dividends and payout, <a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a> covered buybacks, and <a href="margin-of-safety-eli5.html" data-series-link="margin-of-safety-eli5">Part 28</a> turned Ramu Chai’s value into a range: bear ₹44.1, probability-weighted ₹74.3, bull ₹99.6 a share, with a buy price of ₹52.0 or less for a 30% margin of safety. Part 36, “Screening for ideas”, finds candidates and Part 37, “One company, start to finish”, writes a one-page thesis. This last part covers what happens after the thesis. Facts carry a tag: <span class="tag">public</span> is a rule taken from the Act, the exchange or a filing, <span class="tag">example</span> is a made-up but consistent number, mostly a reader who buys our fictional Ramu Chai Ltd. Tax rules are those for FY2026, the year to 31 March 2026, for a resident individual buying listed shares on delivery. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>belongs to you: gains, dividends, what you keep</span>
+        <span><i style="background:#ff8059"></i>money going out: costs, tax</span>
+        <span><i style="background:#76d5c1"></i>money coming in: sale proceeds</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: price</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>The gain on screen is not yours</h2>
+      <p>A reader follows Part 28 and buys 2,000 Ramu shares at ₹52, ₹1,04,000 in all <span class="tag">example</span>. Eighteen months later the price is ₹74 and Ramu has paid a ₹2 dividend. The screen shows a ₹44,000 gain. After trading costs and tax, ₹46,594 of the ₹48,000 is kept. Selling six months earlier, at 12 months, keeps only ₹37,509.</p>
+      <figure><svg viewBox="0 0 800 352" role="img" aria-label="Four bars on one scale for 2,000 Ramu shares bought at 52 rupees and sold at 74: a price gain of 44,000 rupees, 48,000 with dividends, about 46,594 kept if sold after 18 months, and about 37,509 kept if sold at 12 months, when tax takes a coral slice"><text x="40.0" y="30.0" text-anchor="start" fill="#a5a29c" font-size="16">Screen: price gain</text><rect x="40.0" y="40.0" width="440.0" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="48.0" y="59.0" text-anchor="start" fill="#202020" font-size="16">price gain ₹44,000</text><text x="40.0" y="108.0" text-anchor="start" fill="#a5a29c" font-size="16">Plus dividends: ₹48,000 before costs and tax</text><rect x="40.0" y="118.0" width="440.0" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><rect x="480.0" y="118.0" width="40.0" height="26.0" fill="#f5c76a" opacity="0.55" stroke="#202020" stroke-width="1"/><text x="40.0" y="186.0" text-anchor="start" fill="#a5a29c" font-size="16">Kept, sold at 18 months</text><rect x="40.0" y="196.0" width="465.9" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="48.0" y="215.0" text-anchor="start" fill="#202020" font-size="16">kept ₹46,594</text><rect x="505.9" y="196.0" width="5.7" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><rect x="511.7" y="196.0" width="8.3" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="530.0" y="215.0" text-anchor="start" fill="#ff8059" font-size="16">costs + tax ₹1,406</text><text x="40.0" y="264.0" text-anchor="start" fill="#a5a29c" font-size="16">Kept, sold at 12 months</text><rect x="40.0" y="274.0" width="375.1" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="48.0" y="293.0" text-anchor="start" fill="#202020" font-size="16">kept ₹37,509</text><rect x="415.1" y="274.0" width="5.7" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><rect x="420.8" y="274.0" width="8.3" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><rect x="429.1" y="274.0" width="90.9" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="530.0" y="293.0" text-anchor="start" fill="#ff8059" font-size="16">costs + tax ₹10,491</text><text x="40.0" y="338.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹100 · Ramu Chai, 2,000 shares bought at ₹52, sold at ₹74</text></svg></figure>
+      <p>Three things decide how much of a good idea reaches you: how much you put in, when you sell, and what tax and costs take. This part covers each, then a calculator that does all three at once.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Position sizing</p>
+      <h2>Size each idea by its downside</h2>
+      <p>Part 28 gave Ramu a range, not a point. Use the bottom of it. Decide how much of the whole portfolio one idea may lose if the bear case comes true, say 2% <span class="tag">example</span>, then divide by the fall to the bear value. Bought at ₹52, the fall to ₹44.1 is 15.2%, so the idea may be 13.2% of the portfolio. Bought at ₹100, the fall is 55.9% and the limit is 3.6%.</p>
+      <figure><svg viewBox="0 0 800 344" role="img" aria-label="For a buy at 52 rupees the fall to Part 28’s bear value of 44.1 is 15.2 percent, a short coral bar, which allows a position of 13.2 percent of the portfolio; for a buy at 100 the fall is 55.9 percent, a long coral bar, which allows only 3.6 percent"><text x="40.0" y="40.0" text-anchor="start" fill="#f1eee8" font-size="16">Buy at ₹52</text><text x="200.0" y="40.0" text-anchor="start" fill="#a5a29c" font-size="16">fall to bear ₹44.1: 15.2%</text><rect x="200.0" y="50.0" width="121.5" height="24.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="200.0" y="104.0" text-anchor="start" fill="#a5a29c" font-size="16">largest position: 13.2% of portfolio</text><rect x="200.0" y="114.0" width="263.3" height="24.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="40.0" y="190.0" text-anchor="start" fill="#f1eee8" font-size="16">Buy at ₹100</text><text x="200.0" y="190.0" text-anchor="start" fill="#a5a29c" font-size="16">fall to bear ₹44.1: 55.9%</text><rect x="200.0" y="200.0" width="447.2" height="24.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="200.0" y="254.0" text-anchor="start" fill="#a5a29c" font-size="16">largest position: 3.6% of portfolio</text><rect x="200.0" y="264.0" width="71.6" height="24.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="40.0" y="330.0" text-anchor="start" fill="#a5a29c" font-size="16">coral: 8 px per % fall · gold: 20 px per % of portfolio</text></svg></figure>
+      <span class="eq">largest position = loss you accept ÷ fall to bear value = 2% ÷ 15.2% = 13.2% of the portfolio</span>
+      <p>The same company deserves a different size at a different price. A wider range of values, or a price nearer the top of it, means a smaller position. Many investors also set a ceiling for any one idea, whatever the arithmetic says, because the bear case is a guess too.</p>
+      <details class="trace"><summary>Go deeper: other ways to size</summary><p>Equal weights (the same amount in every idea) are simple and stop one idea dominating, but ignore how wrong each could go. Sizing by conviction alone is the weakest rule: confidence is not a measure of downside. Whatever rule you use, write it down before you buy. Also note that a winner grows as a share of the portfolio as its price rises; trimming back to your limit is a decision about size, not a verdict on the company.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">When to sell</p>
+      <h2>Sell on value, not on price</h2>
+      <p>The gold band is Ramu’s range of values; the lavender line is the price <span class="tag">example</span>. Three reasons to sell are about value: the price has run above the bull case (<b>C, valuation stretched</b>), the thesis is broken so the band itself falls (<b>D</b>), or a better idea needs the money. Reaching the weighted value (<b>B</b>) means the margin is gone: time to re-check, not an order to sell.</p>
+      <figure><svg viewBox="0 0 800 382" role="img" aria-label="A lavender price line for Ramu moves through a gold band of values from 44.1 to 99.6 rupees: at A it falls but the value is unchanged, at B it reaches the 74.3 value, at C it rises above the bull case, and at D the band itself drops because the thesis broke"><rect x="90.0" y="103.5" width="508.3" height="172.7" fill="#f5c76a" opacity="0.16"/><rect x="598.3" y="195.6" width="101.7" height="124.4" fill="#f5c76a" opacity="0.16"/><path d="M90.0 182.2 L598.3 182.2" stroke="#f5c76a" stroke-width="2" fill="none" stroke-dasharray="6 5"/><path d="M598.3 257.8 L700.0 257.8" stroke="#f5c76a" stroke-width="2" fill="none" stroke-dasharray="6 5"/><polyline points="90.0,251.6 140.8,260.9 191.7,270.2 242.5,242.2 293.3,220.4 344.2,201.8 395.0,183.1 445.8,158.2 496.7,117.8 530.6,89.8 564.4,99.1 598.3,127.1 649.2,195.6 700.0,214.2" fill="none" stroke="#c3b8ff" stroke-width="3"/><circle cx="191.7" cy="270.2" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="205.7" y="296.2" text-anchor="start" fill="#f1eee8" font-size="16">A · fell: hold</text><circle cx="395.0" cy="183.1" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="409.0" y="209.1" text-anchor="start" fill="#f1eee8" font-size="16">B · at value</text><circle cx="530.6" cy="89.8" r="7" fill="#c3b8ff" stroke="#202020" stroke-width="2"/><text x="530.6" y="73.8" text-anchor="middle" fill="#f1eee8" font-size="16">C · stretched</text><text x="606.3" y="52.4" text-anchor="start" fill="#ff8059" font-size="16">D · thesis broken</text><path d="M598.3 64.9 L598.3 320.0" stroke="#ff8059" stroke-width="2" fill="none" stroke-dasharray="3 4"/><text x="98.0" y="125.5" text-anchor="start" fill="#f5c76a" font-size="16">bull ₹99.6</text><text x="98.0" y="174.2" text-anchor="start" fill="#f5c76a" font-size="16">value ₹74.3</text><text x="98.0" y="296.1" text-anchor="start" fill="#f5c76a" font-size="16">bear ₹44.1</text><text x="606.3" y="310.0" text-anchor="start" fill="#f5c76a" font-size="16">new range</text><path d="M90 40 L90 320 L700 320" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="80.0" y="294.9" text-anchor="end" fill="#a5a29c" font-size="16">₹40</text><text x="80.0" y="170.4" text-anchor="end" fill="#a5a29c" font-size="16">₹80</text><text x="80.0" y="46.0" text-anchor="end" fill="#a5a29c" font-size="16">₹120</text><text x="90.0" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="293.3" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">12</text><text x="496.7" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">24</text><text x="700.0" y="344.0" text-anchor="middle" fill="#a5a29c" font-size="16">36</text><text x="700.0" y="370.0" text-anchor="end" fill="#a5a29c" font-size="16">months after buying</text></svg></figure>
+      <p>Point <b>A</b> is the trap. The price fell 12% while nothing about the business changed. If the thesis still holds, a lower price is a wider margin of safety, not a reason to sell. Write down at the start what would break the thesis: a lost distributor, a cut in margins that is not a one-off, a governance flag from <a href="red-flags-eli5.html" data-series-link="red-flags-eli5">Part 20</a>. Then sell when one happens, whatever the price is doing.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The better idea</p>
+      <h2>Selling has a price of its own</h2>
+      <p>Switching to a better idea is not free. The sale costs money, and a short-term gain is taxed now. With the price at ₹74, selling after 18 months leaves ₹1,47,672; selling at 11 months leaves ₹1,38,587. The new idea must first gain 6.8% just to put you back where holding Ramu would have <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 302" role="img" aria-label="Three teal bars on one scale: holding Ramu is worth 1,48,000 rupees; selling after 18 months leaves 1,47,672 after costs, a tiny gap; selling at 11 months leaves about 1,38,587 after short-term tax, a coral gap that a new idea must first earn back, 6.8 percent"><text x="40.0" y="36.0" text-anchor="start" fill="#a5a29c" font-size="16">Keep holding: worth ₹1,48,000</text><rect x="40.0" y="46.0" width="592.0" height="26.0" fill="#76d5c1" stroke="#202020" stroke-width="1"/><text x="40.0" y="106.0" text-anchor="start" fill="#a5a29c" font-size="16">Sell after 18 months: cash ₹1,47,672</text><rect x="40.0" y="116.0" width="590.7" height="26.0" fill="#76d5c1" stroke="#202020" stroke-width="1"/><rect x="630.7" y="116.0" width="1.3" height="26.0" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="4 3"/><text x="40.0" y="168.0" text-anchor="start" fill="#ff8059" font-size="16">−₹328 costs · new idea must gain 0.2% to catch up</text><text x="40.0" y="202.0" text-anchor="start" fill="#a5a29c" font-size="16">Sell at 11 months: cash ₹1,38,587</text><rect x="40.0" y="212.0" width="554.3" height="26.0" fill="#76d5c1" stroke="#202020" stroke-width="1"/><rect x="594.3" y="212.0" width="37.7" height="26.0" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="4 3"/><text x="40.0" y="264.0" text-anchor="start" fill="#ff8059" font-size="16">−₹9,413 costs and tax · new idea must gain 6.8% to catch up</text><text x="40.0" y="292.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹250 · Ramu at ₹74, 2,000 shares</text></svg></figure>
+      <p>Holding does not cancel the tax; it delays it, and inside the yearly long-term exemption part of it may never be due. So a switch should clear a hurdle: the new idea’s margin of safety must be wider than Ramu’s by more than the cost of moving.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>Four biases that cost money</h2>
+      <p>Most selling mistakes come from how minds work, not from a lack of information. Name the bias, then use a rule written in advance to beat it.</p>
+      <div class="field-grid">
+        <div><b>Anchoring</b><span>Judging the share by the price you paid. “I’ll sell when it gets back to ₹100.” The market does not know your buy price; only the value matters.</span><em>FIX: COMPARE PRICE WITH VALUE, NEVER WITH COST</em></div>
+        <div><b>Confirmation</b><span>Reading only what agrees with your thesis, and explaining away a weak quarter. The red flags of Part 20 are easy to miss when you own the share.</span><em>FIX: WRITE THE THESIS-BREAKERS DOWN FIRST</em></div>
+        <div><b>Loss aversion</b><span>A loss hurts more than an equal gain pleases, so losers are held to avoid “booking” the loss, and winners sold early to lock in the good feeling.</span><em>FIX: ASK “WOULD I BUY IT TODAY?”</em></div>
+        <div><b>Overconfidence</b><span>Treating your base case as a fact. It shows up as positions too big for the range of values, and as trading too often.</span><em>FIX: SIZE FROM THE BEAR CASE, COUNT THE COSTS</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Costs</p>
+      <h2>What one trade costs</h2>
+      <p>Each delivery trade carries six charges <span class="tag">public</span>. Securities transaction tax (STT) is 0.1% of the value on both buy and sell; stamp duty is 0.015% on the buy only; NSE’s transaction charge was ₹297 per crore a side, and SEBI’s fee ₹10 per crore; GST is 18% on the broker’s services. Brokerage is set by your broker: zero at some, a fraction of a percent at others. Here it is 0.1% <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 232" role="img" aria-label="Two stacked coral bars for a 1 lakh rupee delivery trade: buying costs about 236.62 rupees, mostly STT of 100 and example brokerage of 100, plus GST, 15 of stamp duty and a sliver of exchange charges; selling costs about 221.62 with no stamp duty"><text x="40.0" y="59.0" text-anchor="start" fill="#a5a29c" font-size="16">Buy</text><rect x="120.0" y="40.0" width="200.0" height="28.0" fill="#ff8059" opacity="1" stroke="#202020" stroke-width="1"/><text x="128.0" y="60.0" text-anchor="start" fill="#202020" font-size="16">STT ₹100</text><rect x="320.0" y="40.0" width="200.0" height="28.0" fill="#ff8059" opacity="0.6" stroke="#202020" stroke-width="1"/><text x="328.0" y="60.0" text-anchor="start" fill="#202020" font-size="16">brokerage ₹100</text><rect x="520.0" y="40.0" width="37.1" height="28.0" fill="#ff8059" opacity="0.4" stroke="#202020" stroke-width="1"/><rect x="557.1" y="40.0" width="30.0" height="28.0" fill="#ff8059" opacity="0.75" stroke="#202020" stroke-width="1"/><rect x="587.1" y="40.0" width="6.1" height="28.0" fill="#ff8059" opacity="0.3" stroke="#202020" stroke-width="1"/><text x="603.2" y="60.0" text-anchor="start" fill="#f1eee8" font-size="16">= ₹236.62</text><text x="120.0" y="92.0" text-anchor="start" fill="#a5a29c" font-size="16">GST ₹18.55 · stamp ₹15.00 · exch. ₹3.07</text><text x="40.0" y="155.0" text-anchor="start" fill="#a5a29c" font-size="16">Sell</text><rect x="120.0" y="136.0" width="200.0" height="28.0" fill="#ff8059" opacity="1" stroke="#202020" stroke-width="1"/><text x="128.0" y="156.0" text-anchor="start" fill="#202020" font-size="16">STT ₹100</text><rect x="320.0" y="136.0" width="200.0" height="28.0" fill="#ff8059" opacity="0.6" stroke="#202020" stroke-width="1"/><text x="328.0" y="156.0" text-anchor="start" fill="#202020" font-size="16">brokerage ₹100</text><rect x="520.0" y="136.0" width="37.1" height="28.0" fill="#ff8059" opacity="0.4" stroke="#202020" stroke-width="1"/><rect x="557.1" y="136.0" width="6.1" height="28.0" fill="#ff8059" opacity="0.3" stroke="#202020" stroke-width="1"/><text x="573.2" y="156.0" text-anchor="start" fill="#f1eee8" font-size="16">= ₹221.62</text><text x="120.0" y="188.0" text-anchor="start" fill="#a5a29c" font-size="16">GST ₹18.55 · exch. ₹3.07</text><text x="40.0" y="218.0" text-anchor="start" fill="#a5a29c" font-size="16">2 px = ₹1 · per ₹1 lakh traded, brokerage 0.1% (example)</text></svg></figure>
+      <p>About ₹458 per ₹1 lakh for a round trip, or 0.46%, at this brokerage. That is small for one investment held for years, and large for anyone who trades every week: fifty round trips a year would cost about 23% of the money traded once.</p>
+      <div class="table-wrap"><table class="rates">
+        <thead><tr><th>Charge</th><th>FY2026</th><th>Side</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>STT</td><td class="val">0.1%</td><td class="wk">both</td><td class="wk"><a href="https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies">NSE</a></td></tr>
+          <tr><td>Stamp duty</td><td class="val">0.015%</td><td class="wk">buy</td><td class="wk"><a href="https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies">NSE</a></td></tr>
+          <tr><td>NSE charge</td><td class="val">₹297/cr</td><td class="wk">both</td><td class="wk"><a href="https://nsearchives.nseindia.com/content/circulars/FA73061.pdf">circular</a></td></tr>
+          <tr><td>SEBI fee</td><td class="val">₹10/cr</td><td class="wk">both</td><td class="wk"><a href="https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies">NSE</a></td></tr>
+          <tr><td>GST</td><td class="val">18%</td><td class="wk">both</td><td class="wk"><a href="https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies">NSE</a></td></tr>
+          <tr><td>Brokerage</td><td class="val">0.1% <span class="tag">example</span></td><td class="wk">both</td><td class="wk">broker</td></tr>
+        </tbody>
+      </table></div>
+      <details class="trace"><summary>Go deeper: the small print on costs</summary><p>STT is levied under section 98 of the Finance (No. 2) Act, 2004; stamp duty under the Indian Stamp Act, 1899 as amended by the Finance Act, 2019, collected by the clearing corporations since 1 July 2020 (both as NSE lists them). NSE’s ₹297 per crore applied through most of FY2026; from 1 March 2026 it became ₹306.99 with the members’ investor-protection contribution cut to ₹0.01, leaving the total at ₹307 a side. NSE lists GST at 18% on stockbrokers’ services; brokers’ contract notes usually charge it on the exchange and SEBI charges they pass on as well, and this page does the same, so check your own note. Your depository and broker also charge a flat fee on each sale from your demat account; it varies by broker, so it is left out here. STT cannot be deducted when working out a capital gain (section 72(3) of the <a href="https://egazette.gov.in/WriteReadData/2025/265620.pdf">Income-tax Act, 2025</a> says so from April 2026); the other charges count as part of your cost or sale expenses.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Tax on gains</p>
+      <h2>Twelve months splits the tax</h2>
+      <p>A listed share held for more than 12 months is long-term <span class="tag">public</span>. Since 23 July 2024 a short-term gain on shares where STT was paid is taxed at 20%; a long-term gain at 12.5%, but only on the part above ₹1.25 lakh of such gains in a year. That ₹1.25 lakh is one allowance per person per year across all your shares and equity funds, not per stock.</p>
+      <figure><svg viewBox="0 0 800 416" role="img" aria-label="Tax against gain: a coral line for short-term gains rises at 20 percent from zero, while a dashed gold line for long-term gains stays at zero up to 1.25 lakh rupees and then rises at 12.5 percent; Ramu’s 43,678 rupee gain is marked on the coral line at about 8,736 rupees"><path d="M110 40 L110 330 L620 330" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M110.0 330.0 L620.0 40.0" stroke="#ff8059" stroke-width="3" fill="none"/><path d="M110.0 327.0 L322.5 327.0 L620.0 224.3" stroke="#f5c76a" stroke-width="3" fill="none" stroke-dasharray="8 5"/><text x="628.0" y="46.0" text-anchor="start" fill="#ff8059" font-size="16">held ≤ 12 months</text><text x="628.0" y="68.0" text-anchor="start" fill="#ff8059" font-size="16">20%</text><text x="628.0" y="230.3" text-anchor="start" fill="#f5c76a" font-size="16">held > 12</text><text x="628.0" y="252.3" text-anchor="start" fill="#f5c76a" font-size="16">months</text><text x="322.5" y="378.0" text-anchor="middle" fill="#f5c76a" font-size="16">↑ first ₹1.25 lakh free</text><path d="M322.5 330 L322.5 338" stroke="#f5c76a" stroke-width="2" fill="none"/><circle cx="184.3" cy="287.8" r="7" fill="#ff8059" stroke="#202020" stroke-width="2"/><text x="196.3" y="311.8" text-anchor="start" fill="#f1eee8" font-size="16">Ramu: ₹8,736</text><text x="100.0" y="336.0" text-anchor="end" fill="#a5a29c" font-size="16">₹0</text><text x="100.0" y="239.3" text-anchor="end" fill="#a5a29c" font-size="16">₹20,000</text><text x="100.0" y="142.7" text-anchor="end" fill="#a5a29c" font-size="16">₹40,000</text><text x="100.0" y="46.0" text-anchor="end" fill="#a5a29c" font-size="16">₹60,000</text><text x="110.0" y="354.0" text-anchor="middle" fill="#a5a29c" font-size="16">0</text><text x="280.0" y="354.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹1 lakh</text><text x="450.0" y="354.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹2 lakh</text><text x="620.0" y="354.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹3 lakh</text><text x="620.0" y="404.0" text-anchor="end" fill="#a5a29c" font-size="16">gain on listed shares, in one year</text><text x="120.0" y="44.0" text-anchor="start" fill="#a5a29c" font-size="16">tax before 4% cess</text></svg></figure>
+      <p>Ramu’s gain after costs is ₹43,678. Short-term, it costs ₹8,736 plus 4% cess. Long-term, it fits inside the exemption and costs nothing, if no other long-term gains used the allowance that year. A 4% health and education cess applies on top of the tax <a href="https://thc.nic.in/Central%20Governmental%20Acts/Finance%20Act,%202025.pdf">(Finance Act, 2025, s. 2)</a>.</p>
+      <details class="trace"><summary>Go deeper: the law behind the lines</summary><p>Sections 29 and 31 of the <a href="https://egazette.gov.in/WriteReadData/2024/256436.pdf">Finance (No. 2) Act, 2024</a> changed section 111A to 20% and section 112A to 12.5% on gains “exceeding one lakh twenty-five thousand rupees”, for transfers on or after 23 July 2024. The <a href="https://indiabudget.gov.in/budget2024-25/doc/memo.pdf">Government’s memorandum</a> explains the 12-month holding period for all listed securities. Surcharge is left out here; for these gains it is capped at 15%. If your other income is below the basic exemption limit, the gain first uses up the shortfall (sections 196(2) and 198(3) of the Income-tax Act, 2025 spell this out). Losses: a short-term loss can be set against short- or long-term gains, a long-term loss only against long-term gains, and unused losses carry forward eight years (section 111 of the <a href="https://egazette.gov.in/WriteReadData/2025/265620.pdf">Income-tax Act, 2025</a>).</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Tax on dividends</p>
+      <h2>Dividends are taxed at your slab</h2>
+      <p>Since the Finance Act 2020 removed the company’s dividend distribution tax, a dividend is taxed in your hands at your own income-tax slab rate <span class="tag">public</span>. Ramu’s ₹2 a share on 2,000 shares is ₹4,000; how much you keep depends only on your slab <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 236" role="img" aria-label="The same 4,000 rupees of Ramu dividends split into what is kept and what goes in tax at four slab rates: nothing at 0 percent, 416 rupees at 10, 832 at 20 and 1,248 at 30, with cess"><text x="40.0" y="55.0" text-anchor="start" fill="#a5a29c" font-size="16">slab 0%</text><rect x="150.0" y="36.0" width="500.0" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="158.0" y="55.0" text-anchor="start" fill="#202020" font-size="16">kept ₹4,000</text><text x="660.0" y="55.0" text-anchor="start" fill="#a5a29c" font-size="16">no tax</text><text x="40.0" y="101.0" text-anchor="start" fill="#a5a29c" font-size="16">slab 10%</text><rect x="150.0" y="82.0" width="448.0" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="158.0" y="101.0" text-anchor="start" fill="#202020" font-size="16">kept ₹3,584</text><rect x="598.0" y="82.0" width="52.0" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="660.0" y="101.0" text-anchor="start" fill="#ff8059" font-size="16">tax ₹416</text><text x="40.0" y="147.0" text-anchor="start" fill="#a5a29c" font-size="16">slab 20%</text><rect x="150.0" y="128.0" width="396.0" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="158.0" y="147.0" text-anchor="start" fill="#202020" font-size="16">kept ₹3,168</text><rect x="546.0" y="128.0" width="104.0" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="660.0" y="147.0" text-anchor="start" fill="#ff8059" font-size="16">tax ₹832</text><text x="40.0" y="193.0" text-anchor="start" fill="#a5a29c" font-size="16">slab 30%</text><rect x="150.0" y="174.0" width="344.0" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="158.0" y="193.0" text-anchor="start" fill="#202020" font-size="16">kept ₹2,752</text><rect x="494.0" y="174.0" width="156.0" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="660.0" y="193.0" text-anchor="start" fill="#ff8059" font-size="16">tax ₹1,248</text><text x="40.0" y="228.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹8 · ₹4,000 of dividends, tax includes 4% cess</text></svg></figure>
+      <p>A company deducts 10% tax at source (TDS) from dividends it pays a resident individual once they pass ₹10,000 in a year; the Finance Act 2025 raised that line from ₹5,000 from 1 April 2025 <span class="tag">public</span>. TDS is not an extra tax: it is credited against what you owe, and appears in your annual tax statement. From 1 October 2024 money from a company buyback is also taxed as a dividend, with the shares’ cost allowed as a capital loss (<a href="corporate-actions-eli5.html" data-series-link="corporate-actions-eli5">Part 21</a>). A 30% slab therefore favours a company that reinvests over one that pays out, other things equal.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>After tax, after costs, what share?</h2>
+      <p>Put in a buy and a sell, how long you held, and how much you invested. The calculator works out the costs on both trades, the tax on the gain and on dividends, the return you keep, and the position as a share of your portfolio, with the size limit from Part 28’s bear value <span class="tag">example</span>.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Pick a case</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="plan">Bought with a margin</button>
+            <button type="button" class="secondary" data-p="early">Sold at 12 months</button>
+            <button type="button" class="secondary" data-p="dear">Bought at ₹100</button>
+            <button type="button" class="secondary" data-p="winner">Held a big winner</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · The trade</p>
+          <div class="dl-grid">
+            <div class="dl-col">
+              <div class="control"><label for="buy">Buy price: <output id="buy-o"></output></label><input id="buy" type="range" min="30" max="150" step="1" value="52"></div>
+              <div class="control"><label for="sell">Sell price: <output id="sell-o"></output></label><input id="sell" type="range" min="30" max="200" step="1" value="74"></div>
+            </div>
+            <div class="dl-col">
+              <div class="control"><label for="months">Months held: <output id="months-o"></output></label><input id="months" type="range" min="1" max="60" step="1" value="18"></div>
+              <div class="control"><label for="amount">Amount invested: <output id="amount-o"></output></label><input id="amount" type="range" min="10000" max="500000" step="2000" value="104000"></div>
+            </div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · You and your broker</p>
+          <div class="dl-grid">
+            <div class="dl-col">
+              <div class="steps"><span class="stl">Your slab rate</span><button type="button" class="secondary" data-st="slab" data-d="-1" aria-label="Lower the slab rate">−</button><output id="st-slab" role="status"></output><button type="button" class="secondary" data-st="slab" data-d="1" aria-label="Raise the slab rate">+</button></div>
+              <div class="steps"><span class="stl">Dividends received, a share</span><button type="button" class="secondary" data-st="dps" data-d="-1" aria-label="Lower the dividends">−</button><output id="st-dps" role="status"></output><button type="button" class="secondary" data-st="dps" data-d="1" aria-label="Raise the dividends">+</button></div>
+              <div class="steps"><span class="stl">Brokerage, each side</span><button type="button" class="secondary" data-st="brok" data-d="-1" aria-label="Lower the brokerage">−</button><output id="st-brok" role="status"></output><button type="button" class="secondary" data-st="brok" data-d="1" aria-label="Raise the brokerage">+</button></div>
+            </div>
+            <div class="dl-col">
+              <div class="steps"><span class="stl">Long-term exemption used elsewhere</span><button type="button" class="secondary" data-st="used" data-d="-1" aria-label="Lower the exemption already used">−</button><output id="st-used" role="status"></output><button type="button" class="secondary" data-st="used" data-d="1" aria-label="Raise the exemption already used">+</button></div>
+              <div class="steps"><span class="stl">Portfolio size</span><button type="button" class="secondary" data-st="port" data-d="-1" aria-label="Lower the portfolio size">−</button><output id="st-port" role="status"></output><button type="button" class="secondary" data-st="port" data-d="1" aria-label="Raise the portfolio size">+</button></div>
+              <div class="steps"><span class="stl">Loss you accept in the bear case</span><button type="button" class="secondary" data-st="budget" data-d="-1" aria-label="Lower the accepted loss">−</button><output id="st-budget" role="status"></output><button type="button" class="secondary" data-st="budget" data-d="1" aria-label="Raise the accepted loss">+</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · What you keep</p>
+          <div class="dl-out" id="outs"></div>
+          <div class="lab-chart"><svg id="labChart" viewBox="0 0 560 330" role="img" aria-label="Signed bars in rupees: the price gain and dividends in gold, costs and taxes in coral, and what you keep, all on one axis through zero"></svg></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">5 · How big is the position?</p>
+          <div class="lab-chart"><svg id="posChart" viewBox="0 0 560 190" role="img" aria-label="The position as a percentage of the portfolio in gold, against the largest size allowed by the bear-case rule, drawn as a dashed outline"></svg></div>
+          <p class="msg" id="posMsg" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: what the calculator assumes</summary><p>Resident individual, listed shares bought and sold on delivery through NSE with STT paid, FY2026 rules. Shares are the whole number the amount buys at the buy price. Costs are as in the table above; brokerage, exchange charges and stamp duty count as cost, STT does not. Gains: 20% if held 12 months or less, 12.5% above the unused part of ₹1.25 lakh if longer, plus 4% cess; no surcharge, no basic-exemption shortfall, no rebate, and a loss is shown as untaxed (it could reduce tax on other gains). Dividends: your slab plus 4% cess; TDS is shown but is credited, so it does not change the total. The return is what you keep over the money you put in, including buy costs; the yearly figure compounds it over the months held. The size limit uses Part 28’s bear value of ₹44.1.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>One month can beat every cost</h2>
+      <p>Hold the same Ramu trade for 9 to 15 months and only the month changes <span class="tag">example</span>. Up to 12 months the tax is ₹9,085 with cess; one month later it is nil, because the gain turns long-term and fits under ₹1.25 lakh. All the trading costs together came to ₹574.</p>
+      <figure><svg viewBox="0 0 800 342" role="img" aria-label="Seven coral bars of tax on Ramu’s gain by months held: about 9,085 rupees at 9, 10, 11 and 12 months, and nothing from 13 months, because the gain becomes long-term and fits inside the 1.25 lakh exemption"><rect x="110.0" y="80.1" width="60.0" height="199.9" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="140.0" y="304.0" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><text x="140.0" y="70.1" text-anchor="middle" fill="#ff8059" font-size="16">₹9,085</text><rect x="194.0" y="80.1" width="60.0" height="199.9" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="224.0" y="304.0" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><text x="224.0" y="70.1" text-anchor="middle" fill="#ff8059" font-size="16">₹9,085</text><rect x="278.0" y="80.1" width="60.0" height="199.9" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="308.0" y="304.0" text-anchor="middle" fill="#a5a29c" font-size="16">11</text><text x="308.0" y="70.1" text-anchor="middle" fill="#ff8059" font-size="16">₹9,085</text><rect x="362.0" y="80.1" width="60.0" height="199.9" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="392.0" y="304.0" text-anchor="middle" fill="#a5a29c" font-size="16">12</text><text x="392.0" y="70.1" text-anchor="middle" fill="#ff8059" font-size="16">₹9,085</text><rect x="446.0" y="280.0" width="60.0" height="0.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="476.0" y="304.0" text-anchor="middle" fill="#a5a29c" font-size="16">13</text><text x="476.0" y="270.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹0</text><rect x="530.0" y="280.0" width="60.0" height="0.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="560.0" y="304.0" text-anchor="middle" fill="#a5a29c" font-size="16">14</text><text x="560.0" y="270.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹0</text><rect x="614.0" y="280.0" width="60.0" height="0.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="644.0" y="304.0" text-anchor="middle" fill="#a5a29c" font-size="16">15</text><text x="644.0" y="270.0" text-anchor="middle" fill="#a5a29c" font-size="16">₹0</text><path d="M434.0 40 L434.0 280" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><text x="444.0" y="60.0" text-anchor="start" fill="#f1eee8" font-size="16">more than 12 months</text><path d="M100 280 L698 280" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="674.0" y="330.0" text-anchor="end" fill="#a5a29c" font-size="16">months held</text></svg></figure>
+      <p>So before selling a winner just short of a year, check the date. Note “more than 12 months”: a share held for exactly twelve is still short-term. The saving only exists while your long-term gains for the year stay under the allowance; above it the gap is 20% against 12.5%.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Letting the tax decide</h2>
+      <p>The opposite error is to hold a share whose thesis has broken, only to cross the 12-month line. At month 11 Ramu is at ₹74. Waiting saves ₹9,085 of tax. If the idea is broken and the price falls 10% while you wait, you lose ₹14,800 <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 204" role="img" aria-label="Two bars on one scale: waiting past 12 months saves about 9,085 rupees of tax, a gold bar, but a 10 percent fall in a broken idea costs 14,800 rupees, a longer coral bar"><text x="40.0" y="36.0" text-anchor="start" fill="#a5a29c" font-size="16">Tax saved by waiting past 12 months</text><rect x="40.0" y="46.0" width="363.4" height="28.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="413.4" y="66.0" text-anchor="start" fill="#f1eee8" font-size="16">₹9,085</text><text x="40.0" y="120.0" text-anchor="start" fill="#a5a29c" font-size="16">A 10% fall while you wait</text><rect x="40.0" y="130.0" width="592.0" height="28.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="642.0" y="150.0" text-anchor="start" fill="#f1eee8" font-size="16">₹14,800</text><text x="40.0" y="190.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹25 · Ramu at ₹74, 2,000 shares</text></svg></figure>
+      <p>Tax is a cost of a decision, not a reason for one. Decide on the business and the value first; then, between two dates that suit the decision, pick the cheaper one.</p>
+      <p class="note">This page explains the rules; it is not tax advice. Surcharge, rebates, losses carried forward and your other income can change the answer, so check your own case.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Frozen at FY2026</p>
+      <h2>The rules changed in July 2024</h2>
+      <p>The rates on this page start on 23 July 2024, the date of the Finance (No. 2) Act 2024’s changes <span class="tag">public</span>. Before it, a short-term gain on listed shares was taxed at 15%, a long-term gain at 10% above ₹1 lakh. All of FY2026 falls under the new rates.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="Paired bars for the three listed-equity rules before and after 23 July 2024: the short-term rate rose from 15 to 20 percent, the long-term rate from 10 to 12.5 percent, and the long-term exemption from 1 lakh to 1.25 lakh rupees"><text x="40.0" y="36.0" text-anchor="start" fill="#a5a29c" font-size="16">Short-term rate</text><rect x="230.0" y="46.0" width="240.0" height="24.0" fill="#a5a29c" opacity="0.5" stroke="#202020" stroke-width="1"/><text x="480.0" y="64.0" text-anchor="start" fill="#a5a29c" font-size="16">15% · to 22 Jul 2024</text><rect x="230.0" y="78.0" width="320.0" height="24.0" fill="#ff8059" opacity="1" stroke="#202020" stroke-width="1"/><text x="560.0" y="96.0" text-anchor="start" fill="#f1eee8" font-size="16">20% · from 23 Jul 2024</text><text x="40.0" y="136.0" text-anchor="start" fill="#a5a29c" font-size="16">Long-term rate</text><rect x="230.0" y="146.0" width="160.0" height="24.0" fill="#a5a29c" opacity="0.5" stroke="#202020" stroke-width="1"/><text x="400.0" y="164.0" text-anchor="start" fill="#a5a29c" font-size="16">10% · to 22 Jul 2024</text><rect x="230.0" y="178.0" width="200.0" height="24.0" fill="#ff8059" opacity="1" stroke="#202020" stroke-width="1"/><text x="440.0" y="196.0" text-anchor="start" fill="#f1eee8" font-size="16">12.5% · from 23 Jul 2024</text><text x="40.0" y="236.0" text-anchor="start" fill="#a5a29c" font-size="16">Long-term exemption</text><rect x="230.0" y="246.0" width="240.0" height="24.0" fill="#a5a29c" opacity="0.5" stroke="#202020" stroke-width="1"/><text x="480.0" y="264.0" text-anchor="start" fill="#a5a29c" font-size="16">₹1 lakh · to 22 Jul 2024</text><rect x="230.0" y="278.0" width="300.0" height="24.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1"/><text x="540.0" y="296.0" text-anchor="start" fill="#f1eee8" font-size="16">₹1.25 lakh · from 23 Jul 2024</text><text x="40.0" y="322.0" text-anchor="start" fill="#a5a29c" font-size="16">rates: 16 px per point · exemption: 240 px per ₹1 lakh</text></svg></figure>
+      <p>On 1 April 2026 the <a href="https://egazette.gov.in/WriteReadData/2025/265620.pdf">Income-tax Act, 2025</a> replaced the 1961 Act and the “previous year” became the “tax year”. It keeps the same rules for listed shares under new numbers: section 196 for short-term gains at 20% and section 198 for long-term gains at 12.5% above ₹1,25,000. STT on delivery trades stayed at 0.1%; NSE lists higher STT on futures and options from 1 April 2026, which this page does not use. Later Finance Acts can change any of this, so check the year you trade in.</p>
+      <p class="note">Every rate here is as it stood for FY2026, checked against the gazetted Acts and NSE’s pages; the series is frozen at that year.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL’s dividend and your own papers</h2>
+      <p>Tata Consumer Products paid a dividend of ₹8.25 a share during FY2026, ₹816.34 cr in all, and its board recommended ₹10 a share for FY2026 on 8 May 2026, paid in FY2027 <span class="tag">public</span>. A holder with 1,213 or more shares received more than ₹10,000 in FY2026, so 10% was deducted at source.</p>
+      <figure><svg viewBox="0 0 800 264" role="img" aria-label="TCPL’s 8.25 rupee dividend paid in FY2026 for four holdings: 500 and 1,000 shares stay under the 10,000 rupee line with no TDS; 1,213 shares cross it and 10 percent is deducted, as for 2,000 shares"><path d="M400.0 26 L400.0 236" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><text x="408.0" y="24.0" text-anchor="start" fill="#f1eee8" font-size="16">₹10,000: TDS line</text><text x="40.0" y="69.0" text-anchor="start" fill="#a5a29c" font-size="16">500 shares</text><rect x="150.0" y="50.0" width="103.1" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="158.0" y="69.0" text-anchor="start" fill="#202020" font-size="16">₹4,125</text><text x="40.0" y="117.0" text-anchor="start" fill="#a5a29c" font-size="16">1,000 shares</text><rect x="150.0" y="98.0" width="206.2" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="158.0" y="117.0" text-anchor="start" fill="#202020" font-size="16">₹8,250</text><text x="40.0" y="165.0" text-anchor="start" fill="#a5a29c" font-size="16">1,213 shares</text><rect x="150.0" y="146.0" width="225.2" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><rect x="375.2" y="146.0" width="25.0" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="158.0" y="165.0" text-anchor="start" fill="#202020" font-size="16">₹10,007.25</text><text x="410.2" y="165.0" text-anchor="start" fill="#ff8059" font-size="16">TDS ₹1,000.73</text><text x="40.0" y="213.0" text-anchor="start" fill="#a5a29c" font-size="16">2,000 shares</text><rect x="150.0" y="194.0" width="371.2" height="26.0" fill="#f5c76a" stroke="#202020" stroke-width="1"/><rect x="521.2" y="194.0" width="41.2" height="26.0" fill="#ff8059" stroke="#202020" stroke-width="1"/><text x="158.0" y="213.0" text-anchor="start" fill="#202020" font-size="16">₹16,500</text><text x="572.5" y="213.0" text-anchor="start" fill="#ff8059" font-size="16">TDS ₹1,650</text><text x="40.0" y="256.0" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹40 · ₹8.25 a share paid in FY2026</text></svg></figure>
+      <p>The other real reports are your own. Your broker’s contract note for each trade should list brokerage, STT, exchange charges, SEBI fees, stamp duty and GST; check them against the table above. TDS on dividends appears in your annual tax statement. Your broker’s capital-gains statement splits gains into short- and long-term, the split that sets the rate.</p>
+      <div class="field-grid">
+        <div><b>₹8.25 a share paid in FY2026</b><span>₹816.34 cr in all; ₹7.75 a share was paid in FY2025</span><em>NOTE 14(A)(VI) · P. 447</em></div>
+        <div><b>₹10 a share recommended</b><span>Final dividend for FY2026, recommended on 8 May 2026</span><em>NOTE 14(A)(VI) · P. 447</em></div>
+        <div><b>₹10,000 TDS line</b><span>Section 194, raised from ₹5,000 by the Finance Act 2025</span><em>FINANCE ACT 2025, S. 57</em></div>
+      </div>
+      <p class="source-note">Company figures from TCPL’s audited Consolidated Financial Statements in its <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Integrated Annual Report 2025-26</a>, printed page 447. Tax rules from the <a href="https://egazette.gov.in/WriteReadData/2024/256436.pdf">Finance (No. 2) Act, 2024</a>, the <a href="https://thc.nic.in/Central%20Governmental%20Acts/Finance%20Act,%202025.pdf">Finance Act, 2025</a>, the <a href="https://www.indiabudget.gov.in/budget2025-26/doc/memo.pdf">memorandum to the Finance Bill 2025</a> and the <a href="https://egazette.gov.in/WriteReadData/2025/265620.pdf">Income-tax Act, 2025</a>; charges from <a href="https://www.nseindia.com/invest/first-time-investor-sebi-turnover-fees-stt-other-levies">NSE</a>. Frozen at FY2026. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before you trade</h2>
+      <ol class="checks">
+        <li><b>How much can this idea cost me?</b> Size it from the bear value, not from how sure you feel.</li>
+        <li><b>What would make me sell?</b> Write the thesis-breakers down now, and the price above which it is stretched.</li>
+        <li><b>Is the reason about value or about price?</b> A fall with the thesis intact is a wider margin, not an exit.</li>
+        <li><b>What does selling cost?</b> Costs, short- or long-term tax, and how much of the ₹1.25 lakh is left this year.</li>
+        <li><b>Is the switch worth it?</b> The new idea has to clear the cost of moving before it beats the old one.</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Looking back</p>
+      <h2>Thirty-eight parts, one habit</h2>
+      <p>The series started with one question: is the price below the value? Stage 1 set it up. Stage 2 read Ramu’s accounts, ₹500 cr of sales and ₹50 cr of profit. Stage 3 turned them into ratios, Stage 4 judged the business behind them, Stage 5 valued it at a range of ₹44.1 to ₹99.6, Stage 6 showed how banks, insurers and other sectors bend the rules, and Stage 7 put it into practice, ending here with what you keep.</p>
+      <figure><svg viewBox="0 0 800 316" role="img" aria-label="Seven bars for the seven stages of the series, their heights the number of parts in each: 1, 5, 9, 7, 6, 7 and 3, ending with a gold diamond for the bonus study"><rect x="62.0" y="228.0" width="46.0" height="22.0" fill="#a5a29c" opacity="0.55" stroke="#202020" stroke-width="1"/><text x="85.0" y="218.0" text-anchor="middle" fill="#f1eee8" font-size="16">1</text><text x="85.0" y="274.0" text-anchor="middle" fill="#a5a29c" font-size="16">Start</text><rect x="152.0" y="140.0" width="46.0" height="110.0" fill="#a5a29c" opacity="0.55" stroke="#202020" stroke-width="1"/><text x="175.0" y="130.0" text-anchor="middle" fill="#f1eee8" font-size="16">5</text><text x="175.0" y="274.0" text-anchor="middle" fill="#a5a29c" font-size="16">Accounts</text><rect x="242.0" y="52.0" width="46.0" height="198.0" fill="#a5a29c" opacity="0.55" stroke="#202020" stroke-width="1"/><text x="265.0" y="42.0" text-anchor="middle" fill="#f1eee8" font-size="16">9</text><text x="265.0" y="274.0" text-anchor="middle" fill="#a5a29c" font-size="16">Ratios</text><rect x="332.0" y="96.0" width="46.0" height="154.0" fill="#a5a29c" opacity="0.55" stroke="#202020" stroke-width="1"/><text x="355.0" y="86.0" text-anchor="middle" fill="#f1eee8" font-size="16">7</text><text x="355.0" y="274.0" text-anchor="middle" fill="#a5a29c" font-size="16">Business</text><rect x="422.0" y="118.0" width="46.0" height="132.0" fill="#a5a29c" opacity="0.55" stroke="#202020" stroke-width="1"/><text x="445.0" y="108.0" text-anchor="middle" fill="#f1eee8" font-size="16">6</text><text x="445.0" y="274.0" text-anchor="middle" fill="#a5a29c" font-size="16">Valuation</text><rect x="512.0" y="96.0" width="46.0" height="154.0" fill="#a5a29c" opacity="0.55" stroke="#202020" stroke-width="1"/><text x="535.0" y="86.0" text-anchor="middle" fill="#f1eee8" font-size="16">7</text><text x="535.0" y="274.0" text-anchor="middle" fill="#a5a29c" font-size="16">Sectors</text><rect x="602.0" y="184.0" width="46.0" height="66.0" fill="#f5c76a" opacity="1" stroke="#202020" stroke-width="1"/><text x="625.0" y="174.0" text-anchor="middle" fill="#f1eee8" font-size="16">3</text><text x="625.0" y="274.0" text-anchor="middle" fill="#a5a29c" font-size="16">Together</text><path d="M715.0 214.0 L731.0 230.0 L715.0 246.0 L699.0 230.0 Z" fill="#f5c76a" stroke="#202020" stroke-width="1"/><text x="715.0" y="274.0" text-anchor="middle" fill="#f5c76a" font-size="16">Bonus</text><path d="M40 250 L760 250" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="40.0" y="304.0" text-anchor="start" fill="#a5a29c" font-size="16">parts per stage · 22 px per part · 38 parts and a bonus</text></svg></figure>
+      <p>Every part is on <a href="fundamental-analysis-from-scratch.html" data-series-link="fundamental-analysis-from-scratch">the series map</a>, which is the best place to revisit a stage. One study remains: the bonus, <b>Satyam, decoded</b>, reads the 2009 fraud through the red flags of <a href="red-flags-eli5.html" data-series-link="red-flags-eli5">Part 20</a>, a reminder that every step above starts with accounts you can trust.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>Size each idea by how much its bear case could cost, sell when the value changes rather than the price, and count costs and tax before you trade, because the return that matters is the one you keep.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',GOLDC='#f5c76a',CORALC='#ff8059',DKC='#202020';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- FY2026 rules for a resident individual, listed shares on delivery (sources in the panels above) ----
+    const STT=0.001, EXCH=0.0000297, SEBI=0.000001, STAMP=0.00015, GST=0.18, CESS=0.04;
+    const STCG=0.20, LTCG=0.125, EXEMPT=125000, TDS_LINE=10000, TDS=0.10, BEAR=44.1;
+    const SL=['buy','sell','months','amount'];
+    const ST={slab:{v:20,min:0,max:30,step:5,fmt:v=>v+'%'},
+      dps:{v:2,min:0,max:10,step:0.5,fmt:v=>'₹'+v.toFixed(2)},
+      brok:{v:0.1,min:0,max:0.5,step:0.05,fmt:v=>v.toFixed(2)+'%'},
+      used:{v:0,min:0,max:125000,step:25000,fmt:v=>inr(v)},
+      port:{v:1000000,min:200000,max:5000000,step:100000,fmt:v=>'₹'+(v/100000).toFixed(0)+' lakh'},
+      budget:{v:2,min:0.5,max:5,step:0.5,fmt:v=>v.toFixed(1)+'%'}};
+    Object.values(ST).forEach(d=>d.d=d.v);
+    const PRESETS={
+      plan:{s:{buy:52,sell:74,months:18,amount:104000},t:{},m:'Bought with a margin: 2,000 Ramu shares at Part 28’s ₹52, sold at ₹74 after 18 months. The gain is long-term and inside ₹1.25 lakh, so only costs and dividend tax come off.'},
+      early:{s:{buy:52,sell:74,months:12,amount:104000},t:{},m:'Sold at 12 months: the same trade, but exactly twelve months is still short-term, so 20% tax plus cess falls on the whole gain.'},
+      dear:{s:{buy:100,sell:74,months:18,amount:100000},t:{},m:'Bought at ₹100, the market price, and sold at ₹74: a loss, so no tax on the gain, but the costs are still paid. The bear-case rule would have allowed only 3.6% of the portfolio.'},
+      winner:{s:{buy:52,sell:150,months:36,amount:200000},t:{},m:'Held a big winner for three years: the gain is far above ₹1.25 lakh, so 12.5% falls on the excess. The position has also grown past the size limit: a reason to think about trimming.'}};
+    function inr(v,dp){dp=dp||0;const s=Math.abs(v).toLocaleString('en-IN',{minimumFractionDigits:dp,maximumFractionDigits:dp});return (v<-0.005?'−':'')+'₹'+s;}
+    const val=()=>{const o={};SL.forEach(id=>o[id]=+$(id).value);Object.keys(ST).forEach(k=>o[k]=ST[k].v);return o;};
+    function compute(p){
+      const sh=Math.floor(p.amount/p.buy+1e-9), B=sh*p.buy, S=sh*p.sell;
+      const side=(v,isBuy)=>{const br=v*p.brok/100,ex=v*EXCH,se=v*SEBI,st=v*STT,sd=isBuy?v*STAMP:0,g=GST*(br+ex+se);
+        return {br,ex,se,st,sd,g,tot:br+ex+se+st+sd+g,ded:br+ex+se+sd+g};};
+      const cb=side(B,true), cs=side(S,false), costs=cb.tot+cs.tot;
+      const gain=S-cs.ded-(B+cb.ded), long=p.months>12, free=Math.max(0,EXEMPT-p.used);
+      const taxG=gain<=0?0:(long?LTCG*Math.max(0,gain-free):STCG*gain)*(1+CESS);
+      const div=sh*p.dps, taxD=div*p.slab/100*(1+CESS), tds=div>TDS_LINE?TDS*div:0;
+      const keep=S-B+div-costs-taxG-taxD, base=B+cb.tot, r=base>0?keep/base:0;
+      const ann=r>-1?Math.pow(1+r,12/p.months)-1:-1;
+      const pos=100*B/p.port, down=(p.buy-BEAR)/p.buy, maxpos=down>0?p.budget/down:null;
+      return {sh,B,S,cb,cs,costs,gain,long,free,taxG,div,taxD,tds,keep,base,r,ann,pos,down,maxpos};
+    }
+    function niceStep(span){const raw=span/4,m=Math.pow(10,Math.floor(Math.log10(raw)));return [1,2,5,10].map(f=>f*m).find(s=>s>=raw);}
+    const labConfig={format:v=>v===0?'₹0':(v<0?'−':'')+'₹'+(Math.abs(v)>=100000?(Math.abs(v)/100000).toFixed(Math.abs(v)%100000?1:0)+'L':(Math.abs(v)/1000).toFixed(0)+'k')};
+    let R0=null;
+    function draw(){
+      const p=val(), c=compute(p);
+      $('buy-o').textContent='₹'+p.buy; $('sell-o').textContent='₹'+p.sell; $('months-o').textContent=p.months+(p.months>12?' (long-term)':' (short-term)'); $('amount-o').textContent=inr(p.amount);
+      Object.keys(ST).forEach(k=>{$('st-'+k).textContent=ST[k].fmt(ST[k].v);
+        document.querySelector(`[data-st="${k}"][data-d="-1"]`).disabled=ST[k].v<=ST[k].min+1e-9;document.querySelector(`[data-st="${k}"][data-d="1"]`).disabled=ST[k].v>=ST[k].max-1e-9;});
+      // outputs
+      $('outs').innerHTML=[['Costs, both trades',inr(c.costs)],['Tax',inr(c.taxG+c.taxD)],['You keep',inr(c.keep)],['Return kept',(100*c.r).toFixed(1)+'%'],['A year, compounded',(100*c.ann).toFixed(1)+'%'],['Share of portfolio',c.pos.toFixed(1)+'%']]
+        .map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('');
+      // chart: signed bars on one rupee scale through zero
+      const rows=[['Price gain',c.S-c.B],['Dividends',c.div],['Costs',-c.costs],['Tax on gain',-c.taxG],['Tax on dividends',-c.taxD],['You keep',c.keep]];
+      const vals=rows.map(r=>r[1]); let lo=Math.min(0,...vals), hi=Math.max(0,...vals);
+      const step=niceStep(Math.max(hi-lo,1000)); lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step;
+      const X0=150,X1=410,sx=v=>X0+(X1-X0)*(v-lo)/(hi-lo), z=sx(0);
+      let s='';
+      rows.forEach(([n,v],i)=>{const y=14+i*44, x=Math.min(sx(v),z), w=Math.abs(sx(v)-z), col=(i===5?GOLDC:(v>=0?GOLDC:CORALC));
+        s+=T(14,y+19,n,'start',MUTC)+`<rect data-v="${v.toFixed(2)}" x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="26" fill="${col}" opacity="${i===5?1:0.8}"/>`;
+        s+=T(Math.max(sx(v),z)+8,y+19,inr(v),'start',FGC);});
+      s+=`<path d="M${z.toFixed(2)} 6 L${z.toFixed(2)} 278" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      const nt=Math.round((hi-lo)/step), every=1;
+      for(let k=0;k<=nt;k+=every){const t=lo+k*step;s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="302" text-anchor="middle" fill="${MUTC}" font-size="16">${labConfig.format(t)}</text>`;}
+      s+=T(14,324,'₹, one scale · gold to you, coral out','start',MUTC);
+      $('labChart').innerHTML=s;
+      // position chart
+      const mp=c.maxpos, top=Math.max(20,c.pos,mp||0), cap=Math.ceil(top*1.1/10)*10, px=v=>40+440*v/cap;
+      let q=T(40,24,'This position: '+c.pos.toFixed(1)+'% of the portfolio','start',MUTC)+`<rect x="40" y="34" width="${(px(c.pos)-40).toFixed(1)}" height="26" fill="${GOLDC}"/>`;
+      q+=T(40,94,mp===null?'Bear-case limit: none (bought at or below ₹44.1)':'Bear-case limit: '+mp.toFixed(1)+'%','start',MUTC);
+      if(mp!==null) q+=`<rect x="40" y="104" width="${(px(mp)-40).toFixed(1)}" height="26" fill="none" stroke="${GOLDC}" stroke-width="2" stroke-dasharray="5 4"/>`;
+      q+=`<path d="M40 142 L480 142" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      [0,cap/2,cap].forEach((t,i)=>{q+=T(px(t),166,t+'%',['start','middle','end'][i],MUTC);});
+      $('posChart').innerHTML=q;
+      $('posMsg').textContent=mp===null?'Bought at or below the bear value, the rule sets no limit; a ceiling of your own still applies.':
+        (c.pos>mp+1e-9?`Over the limit: at ${p.budget.toFixed(1)}% accepted loss and a ${(100*c.down).toFixed(1)}% fall to ₹44.1, the most this idea should be is ${mp.toFixed(1)}% (${inr(p.port*mp/100)}).`:
+        `Within the limit: a ${(100*c.down).toFixed(1)}% fall to ₹44.1 would cost ${(c.pos*c.down).toFixed(2)}% of the portfolio, against the ${p.budget.toFixed(1)}% you accept.`);
+      // ledger
+      const L=[['Shares bought',c.sh.toLocaleString('en-IN')+' at ₹'+p.buy+' = '+inr(c.B)],
+        ['Sold for',c.sh.toLocaleString('en-IN')+' at ₹'+p.sell+' = '+inr(c.S)],
+        ['Buy costs','STT '+inr(c.cb.st,2)+' · stamp '+inr(c.cb.sd,2)+' · brokerage '+inr(c.cb.br,2)+' · exchange and SEBI '+inr(c.cb.ex+c.cb.se,2)+' · GST '+inr(c.cb.g,2)+' = '+inr(c.cb.tot,2)],
+        ['Sell costs','STT '+inr(c.cs.st,2)+' · brokerage '+inr(c.cs.br,2)+' · exchange and SEBI '+inr(c.cs.ex+c.cs.se,2)+' · GST '+inr(c.cs.g,2)+' = '+inr(c.cs.tot,2)],
+        ['Gain for tax (STT not deducted)',inr(c.S)+' − '+inr(c.cs.ded,2)+' − ('+inr(c.B)+' + '+inr(c.cb.ded,2)+') = '+inr(c.gain,2)],
+        ['Tax on gain',c.gain<=0?'loss or nil gain: no tax':(c.long?'long-term: 12.5% × max(0, '+inr(c.gain)+' − '+inr(c.free)+' unused exemption) × 1.04':'short-term: 20% × '+inr(c.gain)+' × 1.04')+' = '+inr(c.taxG,2)],
+        ['Dividends',c.sh.toLocaleString('en-IN')+' × ₹'+p.dps.toFixed(2)+' = '+inr(c.div)+'; tax '+p.slab+'% × 1.04 = '+inr(c.taxD,2)+(c.tds?'; TDS '+inr(c.tds,2)+' deducted and credited':'; no TDS (₹10,000 or less)')],
+        ['You keep',inr(c.S)+' − '+inr(c.B)+' + '+inr(c.div)+' − costs '+inr(c.costs,2)+' − tax '+inr(c.taxG+c.taxD,2)+' = '+inr(c.keep,2)],
+        ['Return kept',inr(c.keep,2)+' ÷ '+inr(c.base,2)+' = '+(100*c.r).toFixed(2)+'%; over '+p.months+' months that is '+(100*c.ann).toFixed(2)+'% a year'],
+        ['Position',inr(c.B)+' ÷ '+inr(p.port)+' = '+c.pos.toFixed(2)+'%'+(mp===null?'':'; limit '+p.budget.toFixed(1)+'% ÷ '+(100*c.down).toFixed(2)+'% = '+mp.toFixed(2)+'%')]];
+      $('ledger').innerHTML=L.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:[c.costs,c.gain,c.taxG,c.taxD,c.keep,c.r,c.ann,c.pos].every(Number.isFinite),
+        inputs:p,shares:c.sh,buyValue:c.B,sellValue:c.S,costs:c.costs,gain:c.gain,taxGain:c.taxG,div:c.div,taxDiv:c.taxD,tds:c.tds,keep:c.keep,ret:100*c.r,ann:100*c.ann,pos:c.pos,maxpos:c.maxpos};
+    }
+    SL.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('[data-st]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.st,d=ST[k];
+      d.v=Math.min(d.max,Math.max(d.min,Math.round((d.v+(+b.dataset.d)*d.step)*1000)/1000));$('msg').textContent='';draw();}));
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{const pr=PRESETS[bt.dataset.p];
+      SL.forEach(id=>$(id).value=pr.s[id]);Object.keys(ST).forEach(k=>ST[k].v=(k in pr.t)?pr.t[k]:ST[k].d);draw();$('msg').textContent=pr.m;}));
+    draw();
+
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

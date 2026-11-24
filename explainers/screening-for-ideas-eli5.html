@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Screening for ideas — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Series colour key (Fundamental analysis, from scratch): same colour = same meaning in every part.
+       teal #76d5c1 = money coming in (sales, cash) | coral #ff8059 = money going out, losses | gold #f5c76a = what belongs to shareholders (profit, EPS, returns)
+       rose #ec6a94 = what is owed (debt, pledges) | lavender #c3b8ff = the market's view (price, P/E)
+       Part 36 extra: companies left after a filter are neutral #d9d4cc; trap / no trap reuse Part 15's lights: red #ff6b6b ▲ , green #7bd88f ● ; always shape + colour. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:520px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+
+    /* Series additions (shared with earlier parts) */
+    :root{--danger:#ec6a94}
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .tag{display:inline-block;margin-right:4px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted)}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p,details.trace li{font-size:15px}
+    .eq{display:block;margin:10px 0;padding:10px 12px;border-left:2px solid var(--accent);font:13px/1.6 var(--font-mono);color:var(--fg);overflow-x:auto}
+    .field-grid{background:none;border:0;padding:1px;margin-bottom:24px}
+    .field-grid div{outline:1px solid var(--border)}
+    .eli5-study-container button{font-family:var(--font-sans);font-size:14px;font-weight:500}
+    .lab .events{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .events button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .msg{margin:12px 0 0;min-height:3em;font-size:14px;line-height:1.5;color:var(--fg)}
+    .panel figure+p{margin-top:22px}
+    @media (max-width:700px){.lab .ledger{grid-template-columns:1fr}.lab .ledger span:nth-child(even){margin-bottom:8px;color:var(--fg)}}
+    .lab .group-label{margin:18px 0 0;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .lab .steps{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+    .lab .steps .stl{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.3;color:var(--muted)}
+    .lab .steps output{min-width:5.5ch;text-align:center;font-size:13px}
+    .steps button{min-width:32px;padding:6px 8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .steps button:disabled{opacity:.4;cursor:default}
+    .lab-chart svg+svg{margin-top:18px}
+    .eq b{color:var(--fg)}
+    /* Part 15: dashboard tables and traffic lights */
+    .dash{min-width:0;font-size:14px}
+    .dash th,.dash td{padding:7px 8px;vertical-align:top}
+    .dash tr.grp td{padding-top:12px;font:11px/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+    .dash td.line{font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .dash td.val{white-space:nowrap}
+    .dash th.ed::after{content:" ✎";color:var(--accent)}
+    .lt{display:inline-block;width:1.2em;font-weight:700}.lt.g{color:#7bd88f}.lt.a{color:#ffb04d}.lt.r{color:#ff6b6b}
+    .rep{font-size:14px}.rep td.wk{font:12px/1.5 var(--font-mono);color:var(--muted)}.rep td.pg{font:11px/1.5 var(--font-mono);color:var(--accent);white-space:nowrap}
+    .rep td.val{white-space:nowrap;color:var(--fg);font-weight:600}
+    .lab .picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .lab .picks button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .picks button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .lab .events button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .lab .lights-key{margin:10px 0 0;font:12px/1.6 var(--font-mono);color:var(--muted)}
+    /* Part 15 lab layout: one column of numbered steps */
+    .dashlab .dl-step{padding:22px 0;border-top:1px solid var(--border)}
+    .dashlab .dl-step:first-child{border-top:0;padding-top:4px}
+    .dashlab .dl-k{margin:0 0 12px;font:12px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .dashlab .presets,.dashlab .events,.dashlab .picks{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+    .dashlab .presets button{padding:8px 14px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .table-wrap{margin:0}
+    .dashlab .dash{width:100%;font-size:15px;border-collapse:collapse}
+    .dashlab .dash th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+    .dashlab .dash td{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+    .dashlab .dash tr.grp td{padding:16px 10px 6px;border-bottom:0}
+    .dashlab .dash td.line{font:13px/1.4 var(--font-mono)}
+    .dashlab .lights-key{margin:12px 0 0}
+    .dashlab .dl-chart{max-width:560px;margin-top:18px}
+    .dashlab .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:12px}
+    .dashlab .dl-col .control{margin:0 0 14px}
+    .dashlab .dl-col .steps{margin:0 0 10px}
+    .dashlab .dl-col .steps .stl{font-size:14px;color:var(--fg)}
+    .dashlab details.trace{margin-top:16px}
+    .dashlab .dl-col .control label{display:block;margin:0 0 6px;font-size:14px;line-height:1.4;color:var(--fg)}
+    .dashlab .dl-col .control input[type=range]{display:block;width:100%}
+    .dashlab #msg:empty{display:none}
+    .dashlab .gi,.dashlab .nm-short{display:none}
+    @media (max-width:700px){.eli5-study-container .dashlab table.dash{min-width:0}.dashlab .dash .line{display:none}.dashlab .gi{display:block;margin-top:2px;font:11px/1.4 var(--font-mono);color:var(--muted)}.dashlab .nm-full{display:none}.dashlab .nm-short{display:inline}.dashlab .dash td.val{font-size:14px}}
+    @media (max-width:700px){.dashlab .dl-grid{grid-template-columns:1fr;gap:0}.dashlab .dash{font-size:14px}.dashlab .dash td,.dashlab .dash th{padding:8px 6px}}
+    /* Part 36: screen table */
+    .eli5-study-container table.scr{min-width:0}
+    .dashlab .scr-chart{max-width:520px}
+    @media (max-width:700px){.dashlab .scr-chart svg{min-width:0}.dashlab .scr-chart::after{display:none}}
+    .scr{width:100%;min-width:0;border-collapse:collapse;font-size:15px}
+    .scr th{font:11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 8px;border-bottom:1px solid var(--border)}
+    .scr td{padding:8px;border-bottom:1px solid rgba(255,255,255,.05);white-space:nowrap}
+    .scr td.sec{font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .scr tr.tc td{border-top:1px solid var(--border);color:var(--fg)}
+    .scr .x{color:#ff6b6b}
+    .dashlab .toggles{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+    .dashlab .toggles button{padding:8px 12px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+    .dashlab .toggles button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+    .dashlab .near{margin:12px 0 0;font-size:14px;color:var(--muted)}
+    .dashlab ul.why{margin:12px 0 0;padding-left:20px}.dashlab ul.why li{margin:8px 0;font-size:15px}
+    @media (max-width:700px){.eli5-study-container table.rep{min-width:0;font-size:13px}.rep th,.rep td{padding:6px 4px}.rep td.wk{font-size:11px;word-break:break-word}.rep td.pg{white-space:normal;font-size:10px}.rep td.val{white-space:normal}.scr{font-size:13px}.scr th,.scr td{padding:6px 3px}.scr .sec{display:none}.scr th{font-size:10px;letter-spacing:.02em}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 36: filters that find candidates, the traps they pass, and survivorship bias">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/screening-for-ideas-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Screening for ideas">
+<meta property="og:description" content="Part 36: filters that find candidates, the traps they pass, and survivorship bias">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/screening-for-ideas-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/screening-for-ideas-eli5.png?v=8d6edd76">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Screening for ideas">
+<meta property="article:published_time" content="2026-11-24">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="screening-for-ideas-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Monetary Architecture</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>MONETARY ARCHITECTURE / 17 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Screening for ideas</h1>
+      <p class="lede">A screen is a set of lines drawn on ratios you already know. It turns hundreds of companies into a short list worth reading. It cannot tell a bargain from a company that is cheap for a reason, and a backtest that only sees today’s survivors flatters every screen.</p>
+      <p class="source-note">Built from Tata Consumer Products’ audited FY2026 consolidated statements in its Integrated Annual Report 2025-26, its shareholding pattern at 31 March 2026 filed with NSE, and NSE’s closing price of 30 March 2026 · <a href="https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf">Read the source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>Already covered: <a href="pe-ratio-eli5.html" data-series-link="pe-ratio-eli5">Part 7</a> (P/E), <a href="growth-worth-paying-for-eli5.html" data-series-link="growth-worth-paying-for-eli5">Part 9</a> (growth), <a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a> (ROCE), <a href="how-much-debt-eli5.html" data-series-link="how-much-debt-eli5">Part 11</a> (debt) and <a href="free-cash-flow-eli5.html" data-series-link="free-cash-flow-eli5">Part 13</a> (cash conversion) built the ratios a screen uses, and <a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a> read them together. <a href="governance-and-ownership-eli5.html" data-series-link="governance-and-ownership-eli5">Part 19</a> and <a href="red-flags-eli5.html" data-series-link="red-flags-eli5">Part 20</a> covered pledges and red flags, and <a href="cyclicals-eli5.html" data-series-link="cyclicals-eli5">Part 33</a> showed that a cyclical’s P/E is lowest at the peak. <a href="loss-makers-and-ipos-eli5.html" data-series-link="loss-makers-and-ipos-eli5">Part 35</a> closed the sector parts. Facts carry a tag: <span class="tag">public</span> is a figure from TCPL’s filings or NSE, <span class="tag">example</span> is a made-up number for this page’s 30 fictional companies, from Chandni Snacks to Titli Drones. Any likeness to a real company’s name is accidental. All amounts are ₹ crore (cr); each fictional company has 10 crore shares. Real figures are frozen at FY2026. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#76d5c1"></i>money coming in: sales, cash</span>
+        <span><i style="background:#ff8059"></i>money going out, losses</span>
+        <span><i style="background:#f5c76a"></i>belongs to shareholders: profit, returns</span>
+        <span><i style="background:#ec6a94"></i>what is owed: debt, pledges</span>
+        <span><i style="background:#c3b8ff"></i>the market’s view: P/E</span>
+        <span><i style="background:#d9d4cc"></i>companies left</span>
+        <span><b style="color:#ff6b6b">▲ trap</b> <b style="color:#7bd88f">● no trap found</b></span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Too many companies, one reader</h2>
+      <p>Reading one company properly means its annual report, its filings and its business: days of work, as Part 37 will show. Our made-up market has 30 companies, from ₹180 cr of sales to ₹2,600 cr <span class="tag">example</span>. A real exchange lists far more. Nobody reads them all.</p>
+      <figure><svg viewBox="0 0 800 560" role="img" aria-label="Thirty teal circles, one per fictional company, each with an area proportional to its sales, from 180 crore to 2,600 crore"><circle cx="100" cy="56" r="34.7" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="220" cy="56" r="27.1" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="340" cy="56" r="22.8" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="460" cy="56" r="22.3" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="580" cy="56" r="21.5" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="700" cy="56" r="21.5" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="100" cy="138" r="21.1" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="220" cy="138" r="19.7" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="340" cy="138" r="19.0" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="460" cy="138" r="18.4" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="580" cy="138" r="18.2" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="700" cy="138" r="17.9" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="100" cy="220" r="17.5" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="220" cy="220" r="17.1" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="340" cy="220" r="16.7" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="460" cy="220" r="16.1" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="580" cy="220" r="14.6" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="700" cy="220" r="14.4" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="100" cy="302" r="14.4" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="220" cy="302" r="14.3" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="340" cy="302" r="13.9" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="460" cy="302" r="13.4" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="580" cy="302" r="13.3" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="700" cy="302" r="12.6" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="100" cy="384" r="12.4" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="220" cy="384" r="11.8" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="340" cy="384" r="11.6" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="460" cy="384" r="10.8" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="580" cy="384" r="10.5" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="700" cy="384" r="9.1" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><circle cx="80" cy="470" r="34.7" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><text x="126" y="476" text-anchor="start" fill="#a5a29c" font-size="16">₹2,600 cr, the largest</text><circle cx="430" cy="470" r="9.1" fill="#76d5c1" fill-opacity="0.8" stroke="#202020" stroke-width="1.5"/><text x="450" y="476" text-anchor="start" fill="#a5a29c" font-size="16">₹180 cr, the smallest</text><text x="40" y="538" text-anchor="start" fill="#a5a29c" font-size="16">one circle per company · area = FY26 sales</text></svg></figure>
+      <p>A <b>screen</b> is a cheap first pass. It asks every company the same few questions in numbers, drops the ones that fail, and leaves a short list to read. It saves time. It does not do the reading.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>A filter is a line on one ratio</h2>
+      <p>Take ROCE, profit before interest and tax divided by all the capital, equity plus debt (<a href="roe-roce-dupont-eli5.html" data-series-link="roe-roce-dupont-eli5">Part 10</a>). Put every company on one axis and draw a line at 15%. Those at or above it go on; those below drop out <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="Thirty dots on a ROCE axis from minus 10 to 40 percent with a dashed line at 15 percent: 19 gold dots at or above it go on, 11 hollow dots below it drop out"><circle cx="148.0" cy="236.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="284.0" cy="236.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="284.0" cy="215.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="324.8" cy="236.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="324.8" cy="215.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="352.0" cy="236.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="352.0" cy="215.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="365.6" cy="194.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="379.2" cy="236.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="392.8" cy="215.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="392.8" cy="194.0" r="9" fill="none" stroke="#a5a29c" stroke-width="2"/><circle cx="433.6" cy="236.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="433.6" cy="215.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="443.1" cy="194.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="460.8" cy="236.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="474.4" cy="215.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="488.0" cy="236.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="488.0" cy="194.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="488.0" cy="173.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="488.0" cy="152.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="517.9" cy="236.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="524.7" cy="215.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="542.4" cy="236.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="556.0" cy="215.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="556.0" cy="194.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="556.0" cy="173.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="556.0" cy="152.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="624.0" cy="236.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="624.0" cy="215.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><circle cx="760.0" cy="236.0" r="9" fill="#f5c76a" stroke="#f5c76a" stroke-width="2"/><path d="M80 258 L760 258" stroke="#57534f" stroke-width="1.5" fill="none"/><text x="80" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">−10%</text><text x="216" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="352" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="488" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">20%</text><text x="624" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">30%</text><text x="760" y="284" text-anchor="middle" fill="#a5a29c" font-size="16">40%</text><path d="M420 70 L420 250" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><text x="420" y="56" text-anchor="middle" fill="#f1eee8" font-size="16">line: ROCE 15%</text><text x="80" y="120" text-anchor="start" fill="#a5a29c" font-size="16">11 drop out</text><text x="760" y="40" text-anchor="end" fill="#f5c76a" font-size="16">19 go on</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">ROCE, % · one dot per company</text></svg></figure>
+      <p>Every filter works this way: one ratio, one direction, one line. The line is a choice, not a fact. Nothing magic happens at 15%; a company at 14.9% is not worse than one at 15.1%.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">How filters stack</p>
+      <h2>Five lines, one short list</h2>
+      <p>A screen joins filters with AND: a company must pass every one. This page’s default asks five questions from earlier parts <span class="tag">example</span>. Each filter is applied to what the last one left, so the list only shrinks.</p>
+      <figure><svg viewBox="0 0 800 336" role="img" aria-label="Bars shrinking from 30 companies to 19, 18, 16, 14 and finally 12 as each of five filters is applied in turn"><text x="40" y="49" text-anchor="start" fill="#f1eee8" font-size="16">all companies</text><rect x="270" y="30" width="450" height="26" fill="#d9d4cc" stroke="#202020" stroke-width="1.5"/><text x="730" y="49" text-anchor="start" fill="#f1eee8" font-size="16">30</text><text x="40" y="95" text-anchor="start" fill="#a5a29c" font-size="16">ROCE ≥ 15%</text><rect x="270" y="76" width="285" height="26" fill="#d9d4cc" stroke="#202020" stroke-width="1.5"/><text x="565" y="95" text-anchor="start" fill="#f1eee8" font-size="16">19</text><text x="40" y="141" text-anchor="start" fill="#a5a29c" font-size="16">debt ≤ 0.5× equity</text><rect x="270" y="122" width="270" height="26" fill="#d9d4cc" stroke="#202020" stroke-width="1.5"/><text x="550" y="141" text-anchor="start" fill="#f1eee8" font-size="16">18</text><text x="40" y="187" text-anchor="start" fill="#a5a29c" font-size="16">growth ≥ 10%</text><rect x="270" y="168" width="240" height="26" fill="#d9d4cc" stroke="#202020" stroke-width="1.5"/><text x="520" y="187" text-anchor="start" fill="#f1eee8" font-size="16">16</text><text x="40" y="233" text-anchor="start" fill="#a5a29c" font-size="16">cash ≥ 0.8× profit</text><rect x="270" y="214" width="210" height="26" fill="#d9d4cc" stroke="#202020" stroke-width="1.5"/><text x="490" y="233" text-anchor="start" fill="#f1eee8" font-size="16">14</text><text x="40" y="279" text-anchor="start" fill="#a5a29c" font-size="16">P/E ≤ 25</text><rect x="270" y="260" width="180" height="26" fill="#d9d4cc" stroke="#202020" stroke-width="1.5"/><text x="460" y="279" text-anchor="start" fill="#f1eee8" font-size="16">12</text><text x="40" y="318" text-anchor="start" fill="#a5a29c" font-size="16">15 px = 1 company · each filter applied to what is left</text></svg></figure>
+      <p>Thirty become 12. The order changes the bars in between, not the end: AND does not care which question is asked first. Each extra filter cuts the list again, so five moderate lines can be stricter than one harsh one.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The filters, and where they come from</h2>
+      <p>Each line below is this page’s default, a rule of thumb <span class="tag">example</span>, not an industry norm. The ratios use the series’ definitions, on closing balances and one year’s figures.</p>
+      <div class="field-grid"><div><b>Return on capital: ROCE ≥ 15%</b><span>EBIT ÷ (equity + debt). Is the business good at turning capital into profit?</span><em>PART 10</em></div><div><b>Debt: debt ÷ equity ≤ 0.5</b><span>Can it survive a bad year without the lenders deciding?</span><em>PART 11</em></div><div><b>Growth: sales growth ≥ 10%</b><span>Is it getting bigger? One year here; a multi-year CAGR is steadier.</span><em>PART 9</em></div><div><b>Cash conversion: CFO ÷ profit ≥ 0.8</b><span>Does reported profit arrive as cash?</span><em>PART 13</em></div><div><b>Price: P/E ≤ 25</b><span>What is the market asking for a rupee of profit?</span><em>PART 7</em></div><div><b>Governance: pledged ≤ 10%</b><span>An optional check: promoter shares pledged to lenders, from the shareholding pattern.</span><em>PART 19</em></div></div>
+      <details class="trace"><summary>Go deeper: what a screen cannot hold</summary><p>Banks and NBFCs are left out: debt is their raw material, and ROCE and debt ÷ equity mean little for them (<a href="analysing-banks-eli5.html" data-series-link="analysing-banks-eli5">Part 29</a>). A loss-maker has no meaningful P/E or cash ratio (<a href="loss-makers-and-ipos-eli5.html" data-series-link="loss-makers-and-ipos-eli5">Part 35</a>); this page counts “not meaningful” as a fail, never as a good score. Screener websites, such as Screener.in, Tickertape or Trendlyne, let you write filters like these on real data. They are named here as tools only: no figure on this page comes from them, and their definitions can differ from the series’ (<a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a>).</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Where to draw the line</p>
+      <h2>Move one line, the list changes</h2>
+      <p>Hold four filters still and slide the ROCE line <span class="tag">example</span>. With no ROCE line at all, 13 companies pass; at 15%, 12; above 26%, only one. Near the default, a point either way swaps companies in and out.</p>
+      <figure><svg viewBox="0 0 800 346" role="img" aria-label="A falling step line: with the other four filters fixed, 13 companies pass with no ROCE line, 12 at a 15 percent line and only 1 above 26 percent"><path d="M90 270 L750 270" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M90 270 L90 60" stroke="#57534f" stroke-width="1.5" fill="none"/><path d="M90.0 75.0 L112.0 75.0 L112.0 75.0 L134.0 75.0 L134.0 75.0 L156.0 75.0 L156.0 75.0 L178.0 75.0 L178.0 75.0 L200.0 75.0 L200.0 75.0 L222.0 75.0 L222.0 75.0 L244.0 75.0 L244.0 75.0 L266.0 75.0 L266.0 75.0 L288.0 75.0 L288.0 75.0 L310.0 75.0 L310.0 75.0 L332.0 75.0 L332.0 75.0 L354.0 75.0 L354.0 75.0 L376.0 75.0 L376.0 75.0 L398.0 75.0 L398.0 90.0 L420.0 90.0 L420.0 90.0 L442.0 90.0 L442.0 90.0 L464.0 90.0 L464.0 105.0 L486.0 105.0 L486.0 105.0 L508.0 105.0 L508.0 120.0 L530.0 120.0 L530.0 135.0 L552.0 135.0 L552.0 165.0 L574.0 165.0 L574.0 165.0 L596.0 165.0 L596.0 195.0 L618.0 195.0 L618.0 195.0 L640.0 195.0 L640.0 210.0 L662.0 210.0 L662.0 255.0 L684.0 255.0 L684.0 255.0 L706.0 255.0 L706.0 255.0 L728.0 255.0 L728.0 255.0 L750.0 255.0 L750.0 255.0" stroke="#f5c76a" stroke-width="3" fill="none"/><text x="90" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">0%</text><text x="310" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">10%</text><text x="530" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">20%</text><text x="750" y="296" text-anchor="middle" fill="#a5a29c" font-size="16">30%</text><text x="78" y="276" text-anchor="end" fill="#a5a29c" font-size="16">0</text><text x="78" y="201" text-anchor="end" fill="#a5a29c" font-size="16">5</text><text x="78" y="126" text-anchor="end" fill="#a5a29c" font-size="16">10</text><circle cx="420.0" cy="90.0" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="434" y="76" text-anchor="start" fill="#f1eee8" font-size="16">line at 15%: 12 pass</text><circle cx="662.0" cy="255.0" r="7" fill="#f5c76a" stroke="#202020" stroke-width="2"/><text x="676" y="241" text-anchor="start" fill="#f1eee8" font-size="16">at 26%: 1</text><text x="90" y="30" text-anchor="start" fill="#a5a29c" font-size="16">companies passing all five</text><text x="750" y="330" text-anchor="end" fill="#a5a29c" font-size="16">where the ROCE line sits</text></svg></figure>
+      <p>Eight companies miss the default screen by a single filter: Bijli Cables and Zafran Spices on cash, Dhoop Pumps on debt, Jharokha Windows on ROCE, Pankha Fans and Lekhni Pens on growth, and Gulmohar Pharma and Rangoli Paints on price. A near miss deserves a look. A screen is a sieve, not a verdict.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Value traps</p>
+      <h2>Cheap for a reason</h2>
+      <p>A <b>value trap</b> looks cheap on the screen and stays cheap, or gets cheaper, because the numbers are about to change or cannot be trusted. Three kinds pass screens easily <span class="tag">example</span>.</p>
+      <figure><svg viewBox="0 0 800 584" role="img" aria-label="Three traps that pass the screen: Pathar Cement earning 16 rupees a share against a six-year average of 4, Lalten Lamps with sales falling from 520 to 300 crore before a one-off rise, and Kangan Jewellers with 60 percent of promoter shares pledged"><text x="40" y="40" text-anchor="start" fill="#f1eee8" font-size="16">Cyclical at the peak</text><text x="40" y="64" text-anchor="start" fill="#a5a29c" font-size="16">Pathar Cement, EPS ₹</text><rect x="300" y="172" width="40" height="24" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="320" y="218" text-anchor="middle" fill="#a5a29c" font-size="16">FY21</text><rect x="362" y="192" width="40" height="4" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="382" y="218" text-anchor="middle" fill="#a5a29c" font-size="16">FY22</text><rect x="424" y="184" width="40" height="12" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="444" y="218" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><rect x="486" y="188" width="40" height="8" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="506" y="218" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><rect x="548" y="180" width="40" height="16" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="568" y="218" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><rect x="610" y="68" width="40" height="128" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="630" y="218" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><text x="662" y="84" text-anchor="start" fill="#f1eee8" font-size="16">₹16 · P/E 8</text><path d="M290 164 L660 164" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="5 4"/><text x="282" y="170" text-anchor="end" fill="#f1eee8" font-size="16">average ₹4 · P/E 32</text><text x="40" y="272" text-anchor="start" fill="#f1eee8" font-size="16">A falling business</text><text x="40" y="296" text-anchor="start" fill="#a5a29c" font-size="16">Lalten Lamps, sales ₹ cr</text><rect x="300" y="290" width="40" height="130" fill="#76d5c1" stroke="#202020" stroke-width="1.5"/><text x="320" y="442" text-anchor="middle" fill="#a5a29c" font-size="16">FY22</text><text x="320" y="282" text-anchor="middle" fill="#a5a29c" font-size="16">520</text><rect x="362" y="310" width="40" height="110" fill="#76d5c1" stroke="#202020" stroke-width="1.5"/><text x="382" y="442" text-anchor="middle" fill="#a5a29c" font-size="16">FY23</text><text x="382" y="302" text-anchor="middle" fill="#a5a29c" font-size="16">440</text><rect x="424" y="327.5" width="40" height="92.5" fill="#76d5c1" stroke="#202020" stroke-width="1.5"/><text x="444" y="442" text-anchor="middle" fill="#a5a29c" font-size="16">FY24</text><text x="444" y="319.5" text-anchor="middle" fill="#a5a29c" font-size="16">370</text><rect x="486" y="345" width="40" height="75" fill="#76d5c1" stroke="#202020" stroke-width="1.5"/><text x="506" y="442" text-anchor="middle" fill="#a5a29c" font-size="16">FY25</text><text x="506" y="337" text-anchor="middle" fill="#a5a29c" font-size="16">300</text><rect x="548" y="337.5" width="40" height="82.5" fill="#76d5c1" stroke="#202020" stroke-width="1.5"/><text x="568" y="442" text-anchor="middle" fill="#a5a29c" font-size="16">FY26</text><text x="568" y="329.5" text-anchor="middle" fill="#a5a29c" font-size="16">330</text><text x="604" y="353.5" text-anchor="start" fill="#f1eee8" font-size="16">+10%, one order</text><text x="40" y="500" text-anchor="start" fill="#f1eee8" font-size="16">Shaky governance</text><text x="40" y="524" text-anchor="start" fill="#a5a29c" font-size="16">Kangan, promoter shares</text><rect x="300" y="506" width="252" height="30" fill="#ec6a94" stroke="#202020" stroke-width="1.5"/><rect x="552" y="506" width="168" height="30" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="310" y="527" text-anchor="start" fill="#202020" font-size="16">60% pledged</text><text x="562" y="527" text-anchor="start" fill="#202020" font-size="16">free</text><text x="300" y="566" text-anchor="start" fill="#a5a29c" font-size="16">pledged to lenders as security</text></svg></figure>
+      <ol class="checks">
+        <li><b>A cyclical at the peak.</b> Record profit makes the P/E low just when profit is about to fall (<a href="cyclicals-eli5.html" data-series-link="cyclicals-eli5">Part 33</a>). Pathar’s P/E is 8 on this year’s EPS and 32 on its six-year average.</li>
+        <li><b>A falling business.</b> The market is shrinking, so a low P/E prices a profit that will not last. One good year can lift it over a growth line.</li>
+        <li><b>Shaky governance.</b> Pledged promoter shares, money lent to the promoter’s family, an auditor who leaves early (<a href="governance-and-ownership-eli5.html" data-series-link="governance-and-ownership-eli5">Part 19</a>, <a href="red-flags-eli5.html" data-series-link="red-flags-eli5">Part 20</a>). Most of this is not in any ratio.</li>
+      </ol>
+      <p class="note">Each trap’s reason sits outside the screen’s columns: the cycle, the market, the people. That is why a stricter line rarely removes a trap; reading does.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Survivorship bias</p>
+      <h2>The backtest that only sees survivors</h2>
+      <p>A <b>backtest</b> runs a screen on old data and checks what its picks did since. If the database holds only companies listed today, the ones that went bust have vanished from it. Say a screen run five years ago picked ten companies <span class="tag">example</span>. Seven are still listed; three were delisted, worth little or nothing.</p>
+      <figure><svg viewBox="0 0 800 494" role="img" aria-label="Ten picks from a screen run five years ago: seven still listed returned between plus 120 and minus 35 percent, three were delisted with losses of 90 to 100 percent; survivors alone average plus 30 percent, all ten average minus 8 percent"><rect x="360" y="40" width="300" height="20" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="668" y="56" text-anchor="start" fill="#f1eee8" font-size="16">+120%</text><rect x="360" y="70" width="150" height="20" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="518" y="86" text-anchor="start" fill="#f1eee8" font-size="16">+60%</text><rect x="360" y="100" width="112.5" height="20" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="480.5" y="116" text-anchor="start" fill="#f1eee8" font-size="16">+45%</text><rect x="360" y="130" width="75" height="20" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="443" y="146" text-anchor="start" fill="#f1eee8" font-size="16">+30%</text><rect x="360" y="160" width="25" height="20" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="393" y="176" text-anchor="start" fill="#f1eee8" font-size="16">+10%</text><rect x="310" y="190" width="50" height="20" fill="#ff8059" stroke="#202020" stroke-width="1.5"/><text x="368" y="206" text-anchor="start" fill="#f1eee8" font-size="16">−20%</text><rect x="272.5" y="220" width="87.5" height="20" fill="#ff8059" stroke="#202020" stroke-width="1.5"/><text x="368" y="236" text-anchor="start" fill="#f1eee8" font-size="16">−35%</text><rect x="110" y="250" width="250" height="20" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5 4"/><text x="368" y="266" text-anchor="start" fill="#ff6b6b" font-size="16">−100% · delisted</text><rect x="110" y="280" width="250" height="20" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5 4"/><text x="368" y="296" text-anchor="start" fill="#ff6b6b" font-size="16">−100% · delisted</text><rect x="135" y="310" width="225" height="20" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5 4"/><text x="368" y="326" text-anchor="start" fill="#ff6b6b" font-size="16">−90% · delisted</text><path d="M360 30 L360 344" stroke="#f1eee8" stroke-width="1.5" fill="none"/><text x="40" y="150" text-anchor="start" fill="#a5a29c" font-size="16">still listed</text><text x="40" y="286" text-anchor="start" fill="#ff6b6b" font-size="16">gone</text><text x="40" y="396" text-anchor="start" fill="#a5a29c" font-size="16">survivors only</text><rect x="360" y="380" width="75" height="22" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="443" y="396" text-anchor="start" fill="#f1eee8" font-size="16">+30% average</text><text x="40" y="430" text-anchor="start" fill="#a5a29c" font-size="16">all ten picks</text><rect x="340" y="414" width="20" height="22" fill="#ff8059" stroke="#202020" stroke-width="1.5"/><text x="332" y="430" text-anchor="end" fill="#f1eee8" font-size="16">−8%</text><text x="40" y="476" text-anchor="start" fill="#a5a29c" font-size="16">five-year return of each pick · 2.5 px = 1 point</text></svg></figure>
+      <p>Tested on today’s list, the screen’s picks averaged +30% over five years. Counting all ten, they averaged −8%. The dead companies were often the cheapest-looking ones, so the bias flatters cheap screens most. Ask any backtest: does its data include companies that no longer exist?</p>
+      <details class="trace"><summary>Go deeper: the arithmetic</summary><p>Survivors: (120 + 60 + 45 + 30 + 10 − 20 − 35) ÷ 7 = 210 ÷ 7 = +30%. All ten: (210 − 100 − 100 − 90) ÷ 10 = −80 ÷ 10 = −8%. Equal amounts in each pick, no dividends, all figures example. A delisted share is not always worth zero (a takeover also delists a company), so a fair backtest records what holders actually got.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Screen 30 made-up companies</h2>
+      <p>Thirty fictional companies <span class="tag">example</span>, five filters and two extra checks. Pick a screen, move the lines, read the list, then reveal which passers are traps and why. TCPL’s real FY2026 figures <span class="tag">public</span> sit under the table for comparison; they never count among the 30.</p>
+      <div class="lab dashlab">
+        <div class="dl-step">
+          <p class="dl-k">1 · Choose a screen</p>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="fair">Quality at a fair price</button>
+            <button type="button" class="secondary" data-p="deep">Deep value</button>
+            <button type="button" class="secondary" data-p="any">Quality at any price</button>
+            <button type="button" class="secondary" data-p="aware">Trap-aware</button>
+          </div>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">2 · Set the lines</p>
+          <div class="dl-grid">
+            <div class="dl-col"><div class="control"><label for="roce">ROCE at least <output id="roce-o"></output></label><input id="roce" type="range" min="0" max="30" step="1" value="15"></div><div class="control"><label for="de">Debt ÷ equity at most <output id="de-o"></output></label><input id="de" type="range" min="0" max="2" step="0.1" value="0.5"></div><div class="control"><label for="g">Sales growth at least <output id="g-o"></output></label><input id="g" type="range" min="-20" max="30" step="1" value="10"></div><div class="control"><label for="pe">P/E at most <output id="pe-o"></output></label><input id="pe" type="range" min="5" max="80" step="1" value="25"></div></div>
+            <div class="dl-col"><div class="steps"><span class="stl">CFO ÷ profit at least</span><button type="button" class="secondary" data-st="cp" data-d="-1" aria-label="Lower the cash line">−</button><output id="st-cp" role="status"></output><button type="button" class="secondary" data-st="cp" data-d="1" aria-label="Raise the cash line">+</button></div>
+              <div class="toggles" role="group" aria-label="Extra checks"><button type="button" class="secondary" id="tgPl" aria-pressed="false">Drop pledges above 10%</button><button type="button" class="secondary" id="tgMid" aria-pressed="false">Cyclicals on average EPS</button></div></div>
+          </div>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">3 · Watch the list shrink</p>
+          <div class="lab-chart scr-chart"><svg id="labChart" viewBox="0 0 400 480" role="img" aria-label="Bars counting how many of the 30 fictional companies are left after each filter, and after the reveal how many of the passers are traps"></svg></div>
+          <details class="trace"><summary>Show the working</summary><div class="ledger" id="ledger"></div></details>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">4 · Read the short list</p>
+          <div class="table-wrap"><table class="scr" id="scr"></table></div>
+          <p class="near" id="near"></p>
+        </div>
+        <div class="dl-step">
+          <p class="dl-k">5 · Reveal the traps</p>
+          <div class="toggles"><button type="button" class="secondary" id="reveal" aria-pressed="false">Reveal the traps</button></div>
+          <p class="msg" id="revMsg" role="status" aria-live="polite">The screen cannot see them. Press the button to read what it missed.</p>
+          <ul class="why" id="why"></ul>
+        </div>
+      </div>
+      <details class="trace"><summary>Go deeper: the assumptions behind the 30</summary><p>Every company has 10 crore shares. ROCE is EBIT ÷ (equity + borrowings) at the year end; debt ÷ equity is borrowings ÷ equity; growth is one year’s sales growth, FY26 over FY25; cash is CFO ÷ profit after tax; P/E is price ÷ EPS. Each ratio is judged as shown, rounded (ROCE, growth and P/E to one decimal, the others to two). A loss-maker’s P/E and cash ratio are “not meaningful” and fail. “Average EPS” is the six-year average for the four cyclicals (Pathar, Lohapur, Neem, Kagaz), known only with hindsight, as Part 33 warned. Pledges are the share of promoter holdings pledged. Traps are set by the page’s story, not computed: that is the point.</p></details>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>A pass list is not a buy list</h2>
+      <p>On the default screen 12 companies pass. Seven are traps <span class="tag">example</span>. Not one of the seven fails a filter; their problems are in the cycle, the market or the boardroom.</p>
+      <figure><svg viewBox="0 0 800 318" role="img" aria-label="The twelve companies that pass the default screen: five green circles with no trap found in this data, and seven red triangles that are traps"><text x="40" y="40" text-anchor="start" fill="#7bd88f" font-size="16">no trap found in this data</text><circle cx="100" cy="80" r="14" fill="#7bd88f" stroke="#202020" stroke-width="1.5"/><text x="100" y="122" text-anchor="middle" fill="#f1eee8" font-size="16">Chandni</text><circle cx="204" cy="80" r="14" fill="#7bd88f" stroke="#202020" stroke-width="1.5"/><text x="204" y="122" text-anchor="middle" fill="#f1eee8" font-size="16">Patang</text><circle cx="308" cy="80" r="14" fill="#7bd88f" stroke="#202020" stroke-width="1.5"/><text x="308" y="122" text-anchor="middle" fill="#f1eee8" font-size="16">Gwala</text><circle cx="412" cy="80" r="14" fill="#7bd88f" stroke="#202020" stroke-width="1.5"/><text x="412" y="122" text-anchor="middle" fill="#f1eee8" font-size="16">Jugnu</text><circle cx="516" cy="80" r="14" fill="#7bd88f" stroke="#202020" stroke-width="1.5"/><text x="516" y="122" text-anchor="middle" fill="#f1eee8" font-size="16">Tanka</text><text x="40" y="176" text-anchor="start" fill="#ff6b6b" font-size="16">trap</text><path d="M100 200 L116 228 L84 228 Z" fill="#ff6b6b" stroke="#202020" stroke-width="1.5"/><text x="100" y="256" text-anchor="middle" fill="#f1eee8" font-size="16">Pathar</text><path d="M204 200 L220 228 L188 228 Z" fill="#ff6b6b" stroke="#202020" stroke-width="1.5"/><text x="204" y="256" text-anchor="middle" fill="#f1eee8" font-size="16">Lohapur</text><path d="M308 200 L324 228 L292 228 Z" fill="#ff6b6b" stroke="#202020" stroke-width="1.5"/><text x="308" y="256" text-anchor="middle" fill="#f1eee8" font-size="16">Neem</text><path d="M412 200 L428 228 L396 228 Z" fill="#ff6b6b" stroke="#202020" stroke-width="1.5"/><text x="412" y="256" text-anchor="middle" fill="#f1eee8" font-size="16">Kangan</text><path d="M516 200 L532 228 L500 228 Z" fill="#ff6b6b" stroke="#202020" stroke-width="1.5"/><text x="516" y="256" text-anchor="middle" fill="#f1eee8" font-size="16">Pustak</text><path d="M620 200 L636 228 L604 228 Z" fill="#ff6b6b" stroke="#202020" stroke-width="1.5"/><text x="620" y="256" text-anchor="middle" fill="#f1eee8" font-size="16">Lalten</text><path d="M724 200 L740 228 L708 228 Z" fill="#ff6b6b" stroke="#202020" stroke-width="1.5"/><text x="724" y="256" text-anchor="middle" fill="#f1eee8" font-size="16">Dakiya</text><text x="40" y="300" text-anchor="start" fill="#a5a29c" font-size="16">the 12 that pass the default screen</text></svg></figure>
+      <p>Switching on the two extra checks removes four of the seven, the pledge and the cyclicals. Three remain: a governance problem the numbers do not show and two shrinking businesses. Only reading finds those. Treat every name on a screen as a question to answer, and the screen as the start of the work.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Now find it in a real report</p>
+      <h2>TCPL on this page’s screen</h2>
+      <p>Tata Consumer Products, consolidated, year to 31 March 2026 <span class="tag">public</span>, on the default lines. TCPL passes debt, growth, cash and the pledge check, and fails two: ROCE and price.</p>
+      <figure><svg viewBox="0 0 800 378" role="img" aria-label="TCPL FY2026 against the page default screen: ROCE 8.55 percent fails the 15 percent line, debt 0.10 of equity passes, sales growth 15.2 percent passes, cash 1.57 times profit passes, P/E 65.1 fails the line of 25, and no promoter shares are pledged"><text x="40" y="59" text-anchor="start" fill="#a5a29c" font-size="16">ROCE</text><rect x="230" y="40" width="89.8" height="26" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><path d="M387.5 34 L387.5 72" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="329.8" y="59" text-anchor="start" fill="#f1eee8" font-size="16">8.55%</text><path d="M720 43 L730 62 L710 62 Z" fill="#ff6b6b"/><text x="738" y="59" text-anchor="start" fill="#ff6b6b" font-size="16">fail</text><text x="40" y="111" text-anchor="start" fill="#a5a29c" font-size="16">Debt ÷ equity</text><rect x="230" y="92" width="40.9" height="26" fill="#ec6a94" stroke="#202020" stroke-width="1.5"/><path d="M440 86 L440 124" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="280.9" y="111" text-anchor="start" fill="#f1eee8" font-size="16">0.10</text><circle cx="720" cy="105" r="9" fill="#7bd88f"/><text x="738" y="111" text-anchor="start" fill="#7bd88f" font-size="16">pass</text><text x="40" y="163" text-anchor="start" fill="#a5a29c" font-size="16">Sales growth</text><rect x="230" y="144" width="159.3" height="26" fill="#76d5c1" stroke="#202020" stroke-width="1.5"/><path d="M335 138 L335 176" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="399.3" y="163" text-anchor="start" fill="#f1eee8" font-size="16">15.2%</text><circle cx="720" cy="157" r="9" fill="#7bd88f"/><text x="738" y="163" text-anchor="start" fill="#7bd88f" font-size="16">pass</text><text x="40" y="215" text-anchor="start" fill="#a5a29c" font-size="16">CFO ÷ profit</text><rect x="230" y="196" width="328.8" height="26" fill="#76d5c1" stroke="#202020" stroke-width="1.5"/><path d="M398 190 L398 228" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="568.8" y="215" text-anchor="start" fill="#f1eee8" font-size="16">1.57</text><circle cx="720" cy="209" r="9" fill="#7bd88f"/><text x="738" y="215" text-anchor="start" fill="#7bd88f" font-size="16">pass</text><text x="40" y="267" text-anchor="start" fill="#a5a29c" font-size="16">P/E</text><rect x="230" y="248" width="341.7" height="26" fill="#c3b8ff" stroke="#202020" stroke-width="1.5"/><path d="M361.2 242 L361.2 280" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="581.7" y="267" text-anchor="start" fill="#f1eee8" font-size="16">65.1</text><path d="M720 251 L730 270 L710 270 Z" fill="#ff6b6b"/><text x="738" y="267" text-anchor="start" fill="#ff6b6b" font-size="16">fail</text><text x="40" y="319" text-anchor="start" fill="#a5a29c" font-size="16">Pledged</text><path d="M335 294 L335 332" stroke="#f1eee8" stroke-width="2" fill="none" stroke-dasharray="4 3"/><text x="240" y="319" text-anchor="start" fill="#f1eee8" font-size="16">0%</text><circle cx="720" cy="313" r="9" fill="#7bd88f"/><text x="738" y="319" text-anchor="start" fill="#7bd88f" font-size="16">pass</text><text x="40" y="360" text-anchor="start" fill="#a5a29c" font-size="16">dashed = the default line · each row on its own scale</text></svg></figure>
+      <div class="table-wrap"><table class="rep">
+        <thead><tr><th>Filter</th><th>Working</th><th>Value</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>ROCE</td><td class="wk">EBIT 2,165.12 ÷ (equity 23,188.86 + borrowings 2,120.31)</td><td class="val">8.55% · fail</td><td class="pg">PP. 414–415</td></tr>
+          <tr><td>Debt ÷ equity</td><td class="wk">(borrowings 302.14 + 1,818.17) ÷ owners’ equity 21,787.53</td><td class="val">0.10 · pass</td><td class="pg">P. 414</td></tr>
+          <tr><td>Sales growth</td><td class="wk">20,290.43 ÷ 17,618.30 − 1</td><td class="val">+15.2% · pass</td><td class="pg">P. 415</td></tr>
+          <tr><td>CFO ÷ profit</td><td class="wk">2,421.85 ÷ 1,546.80</td><td class="val">1.57 · pass</td><td class="pg">PP. 415, 417</td></tr>
+          <tr><td>P/E</td><td class="wk">₹1,014.80 close, 30 Mar 2026 ÷ basic EPS ₹15.59</td><td class="val">65.1 · fail</td><td class="pg">P. 415 · NSE</td></tr>
+          <tr><td>Pledged</td><td class="wk">promoter and promoter group hold 33.83%; none pledged</td><td class="val">0% · pass</td><td class="pg">NSE SHP</td></tr>
+        </tbody>
+      </table></div>
+      <p>The ROCE fail is a definition at work. TCPL bought companies, and the price paid above their book value sits in its capital as goodwill and other intangibles. On all capital the return is 8.55%; on the capital left once those are taken out, 34.3%. Neither is “the” ROCE. A screen that uses one will drop TCPL; a screen that uses the other will keep it.</p>
+      <figure><svg viewBox="0 0 800 300" role="img" aria-label="TCPL capital employed of 25,309 crore split into goodwill of 11,884, other intangibles of 7,112 and the rest of 6,314, above an EBIT bar of 2,165 crore on the same scale"><text x="40" y="30" text-anchor="start" fill="#a5a29c" font-size="16">Capital employed ₹25,309 cr</text><rect x="40" y="40" width="330.1" height="30" fill="#8f8a83" stroke="#202020" stroke-width="1.5"/><text x="48" y="61" text-anchor="start" fill="#202020" font-size="16">goodwill 11,884</text><rect x="370.1" y="40" width="197.5" height="30" fill="#b8b2a8" stroke="#202020" stroke-width="1.5"/><text x="378.1" y="61" text-anchor="start" fill="#202020" font-size="16">intangibles 7,112</text><rect x="567.7" y="40" width="175.4" height="30" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="575.7" y="61" text-anchor="start" fill="#202020" font-size="16">rest 6,314</text><text x="40" y="116" text-anchor="start" fill="#a5a29c" font-size="16">EBIT ₹2,165 cr</text><rect x="40" y="126" width="60.1" height="30" fill="#f5c76a" stroke="#202020" stroke-width="1.5"/><text x="40" y="206" text-anchor="start" fill="#f1eee8" font-size="16">on all capital: 8.55%</text><text x="40" y="236" text-anchor="start" fill="#f1eee8" font-size="16">without acquired goodwill and intangibles: 34.3%</text><text x="40" y="282" text-anchor="start" fill="#a5a29c" font-size="16">1 px = ₹36 cr · TCPL consolidated, 31 March 2026</text></svg></figure>
+      <p>The P/E fail is the market’s view: 65 times FY26 earnings is a price that already expects a lot (<a href="reverse-dcf-eli5.html" data-series-link="reverse-dcf-eli5">Part 25</a> asks how much). A cheap-only screen would never show TCPL, and a quality-only screen with no price line would show it straight away. Neither tells you whether it is worth buying. That takes the full reading, which is the next part.</p>
+      <details class="trace"><summary>Go deeper: the working and its choices</summary><p>EBIT is EBITDA less depreciation: profit before exceptional items and tax 2,192.84 + finance costs 137.03 + depreciation and amortisation 626.68 − other income 164.75 = EBITDA 2,791.80; less 626.68 = 2,165.12 (<a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a> uses the same). Capital employed is total equity 23,188.86 (including ₹1,401.33 cr of non-controlling interest) + borrowings 2,120.31 = 25,309.17. Less goodwill 11,883.90 and other intangible assets 7,111.76 it is 6,313.51, and 2,165.12 ÷ 6,313.51 = 34.3% (my arithmetic). Lease liabilities (₹699.20 cr) are left out of debt, as in Part 15. Debt ÷ equity on total equity would be 0.09. Growth is one year’s; a multi-year rate is steadier, and for an acquirer it also mixes bought and built growth. The shares-outstanding count, 98,95,61,780, is from note 14(a). The P/E uses the close on 30 March 2026, the last NSE trading day of FY26 (NSE’s 31 March file repeats 30 March’s prices); at the 6 November 2026 price Part 15 used it would be 69.7.</p></details>
+      <div class="field-grid">
+        <div><b>₹20,290.43 cr revenue</b><span>FY25 ₹17,618.30 cr; profit for the year ₹1,546.80 cr; basic EPS ₹15.59</span><em>P&amp;L · P. 415</em></div>
+        <div><b>₹11,883.90 cr goodwill</b><span>Other intangibles ₹7,111.76 cr; total equity ₹23,188.86 cr</span><em>BALANCE SHEET · P. 414</em></div>
+        <div><b>₹1,014.80 close</b><span>TATACONSUM, NSE, 30 March 2026</span><em><a href="https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_30032026.csv">NSE BHAVCOPY ↗</a></em></div>
+        <div><b>33.83% promoter group, 0 pledged</b><span>Shareholding pattern at 31 March 2026; Tata Sons alone 28.68% (note 14(a), p. 446)</span><em><a href="https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml">NSE FILING ↗</a></em></div>
+      </div>
+      <p class="source-note">Real figures are frozen at FY2026: TCPL’s audited Consolidated Financial Statements in its Integrated Annual Report 2025-26 (printed pages as cited), its shareholding pattern for the quarter ended 31 March 2026 filed with NSE, and the NSE closing price of 30 March 2026. Educational, not a recommendation.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>Questions before trusting a screen</h2>
+      <ol class="checks">
+        <li><b>Which definitions?</b> ROCE with or without goodwill, one year’s growth or five, reported or adjusted EPS, and which price date (<a href="ratios-together-eli5.html" data-series-link="ratios-together-eli5">Part 15</a>).</li>
+        <li><b>Why is it cheap?</b> Check the cycle, the market and the governance of every low-P/E passer before anything else.</li>
+        <li><b>What just missed?</b> Read the near misses; the line is a rule of thumb.</li>
+        <li><b>Who is missing from the data?</b> Any backtest of a screen must include the companies that died.</li>
+      </ol>
+      <p>A screen finds candidates. Part 37, “One company, start to finish”, takes one, TCPL, through everything in this series and ends in a one-page thesis. Part 38 then covers the portfolio, taxes and costs.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A screen is a few lines drawn on ratios: it shortens the list, but the traps pass because their reason is outside the columns, and a backtest that forgets the dead flatters every screen. The screen asks the questions; reading answers them.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id);
+    const FGC='#f1eee8',MUTC='#a5a29c',NEU='#d9d4cc',BAD='#ff6b6b',GOOD='#7bd88f';
+    const T=(x,y,s,a,fill)=>`<text x="${(+x).toFixed(1)}" y="${(+y).toFixed(1)}" text-anchor="${a||'start'}" fill="${fill||FGC}" font-size="16">${s}</text>`;
+    // ---- screening lab. Inputs: 30 fictional companies (example); every ratio is computed here from them.
+    const CO=[{"n": "Chandni Snacks", "s": "Chandni", "sec": "snacks", "s25": 400, "s26": 450, "ebit": 50, "eq": 200, "debt": 20, "pat": 36, "cfo": 40, "px": 79.2, "pl": 0, "mid": null, "trap": null}, {"n": "Patang Software", "s": "Patang", "sec": "IT services", "s25": 600, "s26": 690, "ebit": 100, "eq": 400, "debt": 0, "pat": 78, "cfo": 74.1, "px": 187.2, "pl": 0, "mid": null, "trap": null}, {"n": "Pathar Cement", "s": "Pathar", "sec": "cement", "s25": 800, "s26": 1000, "ebit": 250, "eq": 800, "debt": 200, "pat": 160, "cfo": 176, "px": 128, "pl": 0, "mid": 4.0, "trap": "cyc"}, {"n": "Lohapur Steel", "s": "Lohapur", "sec": "steel", "s25": 2000, "s26": 2600, "ebit": 550, "eq": 1500, "debt": 700, "pat": 330, "cfo": 300, "px": 165, "pl": 0, "mid": 6.0, "trap": "cyc"}, {"n": "Neem Agro Chem", "s": "Neem", "sec": "chemicals", "s25": 500, "s26": 600, "ebit": 120, "eq": 400, "debt": 100, "pat": 80, "cfo": 72, "px": 96, "pl": 0, "mid": 3.2, "trap": "cyc"}, {"n": "Kangan Jewellers", "s": "Kangan", "sec": "jewellery", "s25": 900, "s26": 1000, "ebit": 80, "eq": 300, "debt": 120, "pat": 48, "cfo": 40.8, "px": 72, "pl": 60, "mid": null, "trap": "gov"}, {"n": "Pustak Learning", "s": "Pustak", "sec": "education", "s25": 250, "s26": 300, "ebit": 60, "eq": 200, "debt": 0, "pat": 45, "cfo": 36, "px": 81, "pl": 0, "mid": null, "trap": "gov"}, {"n": "Lalten Lamps", "s": "Lalten", "sec": "lighting", "s25": 300, "s26": 330, "ebit": 40, "eq": 150, "debt": 30, "pat": 28, "cfo": 30, "px": 33.6, "pl": 0, "mid": null, "trap": "fall"}, {"n": "Gwala Dairy", "s": "Gwala", "sec": "dairy", "s25": 700, "s26": 784, "ebit": 75, "eq": 350, "debt": 100, "pat": 50, "cfo": 55, "px": 100, "pl": 0, "mid": null, "trap": null}, {"n": "Dakiya Couriers", "s": "Dakiya", "sec": "couriers", "s25": 400, "s26": 440, "ebit": 60, "eq": 250, "debt": 50, "pat": 42, "cfo": 46.2, "px": 37.8, "pl": 0, "mid": null, "trap": "fall"}, {"n": "Jugnu Auto Parts", "s": "Jugnu", "sec": "auto parts", "s25": 500, "s26": 560, "ebit": 72, "eq": 300, "debt": 60, "pat": 48, "cfo": 43.2, "px": 96, "pl": 0, "mid": null, "trap": null}, {"n": "Tanka Pipes", "s": "Tanka", "sec": "pipes", "s25": 400, "s26": 460, "ebit": 54, "eq": 250, "debt": 50, "pat": 36, "cfo": 32.4, "px": 82.8, "pl": 0, "mid": null, "trap": null}, {"n": "Gulmohar Pharma", "s": "Gulmohar", "sec": "pharma", "s25": 800, "s26": 960, "ebit": 180, "eq": 600, "debt": 0, "pat": 135, "cfo": 148.5, "px": 540, "pl": 0, "mid": null, "trap": null}, {"n": "Rangoli Paints", "s": "Rangoli", "sec": "paints", "s25": 1000, "s26": 1120, "ebit": 200, "eq": 500, "debt": 0, "pat": 150, "cfo": 165, "px": 900, "pl": 0, "mid": null, "trap": null}, {"n": "Chashma Optics", "s": "Chashma", "sec": "eyewear retail", "s25": 300, "s26": 390, "ebit": 48, "eq": 500, "debt": 100, "pat": 30, "cfo": 15, "px": 150, "pl": 0, "mid": null, "trap": null}, {"n": "Hathi Tyres", "s": "Hathi", "sec": "tyres", "s25": 1500, "s26": 1590, "ebit": 180, "eq": 900, "debt": 600, "pat": 90, "cfo": 117, "px": 108, "pl": 0, "mid": null, "trap": null}, {"n": "Mehman Hotels", "s": "Mehman", "sec": "hotels", "s25": 200, "s26": 250, "ebit": 60, "eq": 600, "debt": 600, "pat": 12, "cfo": 36, "px": 60, "pl": 0, "mid": null, "trap": null}, {"n": "Bijli Cables", "s": "Bijli", "sec": "cables", "s25": 600, "s26": 720, "ebit": 90, "eq": 300, "debt": 60, "pat": 63, "cfo": 31.5, "px": 151.2, "pl": 0, "mid": null, "trap": null}, {"n": "Kagaz Paper Mills", "s": "Kagaz", "sec": "paper", "s25": 500, "s26": 450, "ebit": 40, "eq": 500, "debt": 300, "pat": 15, "cfo": 45, "px": 60, "pl": 0, "mid": 5.0, "trap": null}, {"n": "Bagicha Agri Inputs", "s": "Bagicha", "sec": "fertilisers", "s25": 700, "s26": 735, "ebit": 77, "eq": 400, "debt": 300, "pat": 42, "cfo": 21, "px": 42, "pl": 0, "mid": null, "trap": null}, {"n": "Mor Pankh Textiles", "s": "Mor Pankh", "sec": "textiles", "s25": 600, "s26": 630, "ebit": 64, "eq": 400, "debt": 400, "pat": 24, "cfo": 30, "px": 19.2, "pl": 0, "mid": null, "trap": null}, {"n": "Dhoop Pumps", "s": "Dhoop", "sec": "pumps", "s25": 350, "s26": 385, "ebit": 64, "eq": 250, "debt": 150, "pat": 35, "cfo": 35, "px": 70, "pl": 0, "mid": null, "trap": null}, {"n": "Jharokha Windows", "s": "Jharokha", "sec": "windows", "s25": 250, "s26": 290, "ebit": 26, "eq": 180, "debt": 20, "pat": 18, "cfo": 18, "px": 36, "pl": 0, "mid": null, "trap": null}, {"n": "Pankha Fans", "s": "Pankha", "sec": "fans", "s25": 800, "s26": 840, "ebit": 88, "eq": 400, "debt": 40, "pat": 60, "cfo": 66, "px": 120, "pl": 0, "mid": null, "trap": null}, {"n": "Dabba Logistics", "s": "Dabba", "sec": "logistics", "s25": 900, "s26": 1080, "ebit": 117, "eq": 500, "debt": 400, "pat": 54, "cfo": 81, "px": 162, "pl": 8, "mid": null, "trap": null}, {"n": "Zafran Spices", "s": "Zafran", "sec": "spices", "s25": 300, "s26": 345, "ebit": 40, "eq": 200, "debt": 50, "pat": 27, "cfo": 13.5, "px": 54, "pl": 0, "mid": null, "trap": null}, {"n": "Lekhni Pens", "s": "Lekhni", "sec": "stationery", "s25": 200, "s26": 180, "ebit": 30, "eq": 150, "debt": 0, "pat": 22, "cfo": 24.2, "px": 13.2, "pl": 0, "mid": null, "trap": "fall"}, {"n": "Bunkar Home Linen", "s": "Bunkar", "sec": "home linen", "s25": 400, "s26": 420, "ebit": 57, "eq": 300, "debt": 270, "pat": 24, "cfo": 19.2, "px": 24, "pl": 45, "mid": null, "trap": "gov"}, {"n": "Ghanti Towers", "s": "Ghanti", "sec": "telecom towers", "s25": 600, "s26": 660, "ebit": 160, "eq": 400, "debt": 1200, "pat": 30, "cfo": 120, "px": 60, "pl": 0, "mid": null, "trap": null}, {"n": "Titli Drones", "s": "Titli", "sec": "drones", "s25": 200, "s26": 240, "ebit": -20, "eq": 300, "debt": 100, "pat": -30, "cfo": -15, "px": 90, "pl": 0, "mid": null, "trap": null}];
+    const WHY={"Pathar": "Cyclical at the peak: cement prices are at a high. EPS of ₹16 is four times its six-year average of ₹4; on ₹4 the P/E is 32, not 8 (Part 33).", "Lohapur": "Cyclical at the peak: steel prices doubled in two years. EPS of ₹33 against a six-year average of ₹6; on ₹6 the P/E is 27.5. Debt of ₹700 cr looks light only at peak profit.", "Neem": "Cyclical at the peak: a rival’s plant shutdown lifted prices, and that ends when the plant restarts. Six-year average EPS ₹3.20; the P/E on that is 30.", "Kangan": "Governance: promoters have pledged 60% of their shares. A fall in the price can force a margin call and selling by lenders (Part 19).", "Pustak": "Governance: the auditor resigned before its term ended, and ₹40 cr, a fifth of equity, was lent to a firm owned by the promoter’s son (Part 20). No column in the screen shows either.", "Lalten": "Falling business: sales fell from ₹520 cr in FY22 to ₹300 cr in FY25 as LED lights replaced its bulbs. This year’s +10% is one bulk order.", "Dakiya": "Falling business: document deliveries, most of its sales, shrink every year as paperwork goes digital. This year’s +10% is a one-off election contract.", "Lekhni": "Falling business: sales are down four years running. A P/E of 6 on a profit that keeps shrinking is not cheap.", "Bunkar": "Governance: promoters have pledged 45% of their shares, on top of debt at 0.9 times equity."}, TYPE={"cyc": "cyclical at the peak", "fall": "falling business", "gov": "governance"};
+    const SH=10;
+    // TCPL FY26 consolidated (public): EBIT, total equity, borrowings, owners' equity, revenue FY26/FY25, CFO, profit, close 30 Mar 2026, basic EPS, pledged %
+    const TC={ebit:2165.12,teq:23188.86,debt:2120.31,oeq:21787.53,s26:20290.43,s25:17618.30,cfo:2421.85,pat:1546.80,px:1014.80,eps:15.59,pl:0};
+    const L={roce:15,de:0.5,g:10,pe:25,cp:0.8,plOn:false,mid:false};
+    const SLIDERS=['roce','de','g','pe'];
+    const SFMT={roce:v=>v+'%',de:v=>(+v).toFixed(1),g:v=>v+'%',pe:v=>v+'×'};
+    const CP={min:0,max:1.5,step:0.1};
+    const PRESETS={
+      fair:{v:{roce:15,de:0.5,g:10,pe:25,cp:0.8,plOn:false,mid:false},t:'Quality at a fair price: good returns, light debt, growth, cash, and a P/E of 25 or less. Twelve pass. Now reveal the traps.'},
+      deep:{v:{roce:10,de:1,g:-10,pe:12,cp:0.5,plOn:false,mid:false},t:'Deep value: a P/E of 12 or less and loose quality lines. Nine pass, and most of them are cheap for a reason.'},
+      any:{v:{roce:20,de:0.3,g:12,pe:80,cp:1,plOn:false,mid:false},t:'Quality at any price: strict on returns, debt and cash, almost no price line. Four pass: two at P/E 40 and 60, and one cyclical at its peak that looks like quality.'},
+      aware:{v:{roce:15,de:0.5,g:10,pe:25,cp:0.8,plOn:true,mid:true},t:'Trap-aware: the fair-price screen plus both extra checks. The pledge and the cyclicals drop out; three traps the numbers cannot see remain.'}};
+    const r1=v=>Math.round(v*10)/10, r2=v=>Math.round(v*100)/100, e=1e-9;
+    function ratios(c,mid){
+      const eps=(mid&&c.mid!=null)?c.mid:c.pat/SH;
+      return {roce:r1(100*c.ebit/(c.eq+c.debt)),de:r2(c.debt/c.eq),g:r1(100*(c.s26-c.s25)/c.s25),
+        cp:c.pat>0?r2(c.cfo/c.pat):null,pe:eps>0?r1(c.px/eps):null,pl:c.pl};}
+    const tests={roce:r=>r.roce>=L.roce-e,de:r=>r.de<=L.de+e,g:r=>r.g>=L.g-e,cp:r=>r.cp!=null&&r.cp>=L.cp-e,pe:r=>r.pe!=null&&r.pe<=L.pe+e,pl:r=>!L.plOn||r.pl<=10};
+    const ORDER=['roce','de','g','cp','pe','pl'];
+    const LAB={roce:()=>'ROCE ≥ '+L.roce+'%',de:()=>'debt ≤ '+L.de.toFixed(1)+'× equity',g:()=>'growth ≥ '+L.g+'%',cp:()=>'cash ≥ '+L.cp.toFixed(1)+'× profit',pe:()=>'P/E ≤ '+L.pe,pl:()=>L.plOn?'pledged ≤ 10%':'pledge check off'};
+    let revealed=false;
+    const fmt={roce:v=>v.toFixed(1)+'%',de:v=>v.toFixed(2),g:v=>(v>0?'+':'')+v.toFixed(1)+'%',cp:v=>v==null?'n/m':v.toFixed(2),pe:v=>v==null?'n/m':v.toFixed(1)};
+    function draw(){
+      SLIDERS.forEach(id=>{L[id]=+$(id).value;$(id+'-o').textContent=SFMT[id](L[id]);});
+      $('st-cp').textContent=L.cp.toFixed(1)+'×';
+      document.querySelector('[data-st="cp"][data-d="-1"]').disabled=L.cp<=CP.min+e;document.querySelector('[data-st="cp"][data-d="1"]').disabled=L.cp>=CP.max-e;
+      $('tgPl').setAttribute('aria-pressed',String(L.plOn));$('tgMid').setAttribute('aria-pressed',String(L.mid));
+      $('reveal').setAttribute('aria-pressed',String(revealed));$('reveal').textContent=revealed?'Hide the traps':'Reveal the traps';
+      // run the screen
+      const R=CO.map(c=>({c,r:ratios(c,L.mid)}));
+      let left=R.slice();const fun=[left.length];
+      ORDER.forEach(k=>{left=left.filter(x=>tests[k](x.r));fun.push(left.length);});
+      const pass=left, traps=pass.filter(x=>x.c.trap);
+      // chart
+      const X0=14,K=11,sx=v=>X0+v*K;
+      const rows=[['all 30 companies',fun[0],NEU]].concat(ORDER.map((k,i)=>[LAB[k](),fun[i+1],NEU]));
+      if(revealed) rows.push(['traps among them',traps.length,BAD]);
+      let s='';
+      rows.forEach(([lab,n,col],i)=>{const y=8+i*54;
+        s+=T(X0,y+16,lab,'start',i?MUTC:FGC)+`<rect data-v="${n}" x="${X0}" y="${y+24}" width="${(n*K).toFixed(2)}" height="22" fill="${col}" stroke="#202020" stroke-width="1.5"/>`+T(sx(n)+8,y+41,String(n));});
+      const yA=8+rows.length*54+4;
+      s+=`<path d="M${X0} ${yA} L${sx(30)} ${yA}" stroke="#57534f" stroke-width="1.5" fill="none"/>`;
+      [0,10,20,30].forEach((t,i)=>{s+=`<text class="tick" data-v="${t}" x="${sx(t).toFixed(2)}" y="${yA+22}" text-anchor="${i?'middle':'start'}" fill="${MUTC}" font-size="16">${t}</text>`;});
+      $('labChart').setAttribute('viewBox',`0 0 400 ${yA+34}`);
+      $('labChart').innerHTML=s;
+      // table
+      let h='<thead><tr><th>Company</th><th class="sec">Business</th><th>ROCE</th><th>D/E</th><th>Growth</th><th>Cash</th><th>P/E</th>'+(revealed?'<th>Trap?</th>':'')+'</tr></thead><tbody>';
+      if(!pass.length) h+=`<tr><td colspan="${revealed?8:7}">No company passes every line. Loosen one.</td></tr>`;
+      pass.forEach(({c,r})=>{h+=`<tr><td>${c.s}</td><td class="sec">${c.sec}</td><td>${fmt.roce(r.roce)}</td><td>${fmt.de(r.de)}</td><td>${fmt.g(r.g)}</td><td>${fmt.cp(r.cp)}</td><td>${fmt.pe(r.pe)}${L.mid&&c.mid!=null?'*':''}</td>`+(revealed?`<td>${c.trap?'<span class="lt r" role="img" aria-label="trap">▲</span>':'<span class="lt g" role="img" aria-label="no trap found">●</span>'}</td>`:'')+'</tr>';});
+      const t={roce:r2(100*TC.ebit/(TC.teq+TC.debt)),de:r2(TC.debt/TC.oeq),g:r1(100*(TC.s26/TC.s25-1)),cp:r2(TC.cfo/TC.pat),pe:r1(TC.px/TC.eps),pl:TC.pl};
+      const tp={};ORDER.forEach(k=>tp[k]=tests[k](t));
+      const cell=(k,v)=>tp[k]?v:`<span class="x">${v}✗</span>`;
+      h+=`<tr class="tc"><td>TCPL</td><td class="sec">FY26, real</td><td>${cell('roce',t.roce.toFixed(2)+'%')}</td><td>${cell('de',fmt.de(t.de))}</td><td>${cell('g',fmt.g(t.g))}</td><td>${cell('cp',fmt.cp(t.cp))}</td><td>${cell('pe',fmt.pe(t.pe))}</td>`+(revealed?'<td>—</td>':'')+'</tr>';
+      $('scr').innerHTML=h+'</tbody>';
+      // near misses: fail exactly one active filter
+      const near=R.filter(x=>ORDER.filter(k=>!tests[k](x.r)).length===1).map(x=>x.c.s+' ('+({roce:'ROCE',de:'debt',g:'growth',cp:'cash',pe:'P/E',pl:'pledge'})[ORDER.find(k=>!tests[k](x.r))]+')');
+      $('near').textContent=(pass.length?pass.length+' of 30 pass. ':'')+(near.length?'Missed by one filter: '+near.join(', ')+'.':'No company misses by just one filter.')+(L.mid?' * P/E on six-year average EPS.':'')+' TCPL '+(ORDER.every(k=>tp[k])?'passes':'fails '+ORDER.filter(k=>!tp[k]).map(k=>({roce:'ROCE',de:'debt',g:'growth',cp:'cash',pe:'P/E',pl:'pledge'})[k]).join(' and '))+' on these lines.';
+      // reveal
+      if(revealed){
+        $('revMsg').textContent=pass.length?`${traps.length} of the ${pass.length} passers ${traps.length===1?'is a trap':'are traps'}; ${pass.length-traps.length} show no trap in this page’s data, which makes them candidates, not buys.`:'Nothing passed, so there is nothing to reveal.';
+        $('why').innerHTML=traps.map(({c})=>`<li><b>${c.n}.</b> ${WHY[c.s]}</li>`).join('');
+      } else {$('revMsg').textContent='The screen cannot see them. Press the button to read what it missed.';$('why').innerHTML='';}
+      // ledger
+      const led=[['Lines',`ROCE ≥ ${L.roce}% · D/E ≤ ${L.de.toFixed(1)} · growth ≥ ${L.g}% · CFO ÷ profit ≥ ${L.cp.toFixed(1)} · P/E ≤ ${L.pe}`],
+        ['Extra checks',`pledges ${L.plOn?'on':'off'} · cyclicals on average EPS ${L.mid?'on':'off'}`],
+        ['Left after each filter',fun.join(' → ')],
+        ['Passers',pass.map(x=>x.c.s).join(', ')||'none'],
+        ['TCPL ROCE','2,165.12 ÷ (23,188.86 + 2,120.31) = '+t.roce.toFixed(2)+'%'],
+        ['TCPL D/E','2,120.31 ÷ 21,787.53 = '+t.de.toFixed(2)],
+        ['TCPL growth','20,290.43 ÷ 17,618.30 − 1 = '+t.g.toFixed(1)+'%'],
+        ['TCPL cash','2,421.85 ÷ 1,546.80 = '+t.cp.toFixed(2)],
+        ['TCPL P/E','1,014.80 ÷ 15.59 = '+t.pe.toFixed(1)]];
+      $('ledger').innerHTML=led.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+      window.labResults={valid:fun.every(Number.isFinite),lines:{...L},funnel:fun,passers:pass.map(x=>x.c.s),traps:traps.map(x=>x.c.s),
+        tcpl:{vals:t,pass:tp},revealed,near:near.length};
+    }
+    const labConfig={format:v=>String(Math.round(v))};
+    SLIDERS.forEach(id=>$(id).addEventListener('input',()=>{$('msg').textContent='';draw();}));
+    document.querySelectorAll('[data-st="cp"]').forEach(b=>b.addEventListener('click',()=>{L.cp=Math.min(CP.max,Math.max(CP.min,Math.round((L.cp+(+b.dataset.d)*CP.step)*10)/10));$('msg').textContent='';draw();}));
+    $('tgPl').addEventListener('click',()=>{L.plOn=!L.plOn;$('msg').textContent='';draw();});
+    $('tgMid').addEventListener('click',()=>{L.mid=!L.mid;$('msg').textContent='';draw();});
+    $('reveal').addEventListener('click',()=>{revealed=!revealed;draw();});
+    document.querySelectorAll('.presets button').forEach(bt=>bt.addEventListener('click',()=>{
+      const p=PRESETS[bt.dataset.p];Object.assign(L,p.v);SLIDERS.forEach(id=>$(id).value=p.v[id]);draw();$('msg').textContent=p.t;}));
+    draw();
+
+  </script>
+  <script src="../series.js"></script>
+  <script src="../series-fundamental-analysis.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

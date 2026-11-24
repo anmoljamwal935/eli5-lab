@@ -1,5 +1,102 @@
 window.PUBLISHED = [
   {
+    "id": "satyam-decoded-eli5",
+    "title": "Satyam, decoded",
+    "category": "Monetary Architecture",
+    "minutes": 32,
+    "summary": "Bonus: the 2009 fraud read through Part 20's red flags",
+    "bullets": [
+      "Fake profits came with fake cash, so most ratio checks passed",
+      "Interest never received, a founders' deal and pledges gave it away"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FAKE INVOICES",
+      "FAKE CASH",
+      "UNPAID INTEREST"
+    ],
+    "file": "explainers/satyam-decoded-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Four of Satyam’s balances at March 2008 as bars: a thin real part in teal and a long fictitious part in red\"><rect x=\"24\" y=\"38\" width=\"25.8\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"49.8\" y=\"38\" width=\"60.7\" height=\"14\" fill=\"#f87171\"/><rect x=\"24\" y=\"60\" width=\"0\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"24\" y=\"60\" width=\"248.1\" height=\"14\" fill=\"#f87171\"/><rect x=\"24\" y=\"82\" width=\"134.5\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"158.5\" y=\"82\" width=\"42.9\" height=\"14\" fill=\"#f87171\"/><rect x=\"24\" y=\"104\" width=\"0\" height=\"14\" fill=\"#76d5c1\"/><rect x=\"24\" y=\"104\" width=\"20.4\" height=\"14\" fill=\"#f87171\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"30\" fill=\"#f87171\">FICTITIOUS</text><text x=\"296\" y=\"30\" text-anchor=\"end\" fill=\"#76d5c1\">REAL</text><text x=\"24\" y=\"136\" fill=\"#f5c76a\">BONUS</text></g></svg>"
+  },
+  {
+    "id": "portfolio-taxes-costs-eli5",
+    "title": "Portfolio, taxes and costs",
+    "category": "Monetary Architecture",
+    "minutes": 20,
+    "summary": "Part 38: position sizing, when to sell, and what tax and costs take",
+    "bullets": [
+      "Size each idea by its bear-case downside, and sell when value changes, not price",
+      "FY2026 rules: STT 0.1% each side, short-term gains 20%, long-term 12.5% above ₹1.25 lakh, dividends at your slab"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SIZE",
+      "SELL",
+      "COSTS",
+      "TAX",
+      "KEEP"
+    ],
+    "file": "explainers/portfolio-taxes-costs-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Tax against gain on listed shares: a coral line rising at 20 percent for gains held up to 12 months, and a dashed gold line that stays at zero up to 1.25 lakh rupees, then rises at 12.5 percent\"><path d=\"M40 125H290M40 125V30\" stroke=\"#57534f\" fill=\"none\"/><path d=\"M40 125L290 40\" stroke=\"#ff8059\" stroke-width=\"2.5\" fill=\"none\"/><path d=\"M40 123H144L290 94\" stroke=\"#f5c76a\" stroke-width=\"2.5\" stroke-dasharray=\"6 4\" fill=\"none\"/><circle cx=\"76\" cy=\"113\" r=\"4\" fill=\"#ff8059\" stroke=\"#202020\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"48\" y=\"36\" fill=\"#f5c76a\">PART 38</text><text x=\"230\" y=\"44\" text-anchor=\"end\" fill=\"#ff8059\">SHORT 20%</text><text x=\"290\" y=\"118\" text-anchor=\"end\" fill=\"#f5c76a\">LONG 12.5%</text></g></svg>",
+    "part": 38
+  },
+  {
+    "id": "one-company-start-to-finish-eli5",
+    "title": "One company, start to finish",
+    "category": "Monetary Architecture",
+    "minutes": 26,
+    "summary": "Part 37: one real company, Tata Consumer, through every test, ending in a thesis",
+    "bullets": [
+      "Run the series' tests in order on TCPL's FY2026 filings, from business and moat to cash, governance and the price",
+      "A 22-item checklist lab writes a one-page thesis as you mark it; a worked example, not a recommendation"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "BUSINESS",
+      "ACCOUNTS",
+      "RATIOS",
+      "QUALITY",
+      "PEOPLE",
+      "PRICE"
+    ],
+    "file": "explainers/one-company-start-to-finish-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Twenty-two checks as small good, watch and weak shapes in six groups, five left hollow for judgement, above a gold bar of weighted value about two-fifths the length of the lavender price bar\"><circle cx=\"30.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"40.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"51.0\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><circle cx=\"61.5\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><path d=\"M25.0 63 H66.5\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><path d=\"M79.0 48.2 L83.8 55.8 L74.2 55.8 Z\" fill=\"#f87171\"/><path d=\"M89.5 48.2 L94.3 55.8 L84.7 55.8 Z\" fill=\"#f87171\"/><circle cx=\"100.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"110.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"121.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M74.0 63 H126.0\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"138.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M149.0 48.2 L153.8 55.8 L144.2 55.8 Z\" fill=\"#f87171\"/><circle cx=\"159.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M170.0 47.2 L174.8 52 L170.0 56.8 L165.2 52 Z\" fill=\"#f5c76a\"/><path d=\"M133.5 63 H175.0\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"187.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"198.0\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"208.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><circle cx=\"219.0\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><circle cx=\"229.5\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><path d=\"M182.5 63 H234.5\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"247.0\" cy=\"52\" r=\"3.4\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.2\" stroke-dasharray=\"2 2\"/><path d=\"M242.0 63 H252.0\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"264.5\" cy=\"52\" r=\"3.8\" fill=\"#76d5c1\"/><path d=\"M275.0 48.2 L279.8 55.8 L270.2 55.8 Z\" fill=\"#f87171\"/><path d=\"M285.5 48.2 L290.3 55.8 L280.7 55.8 Z\" fill=\"#f87171\"/><path d=\"M259.5 63 H290.5\" stroke=\"#57534f\" stroke-width=\"1.5\" fill=\"none\"/><rect x=\"26\" y=\"82\" width=\"97.2\" height=\"12\" fill=\"#f5c76a\"/><rect x=\"26\" y=\"100\" width=\"243.6\" height=\"12\" fill=\"#c3b8ff\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"26\" y=\"136\" fill=\"#a5a29c\">VALUE VS PRICE</text><text x=\"294\" y=\"30\" text-anchor=\"end\" fill=\"#c3b8ff\">PART 37</text></g></svg>",
+    "part": 37
+  },
+  {
+    "id": "screening-for-ideas-eli5",
+    "title": "Screening for ideas",
+    "category": "Monetary Architecture",
+    "minutes": 17,
+    "summary": "Part 36: filters that find candidates, the traps they pass, and survivorship bias",
+    "bullets": [
+      "A screen is a few lines on ratios; it shortens the list but cannot see why something is cheap",
+      "Cyclicals at the peak, falling businesses and shaky governance pass screens; backtests that forget dead companies flatter them"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FILTERS",
+      "FUNNEL",
+      "TRAPS",
+      "SURVIVORS"
+    ],
+    "file": "explainers/screening-for-ideas-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A funnel of bars shrinking from 30 companies to 12 as filters are applied, with the last bar split into 5 pale no-trap and 7 red trap companies\"><rect x=\"24\" y=\"22\" width=\"252.0\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"39\" width=\"159.6\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"56\" width=\"151.2\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"73\" width=\"134.4\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"90\" width=\"117.6\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"107\" width=\"42.0\" height=\"11\" fill=\"#f1eee8\"/><rect x=\"66.0\" y=\"107\" width=\"58.8\" height=\"11\" fill=\"#f87171\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"138\" fill=\"#a5a29c\">TRAPS PASS</text><text x=\"296\" y=\"138\" text-anchor=\"end\" fill=\"#f5c76a\">PART 36</text></g></svg>",
+    "part": 36
+  },
+  {
     "id": "loss-makers-and-ipos-eli5",
     "title": "Loss-making companies and IPOs",
     "category": "Monetary Architecture",

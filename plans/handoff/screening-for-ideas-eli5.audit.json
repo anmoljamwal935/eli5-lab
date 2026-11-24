@@ -1,0 +1,5097 @@
+{
+  "schema_version": 1,
+  "source": {
+    "url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+    "title": "Part 36 of Fundamental analysis, from scratch: topic-only part built from primary sources",
+    "author": "Tata Consumer Products Ltd (anchor); fictional data by the page",
+    "verified_date": "2026-11-24",
+    "duration_or_sections": "topic from series plan row 36",
+    "language": "en",
+    "caption_type": "n/a",
+    "capture_mode": "PDF/CSV/XBRL downloaded and read with pdftotext/grep",
+    "beginning_middle_ending_evidence": "consolidated statements PDF pp.1-84 extracted; auditor report, BS p.414, P&L p.415, CF pp.417-418, note 14 pp.445-447 read",
+    "sampled_visual_timestamps": [],
+    "source_paths": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa36/dl"
+    ],
+    "limitations": "No screening-rule facts beyond the SHP filing used; survivorship and 30-company data are fictional (example)."
+  },
+  "inventory": [
+    {
+      "id": "I1",
+      "item": "Screen = AND of lines on ratios; cheap first pass",
+      "kind": "definition",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p2,p3"
+    },
+    {
+      "id": "I2",
+      "item": "Filter = one ratio, one direction, one line; line is a judgement",
+      "kind": "mechanism",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p2,p5"
+    },
+    {
+      "id": "I3",
+      "item": "Filters from Parts 7-15: ROCE, D/E, growth, CFO/PAT, P/E; governance pledge Part 19",
+      "kind": "definition",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p4"
+    },
+    {
+      "id": "I4",
+      "item": "Funnel: list only shrinks; order changes intermediate counts not final",
+      "kind": "mechanism",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p3"
+    },
+    {
+      "id": "I5",
+      "item": "Near misses; sensitivity of pass count to ROCE line",
+      "kind": "example",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p5"
+    },
+    {
+      "id": "I6",
+      "item": "Value trap: cyclical at peak (Part 33), low P/E on peak EPS",
+      "kind": "misconception",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p6,lab"
+    },
+    {
+      "id": "I7",
+      "item": "Value trap: falling business, one good year",
+      "kind": "misconception",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p6,lab"
+    },
+    {
+      "id": "I8",
+      "item": "Value trap: governance (pledges, auditor exit, related-party loans)",
+      "kind": "misconception",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p6,lab"
+    },
+    {
+      "id": "I9",
+      "item": "Traps pass because reason is outside the columns",
+      "kind": "claim",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p6 note,p8"
+    },
+    {
+      "id": "I10",
+      "item": "Survivorship bias in backtests; survivors +30% vs all -8% (example)",
+      "kind": "mechanism",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p7"
+    },
+    {
+      "id": "I11",
+      "item": "Loss-makers: n/m counts as fail; banks excluded",
+      "kind": "context",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p4 trace"
+    },
+    {
+      "id": "I12",
+      "item": "Screener websites named as tools only",
+      "kind": "context",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p4 trace"
+    },
+    {
+      "id": "I13",
+      "item": "Lab: screen 30 made-up companies, reveal traps",
+      "kind": "example",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "lab"
+    },
+    {
+      "id": "I14",
+      "item": "A pass list is not a buy list",
+      "kind": "misconception",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "p8"
+    },
+    {
+      "id": "I15",
+      "item": "TCPL FY26 on the default screen: fails ROCE and P/E",
+      "kind": "number",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": true,
+      "destination": "p9,lab"
+    },
+    {
+      "id": "I16",
+      "item": "ROCE definition: with/without goodwill 8.55% vs 34.3%",
+      "kind": "number",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": true,
+      "destination": "p9"
+    },
+    {
+      "id": "I17",
+      "item": "Hand-off to Part 37",
+      "kind": "context",
+      "source_locator": "series plan row 36 / brief",
+      "check_needed": false,
+      "destination": "so-what"
+    }
+  ],
+  "claims": [
+    {
+      "inventory_id": "I15",
+      "claim": "Revenue from operations 20,290.43 (FY25 17,618.30); profit for year 1,546.80; basic EPS 15.59; PBT before exceptional 2,192.84; finance costs 137.03; D&A 626.68; other income 164.75",
+      "verdict": "Supported",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage_locator": "Consolidated P&L, printed p.415 (PDF p.13)",
+      "correction_used": "none"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Total equity 23,188.86; owners' equity 21,787.53; NCI 1,401.33; borrowings 302.14 + 1,818.17; goodwill 11,883.90; other intangibles 7,111.76; lease liabilities 608.64 + 90.56",
+      "verdict": "Supported",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage_locator": "Consolidated balance sheet, printed p.414 (PDF p.12)",
+      "correction_used": "none"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "CFO 2,421.85",
+      "verdict": "Supported",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage_locator": "Consolidated cash flow, printed p.417",
+      "correction_used": "none"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Shares 98,95,61,780; Tata Sons 28.68%",
+      "verdict": "Supported",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage_locator": "Note 14(a), printed pp.445-446",
+      "correction_used": "none"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Promoter and promoter group 33.83% at 31 Mar 2026; no promoter shares pledged/encumbered",
+      "verdict": "Supported",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://nsearchives.nseindia.com/corporate/xbrl/SHP_1655090_20042026045147_WEB.xml",
+      "passage_locator": "NSE SHP XBRL: ShareholdingOfPromoterAndPromoterGroup 0.3383; WhetherAnySharesHeldByPromotersAreEncumberedUnderPledged=false",
+      "correction_used": "none"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "TATACONSUM close 1,014.80 on 30 Mar 2026; 31 Mar file repeats 30 Mar",
+      "verdict": "Supported",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_30032026.csv ; https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_31032026.csv",
+      "passage_locator": "NSE sec_bhavdata_full rows",
+      "correction_used": "none"
+    },
+    {
+      "inventory_id": "I15",
+      "claim": "Close 1,086.30 on 6 Nov 2026 (P/E 69.7, Part 15's)",
+      "verdict": "Supported",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_06112026.csv",
+      "passage_locator": "NSE sec_bhavdata_full row",
+      "correction_used": "none"
+    },
+    {
+      "inventory_id": "I16",
+      "claim": "ROCE 8.55% = 2,165.12/25,309.17; ex goodwill+intangibles 34.3% (arithmetic)",
+      "verdict": "Supported (arithmetic)",
+      "as_of": "FY2026 / 31 Mar 2026 (prices 30 Mar and 6 Nov 2026)",
+      "evidence_url": "https://www.tataconsumer.com/iar-2025-26/docs/consolidated.pdf",
+      "passage_locator": "pp.414-415",
+      "correction_used": "none"
+    }
+  ],
+  "panels": [
+    {
+      "id": "hero",
+      "heading": "Screening for ideas"
+    },
+    {
+      "id": "p1",
+      "heading": "Too many companies, one reader"
+    },
+    {
+      "id": "p2",
+      "heading": "A filter is a line on one ratio"
+    },
+    {
+      "id": "p3",
+      "heading": "Five lines, one short list"
+    },
+    {
+      "id": "p4",
+      "heading": "The filters, and where they come from"
+    },
+    {
+      "id": "p5",
+      "heading": "Move one line, the list changes"
+    },
+    {
+      "id": "p6",
+      "heading": "Cheap for a reason"
+    },
+    {
+      "id": "p7",
+      "heading": "The backtest that only sees survivors"
+    },
+    {
+      "id": "lab",
+      "heading": "Screen 30 made-up companies"
+    },
+    {
+      "id": "p8",
+      "heading": "A pass list is not a buy list"
+    },
+    {
+      "id": "p9",
+      "heading": "TCPL on this page's screen"
+    },
+    {
+      "id": "p10",
+      "heading": "Questions before trusting a screen"
+    }
+  ],
+  "lab": {
+    "type": "mechanism-exploration",
+    "assumptions": [
+      "10 crore shares each",
+      "closing balances",
+      "one-year sales growth",
+      "ratios judged at displayed rounding",
+      "n/m fails",
+      "traps set by story, not computed"
+    ],
+    "units": {
+      "ratios": "%, times"
+    },
+    "independent_calculation_method": "scripts/screen.py + data.py recompute every ratio and funnel in Python; Playwright drives sliders, stepper, toggles and presets and compares window.labResults funnel, passers, traps, TCPL values and pass flags",
+    "cases": [
+      {
+        "case": "defaults",
+        "inputs": {
+          "roce": 15,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 25,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            12,
+            12
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            12,
+            12
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "preset fair",
+        "inputs": {
+          "roce": 15,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 25,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            12,
+            12
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            12,
+            12
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "preset deep",
+        "inputs": {
+          "roce": 10,
+          "de": 1.0,
+          "g": -10,
+          "cp": 0.5,
+          "pe": 12,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            25,
+            24,
+            24,
+            24,
+            9,
+            9
+          ],
+          "passers": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Lalten",
+            "Dakiya",
+            "Hathi",
+            "Bagicha",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Lalten",
+            "Dakiya",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            25,
+            24,
+            24,
+            24,
+            9,
+            9
+          ],
+          "passers": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Lalten",
+            "Dakiya",
+            "Hathi",
+            "Bagicha",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Lalten",
+            "Dakiya",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "preset any",
+        "inputs": {
+          "roce": 20,
+          "de": 0.3,
+          "g": 12,
+          "cp": 1.0,
+          "pe": 80,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            14,
+            13,
+            9,
+            4,
+            4,
+            4
+          ],
+          "passers": [
+            "Chandni",
+            "Pathar",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pathar"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            14,
+            13,
+            9,
+            4,
+            4,
+            4
+          ],
+          "passers": [
+            "Chandni",
+            "Pathar",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pathar"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "preset aware",
+        "inputs": {
+          "roce": 15,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 25,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            9,
+            8
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            9,
+            8
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "passers": [
+            "Patang",
+            "Pustak",
+            "Gulmohar",
+            "Rangoli",
+            "Lekhni"
+          ],
+          "traps": [
+            "Pustak",
+            "Lekhni"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "passers": [
+            "Patang",
+            "Pustak",
+            "Gulmohar",
+            "Rangoli",
+            "Lekhni"
+          ],
+          "traps": [
+            "Pustak",
+            "Lekhni"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "passers": [
+            "Patang",
+            "Pustak",
+            "Gulmohar",
+            "Rangoli",
+            "Lekhni"
+          ],
+          "traps": [
+            "Pustak",
+            "Lekhni"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "passers": [
+            "Patang",
+            "Pustak",
+            "Gulmohar",
+            "Rangoli",
+            "Lekhni"
+          ],
+          "traps": [
+            "Pustak",
+            "Lekhni"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 0, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            5,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 0, 1, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            5,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            1,
+            1
+          ],
+          "passers": [
+            "Lohapur"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            1,
+            1
+          ],
+          "passers": [
+            "Lohapur"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            28,
+            28
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli",
+            "Chashma",
+            "Hathi",
+            "Mehman",
+            "Bijli",
+            "Kagaz",
+            "Bagicha",
+            "Mor Pankh",
+            "Dhoop",
+            "Jharokha",
+            "Pankha",
+            "Dabba",
+            "Zafran",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            28,
+            28
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli",
+            "Chashma",
+            "Hathi",
+            "Mehman",
+            "Bijli",
+            "Kagaz",
+            "Bagicha",
+            "Mor Pankh",
+            "Dhoop",
+            "Jharokha",
+            "Pankha",
+            "Dabba",
+            "Zafran",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya",
+            "Lekhni",
+            "Bunkar"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            28,
+            26
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli",
+            "Chashma",
+            "Hathi",
+            "Mehman",
+            "Bijli",
+            "Kagaz",
+            "Bagicha",
+            "Mor Pankh",
+            "Dhoop",
+            "Jharokha",
+            "Pankha",
+            "Dabba",
+            "Zafran",
+            "Lekhni"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Dakiya",
+            "Lekhni"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            28,
+            28,
+            26
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli",
+            "Chashma",
+            "Hathi",
+            "Mehman",
+            "Bijli",
+            "Kagaz",
+            "Bagicha",
+            "Mor Pankh",
+            "Dhoop",
+            "Jharokha",
+            "Pankha",
+            "Dabba",
+            "Zafran",
+            "Lekhni"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Dakiya",
+            "Lekhni"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Mehman",
+            "Kagaz",
+            "Dabba"
+          ],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Mehman",
+            "Kagaz",
+            "Dabba"
+          ],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 0, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Mehman",
+            "Kagaz",
+            "Dabba"
+          ],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            28,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Mehman",
+            "Kagaz",
+            "Dabba"
+          ],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            1,
+            1
+          ],
+          "passers": [
+            "Lohapur"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            1,
+            1
+          ],
+          "passers": [
+            "Lohapur"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            2,
+            2
+          ],
+          "passers": [
+            "Lohapur",
+            "Chashma"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            2,
+            2
+          ],
+          "passers": [
+            "Lohapur",
+            "Chashma"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            2,
+            2
+          ],
+          "passers": [
+            "Lohapur",
+            "Chashma"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            2,
+            2,
+            2
+          ],
+          "passers": [
+            "Lohapur",
+            "Chashma"
+          ],
+          "traps": [
+            "Lohapur"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (0, 1, 1, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 0,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            29,
+            28,
+            2,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 0, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 0, 1, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 0,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": false,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          "passers": [
+            "Pustak",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 0, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": -20,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 0, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 0, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 0, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 0, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 5,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 1, 0)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 1, 0)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 0,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 1, 1)(False, False)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "extreme (1, 1, 1, 1, 1)(True, True)",
+        "inputs": {
+          "roce": 30,
+          "de": 2,
+          "g": 30,
+          "pe": 80,
+          "cp": 1.5,
+          "plOn": true,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "passers": [],
+          "traps": [],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": false,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "edge {\"roce\": 15, \"de\": 0.5, \"g\": 10, \"cp\": 0.8, \"pe\": 25, \"plOn\": true, \"mid\": false}",
+        "inputs": {
+          "roce": 15,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 25,
+          "plOn": true,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            12,
+            11
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            12,
+            11
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "edge {\"roce\": 15, \"de\": 0.5, \"g\": 10, \"cp\": 0.8, \"pe\": 25, \"plOn\": false, \"mid\": true}",
+        "inputs": {
+          "roce": 15,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 25,
+          "plOn": false,
+          "mid": true
+        },
+        "expected": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            9,
+            9
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            9,
+            9
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka"
+          ],
+          "traps": [
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "edge {\"roce\": 15, \"de\": 0.5, \"g\": 10, \"cp\": 1.0, \"pe\": 25, \"plOn\": false, \"mid\": false}",
+        "inputs": {
+          "roce": 15,
+          "de": 0.5,
+          "g": 10,
+          "cp": 1.0,
+          "pe": 25,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            7,
+            5,
+            5
+          ],
+          "passers": [
+            "Chandni",
+            "Pathar",
+            "Lalten",
+            "Gwala",
+            "Dakiya"
+          ],
+          "traps": [
+            "Pathar",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            7,
+            5,
+            5
+          ],
+          "passers": [
+            "Chandni",
+            "Pathar",
+            "Lalten",
+            "Gwala",
+            "Dakiya"
+          ],
+          "traps": [
+            "Pathar",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "edge {\"roce\": 26, \"de\": 0.5, \"g\": 10, \"cp\": 0.8, \"pe\": 25, \"plOn\": false, \"mid\": false}",
+        "inputs": {
+          "roce": 26,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 25,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            1,
+            1
+          ],
+          "passers": [
+            "Pustak"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            3,
+            3,
+            3,
+            3,
+            1,
+            1
+          ],
+          "passers": [
+            "Pustak"
+          ],
+          "traps": [
+            "Pustak"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "edge {\"roce\": 15, \"de\": 0.5, \"g\": 10, \"cp\": 0.8, \"pe\": 65, \"plOn\": false, \"mid\": false}",
+        "inputs": {
+          "roce": 15,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 65,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            14,
+            14
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            19,
+            18,
+            16,
+            14,
+            14,
+            14
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": false,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": false,
+            "pl": true
+          }
+        },
+        "passed": true
+      },
+      {
+        "case": "edge {\"roce\": 8, \"de\": 0.5, \"g\": 10, \"cp\": 0.8, \"pe\": 66, \"plOn\": false, \"mid\": false}",
+        "inputs": {
+          "roce": 8,
+          "de": 0.5,
+          "g": 10,
+          "cp": 0.8,
+          "pe": 66,
+          "plOn": false,
+          "mid": false
+        },
+        "expected": {
+          "funnel": [
+            30,
+            27,
+            20,
+            18,
+            15,
+            15,
+            15
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli",
+            "Jharokha"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "observed": {
+          "funnel": [
+            30,
+            27,
+            20,
+            18,
+            15,
+            15,
+            15
+          ],
+          "passers": [
+            "Chandni",
+            "Patang",
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Gwala",
+            "Dakiya",
+            "Jugnu",
+            "Tanka",
+            "Gulmohar",
+            "Rangoli",
+            "Jharokha"
+          ],
+          "traps": [
+            "Pathar",
+            "Lohapur",
+            "Neem",
+            "Kangan",
+            "Pustak",
+            "Lalten",
+            "Dakiya"
+          ],
+          "tcpl": {
+            "roce": true,
+            "de": true,
+            "g": true,
+            "cp": true,
+            "pe": true,
+            "pl": true
+          }
+        },
+        "passed": true
+      }
+    ],
+    "invariants": [
+      "funnel non-increasing",
+      "final passers independent of order",
+      "TCPL never counted"
+    ],
+    "tolerance": "exact match (integers/booleans); TCPL values 1e-9",
+    "axis_and_clipping": "funnel axis fixed 0-30 companies, 11 px per company; no clipping possible"
+  },
+  "verification": {
+    "supplementary_checks": [
+      "lab 75/75 cases pass",
+      "390px: no page overflow; screen table 308px in 308px wrapper",
+      "card lint 0 errors"
+    ],
+    "screenshots": [
+      "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa36/shots"
+    ],
+    "screenshot_review": "all desktop and phone panels inspected; fixed lab chart readability on phone, table overflow, duplicated trap labels, missing parentheses",
+    "coverage_review": "every inventory row found on page",
+    "semantic_review": "done by author",
+    "artifact_sha256": "d302f5ec76a01a544e9e5daa80051f357278599275f16266322aa9b920f6975a",
+    "structural_lint": {
+      "scope": "structural lint only; not semantic, numerical, visual or publication approval",
+      "errors": [],
+      "warnings": [],
+      "counts": {
+        "diagrams": 10,
+        "panels": 11,
+        "notes": 1
+      },
+      "artifact_sha256": "d302f5ec76a01a544e9e5daa80051f357278599275f16266322aa9b920f6975a",
+      "artifact_path": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/v36/explainers/screening-for-ideas-eli5.html"
+    }
+  },
+  "card": "/tmp/claude-0/-home-user-eli5-lab/a9f776c1-f192-5c86-8d9b-8cdd280f82db/scratchpad/fa36/card.svg",
+  "publication": {
+    "status": "not-attempted (brief forbids publishing)",
+    "commit": null,
+    "live_url": null,
+    "readback_results": []
+  }
+}
