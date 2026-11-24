@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "screening-for-ideas-eli5",
+    "title": "Screening for ideas",
+    "category": "Monetary Architecture",
+    "minutes": 17,
+    "summary": "Part 36: filters that find candidates, the traps they pass, and survivorship bias",
+    "bullets": [
+      "A screen is a few lines on ratios; it shortens the list but cannot see why something is cheap",
+      "Cyclicals at the peak, falling businesses and shaky governance pass screens; backtests that forget dead companies flatter them"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "FILTERS",
+      "FUNNEL",
+      "TRAPS",
+      "SURVIVORS"
+    ],
+    "file": "explainers/screening-for-ideas-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A funnel of bars shrinking from 30 companies to 12 as filters are applied, with the last bar split into 5 pale no-trap and 7 red trap companies\"><rect x=\"24\" y=\"22\" width=\"252.0\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"39\" width=\"159.6\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"56\" width=\"151.2\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"73\" width=\"134.4\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"90\" width=\"117.6\" height=\"11\" fill=\"#a5a29c\"/><rect x=\"24\" y=\"107\" width=\"42.0\" height=\"11\" fill=\"#f1eee8\"/><rect x=\"66.0\" y=\"107\" width=\"58.8\" height=\"11\" fill=\"#f87171\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"138\" fill=\"#a5a29c\">TRAPS PASS</text><text x=\"296\" y=\"138\" text-anchor=\"end\" fill=\"#f5c76a\">PART 36</text></g></svg>",
+    "part": 36
+  },
+  {
     "id": "loss-makers-and-ipos-eli5",
     "title": "Loss-making companies and IPOs",
     "category": "Monetary Architecture",
