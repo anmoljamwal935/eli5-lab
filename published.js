@@ -1,5 +1,30 @@
 window.PUBLISHED = [
   {
+    "id": "portfolio-taxes-costs-eli5",
+    "title": "Portfolio, taxes and costs",
+    "category": "Monetary Architecture",
+    "minutes": 20,
+    "summary": "Part 38: position sizing, when to sell, and what tax and costs take",
+    "bullets": [
+      "Size each idea by its bear-case downside, and sell when value changes, not price",
+      "FY2026 rules: STT 0.1% each side, short-term gains 20%, long-term 12.5% above ₹1.25 lakh, dividends at your slab"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "SIZE",
+      "SELL",
+      "COSTS",
+      "TAX",
+      "KEEP"
+    ],
+    "file": "explainers/portfolio-taxes-costs-eli5.html",
+    "date": "2026-11-24",
+    "subcategory": "Fundamental analysis, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Tax against gain on listed shares: a coral line rising at 20 percent for gains held up to 12 months, and a dashed gold line that stays at zero up to 1.25 lakh rupees, then rises at 12.5 percent\"><path d=\"M40 125H290M40 125V30\" stroke=\"#57534f\" fill=\"none\"/><path d=\"M40 125L290 40\" stroke=\"#ff8059\" stroke-width=\"2.5\" fill=\"none\"/><path d=\"M40 123H144L290 94\" stroke=\"#f5c76a\" stroke-width=\"2.5\" stroke-dasharray=\"6 4\" fill=\"none\"/><circle cx=\"76\" cy=\"113\" r=\"4\" fill=\"#ff8059\" stroke=\"#202020\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"48\" y=\"36\" fill=\"#f5c76a\">PART 38</text><text x=\"230\" y=\"44\" text-anchor=\"end\" fill=\"#ff8059\">SHORT 20%</text><text x=\"290\" y=\"118\" text-anchor=\"end\" fill=\"#f5c76a\">LONG 12.5%</text></g></svg>",
+    "part": 38
+  },
+  {
     "id": "one-company-start-to-finish-eli5",
     "title": "One company, start to finish",
     "category": "Monetary Architecture",
