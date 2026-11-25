@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "context-window-eli5",
+    "title": "Memory and the context window",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 14: what a model can see at once, and why long chats forget",
+    "bullets": [
+      "Every reply re-reads the whole chat through a fixed token window; whatever falls outside is gone",
+      "Longer windows cost quadratic comparisons and a growing KV cache, and text in the middle still gets missed"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CHAT",
+      "WINDOW",
+      "DROPPED"
+    ],
+    "file": "explainers/context-window-eli5.html",
+    "date": "2026-11-25",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A chat drawn as one block per turn: the newest turns sit inside the context window's frame, while the oldest turns have fallen out and fade.\"><path d=\"M24 116H296\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"24.5\" y=\"62\" width=\"7.2\" height=\"36\" fill=\"#ec6a94\" fill-opacity=\"0.3\"/><rect x=\"32.7\" y=\"62\" width=\"18.0\" height=\"36\" fill=\"#ec6a94\" fill-opacity=\"0.3\"/><rect x=\"51.7\" y=\"62\" width=\"9.9\" height=\"36\" fill=\"#ec6a94\" fill-opacity=\"0.3\"/><rect x=\"62.6\" y=\"62\" width=\"15.3\" height=\"36\" fill=\"#ec6a94\" fill-opacity=\"0.3\"/><rect x=\"78.9\" y=\"62\" width=\"12.6\" height=\"36\" fill=\"#ec6a94\" fill-opacity=\"0.3\"/><rect x=\"92.5\" y=\"62\" width=\"7.2\" height=\"36\" fill=\"#ec6a94\" fill-opacity=\"0.3\"/><rect x=\"100.7\" y=\"62\" width=\"18.0\" height=\"36\" fill=\"#ec6a94\" fill-opacity=\"0.3\"/><rect x=\"119.7\" y=\"62\" width=\"9.9\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"130.6\" y=\"62\" width=\"15.3\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"146.9\" y=\"62\" width=\"12.6\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"160.5\" y=\"62\" width=\"7.2\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"168.7\" y=\"62\" width=\"18.0\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"187.7\" y=\"62\" width=\"9.9\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"198.6\" y=\"62\" width=\"15.3\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"214.9\" y=\"62\" width=\"12.6\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"228.5\" y=\"62\" width=\"7.2\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"236.7\" y=\"62\" width=\"18.0\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"255.7\" y=\"62\" width=\"9.9\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"266.6\" y=\"62\" width=\"15.3\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"282.9\" y=\"62\" width=\"12.6\" height=\"36\" fill=\"#f5c76a\" fill-opacity=\"0.85\"/><rect x=\"114.7\" y=\"54\" width=\"181.3\" height=\"52\" fill=\"none\" stroke=\"#c3b8ff\" stroke-width=\"2.5\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"138\" fill=\"#76d5c1\">PART 14</text><text x=\"296\" y=\"38\" text-anchor=\"end\" fill=\"#c3b8ff\">WINDOW</text><text x=\"24\" y=\"38\" fill=\"#ec6a94\">FELL OUT</text></g></svg>",
+    "part": 14
+  },
+  {
     "id": "autocomplete-to-assistant-eli5",
     "title": "From autocomplete to assistant",
     "category": "AI & Frontier",
