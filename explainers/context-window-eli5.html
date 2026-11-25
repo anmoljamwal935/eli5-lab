@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Memory and the context window — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (How AI works, from scratch): gold = text and tokens, teal = stored numbers,
+       orange = arithmetic, purple = connections, rose = the wrong intuition. */
+    :root{--rose:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Series parts: fact tags, Go deeper boxes */
+    .tag{display:inline-block;margin:0 2px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted);vertical-align:1px}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p{font-size:15px}
+    .lab-chart svg+svg{margin-top:18px}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body data-series-id="context-window-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Memory and the context window</h1>
+      <p class="lede">A chatbot seems to remember your conversation. It does not. Before every reply, the whole chat is sent to the model again, and the model can only read a fixed number of tokens at once: its context window. This part shows what fits, what falls out, why a longer window costs more, and why even text in view can be missed.</p>
+      <p class="source-note">A topic study built from the primary sources: Liu and others’ “Lost in the Middle” (2023), Su and others’ RoPE paper (2021), Lewis and others’ retrieval-augmented generation paper (2020), the 2017 Transformer paper, Meta’s Llama 3 report, the vLLM paper on the KV cache, Chen and others’ Position Interpolation paper (2023), and Anthropic’s API documentation as of November 2026; every number below was checked against them · <a href="https://arxiv.org/abs/2307.03172">Read the main source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on <a href="text-becomes-numbers-eli5.html" data-series-link="text-becomes-numbers-eli5">Part 1</a> (text is cut into tokens), <a href="attention-eli5.html" data-series-link="attention-eli5">Part 7</a> (every token compares itself with every earlier one, and the saved keys and values pile up), <a href="memory-bottleneck-eli5.html" data-series-link="memory-bottleneck-eli5">Part 8</a> (memory is the scarce resource) and <a href="the-transformer-eli5.html" data-series-link="the-transformer-eli5">Part 9</a> (one full pass through the model). Part 13 turned the word-guesser into an assistant; this part asks what that assistant can actually see. Facts carry a tag: <span class="tag">public</span> means a published paper, documentation or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>text and tokens in the chat</span>
+        <span><i style="background:#76d5c1"></i>stored numbers: weights, KV cache, saved notes</span>
+        <span><i style="background:#ff8059"></i>arithmetic: comparisons, scores</span>
+        <span><i style="background:#c3b8ff"></i>connections: the window, who can see whom</span>
+        <span><i style="background:#ec6a94"></i>the wrong intuition, text lost from view</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>The model keeps nothing between replies</h2>
+      <p>Part 2 showed that a chat is one long document the model continues. Here is the catch: nothing about your chat is kept inside the model between replies. Its learned numbers never change while you talk. So for every new reply, the app sends the whole conversation again.</p>
+      <figure>
+        <svg id="resendSvg" viewBox="0 0 800 300" role="img" aria-label="Four requests to the same unchanged model: each one carries every earlier turn of the chat again, so the first message is sent four times."></svg>
+      </figure>
+      <p>Anthropic’s documentation says it plainly: “The Messages API is stateless, which means that you always send the full conversational history” <span class="tag">public</span>. Each request holds all earlier turns plus the new message, and the reply becomes part of the next request. In a 20-turn chat, your first message is sent 20 times.</p>
+      <details class="trace"><summary>Go deeper: is all that re-reading wasted?</summary>
+        <p>Mostly not. Servers can keep the work done on an unchanged start of the conversation and reuse it, called prompt caching; the bonus study, <a href="inside-llm-serving-eli5.html" data-series-link="inside-llm-serving-eli5">Inside LLM serving</a>, covers it. Anthropic’s documentation adds that cached text “still occupies the context window”: caching changes the price, not what fits <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>A reader with a fixed-size desk</h2>
+      <p>Picture a reader who answers letters but keeps no notebook. Before each reply they read every page on their desk, top to bottom. The desk holds only so many pages. When a new page arrives and the desk is full, the oldest page goes in the bin.</p>
+      <figure>
+        <svg id="deskSvg" viewBox="0 0 800 340" role="img" aria-label="A desk holding six pages of a conversation; a new page arrives from the right and the oldest page drops off the left end into a bin."></svg>
+      </figure>
+      <p>Mapping it back: the pages are the chat’s tokens, the desk is the <b>context window</b>, the bin is text dropped from the request. Where the analogy breaks: the model reads the whole desk in one parallel pass (Part 9), not page by page, and it cannot see the bin at all, so it never knows what it lost.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Everything shares one window, even the reply</h2>
+      <p>The window is measured in tokens, Part 1’s word pieces, about four characters of English each. Anthropic defines it as “all the text a language model can reference when generating a response, including the response itself” <span class="tag">public</span>. So the reply needs room too.</p>
+      <figure>
+        <svg id="shareSvg" viewBox="0 0 800 250" role="img" aria-label="One 200,000-token window drawn as a bar, split into a small system prompt, tool definitions, a large attached document, the chat so far and empty room kept for the reply."></svg>
+      </figure>
+      <p>Anthropic’s list of what counts: the system prompt, every message including documents, images and tool results, the tool definitions, and the reply, with any thinking <span class="tag">public</span>. The split drawn here is made up <span class="tag">example</span>. A long document attached to a chat leaves less room for the chat itself.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The running example</p>
+      <h2>Anaya’s chat grows turn by turn</h2>
+      <p>Follow one chat for the rest of this part. In turn 1, Anaya writes “I’m Anaya, and I’m allergic to peanuts.” Then she plans a trip with the assistant. Each turn, her message plus the reply, adds a few hundred tokens <span class="tag">example</span>. The window here holds 8,000 tokens.</p>
+      <figure>
+        <svg id="growSvg" viewBox="0 0 800 300" role="img" aria-label="Bars for turns 1 to 20 showing the total tokens of the chat so far, rising to 12,000; from turn 14 the bars rise above an 8,000-token window line."></svg>
+      </figure>
+      <p>The turns average 600 tokens, so after 20 turns the chat is 12,000 tokens long <span class="tag">example</span>. At turn 14 it no longer fits: 8,400 tokens against a window of 8,000. Something has to give. In the lab below, the same chat keeps growing, and you choose the window.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">At the limit</p>
+      <h2>Three things an app can do</h2>
+      <p>When a chat outgrows the window, the model itself cannot help: it only reads what it is sent. The choice is made by the software around it, and there are three common answers.</p>
+      <figure>
+        <svg id="limitSvg" viewBox="0 0 800 320" role="img" aria-label="The same 20-turn chat three times against an 8,000-token window: refused because it is too long; with the oldest turns dropped; and with the oldest turns replaced by one short summary."></svg>
+      </figure>
+      <p><b>Refuse</b>: if the input alone is too big, Anthropic’s API returns an error, “prompt is too long” <span class="tag">public</span>. <b>Drop the oldest</b>: Anthropic notes chat apps such as claude.ai “can also manage the context window on a rolling ‘first in, first out’ basis” <span class="tag">public</span>. <b>Summarise</b>: its compaction feature “replaces the older turns of a conversation with a summary” <span class="tag">public</span>. Exactly which app does what, when, is mostly not documented <span class="tag np">not public</span>.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The wrong intuition</p>
+      <h2>Forgetting is a cliff, not a fade</h2>
+      <p>People forget gradually: old memories blur. So it is natural to assume a model’s grip on early turns weakens slowly. For text that has left the window, that is wrong. It is not faint. It is simply not in the request.</p>
+      <figure>
+        <svg id="cliffSvg" viewBox="0 0 800 280" role="img" aria-label="Across the chat from oldest to newest, the true picture is a step: none of the text before the window edge can be read and all of it after; the guessed picture is a smooth fade."></svg>
+      </figure>
+      <p>If turn 1 is dropped, Anaya’s allergy is gone completely, and nothing marks the gap. Ask for a snack idea and the model answers from what is in view, which no longer mentions peanuts. Inside the window things are less tidy than this step suggests; chapter 12 shows that text in view can still be missed.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The cost of seeing more</p>
+      <h2>Twice the text, four times the comparisons</h2>
+      <p>Why not just make the window huge? Part 7 gave the first reason. Reading a text, every token compares itself with itself and every earlier token, in every head of every layer. Each dot below is one comparison <span class="tag">example</span>:</p>
+      <figure>
+        <svg id="triSvg" viewBox="0 0 800 320" role="img" aria-label="Two triangles of dots, each dot one comparison between a token and an earlier token: 6 tokens make 21 dots, 12 tokens make 78."></svg>
+      </figure>
+      <p>For n tokens that is n × (n + 1) ÷ 2 comparisons, so doubling the text roughly quadruples them; the 2017 Transformer paper lists attention’s cost per layer as growing with n² <span class="tag">public</span>. At 128,000 tokens that is 8.2 billion per head per layer. Llama 3 8B has 32 layers of 32 heads, 1,024 in all <span class="tag">public</span>: about 8.4 trillion comparisons to read one full window <span class="tag">example</span>.</p>
+      <details class="trace"><summary>Go deeper: why Meta trained long text last</summary>
+        <p>Meta’s Llama 3 report says it did not train on long sequences earlier “because the compute in self-attention layers grows quadratically in the sequence length”. It trained with an 8K-token window, then lengthened it in six stages to 128K at the end, using about 800 billion tokens for that stage <span class="tag">public</span>. Adding one new token to a chat of n tokens costs only n comparisons per head per layer, which is why each new word of a reply is cheaper than reading the whole chat; the comparisons still grow with the chat, as Part 9 counted.</p>
+      </details>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The cost of seeing more</p>
+      <h2>The KV cache grows with every token</h2>
+      <p>The second reason is memory. Part 7 showed that each token’s keys and values are saved, so later tokens can compare against them: the <b>KV cache</b>. It holds one key and one value per token, per layer, per key-value head, and it lives in the chip’s scarce memory (Part 8).</p>
+      <figure>
+        <svg id="kvSvg" viewBox="0 0 800 310" role="img" aria-label="Bars on one gigabyte scale: Llama 3 8B's weights at 16 GB; its KV cache at 1.0 GB for 8,000 tokens, 4.2 GB for 32,000 and 16.8 GB for 128,000; Llama 3 405B's cache at 66 GB for 128,000 tokens; one H100 holds 80 GB."></svg>
+      </figure>
+      <p>Size per token = 2 (key and value) × layers × key-value heads × numbers per head × bytes per number. That is the vLLM paper’s formula: its 13-billion-number example needs 800 KB per token, up to 1.6 GB for one 2,048-token request <span class="tag">public</span>. For Llama 3 8B, 32 layers × 8 heads × 128 numbers × 2 bytes × 2 = 128 KB per token <span class="tag">public</span>. At 128,000 tokens, one chat’s cache is bigger than the model’s own weights.</p>
+      <details class="trace"><summary>Go deeper: where the numbers come from</summary>
+        <p>Llama 3’s report lists 32, 80 and 126 layers for its 8B, 70B and 405B models, each with 8 key-value heads, and widths of 4,096, 8,192 and 16,384 shared among 32, 64 and 128 query heads: 128 numbers per head in all three <span class="tag">public</span>. At 2 bytes per number that is 131,072, 327,680 and 516,096 bytes per token. The 8B model’s 8,030,261,248 weights (Part 9) take about 16.1 GB. The bars assume 16-bit numbers; servers can shrink caches with 8-bit numbers and other tricks, which the bonus study covers <span class="tag">example</span>.</p>
+      </details>
+    </section>
+
+    <!-- 9: LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Grow the chat, watch it fall out</h2>
+      <p>Anaya’s chat again: turn 1 holds her allergy, and turns cycle through 0.6, 1.4, 0.8, 1.2 and 1.0 times the average size <span class="tag">example</span>. When the chat outgrows the window, whole turns drop out oldest first, the rolling first-in, first-out rule. Choose the window, the length of the chat, the turn size and the model:</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="win">Context window <output id="win-o"></output></label><input id="win" type="range" min="0" max="6" step="1" value="2"></div>
+          <div class="control"><label for="turns">Turns so far <output id="turns-o"></output></label><input id="turns" type="range" min="1" max="120" step="1" value="20"></div>
+          <div class="control"><label for="avg">Average tokens per turn <output id="avg-o"></output></label><input id="avg" type="range" min="200" max="1400" step="100" value="600"></div>
+          <div class="control"><label for="model">Model (Llama 3 sizes) <output id="model-o"></output></label><input id="model" type="range" min="0" max="2" step="1" value="0"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="2,8,600,0">Short chat, all in view</button>
+            <button type="button" class="secondary" data-p="2,20,600,0">The allergy falls out</button>
+            <button type="button" class="secondary" data-p="6,120,1400,0">128K window, long day</button>
+            <button type="button" class="secondary" data-p="6,120,1400,2">Same day, 405B model</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars in tokens: the window size, the whole chat so far, the part still in view and the part that fell out."></svg>
+          <svg id="stripSvg" viewBox="0 0 520 150" role="img" aria-label="The chat drawn as one block per turn, oldest on the left, with the window's frame over the newest turns; turns outside the frame are faded."></svg>
+          <svg id="costSvg" viewBox="0 0 520 310" role="img" aria-label="As the tokens in view grow to fill the window, the KV cache grows in a straight line and the attention comparisons in a steepening curve, each shown as a share of its full-window value."></svg>
+        </div>
+      </div></div>
+      <p>Three things to try. Slide the turns from 1 upwards at 8K and watch turn 1 leave the frame at turn 14. Halve the chat and the cache halves, but the comparisons fall to about a quarter: the straight line against the curve. Then pick the 405B model at a full 128K window: one chat’s cache would fill most of an 80 GB chip.</p>
+      <details class="trace"><summary>Go deeper: exactly what the lab computes</summary>
+        <p>Turn i has round(average × pattern) tokens, pattern 0.6, 1.4, 0.8, 1.2, 1.0 repeating <span class="tag">example</span>. Counting back from the newest turn, whole turns are kept while their total fits the window; the rest fell out. Nothing is reserved for the reply or a system prompt. Comparisons to read the n tokens in view = layers × query heads × n(n + 1) ÷ 2. KV cache = n × 2 × layers × 8 × 128 × 2 bytes, with layers and heads from Llama 3’s report <span class="tag">public</span>. Gigabytes are 10⁹ bytes. The windows run from 2,000 to 128,000 tokens; Llama 3’s published maximum is 128K <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">Knowing where</p>
+      <h2>Each token’s position is a turning angle</h2>
+      <p>A window is not just a bag of tokens: order matters. Part 7 met the usual method, rotary position embedding (RoPE). Each query and key is cut into pairs of numbers, and each pair is turned by an angle that grows with the token’s position, some pairs fast, some slowly <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="ropeSvg" viewBox="0 0 800 300" role="img" aria-label="Positions 0 to 7, each drawn as a dial: in the top row the hand turns 40 degrees per position, in the bottom row 10 degrees per position."></svg>
+      </figure>
+      <p>Su and others’ paper: RoPE “encodes the absolute position with a rotation matrix and meanwhile incorporates the explicit relative position dependency” <span class="tag">public</span>. Positions 1 and 3 differ by the same angle as 5 and 7, so a score depends on how far apart two tokens are. Llama 3 uses RoPE, and raised its base setting to 500,000 “to better support longer contexts” <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: the angles</summary>
+        <p>Pair number i of a list d numbers long turns by position × base<sup>−2i/d</sup> radians. With the original base of 10,000, the first pair turns about one radian per position and the last pairs barely move. The RoPE paper shows this setting gives a “long-term decay”: the inner product tends to shrink as tokens get further apart <span class="tag">public</span>. A bigger base slows every pair down, so far-apart positions stay distinguishable over longer texts. The 40° and 10° steps drawn here are made up <span class="tag">example</span>.</p>
+      </details>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">Making room</p>
+      <h2>Stretching a window after training</h2>
+      <p>A model trained on short texts has never seen large position numbers. Feed it longer text and the far positions are uncharted. Chen and others at Meta found a cheap fix for RoPE models: squeeze the new, longer range of positions back into the range the model was trained on <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="stretchSvg" viewBox="0 0 800 290" role="img" aria-label="A trained range of positions 0 to 2,048 above a longer text of positions 0 to 8,192; lines map every position of the long text into the trained range, squeezed four times, instead of into unseen positions."></svg>
+      </figure>
+      <p>Their Position Interpolation “linearly down-scales the input position indices to match the original context window size”, extending LLaMA models’ 2,048-token windows “to up to 32768 with minimal fine-tuning (within 1000 steps)” <span class="tag">public</span>. Later methods such as YaRN refine the squeeze; its authors report needing 10 times fewer tokens and 2.5 times fewer training steps than earlier methods <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Lost in the middle</h2>
+      <p>Being in the window is not the same as being used. Liu and others gave models a question and 20 short Wikipedia passages, about 4,000 tokens, exactly one holding the answer. Then they moved that passage from first to last and measured how often the answer came out right <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="lostSvg" viewBox="0 0 800 320" role="img" aria-label="GPT-3.5-Turbo's accuracy against the position of the answer among 20 passages: 75.8% first, 57.2% fifth, 53.8% tenth, 55.4% fifteenth and 63.2% last, a U shape, with 56.1% when given no passages at all."></svg>
+      </figure>
+      <p>The curve is a U: best at the start and end, worst in the middle. The paper’s words: GPT-3.5-Turbo’s accuracy “can drop by more than 20%—in the worst case, performance in 20- and 30-document settings is lower than performance without any input documents (i.e., closed-book performance; 56.1%)” <span class="tag">public</span>. Here, 75.8% at the start against 53.8% in the middle is 22 percentage points.</p>
+      <details class="trace"><summary>Go deeper: what exactly was measured</summary>
+        <p>The questions came from NaturalQuestions-Open, real Google searches with answers marked in Wikipedia. Passages were at most 100 tokens; the 19 decoys were the most relevant passages that did not contain the answer. A reply counted as correct if any accepted answer appeared in it <span class="tag">public</span>. The models were 2023 versions of GPT-3.5-Turbo, Claude 1.3, MPT-30B-Instruct and LongChat-13B. In a second, simpler test, finding a key in a list of key-value pairs, Claude 1.3 was nearly perfect at every position while others again sagged in the middle <span class="tag">public</span>. The paper did not test today’s models; Anthropic’s documentation says of current ones that “as token count grows, accuracy and recall degrade, a phenomenon known as context rot” <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>A bigger window is not better reading</h2>
+      <p>It is tempting to think a model with a bigger window reads better. The same paper tested this directly: GPT-3.5-Turbo with a 4K-token window against its 16K-token version, on the 20-passage test that fits in both <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="pairSvg" viewBox="0 0 800 300" role="img" aria-label="Paired bars for five positions of the answer: the 4K and 16K versions of GPT-3.5-Turbo score almost exactly the same at every position."></svg>
+      </figure>
+      <p>The bars are nearly identical at every position. The paper: “Extended-context models are not necessarily better at using input context” <span class="tag">public</span>. A bigger window lets more text in; it does not change how well the text already in view is used. Anthropic’s own advice: “more context isn’t automatically better” <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">The workaround</p>
+      <h2>Fetch only the pages you need</h2>
+      <p>If the window is limited and the middle gets lost, send less. <b>Retrieval</b> keeps a large library outside the model, finds the few passages that match the question, and puts just those into the window. Lewis and others named this retrieval-augmented generation, <b>RAG</b>, in 2020 <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="ragSvg" viewBox="0 0 800 260" role="img" aria-label="A large grid of stored passages, five of them highlighted and fetched into a small window alongside the question."></svg>
+      </figure>
+      <p>Their library was Wikipedia cut into 21 million 100-word chunks, searched with a learned retriever, with 5 or 10 passages fetched per question <span class="tag">public</span>. Swap the library and the answers change: with a 2016 index RAG named 70% of 2016 world leaders correctly, with a 2018 index 68% of 2018 ones, and only 4% to 12% with the mismatched index <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: more is not always better here either</summary>
+        <p>Liu and others also ran the full pipeline: retrieve from Wikipedia, then answer. Accuracy “saturates long before retriever recall saturates”: using 50 retrieved passages instead of 20 improved GPT-3.5-Turbo by only about 1.5% <span class="tag">public</span>. Fetching the right few matters more than fetching many.</p>
+      </details>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">Memory features</p>
+      <h2>“Memory” is notes put back in view</h2>
+      <p>Some assistants remember you across chats. The model still learns nothing between them. Instead, notes are saved outside it, as ordinary text, and read back into a later chat’s window. It is retrieval again, with your own past as the library.</p>
+      <figure>
+        <svg id="notesSvg" viewBox="0 0 800 280" role="img" aria-label="Chat 1's window writes a short note to a saved file; the note is read back into the start of chat 2's window."></svg>
+      </figure>
+      <p>Anthropic’s memory tool is documented this way: Claude stores what it learns “in files under /memories and reads them back in later conversations”, and the files live in the developer’s application, not the model <span class="tag">public</span>. A summary from compaction works the same way inside one chat. Both cost window space when read back in.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">As of today</p>
+      <h2>Windows grew almost 500 times</h2>
+      <p>Windows have grown fast. LLaMA’s inputs in early 2023 had to be “fewer than 2048 tokens”; the Lost in the Middle paper tested 4K, 16K and 100K versions; Llama 3 reached 128K <span class="tag">public</span>. Anthropic’s documentation lists a 1,000,000-token window for its current models <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="sizeSvg" viewBox="0 0 800 300" role="img" aria-label="Context windows on a log scale: LLaMA 2,048 tokens, GPT-3.5-Turbo 4K and 16K, Claude 1.3 100K, Llama 3 128K, and current Claude models 1 million."></svg>
+      </figure>
+      <p>From 2,048 to 1,000,000 tokens is about 490 times. As of November 2026, Anthropic lists 1M tokens for its current Opus, Sonnet and Haiku models among others, and 200K for older ones, with up to 128,000 tokens of output per request <span class="tag">public</span>. Every chapter above still applies: a million-token window is a bigger desk, not a better memory.</p>
+      <p class="note">Window sizes change with almost every model release. The sizes here are what each paper or vendor document stated; check the vendor’s current documentation before relying on one.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>A long chat forgets its start</b><span>Early turns were dropped or summarised to fit the window.</span><em>chapters 5, 6</em></div>
+        <div><b>A new chat knows nothing</b><span>Each chat starts empty unless saved notes are read back in.</span><em>chapters 1, 15</em></div>
+        <div><b>“Prompt is too long”</b><span>The input alone is bigger than the window.</span><em>chapter 5</em></div>
+        <div><b>Long documents slow things down</b><span>Comparisons grow with the square of the text; the cache with its length.</span><em>chapters 7, 8, lab</em></div>
+        <div><b>A detail buried mid-document is missed</b><span>Text in view is used best at the start and end.</span><em>chapter 12</em></div>
+        <div><b>Answers that cite fetched pages</b><span>Retrieval put a few passages into the window.</span><em>chapter 14</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Context window</b><span>The most tokens the model can read at once, reply included.</span></div>
+        <div><b>Stateless</b><span>Keeping nothing between requests; the chat is resent each time.</span></div>
+        <div><b>Truncation</b><span>Dropping the oldest text so the rest fits.</span></div>
+        <div><b>Compaction</b><span>Replacing older turns with a short summary.</span></div>
+        <div><b>KV cache</b><span>The saved keys and values of every token in view.</span></div>
+        <div><b>RoPE</b><span>Turning queries and keys by an angle set by position.</span></div>
+        <div><b>Position interpolation</b><span>Squeezing longer texts into the trained range of positions.</span></div>
+        <div><b>Lost in the middle</b><span>Information mid-context being used worst.</span></div>
+        <div><b>Context rot</b><span>Anthropic’s name for accuracy and recall falling as context grows.</span></div>
+        <div><b>RAG</b><span>Retrieval-augmented generation: fetch passages, put them in view.</span></div>
+        <div><b>Memory tool</b><span>Notes saved outside the model and read back into a chat.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>Stateless requests, what counts toward the window, overflow errors, compaction and memory files (Anthropic docs); the n² cost; Llama 3’s sizes; the vLLM cache formula; RoPE and Position Interpolation; Lost in the Middle’s numbers; RAG’s results; the window sizes listed.</span><em>papers, vendor documentation</em></div>
+        <div><b>Example</b><span>Anaya’s chat and its turn sizes, the window split, the desk, the dots, the dial angles and the lab’s chat.</span><em>made up to show the idea</em></div>
+        <div><b>Not public</b><span>How each chat app decides when to drop or summarise, and how today’s frontier models score on the exact Lost in the Middle test.</span><em>companies have not said</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">The hand-off</p>
+      <h2>Next: why models make things up</h2>
+      <p>When Anaya’s allergy falls out of the window, the model does not say “I no longer know”. It answers fluently from what is left. Part 15 asks where such confident mistakes come from, including when the facts were never in view, and why they are so hard to stop.</p>
+      <figure>
+        <svg id="nextSvg" viewBox="0 0 800 220" role="img" aria-label="The dropped first turn sits outside the window; the model reads only what is inside and produces a confident reply that guesses."></svg>
+      </figure>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A model remembers nothing: before every reply it re-reads the chat through a fixed window. What falls outside is gone, what is inside costs more the longer it gets, and even inside, the middle is easiest to miss.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+    const C={gold:'#f5c76a',teal:'#76d5c1',or:'#ff8059',pur:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f'};
+    function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+    const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+    const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+    const comma=n=>Math.round(n).toLocaleString('en-US');
+    function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
+    const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+    // Anaya's chat (example): turn i has round(avg x pattern) tokens, pattern repeating.
+    const PATTERN=[0.6,1.4,0.8,1.2,1.0];
+    const turnTokens=(i,avg)=>Math.round(avg*PATTERN[(i-1)%5]);
+
+    /* 1: every request resends the whole chat */
+    (()=>{const svg=$('resendSvg'),m=marker(svg,'rsA',C.mut);
+      S(svg,'rect',{x:640,y:24,width:80,height:216,fill:C.teal,'fill-opacity':.85});
+      for(let k=1;k<=4;k++){const y=30+(k-1)*56;let x=170;
+        T(svg,155,y+21,'request '+k,{'text-anchor':'end'});
+        for(let t=1;t<=k;t++){
+          S(svg,'rect',{x,y,width:40,height:30,fill:C.gold,stroke:t===1?C.fg:'none','stroke-width':2});x+=44;
+          if(t<k){S(svg,'rect',{x,y,width:60,height:30,fill:C.gold,'fill-opacity':.4});x+=64;}}
+        arrow(svg,`M${x+4} ${y+15} L636 ${y+15}`,m,C.mut);}
+      T(svg,170,266,'turn 1, outlined: resent every time',{fill:C.mut});
+      T(svg,680,266,'same model',{'text-anchor':'middle',fill:C.teal});
+      T(svg,680,288,'unchanged',{'text-anchor':'middle',fill:C.mut});})();
+
+    /* 2: the desk analogy */
+    (()=>{const svg=$('deskSvg'),m=marker(svg,'dkA',C.mut),mr=marker(svg,'dkR',C.rose);
+      const page=(x,y,col,o=1)=>{S(svg,'rect',{x,y,width:56,height:76,fill:col,'fill-opacity':.12*o,stroke:col,'stroke-width':2,'stroke-opacity':o});
+        for(let l=0;l<4;l++)S(svg,'line',{x1:x+10,y1:y+16+l*15,x2:x+46-(l===3?16:0),y2:y+16+l*15,stroke:col,'stroke-width':2,'stroke-opacity':o});};
+      for(let i=0;i<6;i++)page(176+i*72,118,C.gold);
+      S(svg,'line',{x1:166,y1:200,x2:612,y2:200,stroke:C.pur,'stroke-width':6});
+      page(686,60,C.gold);arrow(svg,'M680 140 L618 156',m,C.mut);
+      page(52,210,C.rose,.7);
+      S(svg,'path',{d:'M40 248 L52 300 L108 300 L120 248',fill:'none',stroke:C.rose,'stroke-width':2});
+      arrow(svg,'M170 204 L122 222',mr,C.rose);
+      T(svg,389,232,'the desk: fixed size',{'text-anchor':'middle',fill:C.pur});
+      T(svg,714,40,'new page',{'text-anchor':'middle'});
+      T(svg,140,318,'oldest page: binned',{fill:C.rose});
+      T(svg,389,96,'all read before each reply',{'text-anchor':'middle',fill:C.mut});})();
+
+    /* 3: one 200K window shared (example split) */
+    (()=>{const svg=$('shareSvg'),k=760/200;let x=20;
+      const segs=[['system prompt',4,1],['tool definitions',16,.75],['attached document',80,.55],['chat so far',60,.9],['room for reply',40,0]];
+      const pos=[];segs.forEach(([n,v,o])=>{const w=v*k;
+        if(o)S(svg,'rect',{x,y:100,width:w-1,height:50,fill:C.gold,'fill-opacity':o});
+        else S(svg,'rect',{x:x+1,y:101,width:w-3,height:48,fill:'none',stroke:C.gold,'stroke-width':2,'stroke-dasharray':'6 5'});
+        pos.push([x,w]);x+=w;});
+      T(svg,20,84,'system prompt 4K',{fill:C.fg});
+      T(svg,38,178,'tool definitions 16K',{fill:C.fg});
+      T(svg,pos[2][0]+pos[2][1]/2,84,'attached document 80K',{'text-anchor':'middle'});
+      T(svg,pos[3][0]+pos[3][1]/2,178,'chat so far 60K',{'text-anchor':'middle'});
+      T(svg,pos[4][0]+pos[4][1]/2,84,'room for reply 40K',{'text-anchor':'middle'});
+      T(svg,20,36,'one 200K-token window',{fill:C.pur});
+      T(svg,20,228,'scale: 760 px = 200,000 tokens',{fill:C.mut});})();
+
+    /* 4: chat grows turn by turn vs an 8K window (example: avg 600) */
+    (()=>{const svg=$('growSvg'),W=8000,base=250,k=200/12000;let cum=0;
+      [0,4000,8000,12000].forEach(v=>T(svg,68,base-v*k+5,v?comma(v/1000)+'K':'0',{'text-anchor':'end',fill:C.mut}));
+      for(let i=1;i<=20;i++){cum+=turnTokens(i,600);const x=80+(i-1)*34,inV=Math.min(cum,W);
+        S(svg,'rect',{x,y:base-inV*k,width:28,height:inV*k,fill:C.gold,'fill-opacity':i===1?1:.8});
+        if(cum>W)S(svg,'rect',{x,y:base-cum*k,width:28,height:(cum-W)*k,fill:C.rose,'fill-opacity':.75});}
+      S(svg,'line',{x1:74,y1:base-W*k,x2:762,y2:base-W*k,stroke:C.pur,'stroke-width':2,'stroke-dasharray':'6 5'});
+      T(svg,90,base-W*k-12,'8K-token window',{fill:C.pur});
+      T(svg,94,272,'turn 1',{'text-anchor':'middle',fill:C.mut});
+      T(svg,80+13*34+14,272,'turn 14',{'text-anchor':'middle',fill:C.mut});
+      T(svg,80+19*34+14,272,'turn 20',{'text-anchor':'middle',fill:C.mut});
+      T(svg,80+13*34+14,34,'turn 14: over the limit',{'text-anchor':'middle',fill:C.rose});
+      T(svg,20,294,'tokens of chat sent with each reply',{fill:C.mut});})();
+
+    /* 5: three ways to handle overflow. 20 turns (12,000 tokens) vs 8,000; 1 px = 25 tokens */
+    (()=>{const svg=$('limitSvg'),k=1/25,R=760,W=8000,x0=R-12000*k,fx=R-W*k;
+      const toks=[];for(let i=1;i<=20;i++)toks.push(turnTokens(i,600));
+      const starts=[];let x=x0;toks.forEach(t=>{starts.push(x);x+=t*k;});
+      const rows=[60,150,240];
+      rows.forEach(y=>S(svg,'rect',{x:fx,y:y-6,width:W*k,height:42,fill:'none',stroke:C.pur,'stroke-width':2.5}));
+      T(svg,R,36,'8K window',{'text-anchor':'end',fill:C.pur});
+      // row A: refuse
+      toks.forEach((t,i)=>S(svg,'rect',{x:starts[i]+1,y:rows[0],width:t*k-2,height:30,fill:starts[i]<fx?C.rose:C.gold,'fill-opacity':starts[i]<fx?.8:.85}));
+      // row B: drop oldest (whole turns that do not fit)
+      let used=0,firstIn=20;for(let i=19;i>=0;i--){if(used+toks[i]>W)break;used+=toks[i];firstIn=i;}
+      toks.forEach((t,i)=>{const inV=i>=firstIn;S(svg,'rect',{x:starts[i]+1,y:rows[1],width:t*k-2,height:30,fill:inV?C.gold:C.rose,'fill-opacity':inV?.85:.18});});
+      // row C: summary of dropped turns (200 tokens) + recent turns that still fit
+      const sum=400;let u2=sum,fc=20;for(let i=19;i>=0;i--){if(u2+toks[i]>W)break;u2+=toks[i];fc=i;}
+      toks.forEach((t,i)=>{if(i>=fc)S(svg,'rect',{x:starts[i]+1,y:rows[2],width:t*k-2,height:30,fill:C.gold,'fill-opacity':.85});
+        else S(svg,'rect',{x:starts[i]+1,y:rows[2],width:t*k-2,height:30,fill:C.rose,'fill-opacity':.18});});
+      S(svg,'rect',{x:starts[fc]-sum*k-1,y:rows[2],width:sum*k,height:30,fill:C.gold,stroke:C.fg,'stroke-width':2});
+      const mr=marker(svg,'lmA',C.mut);
+      arrow(svg,`M${x0+40} ${rows[2]-8} Q${(x0+starts[fc])/2} ${rows[2]-34} ${starts[fc]-sum*k+2} ${rows[2]-8}`,mr,C.mut);
+      [['refuse','error: too long'],['drop the oldest','turns 1–7 gone'],['summarise','old turns → summary']].forEach(([a,b],i)=>{
+        T(svg,24,rows[i]+12,a);T(svg,24,rows[i]+32,b,{fill:C.mut});});
+      T(svg,starts[fc]-sum*k,300,'summary',{'text-anchor':'middle',fill:C.fg});})();
+
+    /* 6: the cliff */
+    (()=>{const svg=$('cliffSvg'),X0=100,X1=740,xw=400,Y0=230,Y1=60;
+      S(svg,'line',{x1:X0,y1:Y0,x2:X1,y2:Y0,stroke:C.line});S(svg,'line',{x1:X0,y1:Y0,x2:X0,y2:Y1-10,stroke:C.line});
+      S(svg,'line',{x1:xw,y1:44,x2:xw,y2:Y0,stroke:C.pur,'stroke-width':2,'stroke-dasharray':'5 5'});
+      const pts=[];for(let x=X0;x<=X1;x+=8)pts.push([x,Y0-(Y0-Y1)*Math.exp(-(X1-x)/250)]);
+      S(svg,'path',{d:'M'+pts.map(p=>p.join(' ')).join(' L'),fill:'none',stroke:C.rose,'stroke-width':3,'stroke-dasharray':'8 6'});
+      S(svg,'path',{d:`M${X0} ${Y0} L${xw} ${Y0} L${xw} ${Y1} L${X1} ${Y1}`,fill:'none',stroke:C.gold,'stroke-width':4});
+      T(svg,xw,32,'window edge',{'text-anchor':'middle',fill:C.pur});
+      T(svg,570,50,'in view: all of it',{'text-anchor':'middle',fill:C.gold});
+      T(svg,110,190,'out of view: none',{fill:C.gold});
+      T(svg,250,150,'the guess: a fade',{'text-anchor':'middle',fill:C.rose});
+      T(svg,90,66,'100%',{'text-anchor':'end',fill:C.mut});T(svg,90,236,'0%',{'text-anchor':'end',fill:C.mut});
+      T(svg,X0,256,'oldest turn',{fill:C.mut});T(svg,X1,256,'newest turn',{'text-anchor':'end',fill:C.mut});
+      T(svg,420,274,'share of the text the model can read',{'text-anchor':'middle',fill:C.mut});})();
+
+    /* 7: comparisons as dots; same spacing for both */
+    (()=>{const svg=$('triSvg'),g=18;
+      const tri=(x0,y0,n)=>{for(let q=0;q<n;q++)for(let kk=0;kk<=q;kk++)S(svg,'circle',{cx:x0+kk*g,cy:y0+q*g,r:6,fill:C.or});};
+      tri(110,44,6);tri(380,44,12);
+      T(svg,155,180,'6 tokens',{'text-anchor':'middle'});T(svg,155,202,'21 comparisons',{'text-anchor':'middle',fill:C.or});
+      T(svg,479,276,'12 tokens',{'text-anchor':'middle'});T(svg,479,298,'78 comparisons',{'text-anchor':'middle',fill:C.or});
+      T(svg,640,110,'twice the text',{fill:C.fg});T(svg,640,136,'≈ 4× the dots',{fill:C.or});
+      T(svg,100,24,'each row: one token looking back',{fill:C.mut});})();
+
+    /* 8: KV cache sizes (Llama 3 Table 3; 16-bit) vs weights and one H100 */
+    (()=>{const svg=$('kvSvg'),x0=260,k=6.2,per8=2*32*8*128*2,per405=2*126*8*128*2;
+      const rows=[['8B weights',8030261248*2/1e9,1],['8B cache, 8K tokens',per8*8000/1e9,.5],['8B cache, 32K tokens',per8*32000/1e9,.5],['8B cache, 128K',per8*128000/1e9,.5],['405B cache, 128K',per405*128000/1e9,.5]];
+      S(svg,'line',{x1:x0+80*k,y1:24,x2:x0+80*k,y2:260,stroke:C.mut,'stroke-width':2,'stroke-dasharray':'5 5'});
+      rows.forEach(([n,v,o],i)=>{const y=34+i*46;
+        S(svg,'rect',{x:x0,y,width:v*k,height:26,fill:C.teal,'fill-opacity':o});
+        T(svg,x0-14,y+19,n,{'text-anchor':'end'});T(svg,x0+v*k+8,y+19,v.toFixed(1)+' GB',{fill:C.teal});});
+      T(svg,x0+80*k,284,'one H100: 80 GB',{'text-anchor':'end',fill:C.mut});
+      T(svg,20,300,'scale: 6.2 px = 1 GB',{fill:C.mut});})();
+
+    /* 10: RoPE dials (example angles) */
+    (()=>{const svg=$('ropeSvg');
+      [[100,40,'fast-turning pair: 40° per position'],[222,10,'slow-turning pair: 10° per position']].forEach(([cy,step,name])=>{
+        T(svg,76,cy-46,name,{fill:C.mut});
+        for(let p=0;p<8;p++){const cx=110+p*85,a=(p*step-90)*Math.PI/180;
+          S(svg,'circle',{cx,cy,r:28,fill:'none',stroke:C.line,'stroke-width':2});
+          S(svg,'line',{x1:cx,y1:cy,x2:cx+24*Math.cos(a),y2:cy+24*Math.sin(a),stroke:C.or,'stroke-width':3});
+          S(svg,'circle',{cx:cx+24*Math.cos(a),cy:cy+24*Math.sin(a),r:4,fill:C.or});
+          if(cy===222)T(svg,cx,cy+52,String(p),{'text-anchor':'middle',fill:C.mut});}});
+      T(svg,40,280,'position',{fill:C.mut,'text-anchor':'start'});})();
+
+    /* 11: position interpolation, 2,048 trained, 8,192 squeezed 4x */
+    (()=>{const svg=$('stretchSvg'),X=v=>100+v*640/8192,yt=90,yb=210;
+      S(svg,'line',{x1:X(0),y1:yt,x2:X(2048),y2:yt,stroke:C.pur,'stroke-width':6});
+      S(svg,'line',{x1:X(2048),y1:yt,x2:X(8192),y2:yt,stroke:C.rose,'stroke-width':3,'stroke-dasharray':'6 6'});
+      S(svg,'line',{x1:X(0),y1:yb,x2:X(8192),y2:yb,stroke:C.gold,'stroke-width':6});
+      [0,2048,4096,6144,8192].forEach(v=>{S(svg,'line',{x1:X(v),y1:yb-5,x2:X(v/4),y2:yt+5,stroke:C.pur,'stroke-width':1.5});
+        T(svg,X(v),yb+30,comma(v),{'text-anchor':v===0?'start':v===8192?'end':'middle',fill:C.mut});});
+      T(svg,X(0),yt-36,'trained: positions 0–2,048',{fill:C.pur});
+      T(svg,X(8192),yt-36,'never seen in training',{'text-anchor':'end',fill:C.rose});
+      T(svg,X(0),yt-12,'0',{fill:C.mut});T(svg,X(2048),yt-12,'2,048',{'text-anchor':'middle',fill:C.mut});
+      T(svg,X(0),yb+56,'longer text: positions 0–8,192',{fill:C.gold});
+      T(svg,640,128,'squeezed 4×',{'text-anchor':'middle',fill:C.pur});})();
+
+    /* 12: Lost in the Middle, GPT-3.5-Turbo, 20 documents (Table 6), closed-book and oracle (Table 1) */
+    (()=>{const svg=$('lostSvg'),X=p=>120+(p-1)*560/19,Y=v=>260-(v-50)*5.5;
+      const pts=[[1,75.8],[5,57.2],[10,53.8],[15,55.4],[20,63.2]];
+      S(svg,'line',{x1:112,y1:Y(50),x2:700,y2:Y(50),stroke:C.line});S(svg,'line',{x1:112,y1:Y(50),x2:112,y2:Y(90),stroke:C.line});
+      [50,70,90].forEach(v=>T(svg,104,Y(v)+5,v+'%',{'text-anchor':'end',fill:C.mut}));
+      S(svg,'line',{x1:120,y1:Y(56.1),x2:690,y2:Y(56.1),stroke:C.mut,'stroke-width':2,'stroke-dasharray':'6 5'});
+      S(svg,'line',{x1:120,y1:Y(88.3),x2:690,y2:Y(88.3),stroke:C.teal,'stroke-width':2,'stroke-dasharray':'6 5'});
+      S(svg,'path',{d:'M'+pts.map(([p,v])=>X(p)+' '+Y(v)).join(' L'),fill:'none',stroke:C.or,'stroke-width':3});
+      pts.forEach(([p,v],i)=>{S(svg,'circle',{cx:X(p),cy:Y(v),r:6,fill:C.or});
+        T(svg,X(p),284,['1st','5th','10th','15th','20th'][i],{'text-anchor':'middle',fill:C.mut});
+        T(svg,X(p),306,v.toFixed(1)+'%',{'text-anchor':'middle',fill:C.or});});
+      T(svg,130,Y(88.3)-12,'given only the answer passage: 88.3%',{fill:C.teal});
+      T(svg,130,248,'no passages at all: 56.1%',{fill:C.mut});
+      T(svg,712,Y(63.2)+5,'answer last',{fill:C.or});})();
+
+    /* 13: 4K vs 16K versions, 20 documents (Table 6) */
+    (()=>{const svg=$('pairSvg'),base=240,k=2.4;
+      const a=[75.8,57.2,53.8,55.4,63.2],b=[75.7,57.3,54.1,55.4,63.1];
+      S(svg,'rect',{x:120,y:12,width:16,height:16,fill:C.or});T(svg,144,26,'4K-token version',{fill:C.mut});
+      S(svg,'rect',{x:330,y:12,width:16,height:16,fill:C.or,'fill-opacity':.45});T(svg,354,26,'16K-token version',{fill:C.mut});
+      S(svg,'line',{x1:100,y1:base,x2:760,y2:base,stroke:C.line});
+      a.forEach((v,i)=>{const x=130+i*126;
+        S(svg,'rect',{x,y:base-v*k,width:40,height:v*k,fill:C.or});
+        S(svg,'rect',{x:x+46,y:base-b[i]*k,width:40,height:b[i]*k,fill:C.or,'fill-opacity':.45});
+        T(svg,x+20,base-v*k-8,v.toFixed(1),{'text-anchor':'middle',fill:C.or});
+        T(svg,x+66,base-b[i]*k-8,b[i].toFixed(1),{'text-anchor':'middle',fill:C.mut});
+        T(svg,x+43,base+24,['1st','5th','10th','15th','20th'][i],{'text-anchor':'middle',fill:C.mut});});
+      T(svg,100,base+52,'accuracy (%) by position of the answer, of 20 passages',{fill:C.mut});})();
+
+    /* 14: retrieval: a big library, five passages fetched into the window */
+    (()=>{const svg=$('ragSvg'),m=marker(svg,'rgA',C.mut),hot=[[3,2],[17,1],[9,6],[21,8],[13,4]];
+      for(let c=0;c<24;c++)for(let r=0;r<10;r++){const h=hot.some(([a,b])=>a===c&&b===r);
+        S(svg,'rect',{x:40+c*13,y:54+r*13,width:10,height:10,fill:h?C.gold:C.teal,'fill-opacity':h?1:.35});}
+      arrow(svg,'M362 119 L466 119',m,C.mut);
+      S(svg,'rect',{x:474,y:44,width:286,height:150,fill:'none',stroke:C.pur,'stroke-width':2.5});
+      S(svg,'rect',{x:490,y:60,width:254,height:20,fill:C.gold,stroke:C.fg,'stroke-width':1.5});
+      for(let i=0;i<5;i++)S(svg,'rect',{x:490,y:90+i*20,width:200-i*14,height:14,fill:C.gold,'fill-opacity':.8});
+      T(svg,196,210,'library: 21M passages',{'text-anchor':'middle',fill:C.teal});
+      T(svg,414,104,'top 5',{'text-anchor':'middle',fill:C.gold});
+      T(svg,617,220,'the window',{'text-anchor':'middle',fill:C.pur});
+      T(svg,617,244,'question + 5 passages',{'text-anchor':'middle',fill:C.mut});})();
+
+    /* 15: memory notes: chat 1 -> saved file -> chat 2 */
+    (()=>{const svg=$('notesSvg'),m=marker(svg,'ntA',C.mut);
+      const win=(x,first)=>{S(svg,'rect',{x,y:44,width:290,height:66,fill:'none',stroke:C.pur,'stroke-width':2.5});
+        let bx=x+12;[46,30,58,26,52,34].forEach((w,i)=>{S(svg,'rect',{x:bx,y:60,width:w,height:34,fill:i===0&&first?C.teal:C.gold,'fill-opacity':i===0&&first?.9:.8});bx+=w+4;});};
+      win(40,false);win(470,true);
+      S(svg,'path',{d:'M370 160 L414 160 L430 176 L430 232 L370 232 Z',fill:C.teal,'fill-opacity':.25,stroke:C.teal,'stroke-width':2});
+      for(let l=0;l<3;l++)S(svg,'line',{x1:380,y1:186+l*14,x2:420,y2:186+l*14,stroke:C.teal,'stroke-width':2});
+      arrow(svg,'M185 114 L185 196 L364 196',m,C.mut);
+      arrow(svg,'M436 196 L512 196 L512 116',m,C.mut);
+      T(svg,185,30,'chat 1',{'text-anchor':'middle'});T(svg,615,30,'chat 2, days later',{'text-anchor':'middle'});
+      T(svg,270,226,'written down',{'text-anchor':'middle',fill:C.mut});
+      T(svg,560,232,'read back in',{'text-anchor':'middle',fill:C.mut});
+      T(svg,400,262,'saved notes, outside the model',{'text-anchor':'middle',fill:C.teal});})();
+
+    /* 16: window sizes, log scale */
+    (()=>{const svg=$('sizeSvg'),X=v=>300+(Math.log10(v)-3)*150;
+      [[1e3,'1K'],[1e4,'10K'],[1e5,'100K'],[1e6,'1M']].forEach(([v,s])=>{S(svg,'line',{x1:X(v),y1:20,x2:X(v),y2:262,stroke:'#2f2d2a','stroke-width':1.5});
+        T(svg,X(v),284,s,{'text-anchor':'middle',fill:C.mut});});
+      [['LLaMA, 2023',2048,'2,048'],['GPT-3.5-Turbo',4000,'4K'],['GPT-3.5-Turbo (16K)',16000,'16K'],['Claude 1.3 (100K)',100000,'100K'],['Llama 3, 2024',128000,'128K'],['Claude, Nov 2026',1000000,'1M']].forEach(([n,v,s],i)=>{const y=28+i*38;
+        S(svg,'rect',{x:300,y,width:X(v)-300,height:24,fill:C.pur,'fill-opacity':i===5?1:.7});
+        T(svg,285,y+18,n,{'text-anchor':'end'});T(svg,X(v)+8,y+18,s,{fill:C.pur});});
+      T(svg,20,284,'tokens, log scale',{fill:C.mut});})();
+
+    /* hand-off */
+    (()=>{const svg=$('nextSvg'),m=marker(svg,'nxA',C.mut);
+      S(svg,'rect',{x:40,y:58,width:56,height:44,fill:C.rose,'fill-opacity':.25,stroke:C.rose,'stroke-width':2,'stroke-dasharray':'5 5'});
+      S(svg,'rect',{x:120,y:40,width:360,height:80,fill:'none',stroke:C.pur,'stroke-width':2.5});
+      let x=136;[50,40,56,36,60,44].forEach(w=>{S(svg,'rect',{x,y:58,width:w,height:44,fill:C.gold,'fill-opacity':.8});x+=w+4;});
+      arrow(svg,'M488 80 L566 80',m,C.mut);
+      S(svg,'rect',{x:574,y:52,width:186,height:56,fill:C.rose,'fill-opacity':.85});
+      T(svg,40,148,'turn 1: out of view',{fill:C.rose});T(svg,300,180,'what the model sees',{'text-anchor':'middle',fill:C.pur});
+      T(svg,667,148,'a fluent guess',{'text-anchor':'middle',fill:C.rose});
+      T(svg,667,176,'Part 15',{'text-anchor':'middle',fill:C.fg});})();
+  </script>
+
+  <script>
+    // LAB. Anaya's chat (example) against a context window. Whole turns drop oldest-first.
+    // Comparisons = layers x query heads x n(n+1)/2; KV bytes = n x 2 x layers x 8 KV heads x 128 x 2 bytes (Llama 3 Table 3).
+    const ids=['win','turns','avg','model'];
+    const WINS=[2000,4000,8000,16000,32000,64000,128000];
+    const MODELS=[{name:'8B',L:32,H:32},{name:'70B',L:80,H:64},{name:'405B',L:126,H:128}];
+    const KVH=8,HD=128,BYTES=2,H100=80e9;
+    const big=v=>v>=1e12?(v/1e12).toFixed(2)+' trillion':v>=1e9?(v/1e9).toFixed(2)+' billion':v>=1e6?(v/1e6).toFixed(2)+' million':comma(v);
+    const gb=b=>b>=1e9?(b/1e9).toFixed(2)+' GB':(b/1e6).toFixed(1)+' MB';
+    const fmtTok=v=>comma(v)+' tokens';
+    function compute(v){
+      const W=WINS[v[0]],N=v[1],avg=v[2],M=MODELS[v[3]];
+      const toks=[];for(let i=1;i<=N;i++)toks.push(turnTokens(i,avg));
+      const total=toks.reduce((a,b)=>a+b,0);
+      let n=0,first=N+1;for(let i=N;i>=1;i--){if(n+toks[i-1]>W)break;n+=toks[i-1];first=i;}
+      const tooLong=first>N; // newest turn alone exceeds the window (cannot happen within the slider ranges)
+      const dropped=total-n,turnsIn=N-first+1;
+      const perHead=n*(n+1)/2,comps=M.L*M.H*perHead,rel=n*(n+1)/(1000*1001);
+      const kvPer=2*M.L*KVH*HD*BYTES,kv=n*kvPer;
+      const fullHead=W*(W+1)/2;
+      return {W,N,avg,M,toks,total,n,first,tooLong,dropped,turnsIn,perHead,comps,rel,kvPer,kv,attnShare:perHead/fullHead,kvShare:n/W,
+        rows:[['Context window',W,'#c3b8ff'],['Whole chat so far',total,'#f5c76a'],['Still in view',n,'#f5c76a'],['Fell out of view',dropped,'#ec6a94']],
+        ledger:[['whole chat',comma(total)+' tokens, '+N+' turn'+(N>1?'s':'')],['window',comma(W)+' tokens'],
+          ['in view',comma(n)+' tokens, '+(turnsIn>0?(first===N?'turn '+N:'turns '+first+'–'+N):'none')],
+          ['fell out',dropped?comma(dropped)+' tokens, '+(first-1===1?'turn 1':'turns 1–'+(first-1)):'nothing'],
+          ['turn 1 (the allergy)',first===1?'in view':'fell out'],
+          ['comparisons, one head, one layer',big(perHead)],
+          ['comparisons, all '+(M.L*M.H).toLocaleString('en-US')+' heads × layers',big(comps)],
+          ['× a 1,000-token chat',rel>=10?comma(rel)+'×':rel.toFixed(2)+'×'],
+          ['KV cache per token',comma(kvPer/1024)+' KB'],
+          ['KV cache for the view',gb(kv)],
+          ['share of one H100 (80 GB)',(kv/H100*100).toFixed(1)+'%']]};
+    }
+    const labConfig={format:fmtTok,sliderFormats:[v=>comma(WINS[v])+' tokens',v=>String(v),v=>comma(v)+' tokens',v=>'Llama 3 '+MODELS[v].name]};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function niceMax(x){if(x<=0)return 1;const p=10**Math.floor(Math.log10(x));for(const m of [1,2,5,10])if(m*p>=x*(1-1e-9))return m*p;return 10*p;}
+    function drawStrip(r){const svg=$('stripSvg');clear(svg);
+      const L=20,R=500,k=(R-L)/Math.max(r.total,r.W);let x=R-r.total*k;
+      r.toks.forEach((t,i)=>{const w=t*k,inV=i+1>=r.first;
+        S(svg,'rect',{x:x+(w>4?0.5:0),y:54,width:Math.max(0.6,w-(w>4?1:0)),height:40,fill:inV?C.gold:C.rose,'fill-opacity':inV?.85:.3});x+=w;});
+      S(svg,'rect',{x:R-r.W*k,y:46,width:r.W*k,height:56,fill:'none',stroke:C.pur,'stroke-width':2.5});
+      T(svg,R,30,'window: '+comma(r.W),{'text-anchor':'end',fill:C.pur});
+      T(svg,L,30,'oldest',{fill:C.mut});
+      S(svg,'line',{x1:R-r.total*k+1,y1:98,x2:R-r.total*k+1,y2:108,stroke:r.first===1?C.gold:C.rose,'stroke-width':3});
+      T(svg,L,126,'turn 1: '+(r.first===1?'in view':'out'),{fill:r.first===1?C.gold:C.rose});
+      T(svg,R,126,'newest',{'text-anchor':'end',fill:C.mut});}
+    function drawCost(r){const svg=$('costSvg');clear(svg);
+      const x0=60,x1=480,y0=226,y1=60,X=n=>x0+(x1-x0)*n/r.W,Y=s=>y0-(y0-y1)*s;
+      S(svg,'line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:C.line});S(svg,'line',{x1:x0,y1:y0,x2:x0,y2:y1-6,stroke:C.line});
+      S(svg,'line',{x1:x0+4,y1:20,x2:x0+28,y2:20,stroke:C.teal,'stroke-width':3});T(svg,x0+36,26,'KV cache',{fill:C.mut});
+      S(svg,'line',{x1:x0+150,y1:20,x2:x0+174,y2:20,stroke:C.or,'stroke-width':3});T(svg,x0+182,26,'comparisons',{fill:C.mut});
+      T(svg,x0-8,Y(1)+5,'100%',{'text-anchor':'end',fill:C.mut});T(svg,x0-8,y0+5,'0',{'text-anchor':'end',fill:C.mut});
+      S(svg,'path',{d:`M${x0} ${y0} L${x1} ${y1}`,fill:'none',stroke:C.teal,'stroke-width':3});
+      const pts=[];for(let i=0;i<=40;i++){const n=r.W*i/40;pts.push(X(n)+' '+Y(n*(n+1)/(r.W*(r.W+1))));}
+      S(svg,'path',{d:'M'+pts.join(' L'),fill:'none',stroke:C.or,'stroke-width':3});
+      S(svg,'line',{x1:X(r.n),y1:y1-6,x2:X(r.n),y2:y0,stroke:C.gold,'stroke-width':2,'stroke-dasharray':'4 4'});
+      S(svg,'circle',{cx:X(r.n),cy:Y(r.kvShare),r:6,fill:C.teal,stroke:C.box,'stroke-width':2});
+      S(svg,'circle',{cx:X(r.n),cy:Y(r.attnShare),r:6,fill:C.or,stroke:C.box,'stroke-width':2});
+      T(svg,x0,y0+22,'0',{fill:C.mut});T(svg,x1,y0+22,comma(r.W),{'text-anchor':'end',fill:C.mut});
+      T(svg,x0,y0+44,'tokens in view, up to the window',{fill:C.mut});
+      T(svg,x0,y0+70,'cache '+Math.round(r.kvShare*100)+'% · comparisons '+Math.round(r.attnShare*100)+'% of full',{fill:C.fg});}
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const r=compute(v),rows=r.rows;
+      if(rows.some(x=>!Number.isFinite(x[1])||x[1]<0)||!Number.isFinite(r.kv)||!Number.isFinite(r.comps)) throw new Error('Lab returned non-finite results');
+      const m=niceMax(Math.max(...rows.map(x=>x[1]))),x0=30,span=440,sx=x=>x0+Math.min(m,x)*span/m,ticks=[0,m/2,m];
+      const bottom=70+rows.length*82;$('labChart').setAttribute('viewBox',`0 0 520 ${bottom+78}`);
+      let s='<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">'+(r.tooLong?'newest turn alone is too long':'tokens: the window and the chat')+'</text>';
+      rows.forEach(([name,val,col],i)=>{const y=80+i*82;
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}</text><rect data-v="${val}" x="${x0}" y="${y}" width="${sx(val)-x0}" height="26" fill="${esc(col)}"${i===1?' fill-opacity="0.45"':''}/>`;});
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">Axis adjusts to values.</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=r.ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      drawStrip(r);drawCost(r);
+      window.labResults={valid:true,rows:rows.map(x=>x[1]),axis:m,W:r.W,turns:r.N,avg:r.avg,model:r.M.name,total:r.total,inView:r.n,dropped:r.dropped,
+        firstInView:r.first,turn1InView:r.first===1,turnsInView:r.turnsIn,tooLong:r.tooLong,compsPerHead:r.perHead,comps:r.comps,relTo1000:r.rel,
+        kvPerToken:r.kvPer,kvBytes:r.kv,h100Share:r.kv/H100,attnShare:r.attnShare,kvShare:r.kvShare};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
