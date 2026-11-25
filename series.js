@@ -26,7 +26,7 @@ window.ELI5_SERIES = {
     { id: 'context-window-eli5', track: 'llm', title: 'Memory and the context window', blurb: 'What the model can see at once, and why long chats forget', file: 'context-window-eli5.html' },
     { id: 'why-models-make-things-up-eli5', track: 'llm', title: 'Why models make things up', blurb: 'Confident mistakes: where they come from and why they are hard to stop', file: 'why-models-make-things-up-eli5.html' },
     { id: 'thinking-and-tools-eli5', track: 'llm', title: 'Thinking and using tools', blurb: 'Reasoning steps, searching, running code, and acting as an agent', file: 'thinking-and-tools-eli5.html' },
-    { id: 'how-chips-are-made-eli5', track: 'chip', title: 'How chips are made', blurb: 'Silicon, light, and the factories the whole industry depends on' }
+    { id: 'how-chips-are-made-eli5', track: 'chip', title: 'How chips are made', blurb: 'Silicon, light, and the factories the whole industry depends on', file: 'how-chips-are-made-eli5.html' }
   ],
   bonus: { id: 'inside-llm-serving-eli5', title: 'Inside LLM serving: one model, millions of chats', blurb: 'Where software meets hardware: one shared model serving millions of chats', file: 'inside-llm-serving-eli5.html' }
 };
