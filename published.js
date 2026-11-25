@@ -1,5 +1,30 @@
 window.PUBLISHED = [
   {
+    "id": "autocomplete-to-assistant-eli5",
+    "title": "From autocomplete to assistant",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 13: fine-tuning and human feedback turn a word-guesser into a helper",
+    "bullets": [
+      "Base models continue documents; fine-tuning on example chats teaches them to answer",
+      "Reward models and a KL leash steer chances towards what people pick, flattery included"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "BASE MODEL",
+      "FINE-TUNE",
+      "REWARD MODEL",
+      "RLHF",
+      "ASSISTANT"
+    ],
+    "file": "explainers/autocomplete-to-assistant-eli5.html",
+    "date": "2026-11-25",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Three bars of the chances of four replies: the starting model, then a looser and a loose leash, where the plain story takes over and the other replies shrink away\"><path d=\"M36 34V136\" stroke=\"#57534f\" fill=\"none\"/><rect x=\"40.0\" y=\"40\" width=\"96.0\" height=\"20\" fill=\"#ff8059\"/><rect x=\"136.0\" y=\"40\" width=\"72.0\" height=\"20\" fill=\"#ec6a94\"/><rect x=\"208.0\" y=\"40\" width=\"24.0\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"232.0\" y=\"40\" width=\"48.0\" height=\"20\" fill=\"#a5a29c\"/><rect x=\"40.0\" y=\"70\" width=\"139.0\" height=\"20\" fill=\"#ff8059\"/><rect x=\"179.0\" y=\"70\" width=\"89.8\" height=\"20\" fill=\"#ec6a94\"/><rect x=\"268.7\" y=\"70\" width=\"3.1\" height=\"20\" fill=\"#f5c76a\"/><rect x=\"271.8\" y=\"70\" width=\"8.2\" height=\"20\" fill=\"#a5a29c\"/><rect x=\"40.0\" y=\"100\" width=\"204.7\" height=\"20\" fill=\"#ff8059\"/><rect x=\"244.7\" y=\"100\" width=\"35.3\" height=\"20\" fill=\"#ec6a94\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"40\" y=\"28\" fill=\"#76d5c1\">PART 13</text><text x=\"40\" y=\"140\" fill=\"#a5a29c\">LOOSER LEASH</text></g></svg>",
+    "part": 13
+  },
+  {
     "id": "satyam-decoded-eli5",
     "title": "Satyam, decoded",
     "category": "Monetary Architecture",
