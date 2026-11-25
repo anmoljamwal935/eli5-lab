@@ -1,5 +1,29 @@
 window.PUBLISHED = [
   {
+    "id": "thinking-and-tools-eli5",
+    "title": "Thinking and using tools",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 16: how models think in tokens, call tools and run as agents",
+    "bullets": [
+      "Writing out working buys more passes: PaLM went from 17.9% to 56.9% on GSM8K",
+      "Agents loop think, act, observe; 95% per step is only 36% over 20 steps"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "THINK",
+      "ACT",
+      "OBSERVE",
+      "CHECK"
+    ],
+    "file": "explainers/thinking-and-tools-eli5.html",
+    "date": "2026-11-25",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Chance a whole agent task succeeds falling with the number of steps for 99, 95 and 90 percent per step, far below a dashed line at the 95 percent people guess.\"><path d=\"M28 124H292\" stroke=\"#57534f\" fill=\"none\"/><path d=\"M28 36.6H292\" stroke=\"#ec6a94\" stroke-width=\"1.5\" stroke-dasharray=\"5 4\" fill=\"none\"/><polyline points=\"28.0,32.9 33.4,33.8 38.8,34.7 44.2,35.6 49.6,36.5 54.9,37.4 60.3,38.2 65.7,39.1 71.1,40.0 76.5,40.8 81.9,41.6 87.3,42.5 92.7,43.3 98.0,44.1 103.4,44.9 108.8,45.7 114.2,46.4 119.6,47.2 125.0,48.0 130.4,48.8 135.8,49.5 141.1,50.2 146.5,51.0 151.9,51.7 157.3,52.4 162.7,53.2 168.1,53.9 173.5,54.6 178.9,55.3 184.2,55.9 189.6,56.6 195.0,57.3 200.4,58.0 205.8,58.6 211.2,59.3 216.6,59.9 222.0,60.6 227.3,61.2 232.7,61.8 238.1,62.5 243.5,63.1 248.9,63.7 254.3,64.3 259.7,64.9 265.1,65.5 270.4,66.1 275.8,66.6 281.2,67.2 286.6,67.8 292.0,68.3\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.5\"/><polyline points=\"28.0,36.6 33.4,41.0 38.8,45.1 44.2,49.1 49.6,52.8 54.9,56.4 60.3,59.8 65.7,63.0 71.1,66.0 76.5,68.9 81.9,71.7 87.3,74.3 92.7,76.8 98.0,79.1 103.4,81.4 108.8,83.5 114.2,85.5 119.6,87.5 125.0,89.3 130.4,91.0 135.8,92.7 141.1,94.2 146.5,95.7 151.9,97.1 157.3,98.5 162.7,99.8 168.1,101.0 173.5,102.1 178.9,103.2 184.2,104.3 189.6,105.2 195.0,106.2 200.4,107.1 205.8,107.9 211.2,108.7 216.6,109.5 222.0,110.2 227.3,110.9 232.7,111.6 238.1,112.2 243.5,112.8 248.9,113.3 254.3,113.9 259.7,114.4 265.1,114.9 270.4,115.3 275.8,115.7 281.2,116.2 286.6,116.5 292.0,116.9\" fill=\"none\" stroke=\"#f1eee8\" stroke-width=\"2.5\"/><polyline points=\"28.0,41.2 33.4,49.5 38.8,56.9 44.2,63.6 49.6,69.7 54.9,75.1 60.3,80.0 65.7,84.4 71.1,88.4 76.5,91.9 81.9,95.1 87.3,98.0 92.7,100.6 98.0,103.0 103.4,105.1 108.8,107.0 114.2,108.7 119.6,110.2 125.0,111.6 130.4,112.8 135.8,113.9 141.1,114.9 146.5,115.8 151.9,116.7 157.3,117.4 162.7,118.1 168.1,118.7 173.5,119.2 178.9,119.7 184.2,120.1 189.6,120.5 195.0,120.8 200.4,121.2 205.8,121.4 211.2,121.7 216.6,121.9 222.0,122.1 227.3,122.3 232.7,122.5 238.1,122.6 243.5,122.8 248.9,122.9 254.3,123.0 259.7,123.1 265.1,123.2 270.4,123.3 275.8,123.3 281.2,123.4 286.6,123.5 292.0,123.5\" fill=\"none\" stroke=\"#a5a29c\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><circle cx=\"130.4\" cy=\"91.0\" r=\"3.5\" fill=\"#f1eee8\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"292\" y=\"25\" text-anchor=\"end\" fill=\"#ec6a94\">THE GUESS</text><text x=\"28\" y=\"141\" fill=\"#76d5c1\">PART 16</text><text x=\"292\" y=\"141\" text-anchor=\"end\" fill=\"#a5a29c\">MORE STEPS</text></g></svg>",
+    "part": 16
+  },
+  {
     "id": "why-models-make-things-up-eli5",
     "title": "Why models make things up",
     "category": "AI & Frontier",
