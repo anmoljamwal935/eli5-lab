@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://eli5-seven-mu.vercel.app/</loc><lastmod>2026-11-24</lastmod></url>
+<url><loc>https://eli5-seven-mu.vercel.app/</loc><lastmod>2026-11-25</lastmod></url>
+<url><loc>https://eli5-seven-mu.vercel.app/explainers/how-chips-are-made-eli5</loc><lastmod>2026-11-25</lastmod></url>
+<url><loc>https://eli5-seven-mu.vercel.app/explainers/thinking-and-tools-eli5</loc><lastmod>2026-11-25</lastmod></url>
+<url><loc>https://eli5-seven-mu.vercel.app/explainers/why-models-make-things-up-eli5</loc><lastmod>2026-11-25</lastmod></url>
+<url><loc>https://eli5-seven-mu.vercel.app/explainers/context-window-eli5</loc><lastmod>2026-11-25</lastmod></url>
+<url><loc>https://eli5-seven-mu.vercel.app/explainers/autocomplete-to-assistant-eli5</loc><lastmod>2026-11-25</lastmod></url>
 <url><loc>https://eli5-seven-mu.vercel.app/explainers/satyam-decoded-eli5</loc><lastmod>2026-11-24</lastmod></url>
 <url><loc>https://eli5-seven-mu.vercel.app/explainers/portfolio-taxes-costs-eli5</loc><lastmod>2026-11-24</lastmod></url>
 <url><loc>https://eli5-seven-mu.vercel.app/explainers/one-company-start-to-finish-eli5</loc><lastmod>2026-11-24</lastmod></url>

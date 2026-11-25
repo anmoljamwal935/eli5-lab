@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How chips are made — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (How AI works, from scratch): gold = text and tokens, teal = stored numbers,
+       orange = arithmetic, purple = connections, rose = the wrong intuition.
+       On this page: gold = light and the gate input it controls, orange = logic dies that do arithmetic,
+       teal = memory chips, purple = wires and links, rose = the wrong guess and dead dies. */
+    :root{--rose:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Series parts: fact tags, Go deeper boxes, readouts */
+    .tag{display:inline-block;margin:0 2px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted);vertical-align:1px}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p{font-size:15px}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+    .readout b{color:var(--fg);font-weight:600}
+    .lab-chart svg+svg{margin-top:18px}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="Part 17: silicon, light, and the factories every AI chip depends on">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/how-chips-are-made-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="How chips are made">
+<meta property="og:description" content="Part 17: silicon, light, and the factories every AI chip depends on">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/how-chips-are-made-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/how-chips-are-made-eli5.png?v=ac7f2405">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="How chips are made">
+<meta property="article:published_time" content="2026-11-25">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body data-series-id="how-chips-are-made-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>How chips are made</h1>
+      <p class="lede">Every part of this series has run on chips: billions of switches on a slice of silicon. This last part shows how they get there. Sand becomes a perfect crystal, the crystal is sliced into wafers, and light prints the switches and wires, layer by layer, in factories that cost tens of billions of dollars. Then it shows why some chips come out dead, why big AI chips cost so much, and how they are packaged with their memory.</p>
+      <p class="source-note">A topic study built from the primary sources: ASML’s product pages and 2025 annual report, TSMC’s 2025 annual report, 2024 business overview and press releases, Intel’s and Samsung’s process announcements, the IRDS 2022 More Moore roadmap tables, the Semiconductor Industry Association’s 2025 polysilicon filing, SK hynix’s HBM3E release, NVIDIA’s Hopper and Blackwell pages, and Bogdanov and colleagues’ review of yield models; every number below was checked against them, as of November 2026 · <a href="https://www.asml.com/en/products/euv-lithography-systems">Read the main source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on <a href="what-a-chip-is-eli5.html" data-series-link="what-a-chip-is-eli5">Part 3</a> (a chip is billions of switches flipped by electricity, with wires stacked above them), <a href="the-gpu-eli5.html" data-series-link="the-gpu-eli5">Part 5</a> (GPUs and their stacked HBM memory), <a href="memory-bottleneck-eli5.html" data-series-link="memory-bottleneck-eli5">Part 8</a> (why that memory sits right beside the chip) and <a href="ai-chips-eli5.html" data-series-link="ai-chips-eli5">Part 10</a> (the AI chips themselves). Facts carry a tag: <span class="tag">public</span> means a published report, spec sheet or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>light, and the gate it switches</span>
+        <span><i style="background:#ff8059"></i>logic dies: the chips that do arithmetic</span>
+        <span><i style="background:#76d5c1"></i>memory chips</span>
+        <span><i style="background:#c3b8ff"></i>wires and links</span>
+        <span><i style="background:#ec6a94"></i>the wrong guess, dead dies</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Eighty billion switches, all of them working</h2>
+      <p>NVIDIA’s H100, the GPU Part 12 wired together by the thousand, is one piece of silicon 814 mm² across, carrying 80 billion transistors <span class="tag">public</span>. Here it is to scale, with one square millimetre lit up:</p>
+      <figure>
+        <svg id="dieSvg" viewBox="0 0 800 320" role="img" aria-label="An 814 square millimetre die drawn to scale with a one millimetre grid; one small square holds about 98 million switches."></svg>
+      </figure>
+      <p>That is about 98 million switches in every square millimetre <span class="tag">public</span>. Placing them one a second would take about 2,500 years. And one bad switch in the wrong place can ruin the whole chip. So the switches cannot be built one at a time. They are printed, all at once, with light.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>A photograph, not a drawing</h2>
+      <p>Think of an old darkroom. Light shines through a negative, a lens shrinks the image, and wherever light lands, the film changes. Chipmaking does the same. The negative is a <b>mask</b> carrying one layer of the chip’s design. The film is a light-sensitive coating on the wafer, called <b>photoresist</b>.</p>
+      <figure>
+        <svg id="photoSvg" viewBox="0 0 800 290" role="img" aria-label="Light passes through a stencil-like mask, a lens shrinks the pattern four times, and the small image lands on a coated wafer."></svg>
+      </figure>
+      <p>ASML’s EUV machines shrink the mask’s pattern by a factor of four on the way to the wafer <span class="tag">public</span>, so the mask can be drawn larger than the chip. Where the analogy breaks: a photo is one exposure. A chip needs dozens of them, one per layer, each lined up on top of the last to within a few nanometres.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>From sand to one perfect crystal</h2>
+      <p>It starts with silica, the main ingredient of sand. It is refined into crude silicon, then purified into <b>polysilicon</b>. For chips the polysilicon must be at least 99.999999999% pure: “eleven nines”, or one stray atom in a hundred billion <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="sandSvg" viewBox="0 0 800 300" role="img" aria-label="Five stages left to right: sand, lumps of crude silicon, rods of polysilicon, one long single-crystal ingot, and thin round wafers sliced from it, ingot and wafers drawn to scale."></svg>
+      </figure>
+      <p>The polysilicon is melted and a single crystal is slowly pulled from the melt, every atom lined up with its neighbours. For 300 mm wafers the crystal, called an <b>ingot</b>, is about 7 feet long and weighs about 600 pounds <span class="tag">public</span>: roughly 2.1 m and 270 kg. Diamond saws slice it into wafers, which are then polished <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: who makes the raw material</summary>
+        <p>The Semiconductor Industry Association’s 2025 filing to the US government lists five main makers of chip-grade polysilicon (Wacker, Hemlock, Tokuyama, Sumco and OCI) and five main wafer makers (Shin-Etsu Handotai, Sumco, GlobalWafers, SK Siltron and Siltronic). Chips use only about 2.4% of the world’s polysilicon; solar panels use the rest, at a lower purity of 6 to 10 nines <span class="tag">public</span>. The exact purity a given wafer maker reaches is <span class="tag np">not public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>A round wafer, square chips</h2>
+      <p>The 300 mm wafer is the size most used in chipmaking today <span class="tag">public</span>, and TSMC alone shipped 15.0 million of them, counted as 12-inch equivalents, in 2025 <span class="tag">public</span>. Each wafer is printed with a grid of identical chips, called <b>dies</b>. Square dies do not tile a circle:</p>
+      <figure>
+        <svg id="waferSvg" viewBox="0 0 800 450" role="img" aria-label="Two 300 millimetre wafers to scale: one tiled with 69 whole dies of 814 square millimetres, the other with 621 whole dies of 100 square millimetres, each leaving an empty rim."></svg>
+      </figure>
+      <p>Dividing the wafer’s area by the die’s area overestimates, because the rim is wasted, and the bigger the die, the more it wastes <span class="tag">example</span>. These counts assume square dies, no gaps for the saw, and a 3 mm unusable edge <span class="tag">example</span>. The lab below counts the same way.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>One layer: coat, expose, wash, etch</h2>
+      <p>Printing one layer is a short recipe, the same every time <span class="tag">public</span>. Lay down a thin film of the material this layer needs. Coat it with resist. Shine light through the mask. Wash away the resist the light changed. Etch away the film where it is uncovered. Strip off the rest of the resist:</p>
+      <figure>
+        <svg id="layerSvg" viewBox="0 0 800 250" role="img" aria-label="Six cross-sections of one wafer: a film is laid down, coated with resist, exposed to light through a mask, the exposed resist washed away, the bare film etched, and the resist stripped, leaving a patterned film."></svg>
+      </figure>
+      <p>The light never touches the film itself. It only decides which parts of the resist survive, and the resist decides which parts of the film survive. Other steps slot into the same loop: firing charged atoms (ions) into the bare silicon to set where it conducts, which is Part 3’s doping, and polishing each layer flat <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Then do it again, dozens of times</h2>
+      <p>Part 3 showed a chip’s structure: switches in one layer at the bottom, wiring stacked above like floors in a building. Every floor is one more trip around the loop, lined up on the floor below. The finest layers come first:</p>
+      <figure>
+        <svg id="stackSvg" viewBox="0 0 800 330" role="img" aria-label="A cross-section of a finished chip: a row of switches on the silicon, then a dozen wiring layers whose wires get wider and further apart towards the top."></svg>
+      </figure>
+      <p>ASML puts it plainly: chips are made of dozens of layers, each chip goes through this process hundreds of times, and the whole job can take more than three months <span class="tag">public</span>. The wires get thicker and further apart towards the top, where, as Part 3 showed, they cross the whole chip and bring in power.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The catch</p>
+      <h2>Smaller lines need shorter light</h2>
+      <p>Light blurs. The narrowest line a lens can print is set by the wavelength of its light, so each big shrink has needed shorter light. ASML’s own history runs from 436 nm blue light from mercury lamps to 13.5 nm extreme ultraviolet <span class="tag">public</span>. Drawn to one scale:</p>
+      <figure>
+        <svg id="waveSvg" viewBox="0 0 800 330" role="img" aria-label="Five light waves drawn to scale: 436 and 365 nanometres from mercury lamps, 248 and 193 nanometres from lasers, and 13.5 nanometres extreme ultraviolet, whose waves are packed far tighter."></svg>
+      </figure>
+      <p>Deep ultraviolet (<b>DUV</b>) comes from lasers: krypton fluoride at 248 nm and argon fluoride at 193 nm. Extreme ultraviolet (<b>EUV</b>) at 13.5 nm is, in ASML’s words, “almost x-ray range” <span class="tag">public</span>, fourteen times shorter than 193 nm. It is so different that it needs a whole new machine, two panels down.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The rule</p>
+      <h2>Three levers: light, lens, and tricks</h2>
+      <p>ASML gives the rule: smallest printable line = <i>k</i><sub>1</sub> × wavelength ÷ NA <span class="tag">public</span>. NA, the numerical aperture, measures how wide a cone of light the lens gathers. <i>k</i><sub>1</sub> covers every clever trick of the process, and ASML puts its physical limit at 0.25 <span class="tag">public</span>. Here are its three current kinds of machine:</p>
+      <figure>
+        <svg id="resSvg" viewBox="0 0 800 300" role="img" aria-label="For DUV immersion, EUV and High-NA EUV, a faint bar shows wavelength divided by NA and a solid bar the smallest printed line: 38, 13 and 8 nanometres, with the k1 limit of 0.25 marked."></svg>
+      </figure>
+      <p>Each faint bar is wavelength ÷ NA. The solid bar is what ASML says the machine prints: 38 nm or less for its NXT:2100i DUV machine, 13 nm for EUV, 8 nm for High-NA EUV <span class="tag">public</span>. Divide one by the other and you get <i>k</i><sub>1</sub>: the DUV machine is already at 0.27, almost on the limit <span class="tag">example</span>. DUV has no room left to squeeze. Only shorter light, or a wider lens, goes further.</p>
+      <details class="trace"><summary>Go deeper: how a lens gets an NA above 1</summary>
+        <p>In air, NA can never reach 1. ASML’s DUV “immersion” machines put a thin layer of water between the last lens and the wafer, which bends the light more steeply, and their NXT:2100i reaches an NA of 1.35 <span class="tag">public</span>. EUV cannot use water or even lenses, so it uses mirrors, at an NA of 0.33; the High-NA machines raise that to 0.55 <span class="tag">public</span>. Shrinking <i>k</i><sub>1</sub> needs tricks in the mask and the resist, many of them designed by computer simulation, which ASML calls computational lithography <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">The workaround</p>
+      <h2>Print twice to halve the spacing</h2>
+      <p>Before EUV, chipmakers beat the limit by printing one layer in several passes. Print every other line, etch, then print the lines in between, shifted by half a step. Two passes give half the spacing, called the <b>pitch</b>:</p>
+      <figure>
+        <svg id="mpSvg" viewBox="0 0 800 280" role="img" aria-label="Three rows of lines: a first pass at the finest pitch the lens can print, a second pass shifted by half a pitch, and the two combined at half the pitch."></svg>
+      </figure>
+      <p>It works, at a price: more masks, more passes, more chances for a misaligned line. The IRDS roadmap lists self-aligned quadruple patterning on 193 nm machines as one way to print the tightest wires of 2022’s chips <span class="tag">public</span>. ASML’s case for EUV is exactly this: one exposure per layer instead of several, fewer masks, fewer steps and better yield <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The machine</p>
+      <h2>EUV: light made by blasting tin</h2>
+      <p>No lamp or laser makes 13.5 nm light. An EUV machine makes it from tin. Molten droplets fall past a powerful laser, which fires up to 50,000 times a second. Two pulses hit each droplet: one flattens it, the next vaporises it into a plasma that glows with EUV light <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="euvSvg" viewBox="0 0 800 330" role="img" aria-label="Tin droplets fall past a laser; one becomes a glowing plasma; a curved collector mirror gathers its light and a chain of flat mirrors bounces it off a reflective mask down to the wafer, all inside a vacuum."></svg>
+      </figure>
+      <p>EUV light is absorbed by everything, even air, so the whole light path is in a high vacuum, and glass lenses are out: multilayer mirrors steer the light instead <span class="tag">public</span>. Even the mask is a mirror. ASML’s NXE:3800E exposes at least 220 wafers an hour <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: High-NA EUV</summary>
+        <p>ASML’s next platform, EXE, raises the NA from 0.33 to 0.55 and prints 8 nm instead of 13 nm <span class="tag">public</span>. It shipped its first EXE:5200B in April 2025, rated at 175 wafers an hour, and expects EXE to start supporting high-volume manufacturing in 2027 <span class="tag">public</span>. The IRDS roadmap pencils High-NA in for the tightest wires from 2028 <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">The bottleneck</p>
+      <h2>Only one company makes EUV machines</h2>
+      <p>ASML, in the Netherlands, calls EUV “a technology entirely unique to ASML” <span class="tag">public</span>. Its annual report names Canon and Nikon as competitors for DUV machines only <span class="tag">public</span>. Here is every lithography machine ASML recognised in its 2025 sales, one dot each:</p>
+      <figure>
+        <svg id="unitsSvg" viewBox="0 0 800 280" role="img" aria-label="Dots for ASML's 2025 lithography sales: 48 EUV machines, 4 of them High-NA, beside 279 DUV machines."></svg>
+      </figure>
+      <p>48 EUV machines (44 NXE and 4 High-NA EXE) and 279 DUV machines <span class="tag">public</span>. ASML says its NXE:3800E supports high-volume manufacturing of 2 nm logic <span class="tag">public</span>: the newest processes run through that left-hand group. ASML in turn relies on one supplier, Carl Zeiss SMT, for its lenses and mirrors <span class="tag">public</span>. ASML does not publish the price of an EUV machine <span class="tag np">not public</span>.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>“3 nm” is a name, not a size</h2>
+      <p>The natural guess is that a “3 nm” chip has 3 nm parts. It does not. The industry roadmap, the IRDS, labels its 2022 node “3nm” and its 2025 node “2nm”, and lists their real dimensions <span class="tag">public</span>. Drawn to one scale:</p>
+      <figure>
+        <svg id="nodeSvg" viewBox="0 0 800 346" role="img" aria-label="Bars to scale for the IRDS 3 nanometre and 2 nanometre nodes: the name, the gate length of 16 and 14 nanometres, the metal pitch of 24 and 20, and the gate pitch of 48 and 45."></svg>
+      </figure>
+      <p>Nothing on a “3 nm” chip is 3 nm. The gate, the part that switches, is 16 nm long, and gates sit 48 nm apart <span class="tag">public</span>. Intel says it outright: its node numbers “do not represent the actual dimension of any physical feature on a transistor or structure” <span class="tag">public</span>. The names now mean “one generation better”, which Part 3 called a label for a generation.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">The switch, reshaped</p>
+      <h2>From flat, to fins, to sheets</h2>
+      <p>Part 3’s transistor is a channel of silicon with a gate that turns it on and off. As it shrank, a gate sitting only on top lost its grip, and current leaked. So the channel was turned on its side into a <b>fin</b>, with the gate wrapped over three sides, then sliced into stacked <b>nanosheets</b> with the gate all around:</p>
+      <figure>
+        <svg id="fetSvg" viewBox="0 0 800 300" role="img" aria-label="Three transistor cross-sections: a flat channel with the gate on top, an upright fin with the gate on three sides, and three stacked sheets each surrounded by the gate."></svg>
+      </figure>
+      <p>Intel began making FinFETs in 2011 <span class="tag">public</span>. Samsung started the first gate-all-around production in June 2022, on 3 nm, claiming up to 45% less power than its 5 nm <span class="tag">public</span>. TSMC’s N2, its first nanosheet process, entered volume production in late 2025, and Intel’s 18A, with its RibbonFET sheets, went into production in Arizona the same year <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: power from underneath</summary>
+        <p>The next change moves the power wires. Today power and signals share the floors above the switches. Intel’s 18A adds PowerVia, which delivers power from the back of the wafer, “eliminating the need for power routing on the front side”, in Intel’s words <span class="tag">public</span>. TSMC’s version, Super Power Rail on its A16 process, is scheduled for volume production in the second half of 2026 <span class="tag">public</span>. The IRDS roadmap expects it from 2025 on <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">The hidden cost</p>
+      <h2>Every wafer has a few specks</h2>
+      <p>However clean the factory, a few defects land on every wafer: a speck of dust, a flaw in a film. Wherever one lands on a die, that die is usually dead. Here are the same 71 random defects on two wafers, one cut into small dies and one into big ones <span class="tag">example</span>:</p>
+      <figure>
+        <svg id="defectSvg" viewBox="0 0 800 450" role="img" aria-label="The same scattered defects on two wafers: most of the small dies survive, while more than half of the big dies are hit."></svg>
+      </figure>
+      <p>Same wafer, same specks. Most small dies dodge them, but a big die is a big target, and more than half of the big ones are hit. The fraction of dies that work is the <b>yield</b>. Foundries do not publish their defect rates: TSMC says only that N2 entered production “with good yield” <span class="tag np">not public</span>.</p>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">The formula</p>
+      <h2>Yield falls fast as dies grow</h2>
+      <p>The classic model treats defects as raindrops landing at random. If a die has area <i>A</i> and the process leaves <i>D</i><sub>0</sub> defects per square centimetre, a die expects <i>A</i> × <i>D</i><sub>0</sub> hits, and the chance of none is the Poisson yield, e<sup>−<i>A</i>·<i>D</i><sub>0</sub></sup> <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="yieldSvg" viewBox="0 0 800 330" role="img" aria-label="Yield against die area at 0.1 defects per square centimetre: both the Poisson and the Murphy curves fall from 100%, to about 90% at 100 square millimetres and to under half at 814."></svg>
+      </figure>
+      <p>Real defects cluster, so some dies get several and others none, and the plain Poisson model is too gloomy for big dies. In 1964 Murphy proposed a version that allows for this, ((1 − e<sup>−<i>A</i>·<i>D</i><sub>0</sub></sup>) ÷ <i>A</i>·<i>D</i><sub>0</sub>)², which predicts a little more <span class="tag">public</span>. The curves use 0.1 defects per cm² <span class="tag">example</span>.</p>
+    </section>
+
+    <!-- 16: LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Cut a wafer, count the good dies</h2>
+      <p>Pick a die size, a wafer size, a defect rate and a price for the finished wafer. The lab tiles the wafer with square dies, keeps a 3 mm edge free and counts the whole ones. It then works out the good dies with both models, and scatters random defects on the drawing <span class="tag">example</span>. Foundries do not publish wafer prices, so the price is your guess <span class="tag np">not public</span>.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="area">Die area <output id="area-o"></output></label><input id="area" type="range" min="20" max="830" step="1" value="814"></div>
+          <div class="control"><label for="diam">Wafer diameter <output id="diam-o"></output></label><input id="diam" type="range" min="0" max="2" step="1" value="2"></div>
+          <div class="control"><label for="d0">Defects per cm² <output id="d0-o"></output></label><input id="d0" type="range" min="1" max="50" step="1" value="10"></div>
+          <div class="control"><label for="cost">Price of one finished wafer <output id="cost-o"></output></label><input id="cost" type="range" min="2" max="30" step="1" value="20"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="814,2,25,20">Giant AI die, new process</button>
+            <button type="button" class="secondary" data-p="814,2,5,20">Same die, mature process</button>
+            <button type="button" class="secondary" data-p="100,2,25,20">Phone-size chip, new process</button>
+            <button type="button" class="secondary" data-p="814,1,10,20">Giant die, 200 mm wafer</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 400" role="img" aria-label="Bars for one wafer: the area-only guess, the whole dies that fit, and the good dies expected by the Poisson and Murphy models."></svg>
+          <svg id="waferChart" viewBox="0 0 520 540" role="img" aria-label="The wafer drawn to scale, tiled with dies: working dies in orange, dies hit by a simulated defect in rose."></svg>
+        </div>
+      </div></div>
+      <p>Try the presets in order. A giant die on a young process loses most of its dies; the same die on a mature process keeps most of them. A small chip barely notices the same defect rate. On a 200 mm wafer, older factories’ size, the rim wastes a far bigger share. The drawing is one random wafer, so its count wobbles around the models’ average.</p>
+      <details class="trace"><summary>Go deeper: what the lab assumes</summary>
+        <p>Square dies placed edge to edge, with no lanes for the saw; the lab tries four positions of the grid and keeps the one that fits most whole dies. Any defect on a die kills it, though real chips often carry spare parts to survive one. Defects are spread evenly over the wafer, and one defect is one speck. Real processes count defects per layer, and the IRDS roadmap sets its targets in yet another model, the Bose–Einstein model, which multiplies one factor per critical layer <span class="tag">public</span>. Foundries’ real defect rates and wafer prices are <span class="tag np">not public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Eight times the area, seventeen times the price</h2>
+      <p>Put the lab’s default numbers side by side: a 100 mm² phone-size chip and an 814 mm² AI die, at 0.1 defects per cm² and $20,000 a wafer <span class="tag">example</span>. The big die is 8.1 times the area. Each working one costs far more than 8.1 times as much:</p>
+      <figure>
+        <svg id="costSvg" viewBox="0 0 800 250" role="img" aria-label="Cost per working die: about 36 dollars for the small die and about 619 for the big one, far past the dashed line at 8.1 times the small die's cost."></svg>
+      </figure>
+      <p>Two things stack up. Fewer big dies fit, because the rim wastes more, and fewer of those work, because each is a bigger target. That is why a big AI chip is so expensive to make, and why a young process, with more defects, hurts the biggest chips most <span class="tag">example</span>.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">The ceiling</p>
+      <h2>No chip can outgrow the mask</h2>
+      <p>One exposure prints one field, the area of one mask image. TSMC puts that field at about 830 mm² <span class="tag">public</span>, and a single die cannot be larger. The H100’s 814 mm² nearly fills it. So the next generation went sideways:</p>
+      <figure>
+        <svg id="reticleSvg" viewBox="0 0 800 300" role="img" aria-label="Left: one mask field of about 830 square millimetres, almost filled by the 814 square millimetre H100 die. Right: two field-sized Blackwell dies side by side, joined by a 10 terabytes per second link."></svg>
+      </figure>
+      <p>NVIDIA’s Blackwell GPUs use “two reticle-limited dies” joined by a 10 TB/s link so they work as one GPU, with 208 billion transistors in all <span class="tag">public</span> (the reticle is the mask). Two smaller dies also yield far better than one impossible giant would, which is the lab’s lesson. Their exact areas are <span class="tag np">not public</span>.</p>
+    </section>
+
+    <!-- 19 -->
+    <section class="panel">
+      <p class="kicker">The package</p>
+      <h2>CoWoS: chips on a silicon floor</h2>
+      <p>Part 8 showed why AI chips keep their HBM memory right beside them. Making that work takes thousands of wires between the chips, far finer than a circuit board can carry. TSMC’s answer is <b>CoWoS</b>, chip on wafer on substrate: the GPU and its memory stacks sit side by side on a slab of silicon, the <b>interposer</b>, that is just wiring <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="cowosSvg" viewBox="0 0 800 300" role="img" aria-label="A side view: a GPU die between two stacks of memory chips, all standing on a silicon interposer full of wires, which stands on a package substrate."></svg>
+      </figure>
+      <p>The interposer is made with the same light-and-etch loop as a chip, so its wires can be very fine and very many. The full H100 die has room for six HBM stacks; the H100 SXM5 product uses five, for 80 GB <span class="tag">public</span>. Part 8’s 3,350 GB/s runs through these wires.</p>
+    </section>
+
+    <!-- 20 -->
+    <section class="panel">
+      <p class="kicker">The package, growing</p>
+      <h2>The silicon floor keeps getting bigger</h2>
+      <p>An interposer is not one exposure, so it can grow past the mask limit. TSMC measures it in reticles of about 830 mm². Its silicon interposers grew from 1 reticle to 3.3 over the past decade, and TSMC now produces 5.5-reticle CoWoS <span class="tag">public</span>. Drawn to one scale:</p>
+      <figure>
+        <svg id="floorSvg" viewBox="0 0 800 300" role="img" aria-label="Squares to scale for interposers of 1, 3.3, 5.5 and 14 reticles, the largest planned for 2028 with about 10 compute dies and 20 memory stacks."></svg>
+      </figure>
+      <p>Next is a 14-reticle CoWoS, which TSMC says can hold about 10 large compute dies and 20 HBM stacks, slated for production in 2028 <span class="tag">public</span>. The biggest, which TSMC calls CoWoS-L, build the floor from small silicon bridges set into a cheaper wiring layer <span class="tag">public</span>. The AI chip of Part 10 is now a package of many chips.</p>
+    </section>
+
+    <!-- 21 -->
+    <section class="panel">
+      <p class="kicker">The memory, stacked</p>
+      <h2>Twelve memory chips, drilled straight through</h2>
+      <p>Each HBM stack is several memory chips piled up and wired vertically. Thousands of tiny holes run through every chip and are filled with metal, linking each chip to the ones above and below: <b>through-silicon vias</b>, or TSVs <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="hbmSvg" viewBox="0 0 800 310" role="img" aria-label="Two memory stacks of the same height: eight chips, and twelve chips each 40% thinner, with vertical metal links running through every layer."></svg>
+      </figure>
+      <p>SK hynix’s 12-layer HBM3E, in production since September 2024, stacks twelve 3 GB chips for 36 GB. To keep it the same height as the 8-layer version, it made each chip 40% thinner <span class="tag">public</span>. Every one of those chips is a die from a wafer, with its own yield, and one bad layer can spoil a stack.</p>
+    </section>
+
+    <!-- 22 -->
+    <section class="panel">
+      <p class="kicker">The industry</p>
+      <h2>A few companies, one long chain</h2>
+      <p>Each step in this part is done by a handful of companies, often one. From the sources on this page <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="chainSvg" viewBox="0 0 800 270" role="img" aria-label="The supply chain from left to right: polysilicon, wafers, EUV machines, chipmaking, memory stacks and packaging, with the main companies under each."></svg>
+      </figure>
+      <p><b>TSMC</b>, in Taiwan, makes chips other companies design: in 2025 it served 534 customers, its 3 nm processes earned 24% of its wafer revenue, and it runs fabs in Taiwan, China, Japan and Arizona <span class="tag">public</span>. <b>Samsung</b> makes memory and other firms’ chips. <b>Intel</b> makes its own chips and others’, with 18A at Fab 52 in Arizona <span class="tag">public</span>. Market shares are left out: no primary source here states them.</p>
+    </section>
+
+    <!-- 23 -->
+    <section class="panel">
+      <p class="kicker">The bill</p>
+      <h2>Factories priced in tens of billions</h2>
+      <p>All of this happens in a <b>fab</b>, short for fabrication plant: a building of dust-free rooms full of these machines. Their cost is now announced in tens of billions of dollars, for a few fabs at a time:</p>
+      <figure>
+        <svg id="fabSvg" viewBox="0 0 800 250" role="img" aria-label="Bars on one dollar scale: TSMC's announced 165 billion dollar US investment, split into 65 billion already planned and 100 billion added in 2025; TSMC's 2025 revenue of 122 billion dollars; and Intel's more than 32 billion dollars for two Arizona fabs."></svg>
+      </figure>
+      <p>In March 2025 TSMC announced it intends to invest an additional $100 billion in the US, bringing the total to $165 billion; the addition covers three new fabs, two advanced packaging plants and an R&amp;D centre <span class="tag">public</span>. Intel has said it is investing more than $32 billion in two new fabs and an upgrade in Arizona <span class="tag">public</span>. These are announced plans, spent over many years.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>“3 nm” and “2 nm” in the news</b><span>Generation names; the real gate pitch is around 45–48 nm.</span><em>chapter 12</em></div>
+        <div><b>Wafers counted in “12-inch equivalents”</b><span>Foundries report output in 300 mm wafers: 15.0 million at TSMC in 2025.</span><em>chapter 4</em></div>
+        <div><b>“Advanced packaging” in fab plans</b><span>TSMC’s US plan includes two packaging plants beside its fabs.</span><em>chapters 19, 20, 23</em></div>
+        <div><b>Chips made of two or more dies</b><span>The mask limit and yield both favour several smaller dies.</span><em>chapters 17, 18</em></div>
+        <div><b>New fabs announced in the US, Japan, Europe</b><span>Each costs tens of billions and takes years to build.</span><em>chapters 22, 23</em></div>
+        <div><b>Early chips are scarce and costly</b><span>A young process has more defects, and big dies suffer most.</span><em>chapters 15, 16</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Wafer, die</b><span>The round slice of silicon; one chip cut from it.</span></div>
+        <div><b>Ingot</b><span>The single silicon crystal the wafers are sliced from.</span></div>
+        <div><b>Mask, reticle</b><span>The stencil holding one layer’s pattern.</span></div>
+        <div><b>Photoresist</b><span>The light-sensitive coating that light patterns.</span></div>
+        <div><b>Lithography</b><span>Printing patterns with light.</span></div>
+        <div><b>DUV, EUV</b><span>Deep (193 nm) and extreme (13.5 nm) ultraviolet light.</span></div>
+        <div><b>NA, k₁</b><span>How much light the lens gathers; how clever the process is.</span></div>
+        <div><b>Pitch</b><span>The spacing from one line or gate to the next.</span></div>
+        <div><b>FinFET, gate-all-around</b><span>Transistors with the gate on three sides, or all four.</span></div>
+        <div><b>Yield, defect density</b><span>The share of dies that work; specks per square centimetre.</span></div>
+        <div><b>Interposer, CoWoS</b><span>A silicon slab of wires that chips sit on; TSMC’s version.</span></div>
+        <div><b>HBM, TSV</b><span>Stacked memory chips; the metal-filled holes linking them.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>ASML’s wavelengths, NAs, resolutions, unit sales and the Rayleigh rule; IRDS dimensions; transistor timelines from TSMC, Samsung and Intel; H100 and Blackwell die facts; CoWoS sizes; SK hynix’s stack; announced fab investments; the Poisson and Murphy models.</span><em>reports, spec pages</em></div>
+        <div><b>Example</b><span>Square dies, the 3 mm edge, the 71 defects, 0.1 defects per cm², the $20,000 wafer and every lab setting; the cross-sections are simplified.</span><em>chosen to show the idea</em></div>
+        <div><b>Not public</b><span>Foundries’ defect rates and yields, wafer prices, the price of an EUV machine, Blackwell’s die areas, and which fabs and processes make the chips that run Claude.</span><em>companies have not said</em></div>
+      </div>
+    </section>
+
+    <!-- closing -->
+    <section class="panel">
+      <p class="kicker">Looking back</p>
+      <h2>Two tracks, one machine</h2>
+      <p>That is the end of the series. The LLM track built the program: text becomes numbers, a guess at the next word, learning by nudging numbers, attention, the transformer, scale, and, in Parts 13 to 16, how a word-guesser becomes an assistant, what it can hold in mind, why it makes things up, and how it thinks and uses tools. The chip track built the machine, from one switch to thousands of GPUs, and now to the factories that print them.</p>
+      <figure>
+        <svg id="lookSvg" viewBox="0 0 800 270" role="img" aria-label="Two lanes of dots, the LLM track above and the chip track below, seventeen parts in reading order, with this part marked as the last and a gold diamond for the bonus study where both lanes meet."></svg>
+      </figure>
+      <p>The <a href="how-ai-works-from-scratch.html" data-series-link="how-ai-works-from-scratch">series map</a> lists every part. One study remains, the bonus: <a href="inside-llm-serving-eli5.html" data-series-link="inside-llm-serving-eli5">Inside LLM serving</a>, where the two tracks meet. It follows one model on a group of chips answering millions of chats at once, and every word in it has now been drawn for you first.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A chip is printed, not built: light through a stencil, dozens of layers deep. The smaller the lines, the shorter the light and the rarer the machines; the bigger the chip, the more of them die on the wafer.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+    const C={gold:'#f5c76a',teal:'#76d5c1',or:'#ff8059',pur:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f',si:'#3b3936'};
+    function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+    const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+    const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+    const comma=n=>Math.round(n).toLocaleString('en-US');
+    function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
+    const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+
+    /* Shared model. Square dies of side sqrt(area) mm, edge exclusion EDGE mm, four grid offsets, keep the best.
+       A die counts if all four corners lie inside the usable circle. */
+    const EDGE=3;
+    function layDies(area,diam){const s=Math.sqrt(area),r=diam/2-EDGE;let best=null;
+      for(const ox of [0,s/2])for(const oy of [0,s/2]){const list=[];
+        const i0=Math.floor((-r-ox)/s)-1,i1=Math.ceil((r-ox)/s)+1,j0=Math.floor((-r-oy)/s)-1,j1=Math.ceil((r-oy)/s)+1;
+        for(let i=i0;i<=i1;i++)for(let j=j0;j<=j1;j++){const x=ox+i*s,y=oy+j*s,fx=Math.max(Math.abs(x),Math.abs(x+s)),fy=Math.max(Math.abs(y),Math.abs(y+s));
+          if(fx*fx+fy*fy<=r*r+1e-9)list.push([x,y]);}
+        if(!best||list.length>best.dies.length)best={s,r,ox,oy,dies:list};}
+      return best;}
+    const poissonY=(area,d0)=>Math.exp(-area/100*d0);
+    const murphyY=(area,d0)=>{const l=area/100*d0;return l===0?1:((1-Math.exp(-l))/l)**2;};
+    function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+    /* K defects uniform over the whole wafer disc, from a fixed seed */
+    function defects(diam,d0,seed=17){const R=diam/2,K=Math.round(d0*Math.PI*R*R/100),rnd=mulberry32(seed),pts=[];
+      for(let k=0;k<K;k++){const u=rnd(),v=rnd(),rr=R*Math.sqrt(u),th=2*Math.PI*v;pts.push([rr*Math.cos(th),rr*Math.sin(th)]);}return pts;}
+    function badSet(lay,pts){const bad=new Set(),have=new Set(lay.dies.map(([x,y])=>Math.round((x-lay.ox)/lay.s)+','+Math.round((y-lay.oy)/lay.s)));
+      for(const [px,py] of pts){const key=Math.floor((px-lay.ox)/lay.s)+','+Math.floor((py-lay.oy)/lay.s);if(have.has(key))bad.add(key);}return bad;}
+    /* draw a wafer at centre (cx,cy), k px per mm; returns counts */
+    function drawWafer(svg,cx,cy,k,diam,area,pts){const lay=layDies(area,diam),R=diam/2;
+      S(svg,'circle',{cx,cy,r:R*k,fill:C.si,stroke:C.line,'stroke-width':1.5});
+      S(svg,'circle',{cx,cy,r:lay.r*k,fill:'none',stroke:C.mut,'stroke-width':1,'stroke-dasharray':'3 4'});
+      const bad=pts?badSet(lay,pts):new Set();
+      for(const [x,y] of lay.dies){const key=Math.round((x-lay.ox)/lay.s)+','+Math.round((y-lay.oy)/lay.s),b=bad.has(key);
+        S(svg,'rect',{x:cx+x*k,y:cy+y*k,width:lay.s*k,height:lay.s*k,fill:b?C.rose:C.or,'fill-opacity':b?.8:.85,stroke:C.box,'stroke-width':lay.s*k>6?.8:.4});}
+      if(pts)for(const [px,py] of pts)S(svg,'circle',{cx:cx+px*k,cy:cy+py*k,r:2.6,fill:C.fg});
+      return {n:lay.dies.length,bad:bad.size,good:lay.dies.length-bad.size};}
+
+    /* 1: the H100 die to scale, 9 px = 1 mm */
+    (()=>{const svg=$('dieSvg'),k=9,s=Math.sqrt(814)*k,x0=50,y0=24;
+      S(svg,'rect',{x:x0,y:y0,width:s,height:s,fill:C.or,'fill-opacity':.32});
+      for(let i=1;i*k<s;i++){S(svg,'line',{x1:x0+i*k,y1:y0,x2:x0+i*k,y2:y0+s,stroke:C.box,'stroke-width':.6});S(svg,'line',{x1:x0,y1:y0+i*k,x2:x0+s,y2:y0+i*k,stroke:C.box,'stroke-width':.6});}
+      S(svg,'rect',{x:x0,y:y0,width:s,height:s,fill:'none',stroke:C.or,'stroke-width':2});
+      S(svg,'rect',{x:x0+3*k,y:y0+3*k,width:k,height:k,fill:C.or});
+      S(svg,'line',{x1:x0+4*k+2,y1:y0+3.5*k,x2:350,y2:y0+3.5*k,stroke:C.mut,'stroke-dasharray':'3 4'});
+      T(svg,360,y0+3.5*k-4,'1 mm²: about 98 million');T(svg,360,y0+3.5*k+18,'switches',{fill:C.mut});
+      T(svg,360,150,'one H100 die: 814 mm²');T(svg,360,174,'80 billion switches',{fill:C.mut});
+      T(svg,360,230,'placed one a second:');T(svg,360,256,'about 2,500 years',{fill:C.or,'font-size':20});
+      T(svg,360,300,'scale: 9 px = 1 mm',{fill:C.mut});})();
+
+    /* 2: darkroom analogy */
+    (()=>{const svg=$('photoSvg'),cy=110,slits=[[56,70],[86,100],[130,144],[156,170]];
+      S(svg,'circle',{cx:70,cy,r:24,fill:C.gold,'fill-opacity':.9});
+      for(let i=0;i<5;i++)S(svg,'line',{x1:96,y1:cy+(i-2)*10,x2:226,y2:50+i*30,stroke:C.gold,'stroke-opacity':.45,'stroke-width':1.5});
+      let last=40;slits.concat([[180,180]]).forEach(([a,b])=>{S(svg,'rect',{x:228,y:last,width:14,height:a-last,fill:C.line});last=b;});
+      slits.forEach(([a,b])=>{const m=(a+b)/2;S(svg,'line',{x1:244,y1:m,x2:424,y2:cy+(m-cy)*.75,stroke:C.gold,'stroke-width':4,'stroke-opacity':.8});
+        S(svg,'line',{x1:440,y1:cy+(m-cy)*.75,x2:648,y2:cy+(m-cy)/4,stroke:C.gold,'stroke-width':2,'stroke-opacity':.9});});
+      S(svg,'ellipse',{cx:432,cy,rx:12,ry:82,fill:C.fg,'fill-opacity':.12,stroke:C.fg,'stroke-width':1.5});
+      S(svg,'rect',{x:650,y:40,width:8,height:140,fill:C.line});S(svg,'rect',{x:658,y:40,width:4,height:140,fill:C.mut,'fill-opacity':.5});
+      slits.forEach(([a,b])=>S(svg,'rect',{x:657,y:cy+(a-cy)/4,width:6,height:(b-a)/4,fill:C.gold}));
+      [[70,'light','laser'],[235,'mask','the design'],[432,'lens','4× smaller'],[656,'resist on wafer','the print']].forEach(([x,a,b])=>{
+        T(svg,x,230,a,{'text-anchor':'middle'});T(svg,x,254,b,{'text-anchor':'middle',fill:C.mut});});})();
+
+    /* 3: sand to wafers; ingot and wafers at 0.12 px per mm */
+    (()=>{const svg=$('sandSvg'),m=marker(svg,'sdA',C.mut),k=.12,cy=150;
+      for(let i=1;i<=110;i++){const x=42+((i*.618034)%1)*77,h=(1-((x-80)/40)**2)*46;S(svg,'circle',{cx:x,cy:cy+22-Math.sqrt((i*.754878)%1)*h,r:2.2,fill:C.mut,'fill-opacity':.8});}
+      [[160,150,22],[194,160,18],[218,142,16]].forEach(([x,y,r])=>S(svg,'path',{d:`M${x-r} ${y} L${x-r/2} ${y-r} L${x+r/2} ${y-r*.8} L${x+r} ${y+2} L${x+r/3} ${y+r} L${x-r/2} ${y+r*.8} Z`,fill:C.mut,'fill-opacity':.55}));
+      [282,302,322].forEach((x,i)=>S(svg,'rect',{x:x-7,y:96+i*6,width:14,height:76-i*6,rx:6,fill:C.fg,'fill-opacity':.55}));
+      const L=2130*k,D=300*k,x0=372;S(svg,'rect',{x:x0,y:cy-D/2,width:L,height:D,fill:C.fg,'fill-opacity':.7});
+      S(svg,'ellipse',{cx:x0+L,cy,rx:5,ry:D/2,fill:C.fg,'fill-opacity':.85});
+      [0,1,2].forEach(i=>S(svg,'ellipse',{cx:700+i*22,cy,rx:D/2,ry:D/2,fill:C.si,stroke:C.fg,'stroke-width':1.5}));
+      [[124,140],[238,264],[338,364],[x0+L+10,672]].forEach(([a,b])=>arrow(svg,`M${a} ${cy} L${b} ${cy}`,m,C.mut));
+      [[80,'sand','silica'],[195,'silicon','crude'],[302,'polysilicon','11 nines pure'],[x0+L/2,'one crystal','2.1 m, 270 kg'],[722,'wafers','300 mm']].forEach(([x,a,b])=>{
+        T(svg,x,222,a,{'text-anchor':'middle'});T(svg,x,246,b,{'text-anchor':'middle',fill:C.mut});});
+      T(svg,x0,286,'ingot and wafers to scale: 1 px ≈ 8 mm',{fill:C.mut});})();
+
+    /* 4: two wafers, 300 mm, k px per mm */
+    (()=>{const svg=$('waferSvg'),k=170/150;
+      [[200,814],[600,100]].forEach(([cx,a])=>{const c=drawWafer(svg,cx,190,k,300,a,null),naive=Math.PI*150*150/a;
+        T(svg,cx,398,`${a} mm² dies: ${comma(c.n)} whole`,{'text-anchor':'middle'});
+        T(svg,cx,424,`area alone says ${comma(naive)}`,{'text-anchor':'middle',fill:C.rose});});})();
+
+    /* 5: one layer, six cross-sections */
+    (()=>{const svg=$('layerSvg'),W=110,exp=[[22,44],[66,88]];
+      const inExp=x=>exp.some(([a,b])=>x>=a&&x<b);
+      for(let s=0;s<6;s++){const x0=20+s*130;
+        S(svg,'rect',{x:x0,y:160,width:W,height:40,fill:C.si});
+        const film=(a,b)=>S(svg,'rect',{x:x0+a,y:140,width:b-a,height:20,fill:C.pur,'fill-opacity':.85});
+        if(s<4)film(0,W);else{film(0,22);film(44,66);film(88,W);}
+        if(s>=1&&s<=4){const segs=s===1?[[0,W,0]]:s===2?[[0,22,0],[22,44,1],[44,66,0],[66,88,1],[88,W,0]]:[[0,22,0],[44,66,0],[88,W,0]];
+          segs.forEach(([a,b,e])=>S(svg,'rect',{x:x0+a,y:120,width:b-a,height:20,fill:e?C.gold:C.fg,'fill-opacity':e?.9:.35}));}
+        if(s===2){[[0,22],[44,66],[88,W]].forEach(([a,b])=>S(svg,'rect',{x:x0+a,y:56,width:b-a,height:10,fill:C.mut}));
+          exp.forEach(([a,b])=>[a+6,b-6].forEach(x=>S(svg,'line',{x1:x0+x,y1:20,x2:x0+x,y2:116,stroke:C.gold,'stroke-width':2})));}
+        T(svg,x0+W/2,232,['1 deposit','2 coat','3 expose','4 wash','5 etch','6 strip'][s],{'text-anchor':'middle'});}})();
+
+    /* 6: a dozen wiring layers above the switches */
+    (()=>{const svg=$('stackSvg'),x0=40,x1=560;
+      S(svg,'rect',{x:x0,y:282,width:x1-x0,height:30,fill:C.si});
+      for(let x=x0+6;x<x1-6;x+=14)S(svg,'rect',{x,y:272,width:6,height:10,fill:C.gold});
+      let y=266;for(let l=0;l<12;l++){const h=5+l*1.3,p=14+l*5,w=p*.5;y-=h;
+        for(let x=x0+((l*7)%p);x+w<=x1;x+=p)S(svg,'rect',{x,y,width:w,height:h,fill:C.pur,'fill-opacity':.55+l*.035});
+        if(l>0)for(let x=x0+20+l*9;x<x1;x+=p*3)S(svg,'rect',{x,y:y+h,width:2,height:7,fill:C.pur});
+        y-=7;}
+      T(svg,590,Math.max(30,y+24),'thick top wires: power');T(svg,590,180,'fine wires');T(svg,590,204,'between switches',{fill:C.mut});
+      T(svg,590,282,'switches',{fill:C.gold});T(svg,590,306,'silicon',{fill:C.mut});})();
+
+    /* 7: wavelengths to scale, 1 px = 1 nm */
+    (()=>{const svg=$('waveSvg'),x0=210,len=550;
+      [[436,'436 nm','mercury lamp'],[365,'365 nm','mercury lamp'],[248,'248 nm','KrF laser (DUV)'],[193,'193 nm','ArF laser (DUV)'],[13.5,'13.5 nm','tin plasma (EUV)']].forEach(([lam,a,b],i)=>{
+        const yc=44+i*60;let d='';for(let x=0;x<=len;x+=lam<20?.75:2)d+=(x?' L':'M')+(x0+x).toFixed(2)+' '+(yc-13*Math.sin(2*Math.PI*x/lam)).toFixed(2);
+        S(svg,'path',{d,fill:'none',stroke:C.gold,'stroke-width':lam<20?1.2:2.2});
+        T(svg,190,yc-2,a,{'text-anchor':'end'});T(svg,190,yc+18,b,{'text-anchor':'end',fill:C.mut});});
+      T(svg,x0,322,'one scale: 1 px = 1 nm of wavelength',{fill:C.mut});})();
+
+    /* 8: Rayleigh, 4 px per nm */
+    (()=>{const svg=$('resSvg'),x0=210,k=3.9;
+      [[C.gold,.25,'wavelength ÷ NA',210],[C.gold,1,'smallest line printed',410]].forEach(([c,o,s,x])=>{S(svg,'rect',{x,y:10,width:18,height:18,fill:c,'fill-opacity':o});T(svg,x+26,25,s,{fill:C.mut});});
+      S(svg,'line',{x1:620,y1:19,x2:644,y2:19,stroke:C.fg,'stroke-width':2,'stroke-dasharray':'4 3'});T(svg,652,25,'k₁ = 0.25',{fill:C.mut});
+      [['DUV immersion','193 nm ÷ 1.35',193,1.35,38],['EUV','13.5 nm ÷ 0.33',13.5,.33,13],['High-NA EUV','13.5 nm ÷ 0.55',13.5,.55,8]].forEach(([n,s,lam,na,cd],i)=>{const y=64+i*78,r=lam/na;
+        S(svg,'rect',{x:x0,y,width:r*k,height:24,fill:C.gold,'fill-opacity':.22});
+        S(svg,'rect',{x:x0,y,width:cd*k,height:24,fill:C.gold});
+        S(svg,'line',{x1:x0+.25*r*k,y1:y-6,x2:x0+.25*r*k,y2:y+30,stroke:C.fg,'stroke-width':2,'stroke-dasharray':'4 3'});
+        T(svg,195,y+10,n,{'text-anchor':'end'});T(svg,195,y+30,s,{'text-anchor':'end',fill:C.mut});
+        T(svg,x0,y+50,`prints ${cd} nm · k₁ = ${(cd*na/lam).toFixed(2)}`,{fill:C.fg});
+        if(i===0)T(svg,x0+r*k,y+50,`${r.toFixed(0)} nm`,{'text-anchor':'end',fill:C.mut});});
+      T(svg,x0,292,'scale: 3.9 px = 1 nm',{fill:C.mut});})();
+
+    /* 9: double patterning */
+    (()=>{const svg=$('mpSvg'),x0=230,P=120,w=30;
+      const row=(y,off,c,o)=>{for(let x=x0+off;x+w<=760;x+=P)S(svg,'rect',{x,y,width:w,height:44,fill:c,'fill-opacity':o});};
+      row(30,0,C.gold,1);row(110,60,C.gold,.55);row(190,0,C.gold,1);row(190,60,C.gold,.55);
+      T(svg,210,50,'first pass',{'text-anchor':'end'});T(svg,210,70,'finest the lens can',{'text-anchor':'end',fill:C.mut});
+      T(svg,210,130,'second pass',{'text-anchor':'end'});T(svg,210,150,'shifted half a step',{'text-anchor':'end',fill:C.mut});
+      T(svg,210,210,'together',{'text-anchor':'end'});T(svg,210,230,'half the pitch',{'text-anchor':'end',fill:C.mut});
+      S(svg,'line',{x1:x0,y1:90,x2:x0+P,y2:90,stroke:C.fg,'stroke-width':1.5});[x0,x0+P].forEach(x=>S(svg,'line',{x1:x,y1:84,x2:x,y2:96,stroke:C.fg,'stroke-width':1.5}));
+      S(svg,'line',{x1:x0,y1:252,x2:x0+P/2,y2:252,stroke:C.fg,'stroke-width':1.5});[x0,x0+P/2].forEach(x=>S(svg,'line',{x1:x,y1:246,x2:x,y2:258,stroke:C.fg,'stroke-width':1.5}));
+      T(svg,x0+P+12,96,'pitch',{fill:C.mut});T(svg,x0+P/2+12,268,'pitch ÷ 2',{fill:C.mut});})();
+
+    /* 10: EUV light path */
+    (()=>{const svg=$('euvSvg'),px=150,py=150,G=C.gold;
+      S(svg,'rect',{x:20,y:16,width:760,height:262,fill:'none',stroke:C.mut,'stroke-dasharray':'6 6'});
+      for(let y=34;y<=262;y+=18)if(Math.abs(y-py)>20)S(svg,'circle',{cx:px,cy:y,r:4,fill:C.mut});
+      S(svg,'circle',{cx:px,cy:py,r:28,fill:G,'fill-opacity':.22});S(svg,'circle',{cx:px,cy:py,r:12,fill:G});
+      S(svg,'line',{x1:60,y1:256,x2:136,y2:166,stroke:C.or,'stroke-width':3,'stroke-dasharray':'10 5'});
+      S(svg,'path',{d:'M108 58 A110 110 0 0 0 108 242',fill:'none',stroke:C.fg,'stroke-width':4});
+      const pts=[[330,150],[430,70],[560,46],[640,178],[470,226],[690,258]];
+      [[px+12,py,104,90],[px+12,py,104,210]].forEach(([a,b,c,d])=>S(svg,'line',{x1:a,y1:b-(b-d)*.2,x2:c+6,y2:d,stroke:G,'stroke-opacity':.5}));
+      S(svg,'line',{x1:110,y1:90,x2:330,y2:150,stroke:G,'stroke-width':2,'stroke-opacity':.7});S(svg,'line',{x1:110,y1:210,x2:330,y2:150,stroke:G,'stroke-width':2,'stroke-opacity':.7});
+      for(let i=0;i<pts.length-1;i++)S(svg,'line',{x1:pts[i][0],y1:pts[i][1],x2:pts[i+1][0],y2:pts[i+1][1],stroke:G,'stroke-width':2.5,'stroke-opacity':.85});
+      [[430,70,-.5],[640,178,.6],[470,226,-.2]].forEach(([x,y,t])=>S(svg,'line',{x1:x-24,y1:y-24*t,x2:x+24,y2:y+24*t,stroke:C.fg,'stroke-width':5}));
+      S(svg,'rect',{x:520,y:30,width:80,height:12,fill:C.fg});for(let i=0;i<4;i++)S(svg,'rect',{x:528+i*18,y:30,width:8,height:12,fill:G});
+      S(svg,'rect',{x:640,y:258,width:100,height:10,fill:C.si,stroke:C.fg});
+      T(svg,168,40,'tin droplets',{fill:C.mut});T(svg,26,200,'laser',{fill:C.or});T(svg,240,226,'plasma',{fill:G});
+      T(svg,36,48,'collector',{fill:C.fg});T(svg,640,62,'mask',{fill:C.fg});T(svg,700,150,'mirrors',{fill:C.fg});
+      T(svg,690,300,'wafer',{'text-anchor':'middle'});T(svg,20,306,'everything sits in a vacuum: air absorbs EUV',{fill:C.mut});})();
+
+    /* 11: ASML units, 2025 */
+    (()=>{const svg=$('unitsSvg');
+      for(let i=0;i<48;i++){const x=48+(i%8)*28,y=40+Math.floor(i/8)*28;S(svg,'circle',{cx:x,cy:y,r:9,fill:C.gold,'fill-opacity':i<4?1:.7,stroke:i<4?C.fg:'none','stroke-width':2.5});}
+      for(let i=0;i<279;i++){const x=340+(i%24)*18,y=34+Math.floor(i/24)*18;S(svg,'circle',{cx:x,cy:y,r:6,fill:C.mut,'fill-opacity':.7});}
+      T(svg,146,232,'48 EUV',{'text-anchor':'middle','font-size':20});T(svg,146,256,'ringed: 4 High-NA',{'text-anchor':'middle',fill:C.mut});
+      T(svg,547,262,'279 DUV',{'text-anchor':'middle','font-size':20});})();
+
+    /* 12: node names vs dimensions, IRDS 2022, 9 px per nm */
+    (()=>{const svg=$('nodeSvg'),x0=230,k=9.5;
+      [[['“3 nm” node, 2022',0],['the name',3,1],['gate length',16],['metal pitch',24],['gate pitch',48]],[['“2 nm” node, 2025',0],['the name',2,1],['gate length',14],['metal pitch',20],['gate pitch',45]]].forEach((g,gi)=>{const yb=26+gi*154;
+        T(svg,x0,yb,g[0][0],{fill:C.mut});
+        g.slice(1).forEach(([n,v,bad],i)=>{const y=yb+14+i*32;
+          S(svg,'rect',{x:x0,y,width:v*k,height:20,fill:bad?C.rose:C.gold,'fill-opacity':bad?1:.85});
+          T(svg,215,y+16,n,{'text-anchor':'end',fill:bad?C.rose:C.fg});T(svg,x0+v*k+10,y+16,v+' nm',{fill:bad?C.rose:C.mut});});});
+      T(svg,x0,338,'one scale: 9.5 px = 1 nm',{fill:C.mut});})();
+
+    /* 13: planar, FinFET, gate-all-around */
+    (()=>{const svg=$('fetSvg');
+      S(svg,'rect',{x:60,y:170,width:160,height:60,fill:C.mut,'fill-opacity':.55});S(svg,'rect',{x:105,y:140,width:70,height:26,fill:C.gold});
+      S(svg,'rect',{x:320,y:200,width:160,height:30,fill:C.mut,'fill-opacity':.55});S(svg,'rect',{x:368,y:96,width:64,height:104,fill:C.gold});S(svg,'rect',{x:385,y:112,width:30,height:118,fill:C.mut});
+      S(svg,'rect',{x:580,y:200,width:160,height:30,fill:C.mut,'fill-opacity':.55});S(svg,'rect',{x:612,y:84,width:96,height:116,fill:C.gold});
+      [100,134,168].forEach(y=>S(svg,'rect',{x:626,y,width:68,height:14,fill:C.mut}));
+      [[140,'flat','gate on top'],[400,'FinFET','gate on 3 sides'],[660,'gate-all-around','gate on 4 sides']].forEach(([x,a,b])=>{T(svg,x,262,a,{'text-anchor':'middle'});T(svg,x,286,b,{'text-anchor':'middle',fill:C.mut});});
+      T(svg,40,40,'gold: the gate',{fill:C.gold});T(svg,40,64,'grey: silicon channel',{fill:C.mut});})();
+
+    /* 14: same defects, two die sizes */
+    (()=>{const svg=$('defectSvg'),k=170/150,pts=defects(300,.1);
+      [[200,100],[600,814]].forEach(([cx,a])=>{const c=drawWafer(svg,cx,190,k,300,a,pts);
+        T(svg,cx,398,`${a} mm² dies: ${c.good} of ${c.n} work`,{'text-anchor':'middle'});
+        T(svg,cx,424,`${Math.round(c.good/c.n*100)}% yield on this wafer`,{'text-anchor':'middle',fill:C.mut});});})();
+
+    /* 15: yield curves, D0 = 0.1 per cm2 */
+    (()=>{const svg=$('yieldSvg'),d0=.1,X=a=>100+a*620/850,Y=y=>270-y*240;
+      [0,.25,.5,.75,1].forEach(v=>{S(svg,'line',{x1:100,y1:Y(v),x2:720,y2:Y(v),stroke:'#2f2d2a'});T(svg,88,Y(v)+6,Math.round(v*100)+'%',{'text-anchor':'end',fill:C.mut});});
+      [0,200,400,600,800].forEach(a=>T(svg,X(a),296,String(a),{'text-anchor':'middle',fill:C.mut}));
+      T(svg,720,322,'die area, mm²',{'text-anchor':'end',fill:C.mut});
+      const curve=(f,dash)=>{let d='';for(let a=0;a<=850;a+=5)d+=(a?' L':'M')+X(a).toFixed(1)+' '+Y(f(a,d0)).toFixed(1);S(svg,'path',{d,fill:'none',stroke:C.or,'stroke-width':3,'stroke-dasharray':dash});};
+      curve(poissonY,'none');curve(murphyY,'8 5');
+      [100,814].forEach(a=>{S(svg,'circle',{cx:X(a),cy:Y(poissonY(a,d0)),r:6,fill:C.or});S(svg,'circle',{cx:X(a),cy:Y(murphyY(a,d0)),r:6,fill:C.box,stroke:C.or,'stroke-width':2});});
+      T(svg,112,124,'100 mm²: ≈ 90%');T(svg,X(814)-10,Y(murphyY(814,d0))-30,'814 mm²: 44–47%',{'text-anchor':'end'});
+      S(svg,'line',{x1:520,y1:40,x2:550,y2:40,stroke:C.or,'stroke-width':3});T(svg,560,46,'Poisson',{fill:C.mut});
+      S(svg,'line',{x1:520,y1:66,x2:550,y2:66,stroke:C.or,'stroke-width':3,'stroke-dasharray':'8 5'});T(svg,560,72,'Murphy',{fill:C.mut});
+      T(svg,20,16,'yield',{fill:C.mut});})();
+
+    /* 17: cost per good die, lab defaults (0.1 per cm2, $20,000 wafer, 300 mm) */
+    (()=>{const svg=$('costSvg'),x0=200,k=.9,W=20000;
+      const per=a=>W/(layDies(a,300).dies.length*murphyY(a,.1)),small=per(100),big=per(814),guess=small*814/100;
+      [[small,'100 mm² die'],[big,'814 mm² die']].forEach(([v,n],i)=>{const y=60+i*80;
+        S(svg,'rect',{x:x0,y,width:v*k,height:32,fill:C.or});T(svg,185,y+22,n,{'text-anchor':'end'});
+        T(svg,i?x0+v*k-10:x0+v*k+10,y+22,'$'+comma(v),{'text-anchor':i?'end':'start',fill:i?C.box:C.or});});
+      S(svg,'line',{x1:x0+guess*k,y1:44,x2:x0+guess*k,y2:186,stroke:C.rose,'stroke-width':2,'stroke-dasharray':'6 5'});
+      T(svg,x0+guess*k,32,`area alone: $${comma(guess)}`,{'text-anchor':'middle',fill:C.rose});
+      T(svg,x0,226,'cost per working die, Murphy model · 0.9 px = $1',{fill:C.mut});})();
+
+    /* 18: the reticle ceiling, 6 px per mm */
+    (()=>{const svg=$('reticleSvg'),k=6,R=Math.sqrt(830)*k,H=Math.sqrt(814)*k,y0=36;
+      S(svg,'rect',{x:60,y:y0,width:R,height:R,fill:'none',stroke:C.fg,'stroke-width':2,'stroke-dasharray':'6 4'});
+      S(svg,'rect',{x:60+(R-H)/2,y:y0+(R-H)/2,width:H,height:H,fill:C.or,'fill-opacity':.85});
+      [420,420+R+40].forEach(x=>{S(svg,'rect',{x,y:y0,width:R,height:R,fill:'none',stroke:C.fg,'stroke-width':2,'stroke-dasharray':'6 4'});S(svg,'rect',{x:x+3,y:y0+3,width:R-6,height:R-6,fill:C.or,'fill-opacity':.85});});
+      S(svg,'rect',{x:420+R-2,y:y0+R/2-20,width:44,height:40,fill:C.pur});
+      T(svg,60+R/2,240,'H100: 814 mm²',{'text-anchor':'middle'});T(svg,60+R/2,264,'one mask field',{'text-anchor':'middle',fill:C.mut});
+      T(svg,440+R,240,'Blackwell: two dies',{'text-anchor':'middle'});T(svg,440+R,264,'linked at 10 TB/s',{'text-anchor':'middle',fill:C.pur});
+      T(svg,20,292,'dashed square: one field of about 830 mm² · 6 px = 1 mm',{fill:C.mut});})();
+
+    /* 19: CoWoS cross-section */
+    (()=>{const svg=$('cowosSvg');
+      S(svg,'rect',{x:60,y:236,width:620,height:30,fill:C.line});
+      for(let x=80;x<670;x+=22)S(svg,'circle',{cx:x,cy:230,r:5,fill:C.mut});
+      S(svg,'rect',{x:110,y:200,width:520,height:24,fill:C.pur,'fill-opacity':.25,stroke:C.pur,'stroke-width':1.5});
+      [206,212,218].forEach((y,i)=>S(svg,'line',{x1:130+i*10,y1:y,x2:610-i*10,y2:y,stroke:C.pur,'stroke-width':1.5}));
+      for(let x=124;x<620;x+=9)S(svg,'circle',{cx:x,cy:196,r:2.2,fill:C.mut});
+      S(svg,'rect',{x:290,y:120,width:160,height:72,fill:C.or});
+      [[140,250],[490,600]].forEach(([a,b])=>{for(let l=0;l<8;l++)S(svg,'rect',{x:a,y:182-l*12,width:b-a,height:9,fill:C.teal,'fill-opacity':.9-l*.05});});
+      T(svg,370,104,'GPU die',{'text-anchor':'middle',fill:C.or});T(svg,195,76,'HBM stack',{'text-anchor':'middle',fill:C.teal});T(svg,545,76,'HBM stack',{'text-anchor':'middle',fill:C.teal});
+      T(svg,644,216,'interposer',{fill:C.pur});T(svg,692,256,'substrate',{fill:C.mut});
+      T(svg,60,292,'side view, not to scale',{fill:C.mut});})();
+
+    /* 20: interposer sizes to scale, 2 px per mm, 1 reticle = 830 mm2 */
+    (()=>{const svg=$('floorSvg'),k=2,base=238;
+      [[1,'1 reticle','a decade ago',40],[3.3,'3.3 reticles','silicon, today',150],[5.5,'5.5 reticles','in production now',300],[14,'14 reticles','planned for 2028',490]].forEach(([n,a,b,x])=>{const s=Math.sqrt(n*830)*k;
+        S(svg,'rect',{x,y:base-s,width:s,height:s,fill:C.pur,'fill-opacity':.18,stroke:C.pur,'stroke-width':2});
+        T(svg,x,base+24,a);T(svg,x,base+46,b,{fill:C.mut});});
+      const s14=Math.sqrt(14*830)*k;
+      for(let i=0;i<10;i++)S(svg,'rect',{x:500+(i%5)*40,y:base-s14+48+Math.floor(i/5)*46,width:30,height:36,fill:C.or,'fill-opacity':.8});
+      for(let i=0;i<20;i++)S(svg,'rect',{x:500+(i%10)*20,y:i<10?base-s14+12:base-s14+150,width:14,height:28,fill:C.teal,'fill-opacity':.8});})();
+
+    /* 21: HBM 8-high vs 12-high, same height */
+    (()=>{const svg=$('hbmSvg'),top=40,bot=240;
+      [[150,8,20],[470,12,12]].forEach(([x,n,h])=>{const step=(bot-top)/n;
+        for(let l=0;l<n;l++)S(svg,'rect',{x,y:bot-(l+1)*step+(step-h),width:180,height:h,fill:C.teal,'fill-opacity':.85});
+        for(let v=0;v<6;v++)S(svg,'line',{x1:x+18+v*29,y1:top+(step-h),x2:x+18+v*29,y2:bot,stroke:C.pur,'stroke-width':2.5});});
+      T(svg,240,270,'8 chips',{'text-anchor':'middle'});T(svg,560,270,'12 chips, 36 GB',{'text-anchor':'middle'});
+      T(svg,560,294,'each 40% thinner',{'text-anchor':'middle',fill:C.mut});T(svg,240,294,'same height',{'text-anchor':'middle',fill:C.mut});
+      T(svg,676,140,'TSVs',{fill:C.pur});})();
+
+    /* 22: the chain */
+    (()=>{const svg=$('chainSvg'),m=marker(svg,'chA',C.mut),y=90;
+      [[70,'polysilicon','Wacker,','Hemlock'],[200,'wafers','Shin-Etsu,','SUMCO'],[330,'EUV machines','ASML','optics: Zeiss'],[460,'chips','TSMC, Samsung,','Intel'],[590,'memory stacks','e.g. SK hynix',''],[720,'packaging','e.g. TSMC CoWoS','']].forEach(([x,a,b,c],i)=>{
+        if(i===0)[-12,0,12].forEach(d=>S(svg,'rect',{x:x+d-5,y:y-40,width:10,height:80,rx:4,fill:C.fg,'fill-opacity':.55}));
+        if(i===1)S(svg,'circle',{cx:x,cy:y,r:38,fill:C.si,stroke:C.fg,'stroke-width':1.5});
+        if(i===2){S(svg,'rect',{x:x-40,y:y-36,width:80,height:72,fill:C.si,stroke:C.mut});S(svg,'circle',{cx:x,cy:y-6,r:10,fill:C.gold});S(svg,'line',{x1:x,y1:y+4,x2:x,y2:y+28,stroke:C.gold,'stroke-width':3});}
+        if(i===3){S(svg,'circle',{cx:x,cy:y,r:38,fill:C.si,stroke:C.fg,'stroke-width':1.5});for(let a=-2;a<2;a++)for(let b=-2;b<2;b++)if(Math.hypot(a*14+7,b*14+7)<32)S(svg,'rect',{x:x+a*14+1,y:y+b*14+1,width:12,height:12,fill:C.or});}
+        if(i===4)for(let l=0;l<6;l++)S(svg,'rect',{x:x-30,y:y+30-l*12,width:60,height:9,fill:C.teal});
+        if(i===5){S(svg,'rect',{x:x-44,y:y+24,width:88,height:10,fill:C.pur,'fill-opacity':.5});S(svg,'rect',{x:x-14,y:y-6,width:28,height:28,fill:C.or});[-34,22].forEach(d=>S(svg,'rect',{x:x+d,y:y-14,width:12,height:36,fill:C.teal}));}
+        if(i<5)arrow(svg,`M${x+46} ${y} L${x+84} ${y}`,m,C.mut);
+        T(svg,x,176,a,{'text-anchor':'middle'});T(svg,x,202,b,{'text-anchor':'middle',fill:C.mut});if(c)T(svg,x,226,c,{'text-anchor':'middle',fill:C.mut});});})();
+
+    /* 23: announced fab investments, 3.4 px per $1B */
+    (()=>{const svg=$('fabSvg'),x0=230,k=3.3;
+      S(svg,'rect',{x:x0,y:30,width:65*k,height:32,fill:C.fg,'fill-opacity':.45});S(svg,'rect',{x:x0+65*k,y:30,width:100*k,height:32,fill:C.fg,'fill-opacity':.85});
+      T(svg,215,52,'TSMC, US plan',{'text-anchor':'end'});T(svg,x0+165*k-8,52,'$165B',{'text-anchor':'end',fill:C.box});
+      T(svg,x0+8,86,'$65B earlier',{fill:C.mut});T(svg,x0+65*k+8,86,'+ $100B added, 2025',{fill:C.mut});
+      S(svg,'rect',{x:x0,y:112,width:122.42*k,height:32,fill:C.mut,'fill-opacity':.5});T(svg,215,134,'TSMC, 2025 revenue',{'text-anchor':'end'});T(svg,x0+122.42*k+10,134,'$122B',{fill:C.mut});
+      S(svg,'rect',{x:x0,y:172,width:32*k,height:32,fill:C.fg,'fill-opacity':.85});T(svg,215,194,'Intel, Arizona',{'text-anchor':'end'});T(svg,x0+32*k+10,194,'more than $32B',{fill:C.mut});
+      T(svg,x0,238,'one scale: 3.3 px = $1 billion',{fill:C.mut});})();
+
+    /* closing: two lanes */
+    (()=>{const svg=$('lookSvg'),tr='llm llm chip chip chip llm llm chip llm chip llm chip llm llm llm llm chip'.split(' '),Y={llm:90,chip:170},x0=60,dx=37;
+      S(svg,'line',{x1:40,y1:Y.llm,x2:x0+16*dx+20,y2:Y.llm,stroke:'#3b3936','stroke-width':2});S(svg,'line',{x1:40,y1:Y.chip,x2:x0+16*dx+20,y2:Y.chip,stroke:'#3b3936','stroke-width':2});
+      const pts=tr.map((t,i)=>[x0+i*dx,Y[t]]),bx=730,by=130;
+      S(svg,'path',{d:'M'+pts.map(p=>p.join(' ')).join(' L')+` L${bx} ${by}`,fill:'none',stroke:C.fg,'stroke-opacity':.35,'stroke-width':1.5,'stroke-dasharray':'4 4'});
+      pts.forEach(([x,y],i)=>{const c=tr[i]==='llm'?C.teal:C.pur;S(svg,'circle',{cx:x,cy:y,r:i===16?13:10,fill:c,stroke:i===16?C.fg:'none','stroke-width':3});
+        T(svg,x,tr[i]==='llm'?y-20:y+34,String(i+1),{'text-anchor':'middle',fill:C.mut});});
+      S(svg,'path',{d:`M${bx} ${by-17} L${bx+17} ${by} L${bx} ${by+17} L${bx-17} ${by} Z`,fill:C.gold});
+      T(svg,bx,by+44,'bonus',{'text-anchor':'middle',fill:C.gold});
+      T(svg,20,36,'HOW LLMS WORK',{fill:C.teal});T(svg,20,250,'HOW CHIPS WORK',{fill:C.pur});
+      T(svg,pts[16][0],250,'this part',{'text-anchor':'middle',fill:C.fg});})();
+  </script>
+
+  <script>
+    // LAB. Square dies on a round wafer with a 3 mm unusable edge; whole dies counted by geometry (layDies).
+    // Good dies = whole dies x yield. Poisson: exp(-A*D0). Murphy (1964): ((1-exp(-A*D0))/(A*D0))^2. A in cm2.
+    // The drawing scatters round(D0 x wafer area) random defects from a fixed seed; a die with any defect is dead.
+    const ids=['area','diam','d0','cost'];
+    const DIAMS=[150,200,300];
+    const fcount=v=>v>=10||Number.isInteger(v)?comma(v):v.toFixed(1);
+    function compute(v){
+      const area=v[0],diam=DIAMS[v[1]],d0=v[2]/100,cost=v[3]*1000;
+      const lay=layDies(area,diam),n=lay.dies.length,naive=Math.PI*(diam/2)**2/area;
+      const yP=poissonY(area,d0),yM=murphyY(area,d0),P=n*yP,M=n*yM;
+      return {area,diam,d0,cost,lay,n,naive,yP,yM,P,M,costM:cost/M,costP:cost/P,costAll:cost/n,
+        rows:[['Area alone: wafer ÷ die',naive,'#ec6a94'],['Whole dies that fit',n,'#f1eee8'],['Good dies, Poisson',P,'#ff8059'],['Good dies, Murphy',M,'#ff8059']],
+        ledger:[['die side',Math.sqrt(area).toFixed(1)+' mm'],['usable radius',(diam/2-EDGE)+' mm'],['area ÷ die area',naive.toFixed(1)],['whole dies that fit',comma(n)],
+          ['defects expected per die',(area/100*d0).toFixed(3)],['yield, Poisson',(yP*100).toFixed(1)+'%'],['yield, Murphy',(yM*100).toFixed(1)+'%'],
+          ['good dies, Poisson',P.toFixed(1)],['good dies, Murphy',M.toFixed(1)],['cost per die if all worked','$'+comma(cost/n)],
+          ['cost per good die, Murphy','$'+comma(cost/M)],['cost per good die, Poisson','$'+comma(cost/P)]]};
+    }
+    const labConfig={format:fcount,sliderFormats:[v=>v+' mm²',v=>DIAMS[v]+' mm',v=>(v/100).toFixed(2),v=>'$'+comma(v*1000)]};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function niceMax(x){const p=10**Math.floor(Math.log10(x));for(const m of [1,2,5,10])if(m*p>=x*(1-1e-9))return m*p;return 10*p;}
+    function drawLabWafer(r){const svg=$('waferChart');clear(svg);
+      const k=230/150,pts=defects(r.diam,r.d0),c=drawWafer(svg,260,250,k,r.diam,r.area,pts);
+      T(svg,260,510,`this wafer: ${comma(c.good)} good of ${comma(c.n)}`,{'text-anchor':'middle'});
+      T(svg,260,534,`${pts.length} random defects · one scale for every wafer`,{'text-anchor':'middle',fill:C.mut});
+      return {simGood:c.good,simBad:c.bad,simDefects:pts.length};}
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const r=compute(v),rows=r.rows;
+      if(rows.some(x=>!Number.isFinite(x[1])||x[1]<0)||!Number.isFinite(r.costM)) throw new Error('Lab returned non-finite results');
+      const m=niceMax(Math.max(...rows.map(x=>x[1]))),x0=30,span=440,sx=x=>x0+Math.min(m,x)*span/m,ticks=[0,m/2,m];
+      const bottom=70+rows.length*82;$('labChart').setAttribute('viewBox',`0 0 520 ${bottom+78}`);
+      let s='<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">dies from one wafer</text>';
+      rows.forEach(([name,val,col],i)=>{const y=80+i*82;
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}</text><rect data-v="${val}" x="${x0}" y="${y}" width="${sx(val)-x0}" height="26" fill="${esc(col)}"/>`;});
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">Axis adjusts to values.</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=r.ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      const sim=drawLabWafer(r);
+      window.labResults=Object.assign({valid:true,rows:rows.map(x=>x[1]),axis:m,area:r.area,diam:r.diam,d0:r.d0,cost:r.cost,dies:r.n,naive:r.naive,
+        yieldPoisson:r.yP,yieldMurphy:r.yM,goodPoisson:r.P,goodMurphy:r.M,costPerGoodMurphy:r.costM,costPerGoodPoisson:r.costP,costPerDieAllGood:r.costAll},sim);
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
