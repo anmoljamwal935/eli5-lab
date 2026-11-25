@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "why-models-make-things-up-eli5",
+    "title": "Why models make things up",
+    "category": "AI & Frontier",
+    "minutes": 25,
+    "summary": "Part 15: where confident mistakes come from, and why they persist",
+    "bullets": [
+      "Rare facts are stored weakly, and next-word guessing fills gaps fluently",
+      "Right-or-wrong grading makes a guess worth more than 'I don't know'"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "RARE FACTS",
+      "GUESS",
+      "GRADING"
+    ],
+    "file": "explainers/why-models-make-things-up-eli5.html",
+    "date": "2026-11-25",
+    "subcategory": "How AI works, from scratch",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"Two answer habits on the same quiz: one model is right 22%, wrong 26% and says I don't know 52%; the other is right 24%, wrong 75% and almost never abstains.\"><rect x=\"24.0\" y=\"44\" width=\"59.8\" height=\"28\" fill=\"#76d5c1\" opacity=\"1\"/><rect x=\"83.8\" y=\"44\" width=\"70.7\" height=\"28\" fill=\"#ec6a94\" opacity=\"1\"/><rect x=\"154.6\" y=\"44\" width=\"141.4\" height=\"28\" fill=\"#a5a29c\" opacity=\"0.6\"/><rect x=\"24.0\" y=\"92\" width=\"65.3\" height=\"28\" fill=\"#76d5c1\" opacity=\"1\"/><rect x=\"89.3\" y=\"92\" width=\"204.0\" height=\"28\" fill=\"#ec6a94\" opacity=\"1\"/><rect x=\"293.3\" y=\"92\" width=\"2.7\" height=\"28\" fill=\"#a5a29c\" opacity=\"0.6\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"24\" y=\"32\" fill=\"#76d5c1\">PART 15</text><text x=\"296\" y=\"32\" text-anchor=\"end\" fill=\"#a5a29c\">SAYS IDK</text><text x=\"24\" y=\"136\" fill=\"#ec6a94\">ALWAYS GUESSES</text></g></svg>",
+    "part": 15
+  },
+  {
     "id": "context-window-eli5",
     "title": "Memory and the context window",
     "category": "AI & Frontier",
