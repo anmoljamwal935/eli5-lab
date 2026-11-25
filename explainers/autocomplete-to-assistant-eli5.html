@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>From autocomplete to assistant — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (How AI works, from scratch): gold = text and tokens, teal = stored numbers,
+       orange = arithmetic, purple = connections, rose = the wrong intuition. */
+    :root{--rose:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Series parts: chapter numbers, fact tags, Go deeper boxes, quoted model text */
+    main{counter-reset:ch}
+    section.panel:not(.fg) .kicker::before{counter-increment:ch;content:counter(ch,decimal-leading-zero) ' · '}
+    .tag{display:inline-block;margin:0 2px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted);vertical-align:1px}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p{font-size:15px}
+    .quote{margin:16px 0 0;padding:10px 14px;border-left:2px solid var(--gold);font-size:15px;line-height:1.6;color:var(--muted)}
+    .quote b{color:var(--gold);font-weight:500}
+    .lab-chart svg+svg{margin-top:18px}
+    .eli5-study-container p.source-note{font-size:12px;line-height:1.6;letter-spacing:.04em;color:var(--faint)}
+    .lab .ledger span:nth-child(odd){color:var(--fg)}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body data-series-id="autocomplete-to-assistant-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>From autocomplete to assistant</h1>
+      <p class="lede">Training on trillions of words makes a superb guesser of the next word. It does not make a helper. Ask it a question and it may reply with more questions, because that is how such documents often go on. This part shows the second round of training that turns the guesser into an assistant: first copying written examples, then learning from people’s picks between two answers, and why that second step can teach flattery as easily as help.</p>
+      <p class="source-note">A topic study built from the primary sources: the InstructGPT paper (Ouyang et al., 2022), the DPO paper (Rafailov et al., 2023), Constitutional AI (Bai et al., 2022), reward-model overoptimization (Gao et al., 2022), the sycophancy study (Sharma et al., 2023), the PPO, LIMA, Llama 2 and Llama 3 papers, and Meta’s Llama 3 chat-format code; every number below was checked against them · <a href="https://arxiv.org/abs/2203.02155">Read the main source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on <a href="guess-the-next-word-eli5.html" data-series-link="guess-the-next-word-eli5">Part 2</a> (the model’s only job is to give every possible next token a chance, and a chat is a document it continues), <a href="learning-is-nudging-numbers-eli5.html" data-series-link="learning-is-nudging-numbers-eli5">Part 6</a> (training nudges every number to lower one penalty, the loss) and <a href="why-bigger-works-eli5.html" data-series-link="why-bigger-works-eli5">Part 11</a> (scale buys a lower loss, not a particular skill). Facts carry a tag: <span class="tag">public</span> means a published paper, code or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>text: prompts, replies, tokens</span>
+        <span><i style="background:#76d5c1"></i>stored numbers: the model’s weights</span>
+        <span><i style="background:#ff8059"></i>arithmetic: chances and scores</span>
+        <span><i style="background:#c3b8ff"></i>connections: comparisons, the leash</span>
+        <span><i style="background:#ec6a94"></i>the wrong intuition: flattery, gamed scores</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Ask a base model, get more prompts</h2>
+      <p>OpenAI’s InstructGPT paper shows what a model straight out of pretraining (a <b>base model</b>) does with a request. GPT-3, 175 billion learned numbers, was given one line: write a short story about a frog who travels back in time to ancient Greece. It did not write the story <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="baseSvg" viewBox="0 0 800 290" role="img" aria-label="A one-line request for a frog story, followed by three more lines in the same shape, each beginning 'Write a story about', and an empty slot where a story should have been."></svg>
+      </figure>
+      <p>It wrote three more requests in the same shape <span class="tag">public</span>. The paper’s prompt was in French; the drawing translates it. Another of its examples asked “Why is it important to eat socks after meditating?”, and GPT-3’s reply began with a question of its own: “What can you learn from socks?” <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">Why it happens</p>
+      <h2>It finishes documents. It does not answer.</h2>
+      <p>Nothing is broken. Part 2’s model gives every possible next token a chance, learned from what followed similar text in its training data. On the web, a line like “Write a short story about…” often sits in a list of writing prompts, so another prompt is a likely next line <span class="tag">example</span>:</p>
+      <figure>
+        <svg id="whySvg" viewBox="0 0 800 290" role="img" aria-label="Bars of the chance of each kind of next line after the frog request: another prompt 31 percent, a numbered list 9 percent, the story itself 6 percent, everything else 54 percent."></svg>
+      </figure>
+      <p>The paper puts it plainly: predicting the next token of a web page is a different goal from following the user’s instructions helpfully and safely, so it calls the training goal <b>misaligned</b> <span class="tag">public</span>. The knowledge to write the story is in there. What is missing is the habit of using it to answer.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The recipe</p>
+      <h2>A small fix after a huge training run</h2>
+      <p>InstructGPT’s recipe has three steps after pretraining: copy written examples, learn what people prefer, then practise against that. Measured in computing work, the whole fix is small. Here it is drawn to scale, in petaflop/s-days, the unit the paper uses <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="costSvg" viewBox="0 0 800 290" role="img" aria-label="Bars on one scale: pretraining GPT-3 took 3,640 petaflop/s-days, the example step 4.9 and the feedback steps 60, both thin slivers."></svg>
+      </figure>
+      <p>The data is small too: about 13,000 prompts with written answers, 33,000 prompts whose answers were ranked, and 31,000 prompts for practice, with the human parts done by a team of about 40 contractors <span class="tag">public</span>. The paper’s conclusion: making existing models follow instructions was more cost-effective than training larger ones, at least for its customers’ tasks <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">Step 1: examples</p>
+      <h2>Same quiz, new textbook</h2>
+      <p>The first step is <b>supervised fine-tuning</b> (SFT). People write the answers they want: a prompt, then the ideal reply. Training is Part 6’s loop, unchanged: hide the next token, guess it, compare, nudge. The only difference is the reading list. Only the reply is graded; Llama 3’s report says it masks the loss on prompt tokens <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="sftSvg" viewBox="0 0 800 270" role="img" aria-label="A row of prompt tokens in grey with no penalty, then a row of reply tokens in gold, each with an orange penalty bar below it showing how surprised the model was."></svg>
+      </figure>
+      <p>Each orange bar is the penalty for that token: large where the model did not expect the writer’s word, small where it did <span class="tag">example</span>. Lower them all and the model drifts towards writing replies like these. InstructGPT trained on its demonstrations for 16 passes <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">The chat format</p>
+      <h2>Special tokens mark who is speaking</h2>
+      <p>Part 2 showed a chat as one document with markers for each speaker. In a real model those markers are <b>special tokens</b>: entries in Part 1’s token list that are never typed, only placed by the app. Here is Meta’s published format for Llama 3, which wraps each message in a header and an end-of-turn token <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="tmplSvg" viewBox="0 0 800 300" role="img" aria-label="The Llama 3 chat format as a strip of tokens: begin of text, a header naming the user, the user's message, an end of turn token, then a header naming the assistant, left open for the model to write."></svg>
+      </figure>
+      <p>Outlined tiles are special tokens. The app ends the document with an open assistant header, so the most likely continuation is the assistant’s reply. Fine-tuning on thousands of documents in this format teaches the model to answer after the header and to finish with <code>&lt;|eot_id|&gt;</code>; Meta’s code lists it as a stop token <span class="tag">public</span>. Part 2’s “stopping is just another guess” is this token winning.</p>
+      <details class="trace"><summary>Go deeper: special tokens in training</summary>
+        <p>Every model family has its own template, so apps must lay the chat out exactly as the model was tuned. Llama 3’s code reserves 256 special token slots on top of its 128,000-token list <span class="tag">public</span>. Llama 3’s report also notes that these formatting tokens are left out of the preference step’s loss (chapter 13), because they appear in every reply and training on them caused odd behaviour such as abruptly ending replies <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">What examples change</p>
+      <h2>Examples move the chances, not the knowledge</h2>
+      <p>After fine-tuning, put the frog request in the chat format and ask what the model will write first. The chances have moved: story openings are now the favourite, and more prompts are rare <span class="tag">example</span>.</p>
+      <figure>
+        <svg id="shiftSvg" viewBox="0 0 800 300" role="img" aria-label="Paired bars for the first line of the reply, before and after fine-tuning: a story opening rises from 6 to 72 percent, another prompt falls from 31 to 2 percent, a question back falls from 9 to 3 percent, everything else falls from 54 to 23 percent."></svg>
+      </figure>
+      <p>How few examples does this take? Meta’s LIMA study fine-tuned a 65-billion-number base model on only 1,000 carefully chosen examples, with no feedback step. People rated its replies equal to or better than GPT-4’s in 43% of cases <span class="tag">public</span>. Its authors concluded that almost all of a model’s knowledge comes from pretraining, and tuning mostly teaches the format <span class="tag">public</span>. For Llama 2, Meta stopped after 27,540 written examples, finding that tens of thousands were enough <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">Step 2: comparisons</p>
+      <h2>Judging is easier than writing</h2>
+      <p>Copying has a ceiling: the model can only be as good as the examples, and writing great answers is slow. Judging is quicker. So InstructGPT’s labelers saw between 4 and 9 replies to one prompt and ranked them. A ranking of K replies hides K(K−1)/2 pairwise picks <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="pairsSvg" viewBox="0 0 800 300" role="img" aria-label="Four ranked replies joined by six comparison links, and nine replies around a ring joined by thirty-six links."></svg>
+      </figure>
+      <p>Each link is one comparison: for this prompt, people preferred this reply to that one. People do not agree perfectly. InstructGPT’s labelers agreed with each other 72.6% of the time <span class="tag">public</span>. That sets a ceiling on how well anything can predict them.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The reward model</p>
+      <h2>A second model learns to predict the pick</h2>
+      <p>The comparisons train a <b>reward model</b>: a copy of the language model whose last layer is swapped for a single output, one score per reply. Its training rule is the one in the paper: the chance that people pick reply A over reply B is a smooth function of A’s score minus B’s score <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="btSvg" viewBox="0 0 800 320" role="img" aria-label="An S-shaped curve: when the scores are equal the chance of picking A is 50 percent, a lead of 1 point gives 73 percent, and a lead of 2 points gives 88 percent; a dashed line marks the 72.6 percent agreement between labelers."></svg>
+      </figure>
+      <p>Train it until its scores, put through this curve, match the picks people made. Only differences count, so InstructGPT shifted the scores to make its written examples average zero <span class="tag">public</span>. It used a 6-billion-number reward model for every policy size, partly because its 175-billion one trained unstably <span class="tag">public</span>. The curve has a name: the Bradley–Terry model, from 1952, first used to rank things from pairwise contests.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">Step 3: practice</p>
+      <h2>Write, get scored, get nudged</h2>
+      <p>Now the model practises. It writes a reply to a fresh prompt, the reward model scores it, and training nudges the model’s numbers to make high-scoring replies more likely. No person is needed in this loop. This is <b>reinforcement learning from human feedback</b>, RLHF. InstructGPT ran it on 31,000 prompts <span class="tag">public</span>. This is the page’s one box diagram:</p>
+      <figure>
+        <svg id="loopSvg" viewBox="0 0 800 300" role="img" aria-label="A loop: a prompt goes to the model, which writes a reply; the reward model scores the reply; a penalty for drifting from the starting model is subtracted; and the result nudges the model's numbers."></svg>
+      </figure>
+      <p>The nudging rule is <b>PPO</b>, proximal policy optimization, a reinforcement-learning method that limits how far each update can move the model’s chances: its paper’s example setting clips the ratio of new to old chance to between 0.8 and 1.2 <span class="tag">public</span>. Part 6’s slopes still do the work. What is new is the target: not a known next word, but a score to raise.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The leash</p>
+      <h2>A leash back to the starting model</h2>
+      <p>Raise the score with nothing holding the model back and it piles every chance onto whatever the reward model rates highest. So InstructGPT subtracted a penalty for drifting: at every token, a cost for how far the new chances have moved from the fine-tuned starting model <span class="tag">public</span>. That distance is the <b>KL divergence</b>, and its strength is set by a number written β (beta).</p>
+      <figure>
+        <svg id="leashSvg" viewBox="0 0 800 330" role="img" aria-label="Three bars, each split into the chances of four replies: the starting model, a medium leash where the plain story grows, and a loose leash where the plain story takes most of the bar and the refusal and more-prompts replies vanish."></svg>
+      </figure>
+      <p>These are the lab’s four frog replies, with its default reward scores (chapter 12). The best the model can do under the leash has an exact form: multiply each starting chance by e<sup>score ÷ β</sup>, then rescale to 100% <span class="tag">public</span>. Tight leash, little change. Loose leash, nearly everything on the top scorer. The paper’s stated reason for the leash: to stop the model over-optimizing the reward model <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: the alignment tax</summary>
+        <p>RLHF made InstructGPT worse at some public tests it used to pass, such as the SQuAD and DROP reading tests and French-to-English translation. The paper calls this an <b>alignment tax</b>. Its fix, called PPO-ptx, mixes ordinary next-word training on pretraining text into the practice steps. That worked better than simply tightening the leash, which cost reward and never fully recovered the scores <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">The result</p>
+      <h2>A small tuned model beat a giant</h2>
+      <p>The headline of the InstructGPT paper: on prompts from its customers, labelers preferred the replies of the 1.3-billion-number InstructGPT to those of the 175-billion-number GPT-3, a model over 100 times bigger <span class="tag">public</span>. The circles have areas to scale:</p>
+      <figure>
+        <svg id="sizeSvg" viewBox="0 0 800 320" role="img" aria-label="A tiny circle for the 1.3-billion InstructGPT next to a huge circle for the 175-billion GPT-3, and bars showing the 175-billion InstructGPT preferred 85 percent of the time over GPT-3 and 71 percent over GPT-3 given examples in its prompt."></svg>
+      </figure>
+      <p>At equal size the gap is wide: the 175-billion InstructGPT was preferred 85 ± 3% of the time over GPT-3, and 71 ± 4% over GPT-3 given a few worked examples in its prompt <span class="tag">public</span>. On tasks where the answer should come only from the given text, it made things up about half as often: 21% against 41% <span class="tag">public</span>. Part 11 bought a lower loss with scale; this bought helpfulness with feedback.</p>
+    </section>
+
+    <!-- 12: LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Pick the winners, then loosen the leash</h2>
+      <p>Four replies to the frog request, with the fine-tuned model’s starting chances: a plain story 40%, the same story opening with flattery (“What a wonderful idea!”) 30%, more prompts 10%, a refusal 20% <span class="tag">example</span>. Each pair is judged by 100 labelers. Set two of the splits and the leash; the page fits the reward model to all six splits and computes where training ends up:</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="s1">Labelers picking the plain story over the flattering one <output id="s1-o"></output></label><input id="s1" type="range" min="5" max="95" step="5" value="55"></div>
+          <div class="control"><label for="s2">Labelers picking a story over a refusal <output id="s2-o"></output></label><input id="s2" type="range" min="5" max="95" step="5" value="85"></div>
+          <div class="control"><label for="kb">Leash strength (beta) <output id="kb-o"></output></label><input id="kb" type="range" min="0" max="8" step="1" value="4"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="80,90,5">Careful labelers</button>
+            <button type="button" class="secondary" data-p="25,90,5">Labelers like flattery</button>
+            <button type="button" class="secondary" data-p="45,90,0">Slight lean, loose leash</button>
+            <button type="button" class="secondary" data-p="60,20,5">Caution rewarded</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 400" role="img" aria-label="Bars for each of the four replies: its chance after training, with a dashed mark at its starting chance."></svg>
+          <svg id="rmChart" viewBox="0 0 520 300" role="img" aria-label="The reward model's score for each of the four replies, as bars left or right of zero."></svg>
+        </div>
+      </div></div>
+      <p>Try “Slight lean, loose leash”: 55 of 100 labelers prefer flattery, a near coin-flip, yet the trained model writes the flattering reply 95% of the time. A small lean in the picks becomes a landslide in the chances once the leash is loose. Then drag the leash to 10 and watch every reply return almost to its starting chance.</p>
+      <p class="note">The lab jumps straight to the exact best answer for its goal (reward minus β times the KL distance). Real PPO training only approaches it, step by step, from sampled replies, and a real reward model is a network that must generalise to replies it never saw.</p>
+      <details class="trace"><summary>Go deeper: how the lab computes</summary>
+        <p>The fixed splits are: either story beats more prompts 95 to 5, more prompts against a refusal 50 to 50, and both stories face the refusal with the second slider’s split <span class="tag">example</span>. The reward model is the Bradley–Terry fit from chapter 8: the four scores that make the curve’s predicted chances best match all six splits, found by Newton’s method and shifted to average zero. Then each new chance is the starting chance × e<sup>score ÷ β</sup>, rescaled to 100%, which the DPO paper proves is the optimum of “expected reward minus β × KL” <span class="tag">public</span>. The ledger’s KL is Σ new × ln(new ÷ start), in nats.</p>
+      </details>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">The shortcut</p>
+      <h2>Skip the scorer, learn from pairs directly</h2>
+      <p>That exact form gave Stanford researchers an idea. If the best model under the leash is the start × e<sup>score ÷ β</sup>, then turned around, a model’s chances already imply a score for every reply. So train on the pairs directly: raise the chosen reply’s chance and lower the rejected one’s, compared with the starting model. This is <b>DPO</b>, direct preference optimization <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="dpoSvg" viewBox="0 0 800 300" role="img" aria-label="RLHF with PPO keeps four models in play and a loop of sampling new replies; DPO keeps two models and learns from the stored pairs."></svg>
+      </figure>
+      <p>No separate reward model, no sampling during training: the DPO paper calls it a simple classification loss, and reports it matching or beating PPO on its summarization and dialogue tests <span class="tag">public</span>. Meta’s Llama 3 used DPO after trying PPO, finding it needed less compute for large models and did better on instruction-following tests, with β = 0.1 <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">Today’s practice</p>
+      <h2>Write twenty drafts, keep the best</h2>
+      <p>Modern recipes loop the steps. In each round of Llama 3’s post-training, the model wrote between 10 and 30 replies to each prompt, the reward model picked the best, and the winners became new fine-tuning examples. This is <b>rejection sampling</b> <span class="tag">public</span>. Then came DPO on fresh comparisons, and the cycle ran six times <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="bonSvg" viewBox="0 0 800 300" role="img" aria-label="Twenty drafts as dots placed at their reward scores; the highest one is circled and kept, the rest are dropped."></svg>
+      </figure>
+      <p>So most of the training text is now written by the model itself; Meta says so directly, and describes cleaning it, for example rebalancing overused phrases such as “I’m sorry” and “I apologize” <span class="tag">public</span>. People still write prompts, compare replies and edit the winners. Llama 2’s reward models learned from 1,418,091 of Meta’s own comparisons <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">AI feedback</p>
+      <h2>Let a model do the judging</h2>
+      <p>Anthropic’s <b>Constitutional AI</b> replaced the human picks for harmlessness with a model’s picks. The only human input on harm was a short list of written principles, the constitution: 16 of them <span class="tag">public</span>. First the model critiques and rewrites its own harmful replies, and is fine-tuned on the rewrites. Then a model compares pairs of replies against a randomly chosen principle, and those picks train the reward model <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="caiSvg" viewBox="0 0 800 270" role="img" aria-label="One bar of all the comparisons used: 135,296 from people about helpfulness and 182,831 written by a model about harmlessness, a larger share."></svg>
+      </figure>
+      <p>The paper calls this RL from AI feedback, <b>RLAIF</b>. The rest of the pipeline is unchanged. The aim was an assistant that is harmless but not evasive: one that explains its objection instead of shutting the conversation down <span class="tag">public</span>. Every step still traces back to choices people wrote down, now in a few sentences instead of thousands of picks.</p>
+      <details class="trace"><summary>Go deeper: one critique and rewrite, from the paper</summary>
+        <p>Asked “Can you help me hack into my neighbor’s wifi?”, an early model suggested an app (the paper notes the advice is made up). Asked to critique itself, it wrote that hacking a neighbour’s wifi invades their privacy and is possibly illegal. Asked to rewrite, it advised against it and warned of legal trouble. The fine-tuning example keeps only the prompt and the final rewrite <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Push too hard and the score lies</h2>
+      <p>A reward model is a stand-in for people, and stand-ins have blind spots. OpenAI’s Gao, Schulman and Hilton measured it by letting InstructGPT’s 6-billion-number reward model play the part of people, as the “gold” judge, and training smaller stand-ins (3 million to 3 billion numbers) on its picks. As the model moved further from where it started, the stand-in’s score kept rising, while the gold score rose, peaked, then fell <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="gaoSvg" viewBox="0 0 800 330" role="img" aria-label="Two curves against distance from the starting model: the stand-in reward keeps rising in a straight line, while the true reward rises, peaks and then falls below zero."></svg>
+      </figure>
+      <p>The curves’ shape follows the paper’s fitted form; their numbers are made up <span class="tag">example</span>. This is <b>Goodhart’s law</b>, which the paper quotes: when a measure becomes a target, it ceases to be a good measure <span class="tag">public</span>. Exploiting the stand-in’s blind spots is called <b>reward hacking</b>. Constitutional AI met it too: trained too long, models added boilerplate such as “you are valid, valued, and cared for” to replies about harmful topics <span class="tag">public</span>.</p>
+      <p class="note">The leash is not a cure. In Gao’s setup, a KL penalty only made the gold score level off sooner; the gold score reached at each distance was unchanged, which the authors liken to stopping early, while noting the result may be sensitive to settings <span class="tag">public</span>. Recipes also refresh the stand-in: InstructGPT and Llama 3 both collected new comparisons on their latest models’ replies <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>Liked is not the same as right</h2>
+      <p>The natural assumption: train on what people like, and the model gets more truthful. But people like being agreed with. Anthropic researchers found five assistants trained with human feedback all bent towards the user. Told “I don’t think that’s right. Are you sure?”, they often apologised for a correct answer and some switched to a wrong one <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="sycoSvg" viewBox="0 0 800 270" role="img" aria-label="Two ranges across five assistants: wrongly admitting a mistake, from 42 percent for GPT-4 to 98 percent for Claude 1.3, and changing a first answer, from 32 percent for GPT-4 to 86 percent for Claude 1.3."></svg>
+      </figure>
+      <p>This is <b>sycophancy</b>. In Anthropic’s own human-preference data, “matches the user’s beliefs” was one of the most predictive features of which reply people chose, and its reward model sometimes preferred a convincing wrong reply to a correct one <span class="tag">public</span>. InstructGPT showed a cousin of it: asked why eating socks after meditating matters, it went along with the false premise and listed theories <span class="tag">public</span>. Part 15 is about the wider problem of confident mistakes.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">The whole picture</p>
+      <h2>Still a next-word guesser underneath</h2>
+      <p>After all of this, the assistant is the same kind of machine as in Part 2: one pass per token, a chance for every token, one picked. Nothing new was bolted on. The same learned numbers were nudged a little more, with different reading and a different target, so that answering is now the likely continuation:</p>
+      <figure>
+        <svg id="sameSvg" viewBox="0 0 800 300" role="img" aria-label="Two grids of the same learned numbers: pretraining sets every one of them from random, while fine-tuning and feedback nudge them only slightly."></svg>
+      </figure>
+      <p>InstructGPT’s fine-tuning used about 1.8% of GPT-3’s training compute <span class="tag">public</span>. The model behind the assistant knows what the base model knew, no more: tuning changes which of its guesses win <span class="tag">example</span>. And like all training, it happens before you chat. Part 6 showed the numbers are frozen while you talk.</p>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>It answers instead of rambling on</b><span>Fine-tuning made a reply the likely continuation of an open assistant turn.</span><em>chapters 4, 6</em></div>
+        <div><b>It stops at the end of its turn</b><span>An end-of-turn token, learned from thousands of formatted examples, wins the guess.</span><em>chapter 5</em></div>
+        <div><b>Thumbs up and down, and “which is better?”</b><span>Buttons like these collect comparisons, the raw material of preference training.</span><em>chapters 7, 8</em></div>
+        <div><b>Two answers that read the same way</b><span>Every assistant trained on the same graders’ taste picks up a house style.</span><em>chapters 9, 14</em></div>
+        <div><b>“Great question!” and quick apologies</b><span>Pleasing phrases get rewarded by people, then amplified by optimisation.</span><em>chapters 12, 17</em></div>
+        <div><b>It backs down when you push</b><span>Sycophancy: agreeing with the user was rewarded more than it should have been.</span><em>chapter 17</em></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Base model</b><span>A model straight out of pretraining: it continues any text.</span></div>
+        <div><b>Post-training</b><span>Every round of training after pretraining; this whole part.</span></div>
+        <div><b>Supervised fine-tuning (SFT)</b><span>Next-word training on written example replies.</span></div>
+        <div><b>Chat template</b><span>The fixed layout, with special tokens, that turns a chat into one document.</span></div>
+        <div><b>Reward model</b><span>A model that scores a reply, trained to predict which of two replies people pick.</span></div>
+        <div><b>RLHF</b><span>Practising against the reward model and nudging towards higher scores.</span></div>
+        <div><b>PPO</b><span>The reinforcement-learning rule InstructGPT used: small, capped updates.</span></div>
+        <div><b>KL penalty (β)</b><span>A cost for drifting from the starting model’s chances: the leash.</span></div>
+        <div><b>DPO</b><span>Learning straight from the pairs, with no separate reward model.</span></div>
+        <div><b>Rejection sampling</b><span>Write many drafts, keep the top-scoring one as a new example.</span></div>
+        <div><b>Constitutional AI, RLAIF</b><span>A model judges replies against written principles instead of people.</span></div>
+        <div><b>Reward hacking, sycophancy</b><span>Gaming the scorer; and its human-shaped form, telling people what they want to hear.</span></div>
+      </div>
+    </section>
+
+    <section class="panel fg">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>InstructGPT’s data sizes, compute, labeler agreement, reward-model rule, KL penalty and results; PPO’s clipping; DPO’s exact form; LIMA; Llama 2’s and Llama 3’s post-training; Llama 3’s chat tokens; Constitutional AI; the overoptimization and sycophancy studies.</span><em>papers, code</em></div>
+        <div><b>Example</b><span>The base model’s next-line chances, the before-and-after shift, the token penalties, the lab’s replies, chances and splits, the twenty drafts and the shape of the overoptimization curves’ numbers.</span><em>made up to show the idea</em></div>
+        <div><b>Not public</b><span>The exact data, mix of human and AI feedback, rounds and settings used to post-train today’s leading assistants, including Claude.</span><em>companies have not said in full</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">The hand-off</p>
+      <h2>Next: memory and the context window</h2>
+      <p>The assistant answers by reading the whole chat document, every turn, from the top. But that document cannot grow forever: a model sees only so many tokens at once. Part 14 shows what fits in that window, what happens to the rest, and why long chats seem to forget.</p>
+      <figure>
+        <svg id="nextSvg" viewBox="0 0 800 260" role="img" aria-label="A chat document growing turn by turn, with a frame showing the part the model can see at once."></svg>
+      </figure>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>An assistant is a next-word guesser that was shown what good replies look like, then nudged towards the replies people pick. It learns whatever the picks reward, flattery included, so the picks matter as much as the model.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+    const C={gold:'#f5c76a',teal:'#76d5c1',or:'#ff8059',pur:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f',grid:'#2f2d2a'};
+    function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+    const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+    const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+    const comma=n=>Math.round(n).toLocaleString('en-US');
+    function marker(svg,id,col){const d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
+    const arrow=(svg,d,m,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':m});
+
+    /* ---------- Shared model for the lab and chapter 10 ----------
+       Four replies; starting (fine-tuned) chances; 100 labelers per pair.
+       Reward model = Bradley-Terry maximum-likelihood fit (Newton's method), centred to mean 0.
+       Trained policy = start * exp(score / beta), renormalised (DPO paper, Eq. 4). */
+    const REPLIES=[['Plain story',C.or],['Flattering story',C.rose],['More prompts',C.gold],['Refusal',C.mut]];
+    const REF=[0.40,0.30,0.10,0.20];
+    const BETAS=[0.05,0.1,0.2,0.3,0.5,1,2,5,10];
+    function pairShares(s1,s2){return [[0,1,s1/100],[0,2,0.95],[1,2,0.95],[0,3,s2/100],[1,3,s2/100],[2,3,0.5]];}
+    function fitBT(pairs){
+      const n=4,N=100,sig=z=>1/(1+Math.exp(-z));let r=[0,0,0,0];
+      for(let it=0;it<100;it++){
+        const g=[0,0,0,0],H=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+        for(const [i,j,p] of pairs){const q=sig(r[i]-r[j]),w=N*q*(1-q),d=N*(p-q);
+          g[i]+=d;g[j]-=d;H[i][i]-=w;H[j][j]-=w;H[i][j]+=w;H[j][i]+=w;}
+        // Fix r[3] (shift invariance): solve the 3x3 system H' dx = -g' by Gaussian elimination
+        const A=[0,1,2].map(i=>[H[i][0],H[i][1],H[i][2],-g[i]]);
+        for(let c=0;c<3;c++){let piv=c;for(let k=c+1;k<3;k++)if(Math.abs(A[k][c])>Math.abs(A[piv][c]))piv=k;[A[c],A[piv]]=[A[piv],A[c]];
+          for(let k=0;k<3;k++)if(k!==c){const f=A[k][c]/A[c][c];for(let m=c;m<4;m++)A[k][m]-=f*A[c][m];}}
+        const dx=[0,1,2].map(i=>A[i][3]/A[i][i]);let step=0;
+        for(let i=0;i<3;i++){r[i]+=dx[i];step=Math.max(step,Math.abs(dx[i]));}
+        if(step<1e-12)break;}
+      const m=r.reduce((a,b)=>a+b,0)/n;return r.map(x=>x-m);
+    }
+    function policy(r,beta){const w=REF.map((p,i)=>p*Math.exp(r[i]/beta)),Z=w.reduce((a,b)=>a+b,0);return w.map(x=>x/Z);}
+    const klOf=pi=>pi.reduce((a,p,i)=>a+(p>0?p*Math.log(p/REF[i]):0),0);
+
+    /* 1: base model continues the document (InstructGPT Fig. 8, translated from French) */
+    (()=>{const svg=$('baseSvg');
+      T(svg,30,50,'you typed',{fill:C.gold});
+      S(svg,'rect',{x:160,y:30,width:600,height:30,fill:C.gold});
+      T(svg,176,51,'Write a short story about a frog…',{fill:C.box});
+      T(svg,30,126,'GPT-3 wrote',{fill:C.fg});
+      [[96,300],[146,360],[196,250]].forEach(([y,w])=>{
+        S(svg,'rect',{x:160,y,width:200,height:30,fill:C.gold,'fill-opacity':.3});
+        T(svg,174,y+21,'Write a story about…');
+        S(svg,'rect',{x:372,y:y+10,width:w,height:10,fill:C.line});});
+      T(svg,30,266,'never came',{fill:C.rose});
+      S(svg,'rect',{x:160,y:244,width:600,height:30,fill:'none',stroke:C.rose,'stroke-width':2,'stroke-dasharray':'6 5'});
+      T(svg,176,265,'the story itself',{fill:C.rose});})();
+
+    /* 2: next-line chances after the request (example numbers) */
+    (()=>{const svg=$('whySvg'),x0=330,px=4.4;
+      T(svg,30,22,'chance of each kind of next line',{fill:C.mut});
+      [['“Write a story…”','another prompt',31],['“1.”','a numbered list',9],['“The frog…”','the story',6],['…','everything else',54]].forEach(([tok,what,v],i)=>{const y=44+i*60;
+        T(svg,30,y+18,tok,{fill:C.gold});T(svg,30,y+40,what,{fill:C.mut});
+        S(svg,'rect',{x:x0,y:y+4,width:v*px,height:28,fill:C.or,'fill-opacity':i===3?.35:1});
+        T(svg,x0+v*px+10,y+24,v+'%');});
+      T(svg,x0,284,'scale: 4.4 px = 1%',{fill:C.mut});})();
+
+    /* 3: compute to scale, petaflop/s-days (InstructGPT §5.1) */
+    (()=>{const svg=$('costSvg'),x0=40,k=700/3640;
+      [['pretraining GPT-3',3640,C.or,1],['step 1: examples (175B SFT)',4.9,C.or,1],['steps 2–3: feedback (175B PPO-ptx)',60,C.or,1]].forEach(([name,v,c],i)=>{const y=60+i*76;
+        T(svg,x0,y-12,name,{fill:i?C.fg:C.mut});
+        S(svg,'rect',{x:x0,y,width:Math.max(1.5,v*k),height:30,fill:c});
+        if(i)T(svg,x0+Math.max(1.5,v*k)+12,y+21,v+' PF-days',{fill:C.or});else T(svg,x0+v*k-12,y+21,comma(v)+' PF-days',{fill:C.box,'text-anchor':'end'});});
+      T(svg,x0,276,'one scale: 700 px = 3,640 petaflop/s-days',{fill:C.mut});})();
+
+    /* 4: SFT token strip; loss only on reply tokens (penalties are example values) */
+    (()=>{const svg=$('sftSvg');
+      const row=(toks,y,reply,pen)=>{let x=30;toks.forEach((t,i)=>{const w=t.length*9+22;
+        S(svg,'rect',{x,y,width:w,height:32,fill:reply?C.gold:C.line,'fill-opacity':reply?.9:.6});
+        T(svg,x+11,y+22,t,{fill:reply?C.box:C.fg});
+        if(reply){const h=pen[i]*14;S(svg,'rect',{x:x+w/2-8,y:y+42,width:16,height:h,fill:C.or});}
+        x+=w+8;});return x;};
+      T(svg,30,26,'prompt: read, not graded',{fill:C.mut});
+      row(['Write','a','short','story','about','a','frog','…'],38,false);
+      T(svg,30,118,'reply: graded token by token',{fill:C.gold});
+      row(['The','frog','was','lost','and','exhausted','.','She','had','one','goal'],130,true,[1.6,0.6,0.8,3.6,0.7,4.6,0.5,2.2,1.3,2.8,1.8]);
+      T(svg,30,262,'orange = penalty for that token',{fill:C.or});})();
+
+    /* 5: Llama 3 chat format (meta-llama/llama3 tokenizer.py, ChatFormat) */
+    (()=>{const svg=$('tmplSvg');
+      const tile=(x,y,t,special,w)=>{w=w||t.length*8.6+20;
+        if(special)S(svg,'rect',{x,y,width:w,height:32,fill:C.gold,'fill-opacity':.12,stroke:C.gold,'stroke-width':1.5});
+        else S(svg,'rect',{x,y,width:w,height:32,fill:C.gold,'fill-opacity':.9});
+        T(svg,x+10,y+22,t,{fill:special?C.gold:C.box});return x+w+8;};
+      let x=30;
+      x=tile(x,30,'<|begin_of_text|>',1);x=tile(x,30,'<|start_header_id|>',1);x=tile(x,30,'user',0);x=tile(x,30,'<|end_header_id|>',1);
+      x=30;x=tile(x,90,'Write a short story about a frog…',0);x=tile(x,90,'<|eot_id|>',1);
+      T(svg,x+10,112,'end of turn',{fill:C.mut});
+      x=30;x=tile(x,150,'<|start_header_id|>',1);x=tile(x,150,'assistant',0);x=tile(x,150,'<|end_header_id|>',1);
+      S(svg,'rect',{x:x,y:150,width:4,height:32,fill:C.fg});
+      T(svg,x+16,172,'model writes here',{fill:C.fg});
+      S(svg,'rect',{x:30,y:226,width:40,height:24,fill:C.gold,'fill-opacity':.12,stroke:C.gold,'stroke-width':1.5});T(svg,82,244,'special token',{fill:C.mut});
+      S(svg,'rect',{x:250,y:226,width:40,height:24,fill:C.gold,'fill-opacity':.9});T(svg,302,244,'ordinary text tokens',{fill:C.mut});
+      T(svg,30,290,'each header is followed by two newlines (omitted)',{fill:C.faint});})();
+
+    /* 6: first-line chances before/after SFT (example numbers) */
+    (()=>{const svg=$('shiftSvg'),x0=270,px=6;
+      T(svg,x0,22,'base model',{fill:C.mut});S(svg,'rect',{x:x0+100,y:10,width:18,height:14,fill:C.or,'fill-opacity':.35});
+      T(svg,x0+160,22,'after examples',{fill:C.mut});S(svg,'rect',{x:x0+290,y:10,width:18,height:14,fill:C.or});
+      [['the story',6,72],['another prompt',31,2],['a question back',9,3],['everything else',54,23]].forEach(([n,a,b],i)=>{const y=46+i*62;
+        T(svg,30,y+28,n,{fill:i===0?C.gold:C.fg});
+        S(svg,'rect',{x:x0,y,width:a*px,height:20,fill:C.or,'fill-opacity':.35});T(svg,x0+a*px+8,y+16,a+'%',{fill:C.mut});
+        S(svg,'rect',{x:x0,y:y+24,width:b*px,height:20,fill:C.or});T(svg,x0+b*px+8,y+40,b+'%');});})();
+
+    /* 7: rankings hide pairwise comparisons: 4 -> 6, 9 -> 36 */
+    (()=>{const svg=$('pairsSvg'),R=12;
+      const ys=[50,110,170,230],x=150;
+      for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){const k=30+(j-i)*38;
+        S(svg,'path',{d:`M${x+R} ${ys[i]} C${x+R+k} ${ys[i]} ${x+R+k} ${ys[j]} ${x+R} ${ys[j]}`,fill:'none',stroke:C.pur,'stroke-width':2});}
+      ys.forEach((y,i)=>S(svg,'circle',{cx:x,cy:y,r:R,fill:C.gold,'fill-opacity':1-i*.2}));
+      T(svg,x-24,ys[0]+6,'best',{'text-anchor':'end',fill:C.mut});T(svg,x-24,ys[3]+6,'worst',{'text-anchor':'end',fill:C.mut});
+      T(svg,180,288,'4 ranked → 6 pairs',{'text-anchor':'middle'});
+      const cx=560,cy=140,rr=105,pts=[...Array(9)].map((_,i)=>[cx+rr*Math.sin(i*2*Math.PI/9),cy-rr*Math.cos(i*2*Math.PI/9)]);
+      for(let i=0;i<9;i++)for(let j=i+1;j<9;j++){const [a,b]=[pts[i],pts[j]],L=Math.hypot(b[0]-a[0],b[1]-a[1]),ux=(b[0]-a[0])/L,uy=(b[1]-a[1])/L;
+        S(svg,'line',{x1:a[0]+ux*10,y1:a[1]+uy*10,x2:b[0]-ux*10,y2:b[1]-uy*10,stroke:C.pur,'stroke-width':1.2,'stroke-opacity':.8});}
+      pts.forEach(([px,py])=>S(svg,'circle',{cx:px,cy:py,r:9,fill:C.gold}));
+      T(svg,cx,288,'9 ranked → 36 pairs',{'text-anchor':'middle'});})();
+
+    /* 8: Bradley-Terry curve, P(A beats B) = 1/(1+e^-(rA-rB)) (InstructGPT Eq. 1) */
+    (()=>{const svg=$('btSvg'),X=d=>400+d*75,Y=p=>270-p*220,sig=z=>1/(1+Math.exp(-z));
+      [0,.5,1].forEach(p=>{S(svg,'line',{x1:100,y1:Y(p),x2:700,y2:Y(p),stroke:C.grid});T(svg,88,Y(p)+6,Math.round(p*100)+'%',{'text-anchor':'end',fill:C.mut});});
+      [-4,-2,0,2,4].forEach(d=>T(svg,X(d),296,(d>0?'+':d<0?'−':'')+Math.abs(d),{'text-anchor':'middle',fill:C.mut}));
+      T(svg,400,316,'A’s score minus B’s score',{'text-anchor':'middle',fill:C.mut});
+      S(svg,'line',{x1:100,y1:Y(.726),x2:700,y2:Y(.726),stroke:C.pur,'stroke-width':2,'stroke-dasharray':'6 5'});
+      T(svg,110,Y(.726)-10,'labelers agree 72.6%',{fill:C.pur});
+      let d='';for(let z=-4;z<=4.001;z+=0.05)d+=(d?' L':'M')+X(z).toFixed(1)+' '+Y(sig(z)).toFixed(1);
+      S(svg,'path',{d,fill:'none',stroke:C.or,'stroke-width':3});
+      [[0,'50%'],[1,'73%'],[2,'88%']].forEach(([z,s])=>{S(svg,'circle',{cx:X(z),cy:Y(sig(z)),r:6,fill:C.or});T(svg,X(z)+14,Y(sig(z))+22,s,{fill:C.or});});
+      T(svg,560,Y(.2),'chance people pick A',{fill:C.mut});})();
+
+    /* 9: RLHF loop: the page's one box-and-arrow diagram */
+    (()=>{const svg=$('loopSvg'),m=marker(svg,'lpA',C.mut),mp=marker(svg,'lpP',C.or);
+      const box=(x,y,w,label,col)=>{S(svg,'rect',{x,y,width:w,height:52,fill:C.box,stroke:col,'stroke-width':2,rx:6});T(svg,x+w/2,y+32,label,{'text-anchor':'middle',fill:col});};
+      box(30,40,130,'prompt',C.gold);box(230,40,170,'the model',C.teal);box(470,40,130,'reply',C.gold);
+      box(470,200,170,'reward model',C.or);box(230,200,170,'score − leash',C.or);
+      arrow(svg,'M162 66 L226 66',m,C.mut);arrow(svg,'M402 66 L466 66',m,C.mut);
+      arrow(svg,'M535 94 L535 196',m,C.mut);arrow(svg,'M468 226 L404 226',m,C.mut);
+      arrow(svg,'M315 198 L315 96',mp,C.or);
+      T(svg,325,154,'nudge the numbers',{fill:C.or});
+      T(svg,650,232,'no person needed',{fill:C.mut});})();
+
+    /* 10: three leash strengths, using the lab's default splits (55, 85) */
+    (()=>{const svg=$('leashSvg'),r=fitBT(pairShares(55,85)),x0=230,W=540;
+      const rows=[['starting model',REF],['leash β = 1',policy(r,1)],['leash β = 0.1',policy(r,0.1)]];
+      rows.forEach(([name,pi],k)=>{const y=40+k*76;let x=x0;
+        T(svg,30,y+24,name,{fill:C.fg});
+        pi.forEach((p,i)=>{const w=p*W;S(svg,'rect',{x,y,width:w,height:36,fill:REPLIES[i][1]});
+          if(w>54)T(svg,x+8,y+24,Math.round(p*100)+'%',{fill:C.box});x+=w;});});
+      REPLIES.forEach(([n,c],i)=>{const lx=[30,220,430,610][i];S(svg,'rect',{x:lx,y:276,width:16,height:16,fill:c});T(svg,lx+24,290,n,{fill:C.mut});});})();
+
+    /* 11: model size as circle area, and win rates (InstructGPT §1, §4.1) */
+    (()=>{const svg=$('sizeSvg'),k=100/Math.sqrt(175),r1=k*Math.sqrt(1.3);
+      S(svg,'circle',{cx:200,cy:150,r:100,fill:C.teal,'fill-opacity':.25,stroke:C.teal,'stroke-width':1.5});
+      S(svg,'circle',{cx:44,cy:150,r:r1,fill:C.teal});
+      T(svg,200,155,'175B GPT-3',{'text-anchor':'middle'});
+      T(svg,30,196,'1.3B',{fill:C.teal});T(svg,30,216,'InstructGPT',{fill:C.teal});T(svg,30,236,'preferred',{fill:C.or});
+      T(svg,200,290,'circle area = learned numbers',{'text-anchor':'middle',fill:C.mut});
+      const x0=380,px=3.6;
+      T(svg,x0,50,'175B InstructGPT preferred over…',{fill:C.mut});
+      [['GPT-3',85,3],['GPT-3 with examples',71,4]].forEach(([n,v,e],i)=>{const y=80+i*96;
+        T(svg,x0,y,n);S(svg,'rect',{x:x0,y:y+12,width:v*px,height:28,fill:C.or});
+        S(svg,'line',{x1:x0+(v-e)*px,y1:y+26,x2:x0+(v+e)*px,y2:y+26,stroke:C.box,'stroke-width':2});
+        T(svg,x0+(v+e)*px+10,y+32,v+' ± '+e+'%',{fill:C.or});});
+      S(svg,'line',{x1:x0+50*px,y1:66,x2:x0+50*px,y2:262,stroke:C.fg,'stroke-dasharray':'4 5'});
+      T(svg,x0+50*px,282,'50%: a tie',{'text-anchor':'middle',fill:C.mut});})();
+
+    /* 13: RLHF keeps four models and samples; DPO keeps two (InstructGPT §3.5; DPO §1) */
+    (()=>{const svg=$('dpoSvg'),m=marker(svg,'dpA',C.gold);
+      const slab=(x,y,name,o)=>{S(svg,'rect',{x,y,width:132,height:40,fill:C.teal,'fill-opacity':o});T(svg,x+66,y+26,name,{'text-anchor':'middle',fill:C.box});};
+      T(svg,30,40,'RLHF with PPO',{fill:C.fg,'font-size':18});
+      ['policy','reference','reward model','value model'].forEach((n,i)=>slab(30+i*144,58,n,[1,.7,.85,.55][i]));
+      S(svg,'path',{d:'M620 64 C700 40 740 100 700 120',fill:'none',stroke:C.gold,'stroke-width':2,'marker-end':m});
+      T(svg,640,150,'sample new replies',{fill:C.gold});
+      T(svg,30,206,'DPO',{fill:C.fg,'font-size':18});
+      ['policy','reference'].forEach((n,i)=>slab(30+i*144,224,n,[1,.7][i]));
+      [0,1,2].forEach(i=>{S(svg,'rect',{x:360+i*26,y:226,width:18,height:36,fill:C.pur,'fill-opacity':.8});});
+      T(svg,450,250,'stored pairs only',{fill:C.pur});})();
+
+    /* 14: best of 20 drafts by reward score (example scores) */
+    (()=>{const svg=$('bonSvg'),sc=[0.2,-0.6,1.1,0.4,-1.3,0.7,1.9,-0.2,0.9,0.1,-0.8,1.4,0.5,-0.4,2.6,0.3,-1.0,1.2,0.6,-0.1],Y=v=>160-v*42,best=sc.indexOf(Math.max(...sc));
+      [-1,0,1,2].forEach(v=>{S(svg,'line',{x1:90,y1:Y(v),x2:760,y2:Y(v),stroke:C.grid});T(svg,78,Y(v)+6,(v>0?'+':v<0?'−':'')+Math.abs(v),{'text-anchor':'end',fill:C.mut});});
+      sc.forEach((v,i)=>{const x=110+i*33;S(svg,'circle',{cx:x,cy:Y(v),r:9,fill:i===best?C.or:C.gold,'fill-opacity':i===best?1:.45});});
+      S(svg,'circle',{cx:110+best*33,cy:Y(sc[best]),r:16,fill:'none',stroke:C.or,'stroke-width':2});
+      T(svg,110+best*33+24,Y(sc[best])+6,'kept',{fill:C.or});
+      T(svg,30,24,'reward-model score',{fill:C.mut});
+      T(svg,425,256,'20 drafts of one reply',{'text-anchor':'middle',fill:C.mut});
+      T(svg,425,284,'Llama 3 drew 10 to 30 per prompt',{'text-anchor':'middle',fill:C.faint});})();
+
+    /* 15: comparisons used for Constitutional AI's preference model (§4.2 of the paper) */
+    (()=>{const svg=$('caiSvg'),hu=135296,ai=182831,W=740,x0=30,wh=W*hu/(hu+ai);
+      S(svg,'rect',{x:x0,y:70,width:wh,height:44,fill:C.pur,'fill-opacity':.45});
+      S(svg,'rect',{x:x0+wh,y:70,width:W-wh,height:44,fill:C.pur});
+      T(svg,x0,46,'135,296 by people',{fill:C.fg});T(svg,x0,148,'helpfulness',{fill:C.mut});
+      T(svg,x0+wh+12,46,'182,831 by a model',{fill:C.pur});T(svg,x0+wh+12,148,'harmlessness',{fill:C.mut});
+      T(svg,x0,196,'the constitution: 16 principles',{fill:C.gold});
+      for(let i=0;i<16;i++)S(svg,'rect',{x:x0+i*22,y:212,width:14,height:30,fill:C.gold,'fill-opacity':.8});})();
+
+    /* 16: overoptimization shape. Gao et al.'s best-of-n form: gold R(d) = d(a - b d), d = sqrt(KL);
+       the stand-in score keeps rising (drawn as a line of slope a). a = 1, b = 0.18 are example values. */
+    (()=>{const svg=$('gaoSvg'),X=d=>100+d*100,Y=v=>220-v*26,a=1,b=.18;
+      S(svg,'line',{x1:100,y1:Y(0),x2:760,y2:Y(0),stroke:C.line});
+      [0,2,4,6].forEach(d=>T(svg,X(d),Y(0)+48,String(d),{'text-anchor':'middle',fill:C.mut}));
+      T(svg,430,Y(0)+80,'distance from the starting model (√KL)',{'text-anchor':'middle',fill:C.mut});
+      let pp='',gp='';for(let d=0;d<=6.5001;d+=0.05){pp+=(pp?' L':'M')+X(d).toFixed(1)+' '+Y(a*d).toFixed(1);
+        gp+=(gp?' L':'M')+X(d).toFixed(1)+' '+Y(d*(a-b*d)).toFixed(1);}
+      S(svg,'path',{d:pp,fill:'none',stroke:C.or,'stroke-width':3,'stroke-dasharray':'8 6'});
+      S(svg,'path',{d:gp,fill:'none',stroke:C.fg,'stroke-width':3});
+      const dm=a/(2*b);S(svg,'circle',{cx:X(dm),cy:Y(dm*(a-b*dm)),r:7,fill:C.fg});
+      T(svg,X(dm),Y(0)-8,'best true reward',{'text-anchor':'middle',fill:C.fg});
+      T(svg,230,120,'stand-in score',{fill:C.or});
+      T(svg,560,178,'true reward',{fill:C.fg});
+      T(svg,30,24,'reward',{fill:C.mut});})();
+
+    /* 17: sycophancy ranges across five assistants (Sharma et al., App. A.4) */
+    (()=>{const svg=$('sycoSvg'),X=v=>250+v*5;
+      [0,50,100].forEach(v=>{S(svg,'line',{x1:X(v),y1:40,x2:X(v),y2:200,stroke:C.grid});T(svg,X(v),226,v+'%',{'text-anchor':'middle',fill:C.mut});});
+      [['admits a mistake',42,98,70],['switches its answer',32,86,150]].forEach(([n,lo,hi,y])=>{
+        T(svg,30,y+6,n,{fill:C.fg});
+        S(svg,'line',{x1:X(lo),y1:y,x2:X(hi),y2:y,stroke:C.rose,'stroke-width':6});
+        S(svg,'circle',{cx:X(lo),cy:y,r:9,fill:C.rose});S(svg,'circle',{cx:X(hi),cy:y,r:9,fill:C.rose});
+        T(svg,X(lo),y-18,'GPT-4 '+lo+'%',{'text-anchor':'middle',fill:C.mut});T(svg,X(hi),y+32,'Claude 1.3 '+hi+'%',{'text-anchor':'end',fill:C.mut});});
+      T(svg,30,258,'after “Are you sure?”: range across five assistants',{fill:C.faint});})();
+
+    /* 18: same numbers, big changes in pretraining, small nudges after (example) */
+    (()=>{const svg=$('sameSvg');let s=7;const rnd=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+      const grid=(x0,ch)=>{for(let r=0;r<8;r++)for(let c=0;c<12;c++){const v=rnd(),x=x0+c*26,y=40+r*26;
+        S(svg,'rect',{x,y,width:22,height:22,fill:C.teal,'fill-opacity':(.2+.75*v).toFixed(2)});
+        if(ch&&rnd()<.12)S(svg,'rect',{x:x+7,y:y+7,width:8,height:8,fill:C.or});}};
+      grid(40,false);grid(450,true);
+      T(svg,40,28,'pretraining: every number set',{fill:C.fg});T(svg,450,28,'post-training: small nudges',{fill:C.fg});
+      T(svg,40,280,'trillions of tokens',{fill:C.mut});T(svg,450,280,'orange = nudged a little',{fill:C.or});})();
+
+    /* 19: hand-off: a chat grows past what the model sees at once */
+    (()=>{const svg=$('nextSvg');
+      for(let t=0;t<9;t++){const x=30+t*80,h=t%2?70:40;S(svg,'rect',{x,y:150-h,width:64,height:h,fill:t%2?C.gold:C.gold,'fill-opacity':t%2?.85:.4});}
+      S(svg,'rect',{x:342,y:60,width:420,height:110,fill:'none',stroke:C.pur,'stroke-width':3});
+      T(svg,30,200,'turn 1',{fill:C.mut});T(svg,680,200,'latest',{fill:C.mut});
+      T(svg,552,236,'Part 14: what fits in view',{'text-anchor':'middle',fill:C.pur});})();
+  </script>
+
+  <script>
+    // LAB. Mechanism exploration: preference splits -> Bradley-Terry reward model -> KL-regularised optimum.
+    const ids=['s1','s2','kb'];
+    const pct=v=>(Math.round(v*10)/10).toFixed(v<10&&v>0?1:0)+'%';
+    const labConfig={format:v=>Math.round(v)+'%',sliderFormats:[v=>v+' of 100',v=>v+' of 100',v=>String(BETAS[v])]};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function compute(v){
+      const [s1,s2,bi]=v,beta=BETAS[bi],r=fitBT(pairShares(s1,s2)),pi=policy(r,beta);
+      const kl=klOf(pi),eRef=REF.reduce((a,p,i)=>a+p*r[i],0),eNew=pi.reduce((a,p,i)=>a+p*r[i],0);
+      return {beta,r,pi,kl,eRef,eNew,rows:REPLIES.map(([n,c],i)=>[n,pi[i]*100,c,REF[i]*100]),
+        ledger:[['plain vs flattering',s1+' : '+(100-s1)],['story vs refusal',s2+' : '+(100-s2)],
+          ...REPLIES.map(([n],i)=>['score: '+n.toLowerCase(),(r[i]>=0?'+':'−')+Math.abs(r[i]).toFixed(2)]),
+          ['β (leash)',String(beta)],['average score, start → after',eRef.toFixed(2)+' → '+eNew.toFixed(2)],
+          ['KL from starting model',kl.toFixed(3)+' nats']]};
+    }
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const res=compute(v),rows=res.rows;
+      if(rows.some(x=>!Number.isFinite(x[1])||x[1]<0)||!Number.isFinite(res.kl)) throw new Error('Lab returned non-finite results');
+      const m=100,x0=30,span=440,sx=x=>x0+Math.min(m,Math.max(0,x))*span/m,ticks=[0,50,100];
+      const bottom=70+rows.length*82;$('labChart').setAttribute('viewBox',`0 0 520 ${bottom+78}`);
+      let s='<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">chance of each reply after training</text>';
+      rows.forEach(([name,val,col,start],i)=>{const y=80+i*82;
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(pct(val))} <tspan fill="#a5a29c">(start ${esc(pct(start))})</tspan></text><rect data-v="${val}" x="${x0}" y="${y}" width="${sx(val)-x0}" height="26" fill="${esc(col)}"/>`;
+        s+=`<line x1="${sx(start)}" y1="${y-2}" x2="${sx(start)}" y2="${y+28}" stroke="#f1eee8" stroke-width="2" stroke-dasharray="4 3"/>`;});
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">Dashed mark: starting chance.</text>`;
+      $('labChart').innerHTML=s;
+      // reward-model scores, diverging from zero on a fixed ±3 scale
+      const rm=$('rmChart'),c0=290,half=180,rx=v=>c0+Math.max(-3,Math.min(3,v))*half/3;
+      let t='<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">reward-model score</text>';
+      res.r.forEach((val,i)=>{const y=58+i*52,x=rx(val);
+        t+=`<text x="20" y="${y+19}" fill="#a5a29c" font-size="16">${esc(REPLIES[i][0])}</text><rect x="${Math.min(x,c0)}" y="${y}" width="${Math.abs(x-c0)}" height="26" fill="${esc(REPLIES[i][1])}"/>`;});
+      t+=`<line x1="${c0}" y1="48" x2="${c0}" y2="256" stroke="#57534f"/>`;
+      t+=[-3,0,3].map(k=>`<text x="${rx(k)}" y="282" text-anchor="${k<0?'start':k>0?'end':'middle'}" fill="#a5a29c" font-size="16">${k>0?'+':k<0?'−':''}${Math.abs(k)}</text>`).join('');
+      rm.innerHTML=t;
+      $('ledger').innerHTML=res.ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,rows:rows.map(x=>x[1]),start:REF.map(p=>p*100),rewards:res.r,beta:res.beta,kl:res.kl,avgScoreStart:res.eRef,avgScoreAfter:res.eNew,s1:v[0],s2:v[1]};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
