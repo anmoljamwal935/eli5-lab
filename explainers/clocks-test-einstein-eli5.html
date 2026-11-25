@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Testing Einstein with clocks on a mountain — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below. */
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .c-grav{color:var(--accent)}.c-tick{color:var(--teal)}.c-bad{color:var(--danger)}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    #u{accent-color:var(--teal)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+<!-- link-preview:start -->
+<meta name="description" content="How clocks 2.7 km apart can catch gravity slowing time.">
+<link rel="canonical" href="https://eli5-seven-mu.vercel.app/explainers/clocks-test-einstein-eli5">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ELI5 Lab">
+<meta property="og:title" content="Testing Einstein with clocks on a mountain">
+<meta property="og:description" content="How clocks 2.7 km apart can catch gravity slowing time.">
+<meta property="og:url" content="https://eli5-seven-mu.vercel.app/explainers/clocks-test-einstein-eli5">
+<meta property="og:image" content="https://eli5-seven-mu.vercel.app/assets/og/clocks-test-einstein-eli5.png?v=5befc210">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Testing Einstein with clocks on a mountain">
+<meta property="article:published_time" content="2026-11-25">
+<meta name="twitter:card" content="summary_large_image">
+<!-- link-preview:end -->
+</head>
+<body>
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">Energy &amp; Physics</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>ENERGY &amp; PHYSICS / 15 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Testing Einstein with clocks on a mountain</h1>
+      <p class="lede">Gravity slows time, so a clock 2.7 km higher should gain about 25 billionths of a second a day. Checking that to the last digit takes trapped atoms, a laser beamed across Colorado, and a ruler made of light.</p>
+      <p class="source-note">Built from Veritasium's video (34 min, English captions), facts checked against NIST, the team's 2026 APS abstract, BIPM, and Hänsch's Nobel lecture · <a href="https://www.youtube.com/watch?v=eyZEqSPeMwg">Watch the source ↗</a></p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#ff8059"></i>gravity's effect on time</span>
+        <span><i style="background:#76d5c1"></i>the clock's tick (atoms, laser)</span>
+        <span><i style="background:#f5c76a"></i>noise and errors</span>
+        <span><i style="background:#c3b8ff"></i>microwaves and electronics</span>
+        <span><i style="background:#f87171"></i>the misleading picture</span>
+      </div>
+    </section>
+
+    <!-- 1. The experiment -->
+    <section class="panel">
+      <p class="kicker">The experiment</p>
+      <h2>Two clocks, 2.7 km apart in height</h2>
+      <p>NIST put one ytterbium clock in its Boulder lab (1,650 m) and a twin on the summit of Mount Blue Sky (about 4,300 m). Einstein's general relativity says the higher clock runs faster: <span class="c-grav">about 25 nanoseconds more every day</span>. It's the biggest height gap yet tried with clocks this precise; earlier tests used 450 m (Tokyo Skytree) and about 1 km inside a mountain.</p>
+      <figure>
+        <svg viewBox="0 0 800 380" role="img" aria-label="Side view drawn to height scale: a clock in Boulder at 1,650 metres and a clock on the summit at 4,300 metres, 2.7 km higher, gaining 25 nanoseconds a day">
+          <path d="M40 340 L40 230 L300 230 L380 200 L460 150 L540 90 L600 53 L650 95 L700 140 L760 170 L760 340 Z" fill="#262626" stroke="#57534f"/>
+          <path d="M40 340 H760" stroke="#73706a"/>
+          <path d="M336 53 H584" stroke="#73706a" stroke-dasharray="5 5"/>
+          <path d="M320 57 V226" stroke="#ff8059" stroke-width="2"/>
+          <path d="M312 53 H328 M312 230 H328" stroke="#ff8059" stroke-width="2"/>
+          <text x="334" y="146" fill="#ff8059" font-size="18">2.7 km higher</text>
+          <circle cx="120" cy="212" r="14" fill="#202020" stroke="#76d5c1" stroke-width="3"/><path d="M120 212 V203 M120 212 H127" stroke="#76d5c1" stroke-width="2"/>
+          <text x="145" y="200" fill="#f1eee8" font-size="18">Boulder lab, 1,650 m</text>
+          <circle cx="600" cy="36" r="14" fill="#202020" stroke="#76d5c1" stroke-width="3"/><path d="M600 36 V27 M600 36 H607" stroke="#76d5c1" stroke-width="2"/>
+          <text x="625" y="32" fill="#f1eee8" font-size="18">Summit, 4,300 m</text>
+          <text x="625" y="58" fill="#ff8059" font-size="18">+25 ns a day</text>
+          <text x="40" y="366" fill="#a5a29c" font-size="16">sea level</text>
+          <text x="760" y="366" text-anchor="end" fill="#a5a29c" font-size="16">heights to scale: 1 px = 15 m</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 2. The usual picture -->
+    <section class="panel">
+      <p class="kicker">The usual picture</p>
+      <h2>Gravity is mostly time running slow</h2>
+      <p>Science centres show gravity as a ball rolling in a <span class="c-bad">stretchy funnel</span>. For slow things like us and apples, the bigger effect is different: <span class="c-tick">clocks tick slower lower down</span>, and objects fall toward the slower-ticking region.</p>
+      <figure>
+        <svg viewBox="0 0 800 320" role="img" aria-label="Left: the rubber-sheet funnel picture in red. Right: rows of clock ticks in the same second, with fewer ticks lower down, and an arrow showing objects fall toward slower time">
+          <path d="M40 120 C130 120 160 225 200 225 C240 225 270 120 360 120" fill="none" stroke="#f87171" stroke-width="3"/>
+          <path d="M70 150 C140 150 165 205 200 205 C235 205 260 150 330 150" fill="none" stroke="#f87171" stroke-opacity=".5" stroke-width="2"/>
+          <path d="M60 95 H340" stroke="#f87171" stroke-opacity=".5" stroke-width="2"/>
+          <circle cx="200" cy="212" r="12" fill="#f5c76a"/>
+          <text x="200" y="285" text-anchor="middle" fill="#f87171" font-size="18">rubber-sheet picture</text>
+          <text x="470" y="50" fill="#a5a29c" font-size="16">higher: more ticks</text>
+          <path d="M470.0 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M495.6 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M521.1 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M546.7 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M572.2 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M597.8 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M623.3 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M648.9 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M674.4 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M700.0 70 V90" stroke="#76d5c1" stroke-width="3"/><path d="M470 80 H700" stroke="#57534f"/><path d="M470.0 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M498.8 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M527.5 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M556.2 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M585.0 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M613.8 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M642.5 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M671.2 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M700.0 130 V150" stroke="#76d5c1" stroke-width="3"/><path d="M470 140 H700" stroke="#57534f"/><path d="M470.0 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M502.9 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M535.7 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M568.6 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M601.4 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M634.3 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M667.1 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M700.0 190 V210" stroke="#76d5c1" stroke-width="3"/><path d="M470 200 H700" stroke="#57534f"/><path d="M470.0 250 V270" stroke="#76d5c1" stroke-width="3"/><path d="M508.3 250 V270" stroke="#76d5c1" stroke-width="3"/><path d="M546.7 250 V270" stroke="#76d5c1" stroke-width="3"/><path d="M585.0 250 V270" stroke="#76d5c1" stroke-width="3"/><path d="M623.3 250 V270" stroke="#76d5c1" stroke-width="3"/><path d="M661.7 250 V270" stroke="#76d5c1" stroke-width="3"/><path d="M700.0 250 V270" stroke="#76d5c1" stroke-width="3"/><path d="M470 260 H700" stroke="#57534f"/>
+          <text x="470" y="300" fill="#a5a29c" font-size="16">lower: fewer ticks</text>
+          <defs><marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#ff8059"/></marker></defs>
+          <path d="M745 80 V250" stroke="#ff8059" stroke-width="3" marker-end="url(#a2)"/>
+          <text x="760" y="300" text-anchor="end" fill="#ff8059" font-size="16">falls</text>
+          <text x="760" y="50" text-anchor="end" fill="#a5a29c" font-size="16">exaggerated</text>
+        </svg>
+      </figure>
+      <p class="note">This "time does most of the work" rule holds for slow objects in weak gravity, which covers everyday life on Earth: in that limit only the time part of spacetime's geometry steers motion (<a href="https://arxiv.org/abs/gr-qc/9712019">Carroll's GR notes, §4.1</a>). Light and fast objects also feel curved space.</p>
+    </section>
+
+    <!-- 3. Why test it again -->
+    <section class="panel">
+      <p class="kicker">The open question</p>
+      <h2>Where does a mass in two places bend?</h2>
+      <p>Relativity has passed every clock test so far. But quantum mechanics lets a particle sit in two places at once, and relativity can't say how spacetime bends then. Somewhere one theory must give, so physicists hunt for the first crack.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="One flat line with two overlapping dashed dips, one under a particle on the left and one under the same particle on the right, with a question mark: which shape does spacetime take?">
+          <path d="M60 120 H180 C230 120 240 210 280 210 C320 210 330 120 380 120 H740" fill="none" stroke="#ff8059" stroke-width="3" stroke-dasharray="8 6"/>
+          <path d="M60 120 H420 C470 120 480 210 520 210 C560 210 570 120 620 120 H740" fill="none" stroke="#ff8059" stroke-opacity=".6" stroke-width="3" stroke-dasharray="3 6"/>
+          <circle cx="280" cy="192" r="15" fill="#f1eee8" fill-opacity=".55"/>
+          <circle cx="520" cy="192" r="15" fill="#f1eee8" fill-opacity=".55"/>
+          <text x="280" y="250" text-anchor="middle" fill="#f1eee8" font-size="18">here</text>
+          <text x="520" y="250" text-anchor="middle" fill="#f1eee8" font-size="18">there</text>
+          <text x="400" y="85" text-anchor="middle" fill="#ff8059" font-size="34">?</text>
+          <text x="400" y="285" text-anchor="middle" fill="#a5a29c" font-size="16">one particle, both places at once</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 4. The size of it -->
+    <section class="panel">
+      <p class="kicker">The size of it</p>
+      <h2>The effect hides in the 13th digit</h2>
+      <p>The mountain clock runs fast by <span class="c-grav">2.885 parts in 10<sup>13</sup></span> (the team's prediction, from gravity surveys at both sites). To test Einstein you then need several more digits: the best ytterbium clocks are accurate to <span class="c-tick">1.4 parts in 10<sup>18</sup></span> (<a href="https://arxiv.org/abs/1807.11282">NIST, 2018</a>): run since the Big Bang, off by less than a second.</p>
+      <figure>
+        <svg viewBox="0 0 800 260" role="img" aria-label="A row of 18 decimal places: the first 13 in coral are needed just to see the mountain shift, the last 5 in teal are the room left for testing Einstein">
+          <path d="M60 80 V74 H574 V80" fill="none" stroke="#ff8059" stroke-width="2"/>
+          <text x="317" y="62" text-anchor="middle" fill="#ff8059" font-size="16">digits to see the mountain shift</text>
+          <path d="M580 80 V74 H774 V80" fill="none" stroke="#76d5c1" stroke-width="2"/>
+          <text x="677" y="62" text-anchor="middle" fill="#76d5c1" font-size="16">room to test Einstein</text>
+          <rect x="60" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="77" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">1</text><rect x="100" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="117" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">2</text><rect x="140" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="157" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><rect x="180" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="197" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">4</text><rect x="220" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="237" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><rect x="260" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="277" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><rect x="300" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="317" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">7</text><rect x="340" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="357" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">8</text><rect x="380" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="397" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><rect x="420" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="437" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><rect x="460" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="477" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">11</text><rect x="500" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="517" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">12</text><rect x="540" y="90" width="34" height="40" fill="#ff8059" fill-opacity="1"/><text x="557" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">13</text><rect x="580" y="90" width="34" height="40" fill="#76d5c1" fill-opacity="0.55"/><text x="597" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">14</text><rect x="620" y="90" width="34" height="40" fill="#76d5c1" fill-opacity="0.55"/><text x="637" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">15</text><rect x="660" y="90" width="34" height="40" fill="#76d5c1" fill-opacity="0.55"/><text x="677" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">16</text><rect x="700" y="90" width="34" height="40" fill="#76d5c1" fill-opacity="0.55"/><text x="717" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">17</text><rect x="740" y="90" width="34" height="40" fill="#76d5c1" fill-opacity="0.55"/><text x="757" y="154" text-anchor="middle" fill="#a5a29c" font-size="16">18</text>
+          <text x="40" y="200" fill="#a5a29c" font-size="16">decimal place of the tick rate</text>
+          <text x="40" y="240" fill="#76d5c1" font-size="16">1 cm of height moves the 18th place</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 5. Every clock counts swings -->
+    <section class="panel">
+      <p class="kicker">The building block</p>
+      <h2>Every clock counts something that swings</h2>
+      <p>A grandfather clock counts a pendulum, a watch counts vibrating quartz, an atomic clock counts light that atoms respond to (not radioactivity; NIST's forerunner built the first one in 1949). The video puts caesium clocks at over 50 billion times more accurate than watch quartz. More swings per second slice the second more finely: ytterbium's light swings about 56,000 times faster than caesium's microwaves.</p>
+      <figure>
+        <svg viewBox="0 0 800 280" role="img" aria-label="Logarithmic axis of swings per second: a pendulum near 1, caesium at 9.19 billion, ytterbium at 518 trillion, 56,000 times higher">
+          <path d="M60 200 H740" stroke="#a5a29c"/>
+          <path d="M60.0 194 V206" stroke="#a5a29c"/><text x="60.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10⁻¹</text><path d="M145.0 194 V206" stroke="#a5a29c"/><text x="145.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10¹</text><path d="M230.0 194 V206" stroke="#a5a29c"/><text x="230.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10³</text><path d="M315.0 194 V206" stroke="#a5a29c"/><text x="315.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10⁵</text><path d="M400.0 194 V206" stroke="#a5a29c"/><text x="400.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10⁷</text><path d="M485.0 194 V206" stroke="#a5a29c"/><text x="485.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10⁹</text><path d="M570.0 194 V206" stroke="#a5a29c"/><text x="570.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10¹¹</text><path d="M655.0 194 V206" stroke="#a5a29c"/><text x="655.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10¹³</text><path d="M740.0 194 V206" stroke="#a5a29c"/><text x="740.0" y="230" text-anchor="middle" fill="#a5a29c" font-size="16">10¹⁵</text>
+          <path d="M102.5 120 V185" stroke="#f1eee8" stroke-width="2"/><circle cx="102.5" cy="185" r="8" fill="#f1eee8"/>
+          <text x="60" y="100" fill="#f1eee8" font-size="16">pendulum, ~1 swing/s</text>
+          <path d="M525.9 200 V120" stroke="#c3b8ff" stroke-width="3"/>
+          <text x="525.9" y="108" text-anchor="middle" fill="#c3b8ff" font-size="16">caesium 9.19 GHz</text>
+          <path d="M727.9 200 V95" stroke="#76d5c1" stroke-width="3"/>
+          <text x="760" y="80" text-anchor="end" fill="#76d5c1" font-size="16">ytterbium ~518 THz</text>
+          <path d="M525.9 160 H727.9" stroke="#f1eee8" stroke-dasharray="4 4"/>
+          <text x="627" y="150" text-anchor="middle" fill="#f1eee8" font-size="16">×56,000</text>
+          <text x="400" y="264" text-anchor="middle" fill="#a5a29c" font-size="16">swings per second (log scale)</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 6. The atom's pendulum -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>An atom answers only one exact colour</h2>
+      <p>An electron jumps to a higher energy level only if a photon's frequency matches the gap. Sweep a laser's frequency, find where atoms respond, and keep the laser locked there by checking how many atoms jumped. Counting 9,192,631,770 caesium cycles has defined one second since 1967; it underpins UTC, the time on your phone.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Left: two energy levels with an arrow showing a photon lifting an electron. Right: the share of atoms that jump versus laser frequency, a sharp peak where the laser is locked">
+          <path d="M60 80 H200 M60 230 H200" stroke="#f1eee8" stroke-width="3"/>
+          <text x="60" y="68" fill="#a5a29c" font-size="16">excited level</text>
+          <text x="60" y="260" fill="#a5a29c" font-size="16">ground level</text>
+          <defs><marker id="a6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#76d5c1"/></marker></defs>
+          <path d="M185 220 V90" stroke="#76d5c1" stroke-width="3" marker-end="url(#a6)"/>
+          <circle cx="185" cy="230" r="7" fill="#76d5c1"/>
+          <path d="M300 250 H760 M300 250 V60" stroke="#a5a29c"/>
+          <path d="M300.0 248.5 L304.0 248.4 L308.0 248.3 L312.0 248.3 L316.0 248.2 L320.0 248.2 L324.0 248.1 L328.0 248.0 L332.0 247.9 L336.0 247.8 L340.0 247.8 L344.0 247.7 L348.0 247.6 L352.0 247.4 L356.0 247.3 L360.0 247.2 L364.0 247.1 L368.0 246.9 L372.0 246.8 L376.0 246.6 L380.0 246.4 L384.0 246.2 L388.0 246.0 L392.0 245.8 L396.0 245.5 L400.0 245.3 L404.0 245.0 L408.0 244.6 L412.0 244.3 L416.0 243.9 L420.0 243.5 L424.0 243.0 L428.0 242.4 L432.0 241.8 L436.0 241.2 L440.0 240.4 L444.0 239.6 L448.0 238.6 L452.0 237.5 L456.0 236.2 L460.0 234.7 L464.0 233.0 L468.0 231.0 L472.0 228.6 L476.0 225.8 L480.0 222.4 L484.0 218.4 L488.0 213.4 L492.0 207.3 L496.0 199.8 L500.0 190.5 L504.0 179.1 L508.0 165.0 L512.0 148.2 L516.0 129.0 L520.0 109.1 L524.0 91.8 L528.0 81.4 L532.0 81.4 L536.0 91.8 L540.0 109.1 L544.0 129.0 L548.0 148.2 L552.0 165.0 L556.0 179.1 L560.0 190.5 L564.0 199.8 L568.0 207.3 L572.0 213.4 L576.0 218.4 L580.0 222.4 L584.0 225.8 L588.0 228.6 L592.0 231.0 L596.0 233.0 L600.0 234.7 L604.0 236.2 L608.0 237.5 L612.0 238.6 L616.0 239.6 L620.0 240.4 L624.0 241.2 L628.0 241.8 L632.0 242.4 L636.0 243.0 L640.0 243.5 L644.0 243.9 L648.0 244.3 L652.0 244.6 L656.0 245.0 L660.0 245.3 L664.0 245.5 L668.0 245.8 L672.0 246.0 L676.0 246.2 L680.0 246.4 L684.0 246.6 L688.0 246.8 L692.0 246.9 L696.0 247.1 L700.0 247.2 L704.0 247.3 L708.0 247.4 L712.0 247.6 L716.0 247.7 L720.0 247.8 L724.0 247.8 L728.0 247.9 L732.0 248.0 L736.0 248.1 L740.0 248.2 L744.0 248.2 L748.0 248.3 L752.0 248.3 L756.0 248.4 L760.0 248.5" fill="none" stroke="#76d5c1" stroke-width="3"/>
+          <path d="M530 246 V94" stroke="#f1eee8" stroke-dasharray="5 5"/>
+          <text x="530" y="66" text-anchor="middle" fill="#f1eee8" font-size="16">laser locked here</text>
+          <text x="390" y="225" text-anchor="middle" fill="#a5a29c" font-size="16">too low</text>
+          <text x="670" y="225" text-anchor="middle" fill="#a5a29c" font-size="16">too high</text>
+          <text x="530" y="285" text-anchor="middle" fill="#a5a29c" font-size="16">laser frequency</text>
+          <text x="312" y="54" fill="#a5a29c" font-size="16">atoms that jump</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 7. Stability vs accuracy -->
+    <section class="panel">
+      <p class="kicker">Two different qualities</p>
+      <h2>Steady is not the same as right</h2>
+      <p>Every atom of one isotope has the same natural frequency, so ticks are consistent: that's <b>stability</b>. Whether you read the <i>true</i> frequency depends on how well the machine is built: that's <b>accuracy</b>. Caesium fountains reach about 1 part in 10<sup>16</sup>; NIST says under a second lost in 100 million years.</p>
+      <figure>
+        <svg viewBox="0 0 800 310" role="img" aria-label="Three rows of clock readings around a dashed true-frequency line: a tight cluster off to the side, a wide cluster centred, and a tight cluster centred">
+          <path d="M60 80 H560 M60 170 H560 M60 260 H560" stroke="#57534f"/>
+          <path d="M310 52 V290" stroke="#f1eee8" stroke-dasharray="5 5"/>
+          <text x="310" y="38" text-anchor="middle" fill="#f1eee8" font-size="16">true frequency</text>
+          <circle cx="420.0" cy="74" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="424.0" cy="84" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="427.0" cy="78" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="430.0" cy="86" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="432.5" cy="75" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="435.0" cy="82" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="438.0" cy="76" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="440.0" cy="85" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="422.0" cy="81" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="434.0" cy="79" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="225.0" cy="164" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="259.0" cy="174" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="284.5" cy="168" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="310.0" cy="176" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="331.2" cy="165" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="352.5" cy="172" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="378.0" cy="166" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="395.0" cy="175" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="242.0" cy="171" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="344.0" cy="169" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="300.0" cy="254" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="304.0" cy="264" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="307.0" cy="258" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="310.0" cy="266" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="312.5" cy="255" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="315.0" cy="262" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="318.0" cy="256" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="320.0" cy="265" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="302.0" cy="261" r="6" fill="#76d5c1" fill-opacity=".85"/><circle cx="314.0" cy="259" r="6" fill="#76d5c1" fill-opacity=".85"/>
+          <text x="590" y="86" fill="#f5c76a" font-size="18">steady, but off</text>
+          <text x="590" y="176" fill="#f5c76a" font-size="18">right on average, jittery</text>
+          <text x="590" y="266" fill="#76d5c1" font-size="18">steady and right</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 8. Doppler -->
+    <section class="panel">
+      <p class="kicker">The first problem</p>
+      <h2>Moving atoms read the wrong colour</h2>
+      <p>Solid ytterbium blurs the signal (neighbouring atoms tug each other's electrons), so it's boiled into a vapour at about 500 °C. Those atoms fly at roughly 300 m/s, a millionth of light's speed, and the Doppler effect then smears the reading from the 7th digit on.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="An oven firing atoms at 300 metres per second; below, a row of 18 decimal places where only the first 6 survive and the rest are smeared by the Doppler shift">
+          <rect x="60" y="45" width="80" height="50" fill="#2b2b2b" stroke="#f5c76a" stroke-width="2"/>
+          <text x="60" y="122" fill="#a5a29c" font-size="16">oven ~500 °C</text>
+          <circle cx="170" cy="70" r="7" fill="#f1eee8"/><circle cx="200" cy="70" r="7" fill="#f1eee8"/><circle cx="230" cy="70" r="7" fill="#f1eee8"/>
+          <defs><marker id="a8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#f5c76a"/></marker></defs>
+          <path d="M250 70 H330" stroke="#f5c76a" stroke-width="3" marker-end="url(#a8)"/>
+          <text x="345" y="76" fill="#f5c76a" font-size="18">~300 m/s ≈ light speed ÷ 1,000,000</text>
+          <path d="M60 160 V154 H274 V160" fill="none" stroke="#a5a29c" stroke-width="2"/>
+          <text x="167" y="145" text-anchor="middle" fill="#a5a29c" font-size="16">still trusted</text>
+          <path d="M300 160 V154 H774 V160" fill="none" stroke="#f5c76a" stroke-width="2"/>
+          <text x="537" y="145" text-anchor="middle" fill="#f5c76a" font-size="16">smeared by the Doppler shift</text>
+          <rect x="60" y="170" width="34" height="40" fill="#8a867f" fill-opacity="0.6"/><text x="77" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">1</text><rect x="100" y="170" width="34" height="40" fill="#8a867f" fill-opacity="0.6"/><text x="117" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">2</text><rect x="140" y="170" width="34" height="40" fill="#8a867f" fill-opacity="0.6"/><text x="157" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">3</text><rect x="180" y="170" width="34" height="40" fill="#8a867f" fill-opacity="0.6"/><text x="197" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">4</text><rect x="220" y="170" width="34" height="40" fill="#8a867f" fill-opacity="0.6"/><text x="237" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">5</text><rect x="260" y="170" width="34" height="40" fill="#8a867f" fill-opacity="0.6"/><text x="277" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">6</text><rect x="300" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="317" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">7</text><rect x="340" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="357" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">8</text><rect x="380" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="397" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">9</text><rect x="420" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="437" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">10</text><rect x="460" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="477" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">11</text><rect x="500" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="517" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">12</text><rect x="540" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="557" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">13</text><rect x="580" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="597" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">14</text><rect x="620" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="637" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">15</text><rect x="660" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="677" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">16</text><rect x="700" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="717" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">17</text><rect x="740" y="170" width="34" height="40" fill="#f5c76a" fill-opacity="0.75"/><text x="757" y="234" text-anchor="middle" fill="#a5a29c" font-size="16">18</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 9. Laser cooling -->
+    <section class="panel">
+      <p class="kicker">The fix, part 1</p>
+      <h2>Slowing atoms down by shining light</h2>
+      <p>Beams from every direction are tuned slightly below the atoms' colour. An atom only absorbs from a beam it's flying <i>into</i> (Doppler again), and each photon kicks it backwards. A blue laser cools to about a thousandth of a kelvin, a green one to about a millionth.</p>
+      <figure>
+        <svg viewBox="0 0 800 340" role="img" aria-label="Top: an atom moving right between two opposing laser beams gets pushed back by the beam it moves into. Bottom: temperature on a log scale falling from the 773 kelvin oven to 1 millikelvin with the blue laser and 1 microkelvin with the green laser">
+          <defs><marker id="a9t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#76d5c1"/></marker><marker id="a9c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#f1eee8"/></marker><marker id="a9g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#f5c76a"/></marker></defs>
+          <path d="M80 100 H372" stroke="#76d5c1" stroke-opacity=".45" stroke-width="4" marker-end="url(#a9t)"/>
+          <path d="M720 100 H428" stroke="#76d5c1" stroke-width="4" marker-end="url(#a9t)"/>
+          <circle cx="400" cy="100" r="16" fill="#f1eee8"/>
+          <path d="M400 70 V60 H470" fill="none" stroke="#f5c76a" stroke-width="3" marker-end="url(#a9g)"/>
+          <text x="480" y="66" fill="#f5c76a" font-size="16">atom moving right</text>
+          <path d="M384 140 H310" stroke="#f1eee8" stroke-width="3" marker-end="url(#a9c)"/>
+          <text x="300" y="146" text-anchor="end" fill="#f1eee8" font-size="16">kick back</text>
+          <text x="80" y="80" fill="#a5a29c" font-size="16">weak for this atom</text>
+          <text x="720" y="80" text-anchor="end" fill="#76d5c1" font-size="16">absorbed</text>
+          <path d="M80 280 H720" stroke="#a5a29c"/>
+          <path d="M80.0 274 V286" stroke="#a5a29c"/><path d="M144.0 274 V286" stroke="#a5a29c"/><path d="M208.0 274 V286" stroke="#a5a29c"/><path d="M272.0 274 V286" stroke="#a5a29c"/><path d="M336.0 274 V286" stroke="#a5a29c"/><path d="M400.0 274 V286" stroke="#a5a29c"/><path d="M464.0 274 V286" stroke="#a5a29c"/><path d="M528.0 274 V286" stroke="#a5a29c"/><path d="M592.0 274 V286" stroke="#a5a29c"/><path d="M656.0 274 V286" stroke="#a5a29c"/><path d="M720.0 274 V286" stroke="#a5a29c"/><text x="144.0" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">1 µK</text><text x="336.0" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">1 mK</text><text x="528.0" y="306" text-anchor="middle" fill="#a5a29c" font-size="16">1 K</text>
+          <circle cx="712.8" cy="280" r="7" fill="#f5c76a"/>
+          <text x="712.8" y="306" text-anchor="end" fill="#f5c76a" font-size="16">oven 773 K</text>
+          <circle cx="336.0" cy="280" r="7" fill="#76d5c1"/><circle cx="144.0" cy="280" r="7" fill="#76d5c1"/>
+          <path d="M700 268 Q520 200 350 266" fill="none" stroke="#76d5c1" stroke-width="2" marker-end="url(#a9t)"/>
+          <text x="524" y="214" text-anchor="middle" fill="#76d5c1" font-size="16">blue laser</text>
+          <path d="M324 268 Q240 214 158 266" fill="none" stroke="#76d5c1" stroke-width="2" marker-end="url(#a9t)"/>
+          <text x="240" y="220" text-anchor="middle" fill="#76d5c1" font-size="16">green laser</text>
+          <text x="400" y="332" text-anchor="middle" fill="#a5a29c" font-size="16">temperature (log scale)</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 10. Optical lattice -->
+    <section class="panel">
+      <p class="kicker">The fix, part 2</p>
+      <h2>Trapping cold atoms in a crate of light</h2>
+      <p>A laser bounced back on itself makes a standing wave: fixed bright and dark spots. Its electric field slightly stretches each neutral atom's charges, and the stretched atom is pulled to the bright spots, like a marble rolling to the bottom of a bowl. Pinned there, the atoms barely move.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Top: a standing wave's brightness rising and falling at fixed spots. Bottom: matching energy wells whose lowest points sit under the bright spots, each holding an atom">
+          <path d="M60.0 120.0 L64.0 120.9 L68.0 123.4 L72.0 127.5 L76.0 132.9 L80.0 139.4 L84.0 146.7 L88.0 154.4 L92.0 162.1 L96.0 169.4 L100.0 176.1 L104.0 181.7 L108.0 186.0 L112.0 188.8 L116.0 190.0 L120.0 189.4 L124.0 187.1 L128.0 183.3 L132.0 178.1 L136.0 171.7 L140.0 164.6 L144.0 156.9 L148.0 149.2 L152.0 141.8 L156.0 135.0 L160.0 129.1 L164.0 124.6 L168.0 121.5 L172.0 120.1 L176.0 120.4 L180.0 122.4 L184.0 125.9 L188.0 130.9 L192.0 137.1 L196.0 144.2 L200.0 151.8 L204.0 159.5 L208.0 167.0 L212.0 174.0 L216.0 180.0 L220.0 184.8 L224.0 188.1 L228.0 189.8 L232.0 189.8 L236.0 188.1 L240.0 184.8 L244.0 180.0 L248.0 174.0 L252.0 167.0 L256.0 159.5 L260.0 151.8 L264.0 144.2 L268.0 137.1 L272.0 130.9 L276.0 125.9 L280.0 122.4 L284.0 120.4 L288.0 120.1 L292.0 121.5 L296.0 124.6 L300.0 129.1 L304.0 135.0 L308.0 141.8 L312.0 149.2 L316.0 156.9 L320.0 164.6 L324.0 171.7 L328.0 178.1 L332.0 183.3 L336.0 187.1 L340.0 189.4 L344.0 190.0 L348.0 188.8 L352.0 186.0 L356.0 181.7 L360.0 176.1 L364.0 169.4 L368.0 162.1 L372.0 154.4 L376.0 146.7 L380.0 139.4 L384.0 132.9 L388.0 127.5 L392.0 123.4 L396.0 120.9 L400.0 120.0 L404.0 120.9 L408.0 123.4 L412.0 127.5 L416.0 132.9 L420.0 139.4 L424.0 146.7 L428.0 154.4 L432.0 162.1 L436.0 169.4 L440.0 176.1 L444.0 181.7 L448.0 186.0 L452.0 188.8 L456.0 190.0 L460.0 189.4 L464.0 187.1 L468.0 183.3 L472.0 178.1 L476.0 171.7 L480.0 164.6 L484.0 156.9 L488.0 149.2 L492.0 141.8 L496.0 135.0 L500.0 129.1 L504.0 124.6 L508.0 121.5 L512.0 120.1 L516.0 120.4 L520.0 122.4 L524.0 125.9 L528.0 130.9 L532.0 137.1 L536.0 144.2 L540.0 151.8 L544.0 159.5 L548.0 167.0 L552.0 174.0 L556.0 180.0 L560.0 184.8 L564.0 188.1 L568.0 189.8 L572.0 189.8 L576.0 188.1 L580.0 184.8 L584.0 180.0 L588.0 174.0 L592.0 167.0 L596.0 159.5 L600.0 151.8 L604.0 144.2 L608.0 137.1 L612.0 130.9 L616.0 125.9 L620.0 122.4 L624.0 120.4 L628.0 120.1 L632.0 121.5 L636.0 124.6 L640.0 129.1 L644.0 135.0 L648.0 141.8 L652.0 149.2 L656.0 156.9 L660.0 164.6 L664.0 171.7 L668.0 178.1 L672.0 183.3 L676.0 187.1 L680.0 189.4 L684.0 190.0 L688.0 188.8 L692.0 186.0 L696.0 181.7 L700.0 176.1 L704.0 169.4 L708.0 162.1 L712.0 154.4 L716.0 146.7 L720.0 139.4 L724.0 132.9 L728.0 127.5 L732.0 123.4 L736.0 120.9 L740.0 120.0" fill="none" stroke="#76d5c1" stroke-width="3"/>
+          <text x="60" y="60" fill="#76d5c1" font-size="16">light brightness</text>
+          <path d="M400 104 V98 H513 V104" fill="none" stroke="#f1eee8" stroke-width="2"/>
+          <text x="456" y="88" text-anchor="middle" fill="#f1eee8" font-size="16">a few hundred nm</text>
+          <path d="M60.0 300.0 L64.0 299.3 L68.0 297.3 L72.0 294.1 L76.0 289.9 L80.0 284.8 L84.0 279.0 L88.0 273.0 L92.0 266.9 L96.0 261.2 L100.0 255.9 L104.0 251.5 L108.0 248.1 L112.0 245.9 L116.0 245.0 L120.0 245.5 L124.0 247.2 L128.0 250.3 L132.0 254.4 L136.0 259.3 L140.0 265.0 L144.0 271.0 L148.0 277.1 L152.0 282.9 L156.0 288.3 L160.0 292.8 L164.0 296.4 L168.0 298.8 L172.0 299.9 L176.0 299.7 L180.0 298.1 L184.0 295.3 L188.0 291.4 L192.0 286.5 L196.0 281.0 L200.0 275.0 L204.0 269.0 L208.0 263.0 L212.0 257.6 L216.0 252.9 L220.0 249.1 L224.0 246.5 L228.0 245.2 L232.0 245.2 L236.0 246.5 L240.0 249.1 L244.0 252.9 L248.0 257.6 L252.0 263.0 L256.0 269.0 L260.0 275.0 L264.0 281.0 L268.0 286.5 L272.0 291.4 L276.0 295.3 L280.0 298.1 L284.0 299.7 L288.0 299.9 L292.0 298.8 L296.0 296.4 L300.0 292.8 L304.0 288.3 L308.0 282.9 L312.0 277.1 L316.0 271.0 L320.0 265.0 L324.0 259.3 L328.0 254.4 L332.0 250.3 L336.0 247.2 L340.0 245.5 L344.0 245.0 L348.0 245.9 L352.0 248.1 L356.0 251.5 L360.0 255.9 L364.0 261.2 L368.0 266.9 L372.0 273.0 L376.0 279.0 L380.0 284.8 L384.0 289.9 L388.0 294.1 L392.0 297.3 L396.0 299.3 L400.0 300.0 L404.0 299.3 L408.0 297.3 L412.0 294.1 L416.0 289.9 L420.0 284.8 L424.0 279.0 L428.0 273.0 L432.0 266.9 L436.0 261.2 L440.0 255.9 L444.0 251.5 L448.0 248.1 L452.0 245.9 L456.0 245.0 L460.0 245.5 L464.0 247.2 L468.0 250.3 L472.0 254.4 L476.0 259.3 L480.0 265.0 L484.0 271.0 L488.0 277.1 L492.0 282.9 L496.0 288.3 L500.0 292.8 L504.0 296.4 L508.0 298.8 L512.0 299.9 L516.0 299.7 L520.0 298.1 L524.0 295.3 L528.0 291.4 L532.0 286.5 L536.0 281.0 L540.0 275.0 L544.0 269.0 L548.0 263.0 L552.0 257.6 L556.0 252.9 L560.0 249.1 L564.0 246.5 L568.0 245.2 L572.0 245.2 L576.0 246.5 L580.0 249.1 L584.0 252.9 L588.0 257.6 L592.0 263.0 L596.0 269.0 L600.0 275.0 L604.0 281.0 L608.0 286.5 L612.0 291.4 L616.0 295.3 L620.0 298.1 L624.0 299.7 L628.0 299.9 L632.0 298.8 L636.0 296.4 L640.0 292.8 L644.0 288.3 L648.0 282.9 L652.0 277.1 L656.0 271.0 L660.0 265.0 L664.0 259.3 L668.0 254.4 L672.0 250.3 L676.0 247.2 L680.0 245.5 L684.0 245.0 L688.0 245.9 L692.0 248.1 L696.0 251.5 L700.0 255.9 L704.0 261.2 L708.0 266.9 L712.0 273.0 L716.0 279.0 L720.0 284.8 L724.0 289.9 L728.0 294.1 L732.0 297.3 L736.0 299.3 L740.0 300.0" fill="none" stroke="#f1eee8" stroke-width="2"/>
+          <circle cx="173.3" cy="290" r="8" fill="#f1eee8"/><circle cx="286.7" cy="290" r="8" fill="#f1eee8"/><circle cx="400.0" cy="290" r="8" fill="#f1eee8"/><circle cx="513.3" cy="290" r="8" fill="#f1eee8"/><circle cx="626.7" cy="290" r="8" fill="#f1eee8"/>
+          <text x="60" y="230" fill="#a5a29c" font-size="16">energy wells</text>
+          <text x="740" y="230" text-anchor="end" fill="#a5a29c" font-size="16">atoms sit at bright spots</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 11. The link -->
+    <section class="panel">
+      <p class="kicker">The climb</p>
+      <h2>Beaming a clock signal across the plains</h2>
+      <p>A smaller copy of the whole clock went up the mountain. A cable wasn't practical (animals would chew it), so a 10 cm laser beam crosses tens of kilometres of air to a rooftop north of Denver (the video says about 80 km; the team's abstract says 69 km), spreads to about a metre, then must enter a fibre core 8 µm wide. The lab's signal makes the same trip back.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Side view of a beam leaving the mountain 10 centimetres wide and arriving about 1 metre wide, with the tiny 8 micrometre fibre core it must hit marked at the centre">
+          <path d="M80 142 L640 70 L640 230 L80 158 Z" fill="#76d5c1" fill-opacity=".18" stroke="#76d5c1"/>
+          <circle cx="640" cy="150" r="2.5" fill="#ff8059"/>
+          <path d="M646 154 L690 190" stroke="#ff8059"/>
+          <text x="660" y="212" fill="#ff8059" font-size="16">8 µm core</text>
+          <text x="80" y="190" fill="#f1eee8" font-size="16">10 cm beam</text>
+          <text x="660" y="100" fill="#f1eee8" font-size="16">~1 m wide</text>
+          <path d="M80 260 H640 M80 252 V268 M640 252 V268" stroke="#a5a29c"/>
+          <text x="360" y="288" text-anchor="middle" fill="#a5a29c" font-size="16">tens of km, not to scale</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 12. Why not microwaves -->
+    <section class="panel">
+      <p class="kicker">Why stay with light</p>
+      <h2>Same blur, much longer timing error</h2>
+      <p>Satellites already carry microwave clocks, and microwaves pass clouds. But to compare clocks you must pin down where each wave is in its cycle, and noise (a poor signal-to-noise ratio) only lets you pin that to a fraction of a cycle. A microwave cycle lasts tens of thousands of times longer, so the same fractional blur is tens of thousands of times more time.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="A short light wave and a long microwave, each with the same one-eighth-cycle blur shaded at a crest; the microwave's blur covers ten times more time in this drawing">
+          <rect x="537.5" y="60" width="5" height="70" fill="#f5c76a" fill-opacity=".8"/>
+          <rect x="515" y="200" width="50" height="70" fill="#f5c76a" fill-opacity=".6"/>
+          <path d="M140.0 67.0 L142.0 68.4 L144.0 72.3 L146.0 78.5 L148.0 86.3 L150.0 95.0 L152.0 103.7 L154.0 111.5 L156.0 117.7 L158.0 121.6 L160.0 123.0 L162.0 121.6 L164.0 117.7 L166.0 111.5 L168.0 103.7 L170.0 95.0 L172.0 86.3 L174.0 78.5 L176.0 72.3 L178.0 68.4 L180.0 67.0 L182.0 68.4 L184.0 72.3 L186.0 78.5 L188.0 86.3 L190.0 95.0 L192.0 103.7 L194.0 111.5 L196.0 117.7 L198.0 121.6 L200.0 123.0 L202.0 121.6 L204.0 117.7 L206.0 111.5 L208.0 103.7 L210.0 95.0 L212.0 86.3 L214.0 78.5 L216.0 72.3 L218.0 68.4 L220.0 67.0 L222.0 68.4 L224.0 72.3 L226.0 78.5 L228.0 86.3 L230.0 95.0 L232.0 103.7 L234.0 111.5 L236.0 117.7 L238.0 121.6 L240.0 123.0 L242.0 121.6 L244.0 117.7 L246.0 111.5 L248.0 103.7 L250.0 95.0 L252.0 86.3 L254.0 78.5 L256.0 72.3 L258.0 68.4 L260.0 67.0 L262.0 68.4 L264.0 72.3 L266.0 78.5 L268.0 86.3 L270.0 95.0 L272.0 103.7 L274.0 111.5 L276.0 117.7 L278.0 121.6 L280.0 123.0 L282.0 121.6 L284.0 117.7 L286.0 111.5 L288.0 103.7 L290.0 95.0 L292.0 86.3 L294.0 78.5 L296.0 72.3 L298.0 68.4 L300.0 67.0 L302.0 68.4 L304.0 72.3 L306.0 78.5 L308.0 86.3 L310.0 95.0 L312.0 103.7 L314.0 111.5 L316.0 117.7 L318.0 121.6 L320.0 123.0 L322.0 121.6 L324.0 117.7 L326.0 111.5 L328.0 103.7 L330.0 95.0 L332.0 86.3 L334.0 78.5 L336.0 72.3 L338.0 68.4 L340.0 67.0 L342.0 68.4 L344.0 72.3 L346.0 78.5 L348.0 86.3 L350.0 95.0 L352.0 103.7 L354.0 111.5 L356.0 117.7 L358.0 121.6 L360.0 123.0 L362.0 121.6 L364.0 117.7 L366.0 111.5 L368.0 103.7 L370.0 95.0 L372.0 86.3 L374.0 78.5 L376.0 72.3 L378.0 68.4 L380.0 67.0 L382.0 68.4 L384.0 72.3 L386.0 78.5 L388.0 86.3 L390.0 95.0 L392.0 103.7 L394.0 111.5 L396.0 117.7 L398.0 121.6 L400.0 123.0 L402.0 121.6 L404.0 117.7 L406.0 111.5 L408.0 103.7 L410.0 95.0 L412.0 86.3 L414.0 78.5 L416.0 72.3 L418.0 68.4 L420.0 67.0 L422.0 68.4 L424.0 72.3 L426.0 78.5 L428.0 86.3 L430.0 95.0 L432.0 103.7 L434.0 111.5 L436.0 117.7 L438.0 121.6 L440.0 123.0 L442.0 121.6 L444.0 117.7 L446.0 111.5 L448.0 103.7 L450.0 95.0 L452.0 86.3 L454.0 78.5 L456.0 72.3 L458.0 68.4 L460.0 67.0 L462.0 68.4 L464.0 72.3 L466.0 78.5 L468.0 86.3 L470.0 95.0 L472.0 103.7 L474.0 111.5 L476.0 117.7 L478.0 121.6 L480.0 123.0 L482.0 121.6 L484.0 117.7 L486.0 111.5 L488.0 103.7 L490.0 95.0 L492.0 86.3 L494.0 78.5 L496.0 72.3 L498.0 68.4 L500.0 67.0 L502.0 68.4 L504.0 72.3 L506.0 78.5 L508.0 86.3 L510.0 95.0 L512.0 103.7 L514.0 111.5 L516.0 117.7 L518.0 121.6 L520.0 123.0 L522.0 121.6 L524.0 117.7 L526.0 111.5 L528.0 103.7 L530.0 95.0 L532.0 86.3 L534.0 78.5 L536.0 72.3 L538.0 68.4 L540.0 67.0 L542.0 68.4 L544.0 72.3 L546.0 78.5 L548.0 86.3 L550.0 95.0 L552.0 103.7 L554.0 111.5 L556.0 117.7 L558.0 121.6 L560.0 123.0 L562.0 121.6 L564.0 117.7 L566.0 111.5 L568.0 103.7 L570.0 95.0 L572.0 86.3 L574.0 78.5 L576.0 72.3 L578.0 68.4 L580.0 67.0 L582.0 68.4 L584.0 72.3 L586.0 78.5 L588.0 86.3 L590.0 95.0 L592.0 103.7 L594.0 111.5 L596.0 117.7 L598.0 121.6 L600.0 123.0 L602.0 121.6 L604.0 117.7 L606.0 111.5 L608.0 103.7 L610.0 95.0 L612.0 86.3 L614.0 78.5 L616.0 72.3 L618.0 68.4 L620.0 67.0 L622.0 68.4 L624.0 72.3 L626.0 78.5 L628.0 86.3 L630.0 95.0 L632.0 103.7 L634.0 111.5 L636.0 117.7 L638.0 121.6 L640.0 123.0 L642.0 121.6 L644.0 117.7 L646.0 111.5 L648.0 103.7 L650.0 95.0 L652.0 86.3 L654.0 78.5 L656.0 72.3 L658.0 68.4 L660.0 67.0 L662.0 68.4 L664.0 72.3 L666.0 78.5 L668.0 86.3 L670.0 95.0 L672.0 103.7 L674.0 111.5 L676.0 117.7 L678.0 121.6 L680.0 123.0 L682.0 121.6 L684.0 117.7 L686.0 111.5 L688.0 103.7 L690.0 95.0 L692.0 86.3 L694.0 78.5 L696.0 72.3 L698.0 68.4 L700.0 67.0 L702.0 68.4 L704.0 72.3 L706.0 78.5 L708.0 86.3 L710.0 95.0 L712.0 103.7 L714.0 111.5 L716.0 117.7 L718.0 121.6 L720.0 123.0 L722.0 121.6 L724.0 117.7 L726.0 111.5 L728.0 103.7 L730.0 95.0 L732.0 86.3 L734.0 78.5 L736.0 72.3 L738.0 68.4 L740.0 67.0" fill="none" stroke="#76d5c1" stroke-width="2"/>
+          <path d="M140.0 207.0 L142.0 207.0 L144.0 207.1 L146.0 207.1 L148.0 207.2 L150.0 207.3 L152.0 207.5 L154.0 207.7 L156.0 207.9 L158.0 208.1 L160.0 208.4 L162.0 208.7 L164.0 209.0 L166.0 209.3 L168.0 209.7 L170.0 210.1 L172.0 210.5 L174.0 210.9 L176.0 211.4 L178.0 211.8 L180.0 212.3 L182.0 212.9 L184.0 213.4 L186.0 214.0 L188.0 214.6 L190.0 215.2 L192.0 215.8 L194.0 216.5 L196.0 217.2 L198.0 217.8 L200.0 218.5 L202.0 219.3 L204.0 220.0 L206.0 220.7 L208.0 221.5 L210.0 222.3 L212.0 223.1 L214.0 223.9 L216.0 224.7 L218.0 225.5 L220.0 226.3 L222.0 227.2 L224.0 228.0 L226.0 228.9 L228.0 229.8 L230.0 230.6 L232.0 231.5 L234.0 232.4 L236.0 233.2 L238.0 234.1 L240.0 235.0 L242.0 235.9 L244.0 236.8 L246.0 237.6 L248.0 238.5 L250.0 239.4 L252.0 240.2 L254.0 241.1 L256.0 242.0 L258.0 242.8 L260.0 243.7 L262.0 244.5 L264.0 245.3 L266.0 246.1 L268.0 246.9 L270.0 247.7 L272.0 248.5 L274.0 249.3 L276.0 250.0 L278.0 250.7 L280.0 251.5 L282.0 252.2 L284.0 252.8 L286.0 253.5 L288.0 254.2 L290.0 254.8 L292.0 255.4 L294.0 256.0 L296.0 256.6 L298.0 257.1 L300.0 257.7 L302.0 258.2 L304.0 258.6 L306.0 259.1 L308.0 259.5 L310.0 259.9 L312.0 260.3 L314.0 260.7 L316.0 261.0 L318.0 261.3 L320.0 261.6 L322.0 261.9 L324.0 262.1 L326.0 262.3 L328.0 262.5 L330.0 262.7 L332.0 262.8 L334.0 262.9 L336.0 262.9 L338.0 263.0 L340.0 263.0 L342.0 263.0 L344.0 262.9 L346.0 262.9 L348.0 262.8 L350.0 262.7 L352.0 262.5 L354.0 262.3 L356.0 262.1 L358.0 261.9 L360.0 261.6 L362.0 261.3 L364.0 261.0 L366.0 260.7 L368.0 260.3 L370.0 259.9 L372.0 259.5 L374.0 259.1 L376.0 258.6 L378.0 258.2 L380.0 257.7 L382.0 257.1 L384.0 256.6 L386.0 256.0 L388.0 255.4 L390.0 254.8 L392.0 254.2 L394.0 253.5 L396.0 252.8 L398.0 252.2 L400.0 251.5 L402.0 250.7 L404.0 250.0 L406.0 249.3 L408.0 248.5 L410.0 247.7 L412.0 246.9 L414.0 246.1 L416.0 245.3 L418.0 244.5 L420.0 243.7 L422.0 242.8 L424.0 242.0 L426.0 241.1 L428.0 240.2 L430.0 239.4 L432.0 238.5 L434.0 237.6 L436.0 236.8 L438.0 235.9 L440.0 235.0 L442.0 234.1 L444.0 233.2 L446.0 232.4 L448.0 231.5 L450.0 230.6 L452.0 229.8 L454.0 228.9 L456.0 228.0 L458.0 227.2 L460.0 226.3 L462.0 225.5 L464.0 224.7 L466.0 223.9 L468.0 223.1 L470.0 222.3 L472.0 221.5 L474.0 220.7 L476.0 220.0 L478.0 219.3 L480.0 218.5 L482.0 217.8 L484.0 217.2 L486.0 216.5 L488.0 215.8 L490.0 215.2 L492.0 214.6 L494.0 214.0 L496.0 213.4 L498.0 212.9 L500.0 212.3 L502.0 211.8 L504.0 211.4 L506.0 210.9 L508.0 210.5 L510.0 210.1 L512.0 209.7 L514.0 209.3 L516.0 209.0 L518.0 208.7 L520.0 208.4 L522.0 208.1 L524.0 207.9 L526.0 207.7 L528.0 207.5 L530.0 207.3 L532.0 207.2 L534.0 207.1 L536.0 207.1 L538.0 207.0 L540.0 207.0 L542.0 207.0 L544.0 207.1 L546.0 207.1 L548.0 207.2 L550.0 207.3 L552.0 207.5 L554.0 207.7 L556.0 207.9 L558.0 208.1 L560.0 208.4 L562.0 208.7 L564.0 209.0 L566.0 209.3 L568.0 209.7 L570.0 210.1 L572.0 210.5 L574.0 210.9 L576.0 211.4 L578.0 211.8 L580.0 212.3 L582.0 212.9 L584.0 213.4 L586.0 214.0 L588.0 214.6 L590.0 215.2 L592.0 215.8 L594.0 216.5 L596.0 217.2 L598.0 217.8 L600.0 218.5 L602.0 219.3 L604.0 220.0 L606.0 220.7 L608.0 221.5 L610.0 222.3 L612.0 223.1 L614.0 223.9 L616.0 224.7 L618.0 225.5 L620.0 226.3 L622.0 227.2 L624.0 228.0 L626.0 228.9 L628.0 229.8 L630.0 230.6 L632.0 231.5 L634.0 232.4 L636.0 233.2 L638.0 234.1 L640.0 235.0 L642.0 235.9 L644.0 236.8 L646.0 237.6 L648.0 238.5 L650.0 239.4 L652.0 240.2 L654.0 241.1 L656.0 242.0 L658.0 242.8 L660.0 243.7 L662.0 244.5 L664.0 245.3 L666.0 246.1 L668.0 246.9 L670.0 247.7 L672.0 248.5 L674.0 249.3 L676.0 250.0 L678.0 250.7 L680.0 251.5 L682.0 252.2 L684.0 252.8 L686.0 253.5 L688.0 254.2 L690.0 254.8 L692.0 255.4 L694.0 256.0 L696.0 256.6 L698.0 257.1 L700.0 257.7 L702.0 258.2 L704.0 258.6 L706.0 259.1 L708.0 259.5 L710.0 259.9 L712.0 260.3 L714.0 260.7 L716.0 261.0 L718.0 261.3 L720.0 261.6 L722.0 261.9 L724.0 262.1 L726.0 262.3 L728.0 262.5 L730.0 262.7 L732.0 262.8 L734.0 262.9 L736.0 262.9 L738.0 263.0 L740.0 263.0" fill="none" stroke="#c3b8ff" stroke-width="3"/>
+          <text x="40" y="100" fill="#76d5c1" font-size="18">light</text>
+          <text x="40" y="240" fill="#c3b8ff" font-size="18">microwave</text>
+          <text x="550" y="48" fill="#f5c76a" font-size="16">⅛-cycle blur</text>
+          <text x="580" y="188" fill="#f5c76a" font-size="16">same ⅛ cycle, 10× the time</text>
+          <text x="400" y="292" text-anchor="middle" fill="#a5a29c" font-size="16">drawn 10× apart; real gap tens of thousands</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 13. Moving target -->
+    <section class="panel">
+      <p class="kicker">The next target: space</p>
+      <h2>Find each other in space and colour</h2>
+      <p>A team at the University of Western Australia flew an optical clock in a helicopter. Beacon lasers let the ground and air terminals find each other, and a mirror steering 600 times a second fights turbulence. Then the two lasers must match colour within ~5 MHz, a few parts in 100 million (a car radio needs only a fraction of a percent), though they can start gigahertz apart. They got brief locks.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="A 10 gigahertz search range drawn as a long bar in which the 5 megahertz lock window is a hairline; below, the same window magnified a thousand times fills half the bar">
+          <rect x="60" y="70" width="680" height="34" fill="#f5c76a" fill-opacity=".35"/>
+          <path d="M420 66 V108" stroke="#76d5c1" stroke-width="1"/>
+          <text x="60" y="56" fill="#f5c76a" font-size="16">search range ~10 GHz</text>
+          <text x="430" y="130" fill="#76d5c1" font-size="16">lock window: 1/2,000 of the bar</text>
+          <rect x="60" y="180" width="680" height="34" fill="#f5c76a" fill-opacity=".15"/>
+          <rect x="230" y="180" width="340" height="34" fill="#76d5c1"/>
+          <text x="60" y="166" fill="#a5a29c" font-size="16">magnified 1,000×: 10 MHz across</text>
+          <text x="400" y="240" text-anchor="middle" fill="#76d5c1" font-size="16">5 MHz lock window</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 14. Too fast to count -->
+    <section class="panel">
+      <p class="kicker">The readout problem</p>
+      <h2>Light ticks too fast to count</h2>
+      <p>Even with the link working, the clock's light delivers about 518 trillion cycles a second. The video's figure for a very fast transistor is about 10 billion switches a second, roughly 50,000 times too slow. The old workaround multiplied a microwave signal up in stages to optical, through long chains of locked oscillators that only a few labs could run.</p>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="A long bar for 518 terahertz light; a 10 gigahertz transistor would be a bar one fifty-thousandth as long, too thin to see">
+          <rect x="60" y="60" width="680" height="40" fill="#76d5c1"/>
+          <text x="60" y="44" fill="#76d5c1" font-size="16">clock light: ~518 trillion per second</text>
+          <path d="M60 130 V170" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="75" y="156" fill="#c3b8ff" font-size="16">fast transistor ~10 billion: 1/50,000 of the bar</text>
+          <text x="740" y="200" text-anchor="end" fill="#a5a29c" font-size="16">linear scale</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 15. Beat note -->
+    <section class="panel">
+      <p class="kicker">The trick</p>
+      <h2>Count the beat, not the wave</h2>
+      <p>Strike two tuning forks, 440 Hz and 437 Hz, and the sound swells and fades 3 times a second: a beat at the difference. Overlap two lasers and you get a beat too, slow enough for electronics. Known frequency ± beat = unknown frequency.</p>
+      <figure>
+        <svg viewBox="0 0 800 340" role="img" aria-label="Over one second, a steady 440 hertz tone and a steady 437 hertz tone add up to a sound whose loudness swells three times">
+          <rect x="120" y="46" width="620" height="28" fill="#c3b8ff" fill-opacity=".55"/>
+          <rect x="120" y="126" width="620" height="28" fill="#76d5c1" fill-opacity=".55"/>
+          <path d="M120.0 250.0 L123.4 248.5 L126.9 247.1 L130.3 245.6 L133.8 244.2 L137.2 242.8 L140.7 241.3 L144.1 240.0 L147.6 238.6 L151.0 237.3 L154.4 236.0 L157.9 234.8 L161.3 233.5 L164.8 232.4 L168.2 231.3 L171.7 230.2 L175.1 229.2 L178.6 228.2 L182.0 227.3 L185.4 226.5 L188.9 225.8 L192.3 225.1 L195.8 224.4 L199.2 223.9 L202.7 223.4 L206.1 223.0 L209.6 222.6 L213.0 222.3 L216.4 222.2 L219.9 222.0 L223.3 222.0 L226.8 222.0 L230.2 222.2 L233.7 222.3 L237.1 222.6 L240.6 223.0 L244.0 223.4 L247.4 223.9 L250.9 224.4 L254.3 225.1 L257.8 225.8 L261.2 226.5 L264.7 227.3 L268.1 228.2 L271.6 229.2 L275.0 230.2 L278.4 231.3 L281.9 232.4 L285.3 233.5 L288.8 234.8 L292.2 236.0 L295.7 237.3 L299.1 238.6 L302.6 240.0 L306.0 241.3 L309.4 242.8 L312.9 244.2 L316.3 245.6 L319.8 247.1 L323.2 248.5 L326.7 250.0 L330.1 248.5 L333.6 247.1 L337.0 245.6 L340.4 244.2 L343.9 242.8 L347.3 241.3 L350.8 240.0 L354.2 238.6 L357.7 237.3 L361.1 236.0 L364.6 234.8 L368.0 233.5 L371.4 232.4 L374.9 231.3 L378.3 230.2 L381.8 229.2 L385.2 228.2 L388.7 227.3 L392.1 226.5 L395.6 225.8 L399.0 225.1 L402.4 224.4 L405.9 223.9 L409.3 223.4 L412.8 223.0 L416.2 222.6 L419.7 222.3 L423.1 222.2 L426.6 222.0 L430.0 222.0 L433.4 222.0 L436.9 222.2 L440.3 222.3 L443.8 222.6 L447.2 223.0 L450.7 223.4 L454.1 223.9 L457.6 224.4 L461.0 225.1 L464.4 225.8 L467.9 226.5 L471.3 227.3 L474.8 228.2 L478.2 229.2 L481.7 230.2 L485.1 231.3 L488.6 232.4 L492.0 233.5 L495.4 234.8 L498.9 236.0 L502.3 237.3 L505.8 238.6 L509.2 240.0 L512.7 241.3 L516.1 242.8 L519.6 244.2 L523.0 245.6 L526.4 247.1 L529.9 248.5 L533.3 250.0 L536.8 248.5 L540.2 247.1 L543.7 245.6 L547.1 244.2 L550.6 242.8 L554.0 241.3 L557.4 240.0 L560.9 238.6 L564.3 237.3 L567.8 236.0 L571.2 234.8 L574.7 233.5 L578.1 232.4 L581.6 231.3 L585.0 230.2 L588.4 229.2 L591.9 228.2 L595.3 227.3 L598.8 226.5 L602.2 225.8 L605.7 225.1 L609.1 224.4 L612.6 223.9 L616.0 223.4 L619.4 223.0 L622.9 222.6 L626.3 222.3 L629.8 222.2 L633.2 222.0 L636.7 222.0 L640.1 222.0 L643.6 222.2 L647.0 222.3 L650.4 222.6 L653.9 223.0 L657.3 223.4 L660.8 223.9 L664.2 224.4 L667.7 225.1 L671.1 225.8 L674.6 226.5 L678.0 227.3 L681.4 228.2 L684.9 229.2 L688.3 230.2 L691.8 231.3 L695.2 232.4 L698.7 233.5 L702.1 234.8 L705.6 236.0 L709.0 237.3 L712.4 238.6 L715.9 240.0 L719.3 241.3 L722.8 242.8 L726.2 244.2 L729.7 245.6 L733.1 247.1 L736.6 248.5 L740.0 250.0 L740.0 250.0 L736.6 251.5 L733.1 252.9 L729.7 254.4 L726.2 255.8 L722.8 257.2 L719.3 258.7 L715.9 260.0 L712.4 261.4 L709.0 262.7 L705.6 264.0 L702.1 265.2 L698.7 266.5 L695.2 267.6 L691.8 268.7 L688.3 269.8 L684.9 270.8 L681.4 271.8 L678.0 272.7 L674.6 273.5 L671.1 274.2 L667.7 274.9 L664.2 275.6 L660.8 276.1 L657.3 276.6 L653.9 277.0 L650.4 277.4 L647.0 277.7 L643.6 277.8 L640.1 278.0 L636.7 278.0 L633.2 278.0 L629.8 277.8 L626.3 277.7 L622.9 277.4 L619.4 277.0 L616.0 276.6 L612.6 276.1 L609.1 275.6 L605.7 274.9 L602.2 274.2 L598.8 273.5 L595.3 272.7 L591.9 271.8 L588.4 270.8 L585.0 269.8 L581.6 268.7 L578.1 267.6 L574.7 266.5 L571.2 265.2 L567.8 264.0 L564.3 262.7 L560.9 261.4 L557.4 260.0 L554.0 258.7 L550.6 257.2 L547.1 255.8 L543.7 254.4 L540.2 252.9 L536.8 251.5 L533.3 250.0 L529.9 251.5 L526.4 252.9 L523.0 254.4 L519.6 255.8 L516.1 257.2 L512.7 258.7 L509.2 260.0 L505.8 261.4 L502.3 262.7 L498.9 264.0 L495.4 265.2 L492.0 266.5 L488.6 267.6 L485.1 268.7 L481.7 269.8 L478.2 270.8 L474.8 271.8 L471.3 272.7 L467.9 273.5 L464.4 274.2 L461.0 274.9 L457.6 275.6 L454.1 276.1 L450.7 276.6 L447.2 277.0 L443.8 277.4 L440.3 277.7 L436.9 277.8 L433.4 278.0 L430.0 278.0 L426.6 278.0 L423.1 277.8 L419.7 277.7 L416.2 277.4 L412.8 277.0 L409.3 276.6 L405.9 276.1 L402.4 275.6 L399.0 274.9 L395.6 274.2 L392.1 273.5 L388.7 272.7 L385.2 271.8 L381.8 270.8 L378.3 269.8 L374.9 268.7 L371.4 267.6 L368.0 266.5 L364.6 265.2 L361.1 264.0 L357.7 262.7 L354.2 261.4 L350.8 260.0 L347.3 258.7 L343.9 257.2 L340.4 255.8 L337.0 254.4 L333.6 252.9 L330.1 251.5 L326.7 250.0 L323.2 251.5 L319.8 252.9 L316.3 254.4 L312.9 255.8 L309.4 257.2 L306.0 258.7 L302.6 260.0 L299.1 261.4 L295.7 262.7 L292.2 264.0 L288.8 265.2 L285.3 266.5 L281.9 267.6 L278.4 268.7 L275.0 269.8 L271.6 270.8 L268.1 271.8 L264.7 272.7 L261.2 273.5 L257.8 274.2 L254.3 274.9 L250.9 275.6 L247.4 276.1 L244.0 276.6 L240.6 277.0 L237.1 277.4 L233.7 277.7 L230.2 277.8 L226.8 278.0 L223.3 278.0 L219.9 278.0 L216.4 277.8 L213.0 277.7 L209.6 277.4 L206.1 277.0 L202.7 276.6 L199.2 276.1 L195.8 275.6 L192.3 274.9 L188.9 274.2 L185.4 273.5 L182.0 272.7 L178.6 271.8 L175.1 270.8 L171.7 269.8 L168.2 268.7 L164.8 267.6 L161.3 266.5 L157.9 265.2 L154.4 264.0 L151.0 262.7 L147.6 261.4 L144.1 260.0 L140.7 258.7 L137.2 257.2 L133.8 255.8 L130.3 254.4 L126.9 252.9 L123.4 251.5 L120.0 250.0 Z" fill="#f1eee8" fill-opacity=".55"/>
+          <text x="40" y="66" fill="#c3b8ff" font-size="18">440 Hz</text>
+          <text x="40" y="146" fill="#76d5c1" font-size="18">437 Hz</text>
+          <text x="40" y="256" fill="#f1eee8" font-size="18">both</text>
+          <text x="430" y="105" text-anchor="middle" fill="#a5a29c" font-size="16">steady loudness</text>
+          <path d="M120 300 H740 M120 294 V306 M740 294 V306" stroke="#a5a29c"/>
+          <text x="430" y="326" text-anchor="middle" fill="#a5a29c" font-size="16">1 second: 3 swells = 440 − 437</text>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- 16. Frequency comb -->
+    <section class="panel">
+      <p class="kicker">The ruler</p>
+      <h2>A comb of perfectly spaced colours</h2>
+      <p>A beat needs a reference within tens of GHz, yet visible light spans ~400,000 GHz. The fix: one laser whose spectrum is a comb of evenly spaced teeth, so some tooth always lands near the clock's colour.</p>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Evenly spaced comb teeth on a frequency axis, offset from zero by f-CEO and spaced by f-rep; the unknown clock laser sits between two teeth and its beat with the nearest tooth is measured">
+          <text x="400" y="36" text-anchor="middle" fill="#f1eee8" font-size="20">laser = n × f_rep + f_CEO + beat</text>
+          <path d="M60 260 H760" stroke="#a5a29c"/>
+          <path d="M80 260 V200" stroke="#a5a29c" stroke-dasharray="4 5"/><path d="M130 260 V200" stroke="#a5a29c" stroke-dasharray="4 5"/><path d="M180 260 V220.0" stroke="#c3b8ff" stroke-width="3"/><path d="M230 260 V212.4" stroke="#c3b8ff" stroke-width="3"/><path d="M280 260 V185.1" stroke="#c3b8ff" stroke-width="3"/><path d="M330 260 V154.8" stroke="#c3b8ff" stroke-width="3"/><path d="M380 260 V128.0" stroke="#c3b8ff" stroke-width="3"/><path d="M430 260 V112.1" stroke="#c3b8ff" stroke-width="3"/><path d="M480 260 V112.1" stroke="#c3b8ff" stroke-width="3"/><path d="M530 260 V128.0" stroke="#c3b8ff" stroke-width="3"/><path d="M580 260 V154.8" stroke="#c3b8ff" stroke-width="3"/><path d="M630 260 V185.1" stroke="#c3b8ff" stroke-width="3"/><path d="M680 260 V212.4" stroke="#c3b8ff" stroke-width="3"/><path d="M730 260 V220.0" stroke="#c3b8ff" stroke-width="3"/>
+          <path d="M455 260 V82" stroke="#76d5c1" stroke-width="4"/>
+          <text x="463" y="78" fill="#76d5c1" font-size="16">clock laser</text>
+          <path d="M430 108 H455" stroke="#f1eee8" stroke-width="2"/>
+          <text x="425" y="104" text-anchor="end" fill="#f1eee8" font-size="16">beat</text>
+          <path d="M580 280 V286 H630 V280" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="605" y="308" text-anchor="middle" fill="#c3b8ff" font-size="16">f_rep</text>
+          <path d="M60 280 V286 H80 V280" fill="none" stroke="#a5a29c" stroke-width="2"/>
+          <text x="60" y="308" fill="#a5a29c" font-size="16">f_CEO</text>
+          <text x="430" y="284" text-anchor="middle" fill="#c3b8ff" font-size="16">n</text>
+          <text x="760" y="308" text-anchor="end" fill="#a5a29c" font-size="16">frequency →</text>
+        </svg>
+      </figure>
+      <p>Every term is countable: f_rep is locked to a microwave reference, and the beat is slow. The video's formula leaves out f_CEO, the comb's offset from zero, and flags that on screen; the <a href="https://www.nobelprize.org/uploads/2018/06/advanced-physicsprize2005.pdf">Nobel committee's background</a> gives the full form.</p>
+      <p>The history: in 1994 Theodor Hänsch saw a pulsed titanium-sapphire laser at a trade show and guessed its spectrum could be such a ruler; his team then showed the teeth are evenly spaced to a few parts in 10<sup>17</sup>. In October 1999 John Hall's team in Boulder made the first comb wide enough to measure itself (<a href="https://www.nobelprize.org/uploads/2018/06/hansch-lecture.pdf">Hänsch's Nobel lecture</a>). Combs soon read the first optical clocks (on the mountain, comb pulses also carry the clock signal through the air), and Hall and Hänsch shared half the 2005 Nobel Prize in Physics.</p>
+    </section>
+
+    <!-- 17. Lab -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Can your clock see a step up?</h2>
+      <p>Assume Einstein is right: lifting a clock by a height h makes it tick faster by g·h/c² (g = 9.80 m/s², c = light speed). That's the dashed line. A clock can only see the shift if its own uncertainty, the teal bar, is smaller. That's why NIST's clock rooms carry survey markers stating their altitude.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="h">Height difference <output id="h-o"></output></label><input id="h" type="range" min="0" max="300" step="1" value="10"></div>
+          <div class="control"><label for="u">Clock uncertainty <output id="u-o"></output></label><input id="u" type="range" min="0.5" max="200" step="0.1" value="1.4"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="20,1.4">One stair, best clock</button>
+            <button type="button" class="secondary" data-p="1,1.4">1 cm, best clock</button>
+            <button type="button" class="secondary" data-p="100,100">Caesium fountain, 1 m</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart"><svg id="labChart" viewBox="0 0 520 300" role="img" aria-label="Bars comparing gravity's frequency shift for the chosen height with the clock's uncertainty, in parts per 10 to the 18"></svg></div>
+      </div></div>
+    </section>
+
+    <!-- 18. The result -->
+    <section class="panel">
+      <p class="kicker">The result so far</p>
+      <h2>Einstein holds, to the digits checked</h2>
+      <p>Over the link, the time offset between the clocks ramps steadily, as predicted. A few weeks later the team said: no evidence against Einstein, analysis ongoing. The best ground test so far, Tokyo Skytree in 2020, reached about 1 part in 10,000 of the effect; this team hopes for about 1 in 100,000.</p>
+      <figure>
+        <svg viewBox="0 0 800 345" role="img" aria-label="Log scale of how finely tests have checked gravity's effect on clocks: Gravity Probe A, Galileo satellites and Tokyo Skytree near ten to the minus four or five, the Blue Sky team's hope at ten to the minus five, and a spoken goal of a millionth">
+          <text x="40" y="67" fill="#a5a29c" font-size="16">Gravity Probe A, 1976</text><rect x="536.1" y="50" width="203.9" height="24" fill="#a5a29c"/><text x="40" y="115" fill="#a5a29c" font-size="16">Galileo satellites, 2018</text><rect x="453.4" y="98" width="286.6" height="24" fill="#a5a29c"/><text x="40" y="163" fill="#a5a29c" font-size="16">Tokyo Skytree, 2020</text><rect x="515.5" y="146" width="224.5" height="24" fill="#a5a29c"/><text x="40" y="211" fill="#f1eee8" font-size="16">Blue Sky team hope</text><rect x="410.0" y="194" width="330.0" height="24" fill="#ff8059"/><text x="40" y="259" fill="#f1eee8" font-size="16">"A millionth" (spoken goal)</text><rect x="300.0" y="242" width="440.0" height="24" fill="#ff8059" fill-opacity=".35"/><path d="M300.0 290 V300" stroke="#a5a29c"/><text x="300.0" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">10⁻⁶</text><path d="M410.0 290 V300" stroke="#a5a29c"/><text x="410.0" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">10⁻⁵</text><path d="M520.0 290 V300" stroke="#a5a29c"/><text x="520.0" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">10⁻⁴</text><path d="M630.0 290 V300" stroke="#a5a29c"/><text x="630.0" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">10⁻³</text><path d="M740.0 290 V300" stroke="#a5a29c"/><text x="740.0" y="322" text-anchor="middle" fill="#a5a29c" font-size="16">10⁻²</text>
+          <path d="M300 290 H740" stroke="#a5a29c"/>
+          <text x="40" y="322" fill="#a5a29c" font-size="16">← finer test</text>
+        </svg>
+      </figure>
+      <p class="note">Time-sensitive: the Mount Blue Sky results were not yet published when the video came out (Oct 2026). Prior results: Gravity Probe A and Galileo from <a href="https://arxiv.org/abs/2502.06104">Shinkai, Takamoto &amp; Katori's review</a>, which reports Skytree's α = (1.4 ± 9.1) × 10⁻⁵.</p>
+    </section>
+
+    <!-- 19. So what -->
+    <section class="panel">
+      <p class="kicker">So what</p>
+      <h2>What clocks this good can do</h2>
+      <div class="field-grid">
+        <div><b>Map Earth with time</b><span>At 1 part in 10<sup>18</sup>, a clock comparison resolves about 1 cm of height. Clocks become gravity surveyors.</span><em>NIST, NATURE 2018</em></div>
+        <div><b>Hunt the crack</b><span>A mismatch with 2.885 × 10⁻¹³ would hint that relativity needs a correction term, a clue to quantum gravity.</span><em>WHY THE TEST MATTERS</em></div>
+        <div><b>Keep it blind</b><span>Both teams keep their final digits secret until they compare, so nobody nudges the answer.</span><em>HOW IT'S RUN</em></div>
+        <div><b>Go to space</b><span>UWA's link has since been tested on Mount Fuji, through two typhoons, for Hidetoshi Katori's group in Japan.</span><em>NEXT STEP</em></div>
+      </div>
+    </section>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A clock is a counter of swings; make the swings fast, steady and readable, and a few kilometres of height become a measurable test of how gravity bends time.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Configure ids, labConfig and compute() only. Do not edit update(): check_render.py verifies its ticks and bars.
+    // Assumptions and expected results require independent verification.
+    const ids=['h','u'],$=id=>document.getElementById(id);
+    const G=9.80, C=299792458;
+    const e18=v=>(Math.abs(v)>=100?Math.round(v).toString():Math.abs(v)>=10?v.toFixed(1):v.toFixed(2))+' ×10⁻¹⁸';
+    // compute(values) gets slider values in `ids` order: h in cm, u in parts per 10^18.
+    function compute(v){
+      const [hcm,u]=v;
+      const shift=G*(hcm/100)/(C*C)*1e18;            // fractional frequency shift, in units of 1e-18
+      const psDay=shift*1e-18*86400*1e12;              // picoseconds gained per day
+      const mountain=G*2650/(C*C)*1e18;                // Boulder to summit, ~2,650 m
+      const ratio=shift/u;
+      return {truth:shift, rows:[["Gravity's shift (Einstein)",shift,'#ff8059'],["Clock's uncertainty",u,'#76d5c1']], ledger:[
+        ['height',(hcm/100).toFixed(2)+' m'],
+        ['shift = g·h/c²',e18(shift)],
+        ['time gained',psDay.toFixed(3)+' ps per day'],
+        ['clock uncertainty',e18(u)],
+        ['shift ÷ uncertainty',ratio.toFixed(2)+(ratio>1?' → visible':' → hidden')],
+        ['same clock, Blue Sky (2.65 km)','tests Einstein to ±'+(u/mountain*1e6).toFixed(1)+' ppm']]};
+    }
+    const labConfig={format:e18, sliderFormats:[v=>v+' cm',v=>v.toFixed(1)+' ×10⁻¹⁸'], minSpan:1, maxSpan:400, step:1};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function update(){
+      window.labResults={valid:false}; // invalidate stale success before computation
+      $('labChart').innerHTML='';
+      $('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value), fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=(labConfig.sliderFormats[i]||fmt)(v[i]));
+      const {truth,rows,ledger}=compute(v);
+      if(!Number.isFinite(truth)||!rows.length||rows.some(r=>!Number.isFinite(r[1]))) throw new Error('Lab returned non-finite or missing results');
+      const {minSpan,maxSpan,step}=labConfig;
+      if(!(minSpan>0 && maxSpan>=minSpan && step>0)) throw new Error('Invalid lab axis configuration');
+      const m=Math.min(maxSpan,Math.max(minSpan,Math.ceil(Math.max(...rows.map(r=>Math.abs(r[1])),Math.abs(truth))/step)*step));
+      // Zero sits at the left edge unless some value is negative; never hand-place ticks or bars.
+      const neg=Math.min(truth,...rows.map(r=>r[1]))<0, x0=neg?260:60, span=neg?200:400;
+      const sx=x=>x0+Math.max(neg?-m:0,Math.min(m,x))*span/m, ticks=neg?[-m,0,m]:[0,m/2,m];
+      const bottom=70+rows.length*82,height=bottom+78;
+      $('labChart').setAttribute('viewBox',`0 0 520 ${height}`);
+      const clipped=rows.map(r=>Math.abs(r[1])>m), truthClipped=Math.abs(truth)>m;
+      // Axis and truth lines are drawn per row band so they never cross the row labels above each bar.
+      let s=`<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">truth ${esc(fmt(truth))}${truthClipped?' (off-scale)':''}</text>`;
+      rows.forEach(([name,val,col],i)=>{
+        const y=80+i*82,x=sx(val);
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/><line x1="${sx(truth)}" y1="${y-4}" x2="${sx(truth)}" y2="${y+30}" stroke="#f1eee8" stroke-dasharray="5 5"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}${clipped[i]?' · off-scale':''}</text><rect data-v="${val}" x="${Math.min(x,x0)}" y="${y}" width="${Math.abs(x-x0)}" height="26" fill="${esc(col)}"/>`;
+        if(clipped[i]){const d=val>0?1:-1;s+=`<path class="overflow-marker" d="M${x-d*9} ${y+3} L${x} ${y+13} L${x-d*9} ${y+23}" fill="none" stroke="#f1eee8" stroke-width="3"/>`;}
+      });
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">${clipped.some(Boolean)||truthClipped?'Off-scale values clipped; full values above.':'Axis adjusts to values.'}</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      window.labResults={valid:true,truth,rows:rows.map(r=>r[1]),axis:m,clipped,truthClipped};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>

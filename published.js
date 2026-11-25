@@ -1,5 +1,28 @@
 window.PUBLISHED = [
   {
+    "id": "clocks-test-einstein-eli5",
+    "title": "Testing Einstein with clocks on a mountain",
+    "category": "Energy & Physics",
+    "minutes": 15,
+    "summary": "How clocks 2.7 km apart can catch gravity slowing time.",
+    "bullets": [
+      "Gravity mostly works by slowing time near mass",
+      "Cooled, trapped ytterbium atoms tick 518 trillion times a second",
+      "A frequency comb turns uncountable light into countable beats"
+    ],
+    "kind": "flow",
+    "color": "#ff8059",
+    "nodes": [
+      "CLOCK",
+      "CLIMB",
+      "COMB"
+    ],
+    "file": "explainers/clocks-test-einstein-eli5.html",
+    "date": "2026-11-25",
+    "subcategory": "Precision measurement",
+    "card": "<svg viewBox=\"0 0 320 155\" role=\"img\" aria-label=\"A clock in Boulder and a clock on the mountain summit 2.7 km higher, where the summit clock gains about 25 nanoseconds a day\"><path d=\"M24 139.1L24 97.3L122.8 97.3L153.2 85.9L183.6 66.9L214 44.1L236.8 30L255.8 46L274.8 63.1L297.6 74.5L297.6 139.1Z\" fill=\"#202020\" stroke=\"#57534f\"/><path d=\"M136 30H228\" stroke=\"#73706a\" stroke-dasharray=\"3 3\" fill=\"none\"/><path d=\"M130.4 30V97.3M126 30H135M126 97.3H135\" stroke=\"#ff8059\" stroke-width=\"1.5\" fill=\"none\"/><circle cx=\"54.4\" cy=\"89\" r=\"6\" fill=\"#202020\" stroke=\"#76d5c1\" stroke-width=\"2\"/><circle cx=\"236.8\" cy=\"22\" r=\"6\" fill=\"#202020\" stroke=\"#76d5c1\" stroke-width=\"2\"/><g font-family=\"monospace\" font-size=\"9\"><text x=\"226\" y=\"27\" text-anchor=\"end\" fill=\"#ff8059\">+25 NS/DAY</text><text x=\"136\" y=\"68\" fill=\"#ff8059\">2.7 KM</text><text x=\"30\" y=\"122\" fill=\"#a5a29c\">BOULDER</text></g></svg>"
+  },
+  {
     "id": "how-chips-are-made-eli5",
     "title": "How chips are made",
     "category": "AI & Frontier",
