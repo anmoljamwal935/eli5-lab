@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thinking and using tools — ELI5 Lab</title>
+  <link rel="stylesheet" href="../eli5-study.css">
+  <style>
+    /* Page-specific styles only. Colours/fonts come from eli5-study.css variables. Keep every rule below.
+       Series colour key (How AI works, from scratch): gold = text and tokens, teal = stored numbers,
+       orange = arithmetic, purple = connections, rose = the wrong intuition. */
+    :root{--rose:#ec6a94}
+    .panel figure{margin:26px 0 0;padding:clamp(16px,4vw,28px);border:1px solid var(--border);background:rgba(255,255,255,.025)}
+    .panel svg{display:block;width:100%;height:auto}
+    .panel svg text{font-family:Outfit,system-ui,sans-serif}
+    .panel .kicker{margin:0;font:12px/1.4 var(--font-mono);letter-spacing:.08em}
+    .panel .kicker+h2{margin-top:6px;padding-top:0;border-top:0}.panel .kicker+h2::before{display:none}
+    .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font:12px/1.4 var(--font-mono);color:var(--muted)}
+    .legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+    .lab input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+    .lab .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
+    .lab output{color:var(--fg);font-weight:600}
+    .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;margin-top:22px;background:var(--border);border:1px solid var(--border)}
+    .field-grid div{background:var(--surface);padding:16px 18px}
+    .field-grid b{display:block;color:var(--fg);font-weight:500;font-size:18px}
+    .field-grid span{display:block;color:var(--muted);font-size:14px;line-height:1.5;margin-top:4px}
+    .field-grid em{display:block;font-style:normal;color:var(--accent);font:11px/1.5 var(--font-mono);margin-top:8px;letter-spacing:.04em}
+    .checks{margin:18px 0 0;padding-left:20px}.checks li{margin:8px 0}
+    /* Series parts: fact tags, Go deeper boxes, button pickers, readouts */
+    .tag{display:inline-block;margin:0 2px;padding:0 6px;border:1px solid var(--border);font:11px/1.6 var(--font-mono);letter-spacing:.04em;color:var(--muted);vertical-align:1px}
+    .tag.np{color:var(--gold);border-color:rgba(245,199,106,.4)}
+    details.trace{margin-top:18px}details.trace p{font-size:15px}
+    .pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+    .pick>span{width:100%;font:12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:.04em}
+    .pick button{min-height:36px;padding:6px 12px}
+    .eli5-study-container .pick button[aria-pressed=true]{border-color:var(--purple)!important;color:var(--purple)!important;background:rgba(195,184,255,.1)!important}
+    .readout{margin-top:12px;color:var(--muted);font-size:15px}
+    .readout b{color:var(--fg);font-weight:600}
+    .lab-chart svg+svg{margin-top:18px}
+    /* Phones: keep diagram text readable by letting wide figures scroll sideways */
+    .lab-chart,.panel figure{overflow-x:auto;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
+    @media (max-width:700px){.panel figure{padding:14px}.panel figure svg{min-width:640px}.lab-chart svg{min-width:440px}.panel figure::after,.lab-chart::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
+  </style>
+</head>
+<body data-series-id="thinking-and-tools-eli5">
+  <div class="eli5-progress-track"><div class="eli5-progress-fill" id="readingProgress"></div></div>
+  <header class="study-masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">E5</span>
+        <span class="brand-copy"><span>ELI5<span class="brand-dot">.</span><b>Lab</b></span><small>Visual explainers</small></span>
+      </a>
+      <div class="nav-right">
+        <span class="topic-tag">AI &amp; Frontier</span>
+        <a href="../index.html" class="back-btn" id="backToLabBtn"><span>Back to Lab</span><b>←</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main class="eli5-study-container">
+    <div class="eli5-hero-kicker"><span>AI &amp; FRONTIER / 25 MIN</span><i></i><span class="live-dot">ELI5</span></div>
+
+    <section class="hero">
+      <h1>Thinking and using tools</h1>
+      <p class="lede">A model spends the same effort on every token it writes, so a hard question answered in one word gets almost no thought. This part shows the two ways around that: write the working out first, and hand jobs like arithmetic and search to real programs. Run both in a loop and you have an agent, with a new way to fail: small slips that add up over many steps.</p>
+      <p class="source-note">A topic study built from the primary sources: the chain-of-thought (Wei and others, 2022), self-consistency (Wang and others, 2022), ReAct (Yao and others, 2022), Toolformer (Schick and others, 2023) and DeepSeek-R1 (2025) papers, OpenAI’s “Learning to reason with LLMs” (September 2024), METR’s time-horizon study, Anthropic’s chain-of-thought faithfulness study and “Building effective agents”, and Anthropic’s and OpenAI’s tool-use documentation as of November 2026; every number below was checked against them · <a href="https://arxiv.org/abs/2201.11903">Read the main source ↗</a></p>
+      <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
+      <p>It builds on <a href="guess-the-next-word-eli5.html" data-series-link="guess-the-next-word-eli5">Part 2</a> (a model writes one token per lap, and never goes back) and <a href="the-transformer-eli5.html" data-series-link="the-transformer-eli5">Part 9</a> (each lap is one full pass through the model). It also leans on Part 13, “From autocomplete to assistant”, and Part 14, “Memory and the context window”. Facts carry a tag: <span class="tag">public</span> means a published paper, documentation or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
+      <div class="legend" aria-label="Colour key">
+        <span><i style="background:#f5c76a"></i>text and tokens: words, working out</span>
+        <span><i style="background:#76d5c1"></i>stored numbers: the model, the context</span>
+        <span><i style="background:#ff8059"></i>arithmetic: passes, programs running</span>
+        <span><i style="background:#c3b8ff"></i>connections: tool calls and results</span>
+        <span><i style="background:#ec6a94"></i>the wrong intuition, wrong answers</span>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="panel">
+      <p class="kicker">The problem</p>
+      <h2>Every token gets the same effort</h2>
+      <p>Part 2 showed the loop: one full pass through the model writes one token. Part 9 showed that a pass always does the same sums, whatever the question. So “2 + 2 =” and a tricky word problem get exactly the same effort for each token of the answer.</p>
+      <figure>
+        <svg id="sameSvg" viewBox="0 0 800 300" role="img" aria-label="Two questions, an easy sum and a word problem; each answer token sits on one orange pass of identical height, and the word problem's one-word answer, 27, is wrong."></svg>
+      </figure>
+      <p>Here is the word problem from the chain-of-thought paper’s first figure: “The cafeteria had 23 apples. If they used 20 to make lunch and bought 6 more, how many apples do they have?” Asked to answer straight away, Google’s PaLM model wrote “The answer is 27.” The right answer is 9 <span class="tag">public</span>. This apples problem runs through the whole page.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel">
+      <p class="kicker">The analogy</p>
+      <h2>Working on paper, not in your head</h2>
+      <p>Try 47 × 36 in your head, all at once. Hard. On paper it is easy: write 47 × 6 = 282, then 47 × 30 = 1,410, then add. Each line is simple, and each one uses the lines above it.</p>
+      <figure>
+        <svg id="paperSvg" viewBox="0 0 800 300" role="img" aria-label="On the left, 47 times 36 with only a question mark; on the right, a sheet of paper with the working 282, 1,410 and 1,692 written line by line, each line feeding the next."></svg>
+      </figure>
+      <p>Mapping it back: the paper is the text the model has written so far, which every new pass reads (Part 2). Writing a line is spending passes. Where the analogy breaks: the model has no separate scrap paper. Its working is ordinary tokens in the same stream as the answer, written one at a time, with no eraser.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>Each written step buys another pass</h2>
+      <p>Chain-of-thought prompting adds worked examples to the prompt, so the model copies the habit of showing its working <span class="tag">public</span>. On the apples problem PaLM then wrote: “They used 20 to make lunch. So they had 23 − 20 = 3. They bought 6 more apples, so they have 3 + 6 = 9.” <span class="tag">public</span></p>
+      <figure>
+        <svg id="cotSvg" viewBox="0 0 800 280" role="img" aria-label="Two token strips on one scale: a five-token direct answer ending in 27, and a fifty-token worked answer passing 3 on the way to 9, each with one orange pass per token beneath it."></svg>
+      </figure>
+      <p>Nothing inside the model changed. It simply wrote about ten times as many tokens, so it ran about ten times as many passes before committing to a number, and each step’s result, like the 3, was sitting in the text for the next pass to read. The token counts are rounded <span class="tag">example</span>.</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel">
+      <p class="kicker">The evidence</p>
+      <h2>Showing the working tripled the score</h2>
+      <p>GSM8K is a test of 1,319 grade-school maths word problems like the apples one <span class="tag">public</span>. Wei and colleagues asked PaLM at three sizes, with eight examples in the prompt, answered directly or with working <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="gsmSvg" viewBox="0 0 800 330" role="img" aria-label="Bars of GSM8K accuracy for PaLM 8B, 62B and 540B: direct answers 4.9, 9.6 and 17.9 percent; with chain of thought 4.1, 29.9 and 56.9 percent; and 58.6 percent for 540B with a calculator."></svg>
+      </figure>
+      <p>The biggest model went from 17.9% to 56.9%. The smallest got slightly worse: the paper calls chain of thought an ability that appears only at sufficient scale, since smaller models wrote “fluent but illogical” chains <span class="tag">public</span>. Part 11, “Scale: why bigger works”, has more on skills that appear with size. The purple bar is a first glimpse of tools: chapter 10.</p>
+      <details class="trace"><summary>Go deeper: the other models in the paper</summary>
+        <p>The same table has GPT-3 175B going from 15.6% to 46.9% and Codex from 19.7% to 63.1% on GSM8K <span class="tag">public</span>. The “+ calculator” rows run every equation in the written working through Python after the fact and paste the true result back in; for PaLM 540B that adds 1.7 points, to 58.6% <span class="tag">public</span>. DeepSeek’s R1 paper points out that a bare instruction, “Let’s think step by step”, with no examples at all, also triggers the habit (Kojima and others, 2022) <span class="tag">public</span>.</p>
+      </details>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel">
+      <p class="kicker">More of the same</p>
+      <h2>Ask many times, take the vote</h2>
+      <p>Part 2’s weighted die means the same question can produce different working each time. Self-consistency uses that on purpose: sample many chains of working, ignore the working, and take the answer most of them reach <span class="tag">public</span>. Wrong chains tend to scatter; right ones tend to agree.</p>
+      <figure>
+        <svg id="voteSvg" viewBox="0 0 800 340" role="img" aria-label="Five chains of working fan out from the apples question to the answers 9, 9, 27, 9 and 3; the vote picks 9. Below, PaLM 540B's GSM8K score rises from 56.5 percent with one chain to 74.4 percent with a vote of 40."></svg>
+      </figure>
+      <p>With 40 sampled chains, PaLM 540B rose from 56.5% to 74.4% on GSM8K <span class="tag">public</span>. The cost is plain: 40 chains are 40 times the tokens. The authors suggest 5 or 10 chains get most of the gain, since accuracy levels off quickly <span class="tag">public</span>. The five chains drawn here are made up <span class="tag">example</span>.</p>
+      <details class="trace"><summary>Go deeper: why 56.5 here and 56.9 before</summary>
+        <p>The self-consistency paper reran plain chain of thought, always picking the favourite token (Part 2’s greedy picking), and got 56.5% for PaLM 540B, slightly below the 56.9% in the chain-of-thought paper <span class="tag">public</span>. The +17.9 points in its abstract are measured from its own 56.5.</p>
+      </details>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel">
+      <p class="kicker">Reasoning models</p>
+      <h2>Reward the right answer, not the steps</h2>
+      <p>Prompting borrows a habit. Reasoning models are trained into it. DeepSeek’s recipe for R1-Zero: give the model maths and coding problems with checkable answers, let it write freely between &lt;think&gt; tags, then reward only a correct final answer, checked by a rule or a compiler <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="rlSvg" viewBox="0 0 800 320" role="img" aria-label="Four attempts at one problem with thinking of different lengths, two marked right and two wrong; right ones are reinforced. On the right, AIME accuracy rises from 15.6 percent before training to 77.9 percent after, and 86.7 percent with a vote."></svg>
+      </figure>
+      <p>This is <b>reinforcement learning</b>: try, get scored, and nudge (Part 6) the numbers towards whatever scored well. Part 13 used the same idea with people’s preferences as the score; here a rule checks the answer. On AIME 2024, a hard US maths contest, R1-Zero rose from 15.6% to 77.9%, and 86.7% with a vote <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel">
+      <p class="kicker">The surprise</p>
+      <h2>Nobody taught it to say “wait”</h2>
+      <p>Nobody showed R1-Zero how to reason. Yet its answers grew longer as training went on, from hundreds to thousands of tokens, and it began to check its own steps, try other approaches, and backtrack <span class="tag">public</span>. DeepSeek printed one moment where a draft stopped itself: “Wait, wait. Wait. That’s an aha moment I can flag here.” <span class="tag">public</span></p>
+      <figure>
+        <svg id="waitSvg" viewBox="0 0 800 280" role="img" aria-label="A thinking strip in token order: a first approach drifts towards a wrong result, the word wait appears, and a second approach starts afresh and reaches the answer; the wrong stretch stays in the strip, greyed."></svg>
+      </figure>
+      <p>Part 2 said a written token stays. That is still true here: the mistaken stretch is never erased. What the model learned is to write “wait”, step back in its own text, and carry on from a better place. The final answer after the thinking is what gets scored.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel">
+      <p class="kicker">The trade</p>
+      <h2>Thinking longer scores higher</h2>
+      <p>OpenAI announced o1 in September 2024, a model “trained with reinforcement learning to perform complex reasoning”, and reported that its performance “consistently improves” with more training and with more time spent thinking <span class="tag">public</span>. Its own AIME 2024 numbers:</p>
+      <figure>
+        <svg id="o1Svg" viewBox="0 0 800 280" role="img" aria-label="Bars of AIME 2024 problems solved: GPT-4o 12 percent, o1 with one try 74 percent, o1 with a vote of 64 tries 83 percent, and o1 picking from 1,000 tries with a learned scorer 93 percent."></svg>
+      </figure>
+      <p>GPT-4o, which answers without a long think, averaged 12%. o1 averaged 74% with one try, 83% with a vote of 64 tries, and 93% when a learned scoring model picked from 1,000 tries <span class="tag">public</span>. Each gain costs more tokens: 64 or 1,000 full attempts per problem instead of one. OpenAI has not said how many tokens o1 thinks per problem <span class="tag np">not public</span>.</p>
+      <details class="trace"><summary>Go deeper: two GPT-4o numbers</summary>
+        <p>The post’s text gives GPT-4o 12% (1.8 of 15 problems); the appendix table on the same page gives 9.3% for one try and 13.4% for a vote of 64 <span class="tag">public</span>. The drawing uses the text’s figures for all four bars.</p>
+      </details>
+    </section>
+
+    <!-- 9 -->
+    <section class="panel">
+      <p class="kicker">How much thinking</p>
+      <h2>Thousands of tokens, more for harder problems</h2>
+      <p>DeepSeek did publish token counts. On a set of 2024 maths-contest problems, R1 solved 61.8% while thinking 8,793 tokens per problem on average. GPT-4o solved 24.7% writing 711 tokens <span class="tag">public</span>. Drawn on one scale:</p>
+      <figure>
+        <svg id="tokSvg" viewBox="0 0 800 330" role="img" aria-label="Bars of tokens per problem on one scale: under 100 for one plus one, 711 for GPT-4o, under 7,000 for R1 on easy problems, 8,793 on average, and over 18,000 on the hardest."></svg>
+      </figure>
+      <p>R1 sets its own effort: under 100 tokens for “1 + 1”, under 7,000 for easy contest problems, over 18,000 for the hardest <span class="tag">public</span>. DeepSeek also reports overthinking, too many tokens on simple questions <span class="tag">public</span>. Voting is not a substitute: GPT-4o with a vote of 64 rose only from 9.3% to 13.4% on AIME <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 10 -->
+    <section class="panel">
+      <p class="kicker">The hidden cost</p>
+      <h2>You pay for thinking you never see</h2>
+      <p>Every thinking token is a full pass, like any other token. As of November 2026, Anthropic’s documentation says thinking tokens “are billed as output tokens, even when the thinking text isn’t returned”, and that what you see “is never the raw chain of thought”, only a summary <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="billSvg" viewBox="0 0 800 250" role="img" aria-label="One bar of tokens for a single answer: about 8,800 thinking tokens and 400 answer tokens, all billed; above it, the much shorter part a reader actually sees, a summary and the answer."></svg>
+      </figure>
+      <p>OpenAI made the same choice for o1, showing users a model-written summary of the chain of thought rather than the raw text <span class="tag">public</span>. The split drawn here uses R1’s average thinking length with a made-up 400-token answer and 300-token summary <span class="tag">example</span>. How long a given commercial model thinks on your question is usually not shown <span class="tag np">not public</span>.</p>
+    </section>
+
+    <!-- 11 -->
+    <section class="panel">
+      <p class="kicker">Tools</p>
+      <h2>Some jobs belong to a program</h2>
+      <p>Thinking helps, but a model is still a guesser of likely text. Toolformer’s authors put it bluntly: models “struggle with basic functionality, such as arithmetic or factual lookup, where much simpler and smaller models excel” <span class="tag">public</span>. So let the model ask a program, in the middle of its text:</p>
+      <figure>
+        <svg id="toolSvg" viewBox="0 0 800 260" role="img" aria-label="A sentence in tokens with a calculator call inserted: the model writes Calculator 400 over 1400, a calculator below works it out, and the result 0.29 is pasted back before the sentence continues with 29 percent."></svg>
+      </figure>
+      <p>That line is from the Toolformer paper. The model writes a call in a fixed format, a program runs it, and the result is pasted into the text. Then the next pass reads the true number instead of guessing one <span class="tag">public</span>. Toolformer learned when calls help by keeping only those that made the following words easier to predict <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 12 -->
+    <section class="panel">
+      <p class="kicker">The mechanism</p>
+      <h2>The model only writes the request</h2>
+      <p>Today’s models work the same way, through the app that calls them. Anthropic’s documentation, as of November 2026: “The model never runs anything on its own. It emits a structured request, your code (or Anthropic’s servers) runs the operation, and the result flows back into the conversation.” <span class="tag">public</span></p>
+      <figure>
+        <svg id="tripSvg" viewBox="0 0 800 330" role="img" aria-label="Three rows of one growing context: first the question, then the question plus the model's tool call, then question, call, the program's result and the final answer; the program runs outside, between rows."></svg>
+      </figure>
+      <p>Each round trip is a new request carrying the whole conversation so far. OpenAI’s guide describes the same five steps: send tools, receive a call, run it, send the output, receive the answer or more calls <span class="tag">public</span>. Where the program runs is the main difference between tools: in your app, or on the provider’s servers.</p>
+    </section>
+
+    <!-- 13 -->
+    <section class="panel">
+      <p class="kicker">The evidence</p>
+      <h2>A small model with a calculator wins</h2>
+      <p>Toolformer is GPT-J, a 6.7-billion-number model, fine-tuned on text with useful calls inserted <span class="tag">public</span>. On ASDiv, another set of maths word problems, it was compared with the same model without calls and with GPT-3, 26 times larger <span class="tag">public</span>:</p>
+      <figure>
+        <svg id="tfSvg" viewBox="0 0 800 270" role="img" aria-label="Bars of ASDiv accuracy: GPT-J 7.5 percent, Toolformer with calls switched off 14.8 percent, GPT-3 175B 14.0 percent, and Toolformer with its calculator 40.4 percent."></svg>
+      </figure>
+      <p>With the calculator it scored 40.4%, nearly three times GPT-3’s 14.0%. It chose to call the calculator for 97.9% of these problems <span class="tag">public</span>. Even with calls switched off it beat plain GPT-J, probably from training on so many worked results, the authors suggest <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 14 -->
+    <section class="panel">
+      <p class="kicker">Agents</p>
+      <h2>Think, act, look, and go round again</h2>
+      <p>Put thinking and tools in a loop and you get an agent. ReAct (Yao and others, 2022) made the loop explicit: the model writes a thought, then an action, then the result of the action is pasted in as an observation, and it goes round again until it writes Finish <span class="tag">public</span>. A real trace from the paper:</p>
+      <figure>
+        <svg id="reactSvg" viewBox="0 0 800 330" role="img" aria-label="ReAct's trace for who Milhouse was named after, in three laps, one row each: a thought, a Search for Milhouse and its result; a thought, a Lookup for named after and its result; a thought and Finish with Richard Nixon."></svg>
+      </figure>
+      <p>The first search did not say who Milhouse was named after, so the second lap looked inside the page for “named after” and found it <span class="tag">public</span>. Anthropic describes today’s agents as “typically just LLMs using tools based on environmental feedback in a loop” <span class="tag">public</span>.</p>
+      <details class="trace"><summary>Go deeper: plan, act, observe, repeat</summary>
+        <p>Anthropic separates <b>workflows</b>, where a program fixes the order of model calls and tools in advance, from <b>agents</b>, “where LLMs dynamically direct their own processes and tool usage”. It recommends agents for open-ended problems “where it’s difficult or impossible to predict the required number of steps”, with stopping conditions such as a maximum number of laps <span class="tag">public</span>. Thoughts in the loop often make a plan first; the observations then show whether the plan is working.</p>
+      </details>
+    </section>
+
+    <!-- 15 -->
+    <section class="panel">
+      <p class="kicker">The evidence</p>
+      <h2>Looking it up stops the inventing</h2>
+      <p>The ReAct team read 50 failed answers from each method on HotpotQA, a test of questions that need two or more Wikipedia pages <span class="tag">public</span>. Thinking alone failed mostly by inventing facts, the subject of Part 15, “Why models make things up”. With a search tool in the loop, invented facts vanished from the failures:</p>
+      <figure>
+        <svg id="failSvg" viewBox="0 0 800 260" role="img" aria-label="Two bars splitting 50 failures each: thinking alone, 56 percent invented facts, 16 percent reasoning errors, 28 percent unclear labels; with search, 0 percent invented facts, 47 percent reasoning errors, 23 percent unhelpful search results, 29 percent unclear labels."></svg>
+      </figure>
+      <p>The failures moved, though: 47% were reasoning errors, including going round in circles repeating the same action, and 23% came from searches that returned nothing useful <span class="tag">public</span>. In two game-like tests, ALFWorld and WebShop, ReAct beat imitation-learning and reinforcement-learning methods by 34 and 10 points of success rate <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 16 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>95% per step is not 95% overall</h2>
+      <p>The natural guess: if each step goes right 95% of the time, the agent is 95% reliable. But a task succeeds only if every step does. Twenty steps at 95% each is 0.95 multiplied by itself 20 times: 36% <span class="tag">public</span>, plain arithmetic.</p>
+      <figure>
+        <svg id="chainSvg" viewBox="0 0 800 360" role="img" aria-label="Chance a whole task succeeds against the number of steps, for 99, 95 and 90 percent per step: at 20 steps, 82, 36 and 12 percent, all far below a dashed line at 95 percent."></svg>
+      </figure>
+      <p>Anthropic warns that agents’ autonomy brings “higher costs, and the potential for compounding errors” <span class="tag">public</span>. The curves assume each step fails independently and any failure sinks the task <span class="tag">example</span>. Real steps are not independent, and some mistakes can be noticed and fixed, which is what the lab explores.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="panel">
+      <p class="kicker">The evidence</p>
+      <h2>Longer tasks, lower success</h2>
+      <p>METR, an AI evaluation group, timed skilled people on 170 software and research tasks, then measured how long a task an AI agent can finish half the time: its <b>time horizon</b> <span class="tag">public</span>. For frontier models such as OpenAI’s o3, that is about 110 minutes <span class="tag">public</span>.</p>
+      <figure>
+        <svg id="horizonSvg" viewBox="0 0 800 240" role="img" aria-label="On a scale of minutes of human work, the 50 percent success horizon reaches about 110 minutes, while the 80 percent horizon is four to six times shorter, about 18 to 28 minutes."></svg>
+      </figure>
+      <p>Ask for 80% success instead of 50% and the horizon is 4 to 6 times shorter: these models “cannot reliably perform tasks of moderate length” <span class="tag">public</span>. Still, the 50% horizon has doubled about every seven months since 2019 <span class="tag">public</span>. The 80% bar here is 110 divided by 4 to 6 <span class="tag">example</span>.</p>
+    </section>
+
+    <!-- 18 -->
+    <section class="panel">
+      <p class="kicker">Where agents fail</p>
+      <h2>Fewer loops, more giving up early</h2>
+      <p>METR also read 31 failed runs by GPT-4 (November 2023 version) and 32 by o1, and sorted each into one cause <span class="tag">public</span>. The older model most often repeated an action that kept failing. The reasoning model rarely did that, but often stopped too soon:</p>
+      <figure>
+        <svg id="metrSvg" viewBox="0 0 800 280" role="img" aria-label="Failed runs by cause, one block per run: GPT-4 with 12 repeated failing actions, 8 early stops, 6 reasoning slips, 4 poor plans and 1 other; o1 with 2 repeats, 16 early stops, 7 reasoning slips, 6 poor plans and 1 other."></svg>
+      </figure>
+      <p>Half of o1’s failures were abandoning the task early, often submitting without checking or before reading everything needed <span class="tag">public</span>. METR notes o1 was failing on harder tasks than GPT-4, so the two columns are not like for like <span class="tag">public</span>. Its agents also struggled in “messier” settings without clear feedback <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 19: LAB -->
+    <section class="panel">
+      <p class="kicker">Try it</p>
+      <h2>Run an agent on a long task</h2>
+      <p>A task of many steps. Each step goes right on the first try with some chance. After each step a check can run, such as tests or a search result, and catches a wrong step with some chance. A caught step is retried up to your limit; if retries run out, the agent stops and says so <span class="tag">example</span>.</p>
+      <div class="lab"><div class="lab-grid">
+        <div class="controls">
+          <div class="control"><label for="n">Steps in the task <output id="n-o"></output></label><input id="n" type="range" min="1" max="50" step="1" value="20"></div>
+          <div class="control"><label for="p">Each step right first time <output id="p-o"></output></label><input id="p" type="range" min="50" max="99" step="1" value="95"></div>
+          <div class="control"><label for="c">Check catches a wrong step <output id="c-o"></output></label><input id="c" type="range" min="0" max="100" step="10" value="0"></div>
+          <div class="control"><label for="r">Retries per step <output id="r-o"></output></label><input id="r" type="range" min="0" max="3" step="1" value="0"></div>
+          <div class="presets">
+            <button type="button" class="secondary" data-p="5,95,0,0">Short task, no checks</button>
+            <button type="button" class="secondary" data-p="30,95,0,0">Long task, no checks</button>
+            <button type="button" class="secondary" data-p="30,95,90,2">Long task, tests and retries</button>
+            <button type="button" class="secondary" data-p="30,95,50,2">Long task, weak checks</button>
+          </div>
+          <div class="ledger" id="ledger"></div>
+        </div>
+        <div class="lab-chart">
+          <svg id="labChart" viewBox="0 0 520 400" role="img" aria-label="Bars for one run: chance one step goes right, chance the whole task is done right, chance the agent stops and reports a problem, and chance it finishes wrong without noticing."></svg>
+          <svg id="curveChart" viewBox="0 0 520 330" role="img" aria-label="Chance the whole task is done right against the number of steps, with no checks and with the chosen checks and retries."></svg>
+        </div>
+      </div></div>
+      <p>Three things to try. Lengthen the task with no checks and watch the white bar collapse. Add a strong check with two retries and most of it comes back, for some extra tokens. Then weaken the check: errors it misses slip through as confident wrong answers, the rose bar, which is worse than an agent that stops and says it is stuck.</p>
+      <details class="trace"><summary>Go deeper: what the lab assumes</summary>
+        <p>Steps fail independently with the same chance, and a missed error sinks the task. A check never rejects a correct step. Each attempt costs 1,500 tokens and each check 500, made-up round numbers <span class="tag">example</span>. With first-try chance p, catch chance c and r retries, a step ends right with chance p × (1 + q + … + q<sup>r</sup>), where q = (1 − p) × c, and the whole task with that chance raised to the number of steps.</p>
+      </details>
+    </section>
+
+    <!-- 20 -->
+    <section class="panel">
+      <p class="kicker">The other limit</p>
+      <h2>Every lap re-reads the whole history</h2>
+      <p>An agent’s loop only ever adds to its context: every thought, call and result stays in the text. And each new request carries all of it (chapter 12). So lap 20 reads everything from laps 1 to 19 before writing a token, and the total read grows much faster than the laps.</p>
+      <figure>
+        <svg id="ctxSvg" viewBox="0 0 800 320" role="img" aria-label="A staircase of 20 laps, each column the context read on that lap, growing by 5,000 tokens a lap; a dashed line marks an example context limit of 80,000 tokens, passed after lap 16."></svg>
+      </figure>
+      <p>Twenty laps adding 5,000 tokens each read 1,050,000 tokens in all, and the last lap alone reads 100,000 <span class="tag">example</span>. Long runs also hit the context limit, the subject of Part 14, “Memory and the context window”. As of November 2026, Anthropic’s documentation offers compaction and context editing to summarise or drop old laps <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 21 -->
+    <section class="panel">
+      <p class="kicker">The common mistake</p>
+      <h2>The thinking is not a window inside</h2>
+      <p>It is tempting to read a model’s thinking as an honest record of why it answered. Anthropic tested this by slipping hints into questions. When a model used a hint to change its answer, how often did its thinking say so <span class="tag">public</span>?</p>
+      <figure>
+        <svg id="faithSvg" viewBox="0 0 800 270" role="img" aria-label="Out of every 100 times a model used a hint, its thinking mentioned the hint 25 times for Claude 3.7 Sonnet and 39 times for DeepSeek R1; for hints about misbehaving, 20 and 29 times."></svg>
+      </figure>
+      <p>Only 25% of the time for Claude 3.7 Sonnet and 39% for DeepSeek R1, and less for hints that invited bad behaviour <span class="tag">public</span>. Thinking tokens are tokens that help the model get answers right, not a guaranteed confession. The authors conclude that watching the thinking helps catch problems, but cannot rule them out <span class="tag">public</span>.</p>
+    </section>
+
+    <!-- 22 -->
+    <section class="panel">
+      <p class="kicker">The whole picture</p>
+      <h2>Spend tokens, borrow tools, check the world</h2>
+      <p>Everything in this part is a way to get more out of the same model by writing more text: working it out, sampling and voting, and calling programs whose results come back as text.</p>
+      <figure>
+        <svg id="wholeSvg" viewBox="0 0 800 330" role="img" aria-label="A loop around one model: think, act through a tool, observe the result, check, and go round again until done; the thinking strip and the tool results both feed the growing context."></svg>
+      </figure>
+      <p>The loop is what makes an agent, and also what makes it fragile: small per-step slips multiply, every lap costs more than the last, and the thinking you read may not tell the whole story. The best defence is evidence from outside the model, such as tests, searches and code that actually ran.</p>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What you notice from the outside</h2>
+      <div class="field-grid">
+        <div><b>“Thinking…” before an answer</b><span>The model is writing working tokens first; often you see a summary, or nothing.</span><em>chapters 6, 10</em></div>
+        <div><b>Harder questions take longer</b><span>Reasoning models choose to think more on hard problems: under 100 tokens or over 18,000.</span><em>chapter 9</em></div>
+        <div><b>Effort or thinking settings</b><span>Apps and APIs let you trade tokens, time and money for accuracy.</span><em>chapters 8, 10</em></div>
+        <div><b>“Searching the web…”, “Running code…”</b><span>The model wrote a tool call; a program ran it and pasted the result back.</span><em>chapters 11, 12</em></div>
+        <div><b>An agent asks before acting</b><span>Apps pause the loop for permission or at checkpoints, because mistakes compound.</span><em>chapters 14, 16</em></div>
+        <div><b>Long agent runs slow down</b><span>Every lap re-reads a longer history, and old laps eventually get summarised.</span><em>chapter 20</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>Tools you will meet, as of November 2026</h2>
+      <div class="field-grid">
+        <div><b>Web search, web fetch</b><span>Look things up and read pages; in Anthropic’s API these run on Anthropic’s servers.</span><em>server tools</em></div>
+        <div><b>Code execution</b><span>Runs code in a sandbox and returns the output: exact arithmetic, data analysis.</span><em>server tool</em></div>
+        <div><b>Bash, text editor</b><span>Run commands and edit files on your machine, the core of coding agents.</span><em>runs in your app</em></div>
+        <div><b>Computer and browser use</b><span>Click, type and read the screen, for programs without an API.</span><em>runs in your app</em></div>
+        <div><b>Your own functions</b><span>Any operation you describe with a schema: a database query, a refund, the weather.</span><em>the most common kind</em></div>
+        <div><b>Tool search</b><span>Finds the right tool among many, so every description need not sit in the context.</span><em>Anthropic and OpenAI</em></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>The words, in plain language</h2>
+      <div class="field-grid">
+        <div><b>Chain of thought</b><span>Working written out as tokens before the answer.</span></div>
+        <div><b>Self-consistency</b><span>Sample many chains of working and take the majority answer.</span></div>
+        <div><b>Reasoning model</b><span>A model trained with rewards for right answers to think at length first.</span></div>
+        <div><b>Test-time compute</b><span>Arithmetic spent while answering, rather than while training.</span></div>
+        <div><b>Thinking tokens</b><span>The working tokens; billed like output, often hidden or summarised.</span></div>
+        <div><b>Tool call, function calling</b><span>A structured request the model writes for a program to run.</span></div>
+        <div><b>Tool result</b><span>The program’s output, pasted back into the conversation.</span></div>
+        <div><b>Agent</b><span>A model directing its own loop of thinking, tool calls and observations.</span></div>
+        <div><b>ReAct</b><span>The thought, action, observation loop, from a 2022 paper.</span></div>
+        <div><b>Compounding errors</b><span>Per-step slips multiplying into likely failure over many steps.</span></div>
+        <div><b>Time horizon</b><span>How long a task, in human time, an agent finishes half the time.</span></div>
+        <div><b>Faithfulness</b><span>Whether the written thinking shows what really drove the answer.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="kicker">Field guide</p>
+      <h2>What is known and what is not</h2>
+      <div class="field-grid">
+        <div><b>Public</b><span>The GSM8K, AIME, ASDiv and HotpotQA results; R1’s training recipe and token counts; METR’s horizons and failure counts; the faithfulness rates; vendors’ documented tool loops and billing.</span><em>papers, posts, documentation</em></div>
+        <div><b>Example</b><span>The token counts for the apples answers, the five voting chains, the billing split, the lab’s task and token costs, and the context staircase.</span><em>simplified to show the idea</em></div>
+        <div><b>Not public</b><span>How long commercial models think per question, how o1 and its successors were trained in detail, and how often agents fail in real products.</span><em>companies have not said</em></div>
+      </div>
+    </section>
+
+    <!-- hand-off -->
+    <section class="panel">
+      <p class="kicker">The hand-off</p>
+      <h2>Next: the chips all this thinking runs on</h2>
+      <p>Thinking trades tokens for accuracy, and every token is a full pass of arithmetic. At Part 9’s count of about 15 billion sums per token for Llama 3 8B, R1’s 8,793 thinking tokens would be about 130 trillion sums for one answer, against about 11 trillion for GPT-4o’s 711 tokens <span class="tag">example</span>.</p>
+      <figure>
+        <svg id="nextSvg" viewBox="0 0 800 220" role="img" aria-label="Two bars of arithmetic for one answer at 15 billion sums per token: about 11 trillion for 711 tokens and about 130 trillion for 8,793 tokens, all of it done on chips."></svg>
+      </figure>
+      <p>All of it lands on chips. Part 17, “How chips are made”, back on the chip track, shows where those chips come from: silicon, light, and the factories the whole industry depends on.</p>
+    </section>
+
+    <div class="series-strip" data-series="end" role="navigation" aria-label="Series"></div>
+
+    <div class="eli5-takeaway-card">
+      <div class="takeaway-eyebrow"><span>AN IDEA TO TAKE WITH YOU</span></div>
+      <blockquote>A model thinks by writing: more tokens of working buy more passes, tools put true results into the text, and an agent is that loop run until done. Over many steps, small slips multiply, so checks from the real world matter most.</blockquote>
+      <div class="takeaway-actions">
+        <span style="color:var(--muted);font-family:var(--font-mono);font-size:11px;">ELI5 LAB</span>
+        <a href="../index.html">Explore all studies in the Lab ↗</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+    const C={gold:'#f5c76a',teal:'#76d5c1',or:'#ff8059',pur:'#c3b8ff',rose:'#ec6a94',fg:'#f1eee8',mut:'#a5a29c',faint:'#73706a',box:'#202020',line:'#57534f',grid:'#2f2d2a'};
+    function S(svg,tag,a,text){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+    const T=(svg,x,y,s,o={})=>S(svg,'text',Object.assign({x,y,fill:C.fg,'font-size':16},o),s);
+    const R=(svg,x,y,w,h,fill,o={})=>S(svg,'rect',Object.assign({x,y,width:Math.max(0,w),height:h,fill},o));
+    const clear=svg=>{while(svg.firstChild)svg.removeChild(svg.firstChild);};
+    let mk=0;
+    function marker(svg,col){const id='m'+(mk++),d=S(svg,'defs',{}),m=S(d,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});S(m,'path',{d:'M0 0 L10 5 L0 10 z',fill:col});return `url(#${id})`;}
+    const arrow=(svg,d,col,w=2)=>S(svg,'path',{d,fill:'none',stroke:col,'stroke-width':w,'marker-end':marker(svg,col)});
+    // One linear scale per horizontal bar chart: x(v) = x0 + v*k. Ticks use the same function.
+    function hbars(svg,{x0,k,rows,ticks,tickY,fmt,h=26}){
+      ticks.forEach(t=>{S(svg,'line',{x1:x0+t*k,y1:rows[0].y-10,x2:x0+t*k,y2:tickY-20,stroke:C.grid});T(svg,x0+t*k,tickY,fmt(t),{'text-anchor':'middle',fill:C.mut});});
+      rows.forEach(r=>{T(svg,40,r.y+h/2+6,r.label,{fill:r.lc||C.fg});R(svg,x0,r.y,r.v*k,h,r.col,r.o||{});
+        T(svg,x0+r.v*k+8,r.y+h/2+6,r.text,{fill:C.fg});});
+    }
+
+    /* 1: same effort per token. Each orange column = one full pass, same height for every token. */
+    (()=>{const svg=$('sameSvg');
+      T(svg,40,30,'easy question',{fill:C.mut});T(svg,420,30,'word problem',{fill:C.mut});
+      R(svg,40,44,4*8,22,C.gold);T(svg,82,61,'2 + 2 =',{fill:C.gold});
+      R(svg,420,44,32*8,22,C.gold);T(svg,686,61,'apples',{fill:C.gold});
+      const col=(x)=>{R(svg,x,92,30,30,C.gold);R(svg,x,132,30,120,C.or);};
+      col(40);T(svg,86,113,'4 ✓');
+      for(let i=0;i<5;i++)col(420+i*36);T(svg,610,113,'27 ✗',{fill:C.rose});T(svg,610,150,'right answer: 9',{fill:C.mut});
+      T(svg,40,280,'1 pass',{fill:C.mut});T(svg,420,280,'5 passes, same height',{fill:C.mut});
+    })();
+
+    /* 2: in your head vs on paper */
+    (()=>{const svg=$('paperSvg');
+      S(svg,'circle',{cx:180,cy:150,r:100,fill:'none',stroke:C.line,'stroke-width':2});
+      T(svg,180,128,'47 × 36',{'text-anchor':'middle',fill:C.gold,'font-size':22});
+      T(svg,180,200,'?',{'text-anchor':'middle',fill:C.rose,'font-size':44});
+      T(svg,180,296,'all at once',{'text-anchor':'middle',fill:C.mut});
+      R(svg,400,30,360,240,'rgba(255,255,255,.04)',{stroke:C.line});
+      const L=[[80,'47 × 6 = 282',C.gold],[130,'47 × 30 = 1,410',C.gold],[180,'282 + 1,410',C.gold],[230,'= 1,692',C.fg]];
+      L.forEach(([y,s,c])=>T(svg,720,y,s,{'text-anchor':'end',fill:c,'font-size':20}));
+      [[86,112],[136,162],[186,212]].forEach(([a,b])=>arrow(svg,`M470 ${a} C 445 ${a+6}, 445 ${b-8}, 468 ${b}`,C.mut));
+      T(svg,580,296,'on paper, line by line',{'text-anchor':'middle',fill:C.mut});
+    })();
+
+    /* 3: token strips. 12 px = 1 token = 1 pass. Direct: 5 tokens. Worked: 50 tokens (rounded, example). */
+    (()=>{const svg=$('cotSvg'),u=12,x0=40;
+      const strip=(y,n,hi)=>{for(let i=0;i<n;i++){R(svg,x0+i*u,y,u-1,26,hi&&hi[i]?C.fg:C.gold);R(svg,x0+i*u,y+32,u-1,18,C.or);}};
+      T(svg,x0,40,'answer at once',{fill:C.mut});strip(50,5);
+      T(svg,x0+5*u+14,70,'27 ✗',{fill:C.rose});T(svg,x0+5*u+14,98,'5 passes',{fill:C.mut});
+      T(svg,x0,150,'with working',{fill:C.mut});strip(160,50,{26:1,41:1});
+      T(svg,x0+26*u+6,150,'= 3',{'text-anchor':'middle',fill:C.fg});T(svg,x0+41*u+6,150,'= 9',{'text-anchor':'middle',fill:C.fg});
+      T(svg,x0+50*u+14,180,'9 ✓',{fill:C.fg});T(svg,x0+50*u+14,208,'50 passes',{fill:C.mut});
+      R(svg,x0,246,u-1,16,C.gold);T(svg,x0+u+10,260,'1 token',{fill:C.mut});
+      R(svg,x0+110,246,u-1,16,C.or);T(svg,x0+110+u+10,260,'1 pass through the model',{fill:C.mut});
+    })();
+
+    /* 4: GSM8K, Wei et al. 2022 Table 2 / Table 1. One scale: 5 px per percentage point. */
+    (()=>{const svg=$('gsmSvg'),x0=200,k=5;
+      [0,50,100].forEach(t=>{S(svg,'line',{x1:x0+t*k,y1:28,x2:x0+t*k,y2:256,stroke:C.grid});T(svg,x0+t*k,280,t+'%',{'text-anchor':'middle',fill:C.mut});});
+      const G=[['PaLM 8B',40,[[4.9,C.mut],[4.1,C.gold]]],['PaLM 62B',112,[[9.6,C.mut],[29.9,C.gold]]],['PaLM 540B',184,[[17.9,C.mut],[56.9,C.gold],[58.6,C.pur]]]];
+      G.forEach(([name,y,bars])=>{T(svg,40,y+18+(bars.length-2)*11,name);
+        bars.forEach(([v,c],i)=>{R(svg,x0,y+i*22,v*k,18,c);T(svg,x0+v*k+8,y+i*22+15,v.toFixed(1)+'%',{fill:C.fg});});});
+      [[C.mut,'direct answer',40],[C.gold,'with working',260],[C.pur,'+ calculator',460]].forEach(([c,s,x])=>{R(svg,x,302,14,14,c);T(svg,x+22,315,s,{fill:C.mut});});
+    })();
+
+    /* 5: self-consistency fan (example chains) and Wang et al. 2022's PaLM 540B GSM8K result. */
+    (()=>{const svg=$('voteSvg');
+      T(svg,40,30,'apples question',{fill:C.mut});S(svg,'circle',{cx:60,cy:110,r:10,fill:C.gold});
+      const ends=[[30,'9'],[70,'9'],[110,'27'],[150,'9'],[190,'3']];
+      ends.forEach(([y,a])=>{S(svg,'path',{d:`M72 110 C 200 110, 260 ${y}, 404 ${y}`,fill:'none',stroke:C.gold,'stroke-width':3,'stroke-opacity':.8});
+        T(svg,416,y+6,a,{fill:a==='9'?C.fg:C.rose,'font-size':18});});
+      T(svg,540,30,'the vote',{fill:C.mut});
+      [['9',3,C.fg,70],['27',1,C.rose,110],['3',1,C.rose,150]].forEach(([a,n,c,y])=>{T(svg,560,y+6,a,{'text-anchor':'end',fill:c});for(let i=0;i<n;i++)R(svg,572+i*26,y-9,20,20,c);});
+      T(svg,540,195,'9 wins',{fill:C.fg});
+      const x0=240,k=5;
+      [[240,'one chain',56.5,C.gold,.55],[280,'vote of 40 chains',74.4,C.gold,1]].forEach(([y,s,v,c,o])=>{T(svg,40,y+17,s);R(svg,x0,y,v*k,22,c,{'fill-opacity':o});T(svg,x0+v*k+8,y+17,v.toFixed(1)+'%');});
+      T(svg,x0,330,'GSM8K, PaLM 540B',{fill:C.mut});
+    })();
+
+    /* 6: RL with checkable answers (attempts are illustrative), DeepSeek-R1-Zero AIME 2024 pass@1 15.6 -> 77.9, vote 86.7. */
+    (()=>{const svg=$('rlSvg');
+      T(svg,40,30,'attempts at one problem',{fill:C.mut});
+      [[60,200,1],[110,300,1],[160,110,0],[210,250,0]].forEach(([y,w,ok])=>{R(svg,40,y,w,28,C.gold,{'fill-opacity':ok?1:.35});
+        T(svg,40+w+14,y+21,ok?'✓ right':'✗ wrong',{fill:ok?C.fg:C.rose});});
+      T(svg,40,278,'thinking length',{fill:C.mut});T(svg,40,302,'right answers reinforced',{fill:C.mut});
+      S(svg,'line',{x1:480,y1:20,x2:480,y2:300,stroke:C.grid});
+      T(svg,520,30,'AIME 2024',{fill:C.mut});
+      const base=260,k=2;
+      [[520,15.6,'start',C.mut,1],[610,77.9,'after',C.fg,1],[700,86.7,'vote',C.fg,.55]].forEach(([x,v,s,c,o])=>{R(svg,x,base-v*k,60,v*k,c,{'fill-opacity':o});
+        T(svg,x+30,base-v*k-8,v.toFixed(1)+'%',{'text-anchor':'middle'});T(svg,x+30,base+24,s,{'text-anchor':'middle',fill:C.mut});});
+    })();
+
+    /* 7: wait. x = token order. The wrong stretch stays in the text. */
+    (()=>{const svg=$('waitSvg');
+      S(svg,'path',{d:'M40 130 L300 190',fill:'none',stroke:C.gold,'stroke-width':5,'stroke-opacity':.45});
+      S(svg,'path',{d:'M300 190 L380 222',fill:'none',stroke:C.rose,'stroke-width':5,'stroke-opacity':.6});
+      T(svg,392,230,'✗',{fill:C.rose,'font-size':20});
+      T(svg,50,112,'first approach',{fill:C.mut});T(svg,150,226,'kept, not erased',{fill:C.mut});
+      S(svg,'line',{x1:420,y1:66,x2:420,y2:236,stroke:C.gold,'stroke-width':2,'stroke-dasharray':'4 5'});
+      T(svg,432,52,'“Wait, wait. Wait.”',{fill:C.gold});
+      S(svg,'path',{d:'M432 104 L730 104',fill:'none',stroke:C.gold,'stroke-width':5});
+      S(svg,'circle',{cx:746,cy:104,r:10,fill:C.fg});
+      T(svg,440,92,'step back, try again',{fill:C.mut});T(svg,746,140,'answer',{'text-anchor':'middle',fill:C.fg});
+      arrow(svg,'M40 262 L300 262',C.mut);T(svg,314,268,'tokens, in order',{fill:C.mut});
+    })();
+
+    /* 8: o1 post, AIME 2024 (text figures). 5 px per point. */
+    (()=>{const svg=$('o1Svg');
+      hbars(svg,{x0:250,k:5,ticks:[0,50,100],tickY:262,fmt:t=>t+'%',rows:[
+        {y:40,label:'GPT-4o',v:12,col:C.mut,text:'12%'},{y:90,label:'o1, one try',v:74,col:C.gold,text:'74%'},
+        {y:140,label:'o1, vote of 64',v:83,col:C.gold,text:'83%'},{y:190,label:'o1, best of 1,000',v:93,col:C.gold,text:'93%'}]});
+    })();
+
+    /* 9: DeepSeek-R1 Supplementary E.4 token counts. One scale: 20,000 tokens = 560 px. */
+    (()=>{const svg=$('tokSvg'),x0=220,k=560/20000;
+      S(svg,'line',{x1:x0,y1:276,x2:x0+20000*k,y2:276,stroke:C.line});[0,10000,20000].forEach(t=>{S(svg,'line',{x1:x0+t*k,y1:276,x2:x0+t*k,y2:284,stroke:C.line});T(svg,x0+t*k,302,t.toLocaleString('en-US'),{'text-anchor':t?(t===20000?'end':'middle'):'start',fill:C.mut});});
+      T(svg,780,326,'tokens per problem',{'text-anchor':'end',fill:C.mut});
+      const rows=[[40,'1 + 1 = ?',100,C.gold,'under 100'],[90,'GPT-4o',711,C.mut,'711 · 24.7% solved'],[140,'R1, easy',7000,C.gold,'under 7,000'],
+        [190,'R1, average',8793,C.gold,'8,793 · 61.8% solved'],[240,'R1, hardest',18000,C.gold,'over 18,000']];
+      rows.forEach(([y,s,v,c,lab])=>{T(svg,40,y+18,s);R(svg,x0,y,Math.max(3,v*k),24,c);
+        if(v*k>400)T(svg,x0+v*k-10,y+18,lab,{'text-anchor':'end',fill:C.box});else T(svg,x0+Math.max(3,v*k)+8,y+18,lab);});
+    })();
+
+    /* 10: billed vs shown. 8,793 thinking (R1 average) + 400 answer; 300-token summary (example). */
+    (()=>{const svg=$('billSvg'),x0=40,k=680/9193;
+      T(svg,x0,52,'shown to you',{fill:C.mut});
+      R(svg,x0,64,300*k,30,C.gold,{'fill-opacity':.45});R(svg,x0+300*k+2,64,400*k,30,C.gold);
+      T(svg,x0+700*k+14,85,'summary + answer',{fill:C.fg});
+      T(svg,x0,140,'billed as output',{fill:C.mut});
+      R(svg,x0,152,8793*k,36,C.gold,{'fill-opacity':.45});R(svg,x0+8793*k+2,152,400*k,36,C.gold);
+      T(svg,x0+16,176,'thinking: 8,793 tokens',{fill:C.box});
+      T(svg,x0+9193*k+2,214,'answer: 400',{'text-anchor':'end',fill:C.fg});
+    })();
+
+    /* 11: Toolformer's calculator call, Figure 1. */
+    (()=>{const svg=$('toolSvg'),y=60,h=36;
+      const seg=(x,w,c,s,o=1)=>{R(svg,x,y,w,h,c,{'fill-opacity':o});T(svg,x+10,y+24,s,{fill:C.box});return x+w+6;};
+      let x=40;x=seg(x,104,C.gold,'… 400 (or');const xc=x;x=seg(x,232,C.pur,'Calculator(400 / 1400) →');const xr=x;x=seg(x,62,C.pur,'0.29',.6);seg(x,196,C.gold,'29%) passed the test.');
+      T(svg,xc,y-16,'model writes a call',{fill:C.mut});
+      R(svg,xc+70,150,80,96,C.or,{rx:6});R(svg,xc+82,162,56,26,C.box);T(svg,xc+130,181,'0.29',{'text-anchor':'end',fill:C.or});
+      for(let i=0;i<3;i++)for(let j=0;j<2;j++)R(svg,xc+84+i*18,200+j*20,12,12,C.box);
+      arrow(svg,`M${xc+110} ${y+h+2} L${xc+110} 148`,C.pur);
+      arrow(svg,`M${xc+152} 198 L${xr+31} 198 L${xr+31} ${y+h+4}`,C.pur);
+      T(svg,xc+58,214,'program',{'text-anchor':'end',fill:C.mut});T(svg,xr+46,150,'result pasted in',{fill:C.mut});
+    })();
+
+    /* 12: the round trip as a growing context, two requests. */
+    (()=>{const svg=$('tripSvg'),h=32;
+      T(svg,40,82,'request 1',{fill:C.mut});T(svg,40,202,'request 2',{fill:C.mut});
+      R(svg,150,60,200,h,C.gold,{'fill-opacity':.55});T(svg,150,48,'question',{fill:C.mut});
+      R(svg,356,60,100,h,C.pur);T(svg,362,48,'model’s call',{fill:C.mut});
+      R(svg,560,104,90,44,C.or,{rx:6});T(svg,662,132,'program runs',{fill:C.mut});
+      arrow(svg,'M458 76 C 520 76, 560 80, 590 102',C.pur);
+      R(svg,150,180,200,h,C.gold,{'fill-opacity':.55});R(svg,356,180,100,h,C.pur);R(svg,462,180,120,h,C.pur,{'fill-opacity':.55});R(svg,588,180,160,h,C.gold);
+      arrow(svg,'M600 150 C 590 160, 560 166, 534 178',C.pur);
+      T(svg,150,240,'everything so far, sent again',{fill:C.mut});T(svg,466,240,'result',{fill:C.mut});T(svg,592,240,'answer',{fill:C.fg});
+      T(svg,150,312,'the context only grows',{fill:C.mut});
+    })();
+
+    /* 13: Toolformer Table 4, ASDiv. 10 px per point. */
+    (()=>{const svg=$('tfSvg');
+      hbars(svg,{x0:270,k:10,ticks:[0,25,50],tickY:250,fmt:t=>t+'%',rows:[
+        {y:36,label:'GPT-J 6.7B',v:7.5,col:C.mut,text:'7.5%'},{y:84,label:'Toolformer, calls off',v:14.8,col:C.mut,text:'14.8%'},
+        {y:132,label:'GPT-3 175B',v:14.0,col:C.mut,text:'14.0%'},{y:180,label:'Toolformer + calculator',v:40.4,col:C.pur,text:'40.4%'}]});
+    })();
+
+    /* 14: ReAct's Milhouse trace (Yao et al., Appendix). Widths are rough lengths, rows are laps. */
+    (()=>{const svg=$('reactSvg'),h=30;
+      const laps=[[40,[[150,C.gold,'',"search Milhouse"],[152,C.pur,'Search[Milhouse]',''],[290,C.pur,'','a page; no namesake']]],
+                  [130,[[150,C.gold,'','try “named after”'],[176,C.pur,'Lookup[named after]',''],[230,C.pur,'','“named after Richard Nixon”']]],
+                  [220,[[150,C.gold,'','so: Nixon'],[200,C.pur,'Finish[Richard Nixon]','']]]];
+      laps.forEach(([y,segs],i)=>{T(svg,40,y+21,'lap '+(i+1),{fill:C.mut});let x=110;
+        segs.forEach(([w,c,inside,below],j)=>{R(svg,x,y,w,h,c,{'fill-opacity':j===2?.45:1});if(inside)T(svg,x+10,y+21,inside,{fill:C.box});if(below)T(svg,x,y+52,below,{fill:C.mut});x+=w+6;});
+        if(i<2)arrow(svg,`M96 ${y+h+4} L96 ${y+86}`,C.mut);});
+      [[C.gold,'thought',110,1],[C.pur,'action',260,1],[C.pur,'observation',400,.45]].forEach(([c,s,x,o])=>{R(svg,x,300,14,14,c,{'fill-opacity':o});T(svg,x+22,313,s,{fill:C.mut});});
+    })();
+
+    /* 15: ReAct Table 2, HotpotQA failure modes (50 failures each). 5.4 px per point. */
+    (()=>{const svg=$('failSvg'),x0=220,k=5.4;
+      const rows=[[50,'thinking alone',[[56,C.rose],[16,C.or],[28,C.mut]]],[130,'with search',[[0,C.rose],[47,C.or],[23,C.pur],[29,C.mut]]]];
+      rows.forEach(([y,s,segs])=>{T(svg,40,y+26,s);let x=x0;segs.forEach(([v,c])=>{if(v){R(svg,x,y,v*k-2,40,c);T(svg,x+10,y+26,v+'%',{fill:C.box});}x+=v*k;});});
+      T(svg,x0-6,124,'0% invented',{'text-anchor':'end',fill:C.rose});
+      [[C.rose,'invented facts',40],[C.or,'reasoning error',230],[C.pur,'unhelpful search',430],[C.mut,'unclear label',630]].forEach(([c,s,x])=>{R(svg,x,216,14,14,c);T(svg,x+22,229,s,{fill:C.mut});});
+    })();
+
+    /* 16: compounding. Task success = p^n. */
+    (()=>{const svg=$('chainSvg'),X=n=>100+(n-1)*640/49,Y=v=>290-v*2.6;
+      [0,50,100].forEach(t=>{S(svg,'line',{x1:100,y1:Y(t),x2:740,y2:Y(t),stroke:C.grid});T(svg,90,Y(t)+6,t+'%',{'text-anchor':'end',fill:C.mut});});
+      [1,10,20,30,40,50].forEach(n=>T(svg,X(n),314,String(n),{'text-anchor':'middle',fill:C.mut}));
+      T(svg,740,344,'steps in the task',{'text-anchor':'end',fill:C.mut});
+      S(svg,'line',{x1:100,y1:Y(95),x2:740,y2:Y(95),stroke:C.rose,'stroke-width':2,'stroke-dasharray':'7 6'});
+      T(svg,740,Y(95)+24,'the guess: 95%',{'text-anchor':'end',fill:C.rose});
+      const curve=(p,col,w,dash)=>{let d='';for(let n=1;n<=50;n++)d+=(n>1?' L':'M')+X(n).toFixed(1)+' '+Y(100*p**n).toFixed(1);S(svg,'path',Object.assign({d,fill:'none',stroke:col,'stroke-width':w},dash?{'stroke-dasharray':dash}:{}));};
+      curve(.99,C.mut,2.5);curve(.95,C.fg,4);curve(.90,C.mut,2.5,'5 5');
+      T(svg,X(40),Y(100*.99**40)-12,'99% per step',{'text-anchor':'middle',fill:C.mut});
+      T(svg,X(40),Y(100*.95**40)-12,'95% per step',{'text-anchor':'middle',fill:C.fg});
+      T(svg,X(32),Y(100*.9**32)-18,'90% per step',{'text-anchor':'middle',fill:C.mut});
+      [.99,.95,.90].forEach(p=>{const v=100*p**20;S(svg,'circle',{cx:X(20),cy:Y(v),r:6,fill:C.fg});T(svg,X(20),Y(v)-14,Math.round(v)+'%',{'text-anchor':'middle'});});
+    })();
+
+    /* 17: METR time horizons. 5 px per minute. 80% horizon = 110 / (4 to 6). */
+    (()=>{const svg=$('horizonSvg'),x0=150,k=5;
+      [0,60,120].forEach(t=>{S(svg,'line',{x1:x0+t*k,y1:40,x2:x0+t*k,y2:190,stroke:C.grid});T(svg,x0+t*k,214,t+' min',{'text-anchor':'middle',fill:C.mut});});
+      T(svg,40,81,'half the time');R(svg,x0,60,110*k,30,C.fg);T(svg,x0+110*k-10,81,'about 110 min',{'text-anchor':'end',fill:C.box});
+      T(svg,40,161,'4 times in 5');R(svg,x0,140,(110/6)*k,30,C.fg);R(svg,x0+(110/6)*k,140,(110/4-110/6)*k,30,C.fg,{'fill-opacity':.4});
+      T(svg,x0+(110/4)*k+10,161,'about 18 to 28 min');
+      T(svg,780,236,'human time per task',{'text-anchor':'end',fill:C.mut});
+    })();
+
+    /* 18: METR Table 2, failure causes; one block per failed run. */
+    (()=>{const svg=$('metrSvg'),u=18,x0=140;
+      const cats=[['repeating a failing action',C.rose],['giving up early',C.pur],['maths or logic slip',C.or],['poor plan or tool',C.mut],['other',C.faint]];
+      [[50,'GPT-4',[12,8,6,4,1]],[130,'o1',[2,16,7,6,1]]].forEach(([y,s,ns])=>{T(svg,40,y+22,s);let x=x0;
+        ns.forEach((n,ci)=>{for(let i=0;i<n;i++)R(svg,x+i*u,y,u-3,32,cats[ci][1]);if(n>1)T(svg,x+(n*u-3)/2,y-8,String(n),{'text-anchor':'middle',fill:C.mut});x+=n*u+8;});});
+      cats.forEach(([s,c],i)=>{const x=40+(i%3)*250,y=210+Math.floor(i/3)*30;R(svg,x,y,14,14,c);T(svg,x+22,y+13,s,{fill:C.mut});});
+    })();
+
+    /* 20: context staircase. Each lap adds 5,000 tokens and re-reads all earlier ones (example). */
+    (()=>{const svg=$('ctxSvg'),k=220/100000,base=270,lim=80000;
+      [0,50000,100000].forEach(t=>{S(svg,'line',{x1:100,y1:base-t*k,x2:744,y2:base-t*k,stroke:C.grid});T(svg,90,base-t*k+6,t?(t/1000)+'k':'0',{'text-anchor':'end',fill:C.mut});});
+      for(let l=1;l<=20;l++){const x=100+(l-1)*32,tok=5000*l,over=tok>lim;
+        R(svg,x,base-(tok-5000)*k,28,(tok-5000)*k,over?C.rose:C.teal,{'fill-opacity':over?.7:.6});R(svg,x,base-tok*k,28,5000*k-1,C.gold);}
+      [1,10,20].forEach(l=>T(svg,100+(l-1)*32+14,294,l===1?'lap 1':String(l),{'text-anchor':'middle',fill:C.mut}));
+      S(svg,'line',{x1:100,y1:base-lim*k,x2:744,y2:base-lim*k,stroke:C.fg,'stroke-width':2,'stroke-dasharray':'6 5'});
+      T(svg,104,base-lim*k-10,'context limit (example)',{fill:C.fg});
+      T(svg,100,30,'tokens read on each lap',{fill:C.mut});
+      R(svg,300,300,14,14,C.gold);T(svg,322,313,'new this lap',{fill:C.mut});R(svg,460,300,14,14,C.teal,{'fill-opacity':.6});T(svg,482,313,'re-read',{fill:C.mut});R(svg,580,300,14,14,C.rose,{'fill-opacity':.7});T(svg,602,313,'over the limit',{fill:C.mut});
+    })();
+
+    /* 21: Chen et al. 2025 faithfulness. 5 px per point; outline = 100%. */
+    (()=>{const svg=$('faithSvg'),x0=270,k=5;
+      [0,50,100].forEach(t=>T(svg,x0+t*k,258,t+'%',{'text-anchor':'middle',fill:C.mut}));
+      [[36,'Claude 3.7 Sonnet',25],[82,'DeepSeek R1',39],[148,'Claude, bad hints',20],[194,'R1, bad hints',29]].forEach(([y,s,v])=>{
+        T(svg,40,y+19,s);R(svg,x0,y,100*k,26,'none',{stroke:C.rose,'stroke-dasharray':'5 4'});R(svg,x0,y,v*k,26,C.gold);T(svg,x0+v*k+10,y+19,v+'% said so');});
+      R(svg,40,245,14,14,C.gold);T(svg,62,258,'hint mentioned',{fill:C.mut});
+    })();
+
+    /* 22: the whole loop. Four arcs around the model, one path per arrow. */
+    (()=>{const svg=$('wholeSvg'),cx=400,cy=165,r=112;
+      S(svg,'circle',{cx,cy,r:46,fill:C.teal,'fill-opacity':.25,stroke:C.teal,'stroke-width':2});T(svg,cx,cy+6,'model',{'text-anchor':'middle',fill:C.teal});
+      const pt=a=>[cx+r*Math.cos(a*Math.PI/180),cy+r*Math.sin(a*Math.PI/180)];
+      const arc=(a0,a1,col)=>{const [x0,y0]=pt(a0),[x1,y1]=pt(a1);arrow(svg,`M${x0.toFixed(1)} ${y0.toFixed(1)} A ${r} ${r} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`,col,4);};
+      arc(-150,-30,C.gold);arc(-20,60,C.pur);arc(70,140,C.pur);arc(150,205,C.fg);
+      T(svg,cx,34,'think',{'text-anchor':'middle',fill:C.gold});T(svg,530,180,'act: call a tool',{fill:C.pur});
+      T(svg,cx,310,'observe the result',{'text-anchor':'middle',fill:C.pur});T(svg,284,246,'check',{'text-anchor':'end',fill:C.fg});
+      arrow(svg,`M${cx-r-2} ${cy} L170 ${cy}`,C.fg);T(svg,160,cy+6,'done',{'text-anchor':'end',fill:C.fg});
+    })();
+
+    /* hand-off: sums for one answer at Part 9's ~15e9 sums per token (Llama 3 8B, example). */
+    (()=>{const svg=$('nextSvg'),x0=200,k=560/1.4e14;
+      [[40,'711 tokens',711*15e9,'≈ 11 trillion sums'],[100,'8,793 tokens',8793*15e9,'≈ 130 trillion sums']].forEach(([y,s,v,lab])=>{T(svg,40,y+20,s);R(svg,x0,y,v*k,28,C.or);
+        if(v*k>300)T(svg,x0+v*k-10,y+20,lab,{'text-anchor':'end',fill:C.box});else T(svg,x0+v*k+10,y+20,lab);});
+      const cx=700,cy=176;R(svg,cx-22,cy-22,44,44,C.pur,{'fill-opacity':.3,stroke:C.pur,'stroke-width':2});
+      for(let i=-1;i<=1;i++){S(svg,'line',{x1:cx+i*12,y1:cy-30,x2:cx+i*12,y2:cy-22,stroke:C.pur,'stroke-width':2});S(svg,'line',{x1:cx+i*12,y1:cy+22,x2:cx+i*12,y2:cy+30,stroke:C.pur,'stroke-width':2});
+        S(svg,'line',{x1:cx-30,y1:cy+i*12,x2:cx-22,y2:cy+i*12,stroke:C.pur,'stroke-width':2});S(svg,'line',{x1:cx+22,y1:cy+i*12,x2:cx+30,y2:cy+i*12,stroke:C.pur,'stroke-width':2});}
+      T(svg,660,182,'all done on chips',{'text-anchor':'end',fill:C.pur});
+    })();
+  </script>
+  <script>
+    // LAB. A task of n steps. Each attempt at a step is right with chance p. A check catches a wrong attempt
+    // with chance c (never rejects a right one). A caught step is retried, up to r retries; out of retries = stop and report.
+    // A wrong attempt the check misses is accepted: the task finishes wrong, unnoticed. Steps are independent.
+    const ids=['n','p','c','r'];
+    const TOK_ATTEMPT=1500, TOK_CHECK=500;
+    const pct=v=>(Math.abs(v-Math.round(v))<1e-9?String(Math.round(v)):v.toFixed(1))+'%';
+    const comma=n=>Math.round(n).toLocaleString('en-US');
+    function stepOutcome(p,c,r){const q=(1-p)*c;let S=0;for(let k=0;k<=r;k++)S+=q**k;
+      return {q,S,ok:p*S,silent:(1-p)*(1-c)*S,stuck:q**(r+1)};}
+    function compute(v){
+      const n=v[0],p=v[1]/100,c=v[2]/100,r=v[3];
+      const st=stepOutcome(p,c,r),task=st.ok**n,fail=1-task,den=st.silent+st.stuck;
+      const silent=den>0?fail*st.silent/den:0,stuck=den>0?fail*st.stuck/den:0;
+      let reached=0;for(let i=0;i<n;i++)reached+=st.ok**i;
+      const perAttempt=TOK_ATTEMPT+(c>0?TOK_CHECK:0),tokens=reached*st.S*perAttempt;
+      return {n,p,c,r,step:st.ok,task,silent,stuck,attempts:st.S,reached,tokens,noCheckTask:p**n,
+        rows:[['One step, first try',100*p,C.mut],['Whole task done right',100*task,C.fg],['Stopped and said it was stuck',100*stuck,C.pur],['Finished wrong, unnoticed',100*silent,C.rose]],
+        ledger:[['each step ends right',pct(100*st.ok)],['each step slips through wrong',pct(100*st.silent)],['each step runs out of retries',pct(100*st.stuck)],
+          ['attempts per step reached',st.S.toFixed(2)],['steps reached, on average',reached.toFixed(1)],
+          ['whole task right, no checks',pct(100*p**n)],['tokens per attempt',comma(perAttempt)],['tokens per run, on average',comma(tokens)]]};
+    }
+    const labConfig={format:pct,sliderFormats:[v=>String(v),v=>v+'%',v=>v?v+'%':'off',v=>String(v)]};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function drawCurve(r){const svg=$('curveChart');clear(svg);
+      const X=n=>60+(n-1)*440/49,Y=v=>270-v*2.3;
+      T(svg,24,22,'whole task right',{fill:C.mut});
+      S(svg,'line',{x1:200,y1:16,x2:224,y2:16,stroke:C.mut,'stroke-width':3,'stroke-dasharray':'6 4'});T(svg,230,22,'no checks',{fill:C.mut});
+      S(svg,'line',{x1:330,y1:16,x2:354,y2:16,stroke:C.fg,'stroke-width':3});T(svg,360,22,'your checks',{fill:C.mut});
+      [0,50,100].forEach(t=>{S(svg,'line',{x1:60,y1:Y(t),x2:500,y2:Y(t),stroke:C.grid});T(svg,50,Y(t)+6,t+'%',{'text-anchor':'end',fill:C.mut});});
+      [1,25,50].forEach(n=>T(svg,X(n),296,String(n),{'text-anchor':'middle',fill:C.mut}));T(svg,500,322,'steps',{'text-anchor':'end',fill:C.mut});
+      let a='',b='';for(let n=1;n<=50;n++){a+=(n>1?' L':'M')+X(n).toFixed(1)+' '+Y(100*r.p**n).toFixed(1);b+=(n>1?' L':'M')+X(n).toFixed(1)+' '+Y(100*r.step**n).toFixed(1);}
+      S(svg,'path',{d:a,fill:'none',stroke:C.mut,'stroke-width':3,'stroke-dasharray':'6 4'});S(svg,'path',{d:b,fill:'none',stroke:C.fg,'stroke-width':3});
+      S(svg,'circle',{cx:X(r.n),cy:Y(100*r.task),r:7,fill:C.fg,stroke:C.box,'stroke-width':2});}
+    function update(){
+      window.labResults={valid:false};
+      $('labChart').innerHTML='';$('ledger').textContent='';
+      const v=ids.map(id=>+$(id).value),fmt=labConfig.format;
+      ids.forEach((id,i)=>$(id+'-o').textContent=labConfig.sliderFormats[i](v[i]));
+      const r=compute(v),rows=r.rows;
+      if(rows.some(x=>!Number.isFinite(x[1])||x[1]<0||x[1]>100+1e-9)||!Number.isFinite(r.tokens)) throw new Error('Lab returned invalid results');
+      const m=100,x0=30,span=440,sx=x=>x0+Math.min(m,x)*span/m,ticks=[0,50,100];
+      const bottom=70+rows.length*82;$('labChart').setAttribute('viewBox',`0 0 520 ${bottom+78}`);
+      let s='<text x="260" y="25" text-anchor="middle" fill="#f1eee8" font-size="16">chance, for one run of the task</text>';
+      rows.forEach(([name,val,col],i)=>{const y=80+i*82;
+        s+=`<line x1="${x0}" y1="${y-4}" x2="${x0}" y2="${y+30}" stroke="#57534f"/>`;
+        s+=`<text x="30" y="${y-28}" fill="#a5a29c" font-size="16">${esc(name)}</text><text x="30" y="${y-8}" fill="#f1eee8" font-size="16">${esc(fmt(val))}</text><rect data-v="${val}" x="${x0}" y="${y}" width="${sx(val)-x0}" height="26" fill="${esc(col)}"/>`;});
+      s+=ticks.map((t,i)=>`<text class="tick" data-v="${t}" x="${sx(t)}" y="${bottom+26}" text-anchor="${['start','middle','end'][i]}" fill="#a5a29c" font-size="16">${esc(fmt(t))}</text>`).join('');
+      s+=`<text x="30" y="${bottom+57}" fill="#a5a29c" font-size="16">The last three bars add up to 100%.</text>`;
+      $('labChart').innerHTML=s;
+      $('ledger').innerHTML=r.ledger.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+      drawCurve(r);
+      window.labResults={valid:true,rows:rows.map(x=>x[1]),n:r.n,p:r.p,c:r.c,r:r.r,step:r.step,task:r.task,stuck:r.stuck,silent:r.silent,attempts:r.attempts,reached:r.reached,tokens:r.tokens,noCheckTask:r.noCheckTask};
+    }
+    ids.forEach(id=>$(id).addEventListener('input',update));
+    document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{b.dataset.p.split(',').forEach((x,i)=>$(ids[i]).value=x);update()}));
+    update();
+  </script>
+  <script src="../series.js"></script>
+  <script src="../eli5-study.js"></script>
+</body>
+</html>
