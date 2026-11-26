@@ -78,8 +78,8 @@
     .code span{font:12px/1.5 var(--font-mono);color:var(--teal)}
     .code em{font:normal 11px/1.4 var(--font-mono);color:var(--muted)}
     .tok-in{width:100%;min-height:72px;margin-top:14px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
-    .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .presets button{min-height:34px;padding:5px 12px}
+    .presets,.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .presets button,.actions button{min-height:34px;padding:5px 12px}
     .bpe-words{display:grid;gap:10px;margin-top:12px}
     .bpe-word{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
     .bpe-word>em{width:44px;font:normal 12px/1 var(--font-mono);color:var(--muted)}
@@ -145,6 +145,8 @@
       /* Drawings inside boxes keep readable text on phones by scrolling sideways, like figures */
     .sx{overflow-x:auto;margin-top:16px;scrollbar-color:#3b3936 transparent;scrollbar-width:thin}
     .sx>svg{margin-top:0!important}
+    @media (max-width:420px){#mSize .ticks{font-size:10px}#mSize .ticks span:nth-child(4):not(.on),#mSize .ticks span:nth-child(4).on+.last{visibility:hidden}}
+    .box.lab .ledger{display:grid;grid-template-columns:auto auto;gap:2px 16px;justify-content:start;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font:12px/1.6 var(--font-mono);color:var(--muted)}
     @media (max-width:700px){.sx>svg{min-width:540px}.sx::after{content:"swipe →";display:block;font:11px var(--font-mono);color:var(--faint);margin-top:6px}}
   </style>
 <!-- link-preview:start -->
@@ -182,6 +184,7 @@
     <section class="hero">
       <h1>What a chip actually is</h1>
       <p class="lede">Parts 1 and 2 kept saying the model does “a huge calculation”. Something physical has to do that arithmetic. It is a chip: a flat piece of silicon about the size of a fingernail, covered in billions of tiny switches. This part builds one from nothing, starting with a single switch and ending with a machine that can multiply numbers billions of times a second.</p>
+      <p class="source-note">A topic study built from textbook digital electronics (binary, logic gates, adders, SRAM and DRAM cells), chip makers’ published spec sheets for transistor counts, clock speeds and power, Gordon Moore’s 1965 and 1975 papers, and the published history of desktop clock speeds; rounded numbers used only to illustrate are tagged example</p>
       <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
       <p>This is the first part on the chip track, and it needs no background in electronics. Facts carry a tag: <span class="tag">public</span> means a published spec sheet, paper or plain arithmetic, <span class="tag">example</span> means a made-up or rounded number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
       <div class="legend" aria-label="Colour key">
@@ -226,11 +229,11 @@
       <h2>A switch is either on or off</h2>
       <p>Think of a light switch. It has exactly two states: on or off. There is no “a bit on”. A chip is built from switches like that, only microscopic and flipped by electricity instead of a finger. One switch can hold one fact: yes or no, 1 or 0. That single yes-or-no is called a <b>bit</b>.</p>
       <figure>
-        <svg viewBox="0 0 800 220" role="img" aria-label="A light switch has two states, on and off; one switch holds one bit, a one or a zero">
+        <svg viewBox="0 0 800 180" role="img" aria-label="A light switch has two states, on and off; one switch holds one bit, a one or a zero">
           <g id="lightSw"></g>
-          <text x="40" y="200" fill="#f1eee8" font-size="17">One switch, two states: one bit. Everything a computer stores is made of these.</text>
         </svg>
       </figure>
+      <p>One switch, two states: one bit. Everything a computer stores is made of these.</p>
       <p>Why only two states, and not ten like our digits? Because on-or-off is very hard to get wrong. A switch that is “mostly on” is still clearly on, so a tiny bit of electrical noise cannot turn a 1 into a 0. Telling ten levels apart reliably, billions of times a second, would be far harder.</p>
     </section>
 
@@ -243,7 +246,8 @@
         <small>Eight switches</small>
         <div class="bits" id="bits"></div>
         <div class="big"><span id="bitsN">0</span><small id="bitsSum"></small></div>
-        <div class="presets"><button type="button" class="secondary" id="bitsUp">Count up by 1</button><button type="button" class="secondary" id="bitsClear">All off</button><button type="button" class="secondary" id="bits42">Show 42</button></div>
+        <div class="sx"><svg id="bitsSvg" viewBox="0 0 730 112" role="img" aria-label="A ruler from 0 to 255 drawn to scale; each switch that is on adds a teal segment as long as its value, and the segments end at the number shown" style="display:block;width:100%;height:auto"></svg></div>
+        <div class="actions"><button type="button" class="secondary" id="bitsUp">Count up by 1</button><button type="button" class="secondary" id="bitsClear">All off</button><button type="button" class="secondary" id="bits42">Show 42</button></div>
       </div>
       <p>This way of writing numbers with only 0 and 1 is called <b>binary</b>. Eight bits together are a <b>byte</b>, which can hold any whole number from 0 to 255. The bytes in Part 1, chapter 2, are exactly this: each letter stored as one or more groups of eight switches. Bigger numbers just use more switches: 16 bits reach 65,535, and 32 bits reach about 4.3 billion <span class="tag">public</span>.</p>
       <details class="trace"><summary>Go deeper: fractions and negative numbers</summary>
@@ -258,9 +262,10 @@
       <h2>A transistor: a switch flipped by electricity</h2>
       <p>A light switch needs a finger. A chip’s switches have to flip each other, so each one is flipped by electricity. Picture a water pipe with a tap in the middle, where the tap is opened not by a hand but by water pressure in a third, small pipe. Push on the small pipe and water flows through the big one. Let go and it stops.</p>
       <figure>
-        <svg id="trSvg" viewBox="0 0 800 260" role="img" aria-label="A transistor has an input, an output and a control. With no voltage on the control no current flows; with voltage on the control current flows through"></svg>
+        <svg id="trSvg" viewBox="0 0 800 176" role="img" aria-label="A transistor has an input, an output and a control. With no voltage on the control no current flows; with voltage on the control current flows through"></svg>
       </figure>
-      <div class="presets" style="margin-bottom:22px"><button type="button" class="secondary" id="trBtn" aria-pressed="false">Turn the control on</button></div>
+      <div class="actions" style="margin-bottom:22px"><button type="button" class="secondary" id="trBtn" aria-pressed="false">Turn the control on</button></div>
+      <p class="readout" id="trNote" style="margin:-10px 0 22px"></p>
       <p>That is a <b>transistor</b>: three connections, and a small voltage on one of them (the control, called the <b>gate</b>) decides whether electricity can flow between the other two. Crucially, the output of one transistor can be the control of the next. That is how switches flip switches, with no finger anywhere, and it is the whole trick behind every chip.</p>
       <details class="trace"><summary>Go deeper: how a transistor switches</summary>
         <p><b>No moving parts.</b> Nothing moves. Silicon normally conducts electricity poorly. A voltage on the gate pulls electric charges into a thin channel just under it, and while they are there, the channel conducts. Remove the voltage and the channel empties again (chapter 13 explains why silicon can do this).</p>
@@ -306,6 +311,7 @@
           <button type="button" data-v="0">0</button><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6" aria-pressed="true">6</button><button type="button" data-v="7">7</button><button type="button" data-v="8">8</button><button type="button" data-v="9">9</button><button type="button" data-v="10">10</button><button type="button" data-v="11">11</button><button type="button" data-v="12">12</button><button type="button" data-v="13">13</button><button type="button" data-v="14">14</button><button type="button" data-v="15">15</button>
         </div>
         <div class="adder" id="adder"></div>
+        <div class="sx"><svg id="carrySvg" viewBox="0 0 800 204" role="img" aria-label="Four one-column adders in a chain, right to left; each takes two bits from above, gives a sum bit below, and passes its carry to the column on its left, lit orange when the carry is 1" style="display:block;width:100%;height:auto"></svg></div>
         <p class="readout" id="addNote"></p>
       </div>
       <p>Four columns of adders handle numbers up to 15; real chips chain 32 or 64 columns. A full one-column adder takes about 28 transistors in the common design <span class="tag">public</span>, so a 32-column adder is roughly 900 transistors. That sounds like a lot, until chapter 11.</p>
@@ -317,7 +323,7 @@
       <h2>Multiplying is shifting and adding</h2>
       <p>AI models mostly multiply. In binary, long multiplication is even simpler than in school, because every digit is 0 or 1: you either add a shifted copy of the number, or you add nothing. So a multiplier is just a grid of AND gates choosing what to add, feeding rows of adders.</p>
       <figure>
-        <svg viewBox="0 0 800 300" role="img" aria-label="Multiplying 1011 by 0110 in binary: for each 1 in the second number, a shifted copy of the first is added; the rows sum to 1000010, which is 66">
+        <svg viewBox="0 0 800 270" role="img" aria-label="Multiplying 1011 by 0110 in binary: for each 1 in the second number, a shifted copy of the first is added; the rows sum to 1000010, which is 66">
           <g font-family="monospace" font-size="22" text-anchor="end">
             <text x="300" y="50" fill="#f5c76a">1011</text><text x="150" y="50" fill="#a5a29c" font-size="15" text-anchor="start">11 =</text>
             <text x="300" y="82" fill="#f5c76a">× 0110</text><text x="150" y="82" fill="#a5a29c" font-size="15" text-anchor="start">6 =</text>
@@ -334,22 +340,22 @@
           <text x="360" y="180" fill="#ff8059" font-size="15">digit 2 is 1: add 1011, shifted two places</text>
           <text x="360" y="208" fill="#a5a29c" font-size="15">digit 3 is 0: add nothing</text>
           <text x="360" y="252" fill="#76d5c1" font-size="15">add the rows: 64 + 2 = 66</text>
-          <text x="40" y="290" fill="#f1eee8" font-size="16">A multiplier is a grid of “add this row or not” gates feeding adders.</text>
         </svg>
       </figure>
+      <p>A multiplier is a grid of “add this row or not” gates feeding adders.</p>
       <p>An 8-bit multiplier built this way takes a couple of thousand transistors <span class="tag">example</span>. One multiplication: a couple of thousand switches flipping in a particular pattern, all at nearly the same instant.</p>
     </section>
 
     <!-- 9 -->
     <section class="panel">
       <p class="kicker">Keeping time</p>
-      <h2>The clock: a drumbeat billions of times a second</h2>
+      <h2>The clock: billions of drumbeats a second</h2>
       <p>After the inputs change, the switches inside an adder need a moment to settle into the right answer. If the next step started too early it would read a half-finished result. So every chip has a <b>clock</b>: a signal that ticks on and off at a steady rate, like a drummer keeping a rowing team in time. On each tick, results move one step forward.</p>
       <div class="box">
         <div class="pick" id="ghz" role="group" aria-label="Clock speed"><span>CLOCK SPEED</span>
           <button type="button" data-v="1">1 GHz</button><button type="button" data-v="2">2 GHz</button><button type="button" data-v="3" aria-pressed="true">3 GHz</button><button type="button" data-v="4">4 GHz</button><button type="button" data-v="5">5 GHz</button>
         </div>
-        <svg id="clkSvg" viewBox="0 0 800 110" role="img" aria-label="A square wave showing clock ticks" style="display:block;width:100%;height:auto;margin-top:14px"></svg>
+        <div class="sx"><svg id="clkSvg" viewBox="0 0 800 110" role="img" aria-label="A square wave showing clock ticks" style="display:block;width:100%;height:auto;margin-top:14px"></svg></div>
         <div class="tiles">
           <div><b id="cT">3 billion</b><span>ticks every second</span></div>
           <div><b id="cN">0.33 ns</b><span>per tick (a nanosecond is a billionth of a second)</span></div>
@@ -365,22 +371,20 @@
       <h2>Switches that hold their value</h2>
       <p>Arithmetic is useless if results vanish. A chip also needs memory: switches that keep their state after the input goes away. The classic trick is a loop. Take two NOT gates and connect each one’s output to the other’s input. If the first says 1, the second says 0, which keeps the first at 1. The loop holds itself in place until something forces it to flip.</p>
       <figure>
-        <svg viewBox="0 0 800 250" role="img" aria-label="Two NOT gates in a loop hold a bit: each keeps the other in its state, so the value stays put">
+        <svg viewBox="-110 36 720 180" role="img" aria-label="Two NOT gates in a loop hold a bit: each keeps the other in its state, so the value stays put">
           <defs><marker id="ar10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#c3b8ff"/></marker></defs>
           <path d="M140 80 L200 110 L140 140 Z" fill="none" stroke="#f1eee8" stroke-width="2"/><circle cx="206" cy="110" r="6" fill="none" stroke="#f1eee8" stroke-width="2"/>
           <path d="M360 180 L300 150 L360 120 Z" fill="none" stroke="#f1eee8" stroke-width="2"/><circle cx="294" cy="150" r="6" fill="none" stroke="#f1eee8" stroke-width="2"/>
           <path d="M212 110 H420 V150 H366" fill="none" stroke="#c3b8ff" stroke-width="2" marker-end="url(#ar10)"/>
           <path d="M288 150 H80 V110 H134" fill="none" stroke="#c3b8ff" stroke-width="2" marker-end="url(#ar10)"/>
           <text x="170" y="64" fill="#a5a29c" font-size="14" text-anchor="middle">NOT</text><text x="330" y="204" fill="#a5a29c" font-size="14" text-anchor="middle">NOT</text>
-          <rect x="226" y="88" width="36" height="28" fill="#76d5c1"/><text x="244" y="108" fill="#0d2622" font-size="17" text-anchor="middle">1</text>
-          <rect x="226" y="136" width="36" height="28" fill="#2f2d2a" stroke="#57534f"/><text x="244" y="156" fill="#a5a29c" font-size="17" text-anchor="middle">0</text>
-          <text x="470" y="98" fill="#f1eee8" font-size="16">Each gate keeps the other in place,</text>
-          <text x="470" y="122" fill="#f1eee8" font-size="16">so the bit stays put: memory.</text>
-          <text x="470" y="160" fill="#a5a29c" font-size="15">A real cell adds two switches to write a</text>
-          <text x="470" y="182" fill="#a5a29c" font-size="15">new value: six transistors per bit.</text>
-          <text x="40" y="236" fill="#f1eee8" font-size="16">Six transistors to remember one bit, as fast as the chip can run.</text>
+          <rect x="298" y="72" width="36" height="28" fill="#76d5c1"/><text x="316" y="92" fill="#0d2622" font-size="17" text-anchor="middle">1</text>
+          <rect x="166" y="160" width="36" height="28" fill="#2f2d2a" stroke="#57534f"/><text x="184" y="180" fill="#a5a29c" font-size="17" text-anchor="middle">0</text>
+          <text x="440" y="114" fill="#76d5c1" font-size="16">holds 1</text>
+          <text x="440" y="155" fill="#a5a29c" font-size="16">holds 0</text>
         </svg>
       </figure>
+      <p>Each gate keeps the other in place, so the bit stays put: memory. A real cell adds two switches to write a new value: six transistors per bit. Six transistors to remember one bit, as fast as the chip can run.</p>
       <p>Memory built this way is called <b>SRAM</b>, and it takes six transistors per bit <span class="tag">public</span>. It is very fast but takes a lot of space, so chips keep only a little of it close to the arithmetic. Most memory instead stores each bit as a tiny bucket of electric charge with one transistor as its lid. That is <b>DRAM</b>, the kind in your laptop’s RAM. The buckets slowly leak, so the chip has to top them up every few hundredths of a second <span class="tag">public</span>. Part 8 is about why memory, not arithmetic, is now the real bottleneck for AI.</p>
     </section>
 
@@ -393,7 +397,8 @@
         <div class="pick" id="scale" role="group" aria-label="Thing to compare"><span>COMPARE</span>
           <button type="button" data-v="0" aria-pressed="true">hair</button><button type="button" data-v="1">cell</button><button type="button" data-v="2">germ</button><button type="button" data-v="3">virus</button><button type="button" data-v="4">switch</button><button type="button" data-v="5">detail</button><button type="button" data-v="6">atom</button>
         </div>
-        <div class="sx"><svg id="scaleSvg" viewBox="0 0 800 200" role="img" aria-label="A ruler where each mark is ten times smaller than the last, from a human hair down to a silicon atom" style="display:block;width:100%;height:auto;margin-top:16px"></svg></div>
+        <div class="sx"><svg id="scaleSvg" viewBox="0 0 800 166" role="img" aria-label="A ruler where each mark is ten times smaller than the last, from a human hair down to a silicon atom" style="display:block;width:100%;height:auto;margin-top:16px"></svg></div>
+        <p class="readout">Each mark is ten times smaller than the one to its left.</p>
         <p class="readout" id="scaleNote"></p>
       </div>
       <p>Neighbouring transistors on a modern chip sit roughly 50 nanometres apart, and their finest parts are only a few nanometres wide: a few tens of silicon atoms <span class="tag">public</span>. One gotcha: chip factories name their processes “3 nanometre” or “2 nanometre”, but those names are labels for a generation, not the size of anything on the chip <span class="tag">public</span>.</p>
@@ -413,18 +418,22 @@
     <!-- 13 -->
     <section class="panel">
       <p class="kicker">Why silicon</p>
-      <h2>A material that can be told when to conduct</h2>
+      <h2>A material told when to conduct</h2>
       <p>Metals always let electricity through. Glass and plastic never do. Silicon sits in between, which is why it is called a <b>semiconductor</b>. On its own it barely conducts. But add a tiny, controlled pinch of other elements, about one atom in millions, and it can be made to conduct in exactly the spots you choose, and switched by a voltage like the tap in chapter 4.</p>
       <figure>
-        <svg viewBox="0 0 800 220" role="img" aria-label="Metal always conducts, glass never conducts, and silicon can be made to conduct only where and when a voltage tells it to">
+        <svg viewBox="0 0 800 176" role="img" aria-label="Metal always conducts, glass never conducts, and silicon can be made to conduct only where and when a voltage tells it to">
           <g font-size="16">
-            <rect x="40" y="40" width="220" height="110" fill="#202020" stroke="#57534f"/><text x="56" y="70" fill="#f1eee8">Metal</text><text x="56" y="98" fill="#a5a29c" font-size="14">always conducts</text><path d="M60 126 H240" stroke="#f5c76a" stroke-width="4"/>
-            <rect x="290" y="40" width="220" height="110" fill="#202020" stroke="#57534f"/><text x="306" y="70" fill="#f1eee8">Glass</text><text x="306" y="98" fill="#a5a29c" font-size="14">never conducts</text><path d="M310 126 H490" stroke="#57534f" stroke-width="4" stroke-dasharray="4 6"/>
-            <rect x="540" y="40" width="220" height="110" fill="#202020" stroke="#76d5c1"/><text x="556" y="70" fill="#76d5c1">Silicon, treated</text><text x="556" y="98" fill="#a5a29c" font-size="14">conducts when told to</text><path d="M560 126 H630" stroke="#f5c76a" stroke-width="4"/><path d="M630 126 H690" stroke="#57534f" stroke-width="4" stroke-dasharray="4 6"/><path d="M690 126 H740" stroke="#f5c76a" stroke-width="4"/>
+            <text x="40" y="34" fill="#f1eee8">Metal</text><text x="40" y="58" fill="#a5a29c" font-size="14">always conducts</text>
+            <rect x="40" y="76" width="220" height="56" fill="#73706a" opacity=".5"/><path d="M40 104 H260" stroke="#f5c76a" stroke-width="4"/>
+            <text x="290" y="34" fill="#f1eee8">Glass</text><text x="290" y="58" fill="#a5a29c" font-size="14">never conducts</text>
+            <rect x="290" y="76" width="220" height="56" fill="#a5a29c" opacity=".12"/><path d="M290 104 H510" stroke="#57534f" stroke-width="4" stroke-dasharray="4 6"/>
+            <text x="540" y="34" fill="#76d5c1">Silicon, treated</text><text x="540" y="58" fill="#a5a29c" font-size="14">conducts when told to</text>
+            <rect x="540" y="76" width="220" height="56" fill="#76d5c1" opacity=".14"/><path d="M540 104 H620" stroke="#f5c76a" stroke-width="4"/><path d="M620 104 H680" stroke="#57534f" stroke-width="4" stroke-dasharray="4 6"/><path d="M680 104 H760" stroke="#f5c76a" stroke-width="4"/>
+            <text x="580" y="160" fill="#f5c76a" font-size="14" text-anchor="middle">on</text><text x="650" y="160" fill="#a5a29c" font-size="14" text-anchor="middle">off</text><text x="720" y="160" fill="#f5c76a" font-size="14" text-anchor="middle">on</text>
           </g>
-          <text x="40" y="196" fill="#f1eee8" font-size="17">Silicon is also cheap: it is made from ordinary sand, purified extremely carefully.</text>
         </svg>
       </figure>
+      <p>Silicon is also cheap: it is made from ordinary sand, purified extremely carefully.</p>
       <p>Adding those other elements on purpose is called <b>doping</b>. How a factory puts billions of precisely doped, precisely shaped switches onto one slice of silicon, using light, is a story of its own: it is the last part of this track, part 17.</p>
     </section>
 
@@ -436,6 +445,7 @@
       <figure>
         <svg id="layersSvg" viewBox="0 0 800 300" role="img" aria-label="A cross-section of a chip: transistors at the bottom, more than ten layers of copper wiring above, thin at the bottom and thick at the top"></svg>
       </figure>
+      <p>Copper wiring floors stacked above the switches, finest at the bottom.</p>
       <p>Modern chips have more than ten wiring layers, with many kilometres of wire in total, all on a piece of silicon you could cover with a fingernail <span class="tag">public</span>. Designing which switch connects to which is done by software, because no team of people could draw billions of connections by hand.</p>
     </section>
 
@@ -446,7 +456,19 @@
       <p>Each time a switch flips, a tiny amount of electricity is used and turned into heat. One flip is nothing. But billions of switches flipping billions of times a second add up to a lot of heat in a very small space.</p>
       <div class="box">
         <small>Power drawn, roughly (example values)</small>
-        <div class="soft wide" id="wattRows"></div>
+        <div class="sx"><svg id="wattSvg" viewBox="0 0 800 262" role="img" aria-label="Bars drawn to one scale: a phone chip about 5 watts, a laptop chip about 30, a desktop chip about 150, an AI chip about 1,000, and an electric kettle about 2,000" style="display:block;width:100%;height:auto">
+          <text x="40" y="36" fill="#f1eee8" font-size="16">phone chip</text><rect x="170" y="20" width="2" height="22" fill="#ff8059" opacity=".75"/><text x="182" y="36" fill="#a5a29c" font-size="14">about 5 W</text>
+          <text x="40" y="76" fill="#f1eee8" font-size="16">laptop chip</text><rect x="170" y="60" width="7.2" height="22" fill="#ff8059" opacity=".75"/><text x="187.2" y="76" fill="#a5a29c" font-size="14">about 30 W</text>
+          <text x="40" y="116" fill="#f1eee8" font-size="16">desktop chip</text><rect x="170" y="100" width="36" height="22" fill="#ff8059" opacity=".75"/><text x="216" y="116" fill="#a5a29c" font-size="14">about 150 W</text>
+          <text x="40" y="156" fill="#f1eee8" font-size="16" font-weight="600">AI chip</text><rect x="170" y="140" width="240" height="22" fill="#ff8059" opacity="1"/><text x="420" y="156" fill="#a5a29c" font-size="14">about 1,000 W</text>
+          <text x="40" y="196" fill="#f1eee8" font-size="16">electric kettle</text><rect x="170" y="180" width="480" height="22" fill="#73706a" opacity=".75"/><text x="660" y="196" fill="#a5a29c" font-size="14">about 2,000 W</text>
+          <path d="M170 222 H650" stroke="#57534f" stroke-width="1.5"/>
+          <path d="M170 222 V230" stroke="#57534f" stroke-width="1.5"/><text x="170" y="250" fill="#a5a29c" font-size="14" text-anchor="start">0 W</text>
+          <path d="M290 222 V230" stroke="#57534f" stroke-width="1.5"/><text x="290" y="250" fill="#a5a29c" font-size="14" text-anchor="middle">500 W</text>
+          <path d="M410 222 V230" stroke="#57534f" stroke-width="1.5"/><text x="410" y="250" fill="#a5a29c" font-size="14" text-anchor="middle">1,000 W</text>
+          <path d="M530 222 V230" stroke="#57534f" stroke-width="1.5"/><text x="530" y="250" fill="#a5a29c" font-size="14" text-anchor="middle">1,500 W</text>
+          <path d="M650 222 V230" stroke="#57534f" stroke-width="1.5"/><text x="650" y="250" fill="#a5a29c" font-size="14" text-anchor="middle">2,000 W</text>
+        </svg></div>
       </div>
       <p>A big AI chip can draw around 1,000 watts, about half an electric kettle, from a slice of silicon a few centimetres across <span class="tag">public</span>. Air alone can barely carry that heat away, so the newest AI servers are often cooled with liquid pumped right over the chips. Heat, not just switch count, limits what a chip can do, which is the gotcha in the next chapter.</p>
     </section>
@@ -473,6 +495,24 @@
         <div><b style="color:var(--gold)">Control</b><span>Circuits that fetch instructions and decide which block does what, tick by tick.</span></div>
         <div><b style="color:var(--purple)">Connections</b><span>Wires inside, and links to other chips and the rest of the computer (chapter 14).</span></div>
       </div>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Sketch of two chip floor plans: a laptop chip with a large control area, some memory and a little arithmetic; an AI chip almost filled with repeated arithmetic blocks and memory, with a thin strip of control; both ringed by connections">
+          <text x="40" y="26" fill="#a5a29c" font-size="14">LAPTOP MAIN CHIP</text><text x="440" y="26" fill="#a5a29c" font-size="14">AI CHIP</text>
+          <path d="M40 44 H360 V244 H40 Z" fill="none" stroke="#c3b8ff" stroke-width="8" stroke-opacity=".7"/>
+          <rect x="54" y="58" width="140" height="172" fill="#f5c76a" opacity=".45"/>
+          <rect x="200.0" y="58.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="225.0" y="58.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="250.0" y="58.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="275.0" y="58.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="300.0" y="58.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="325.0" y="58.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="200.0" y="79.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="225.0" y="79.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="250.0" y="79.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="275.0" y="79.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="300.0" y="79.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="325.0" y="79.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="200.0" y="101.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="225.0" y="101.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="250.0" y="101.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="275.0" y="101.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="300.0" y="101.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="325.0" y="101.0" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="200.0" y="122.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="225.0" y="122.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="250.0" y="122.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="275.0" y="122.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="300.0" y="122.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/><rect x="325.0" y="122.5" width="21.0" height="17.5" fill="#76d5c1" opacity=".45"/>
+          <rect x="200.0" y="146.0" width="46.0" height="40.0" fill="#ff8059" opacity=".6"/><rect x="250.0" y="146.0" width="46.0" height="40.0" fill="#ff8059" opacity=".6"/><rect x="300.0" y="146.0" width="46.0" height="40.0" fill="#ff8059" opacity=".6"/><rect x="200.0" y="190.0" width="46.0" height="40.0" fill="#ff8059" opacity=".6"/><rect x="250.0" y="190.0" width="46.0" height="40.0" fill="#ff8059" opacity=".6"/><rect x="300.0" y="190.0" width="46.0" height="40.0" fill="#ff8059" opacity=".6"/>
+          <path d="M440 44 H760 V244 H440 Z" fill="none" stroke="#c3b8ff" stroke-width="8" stroke-opacity=".7"/>
+          <rect x="454" y="58" width="292" height="14" fill="#f5c76a" opacity=".45"/>
+          <rect x="454.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="491.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="528.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="565.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="602.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="639.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="676.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="713.0" y="78.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="454.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="491.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="528.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="565.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="602.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="639.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="676.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="713.0" y="105.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="454.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="491.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="528.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="565.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="602.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="639.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="676.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="713.0" y="132.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="454.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="491.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="528.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="565.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="602.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="639.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="676.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/><rect x="713.0" y="159.0" width="33.0" height="23.0" fill="#ff8059" opacity=".6"/>
+          <rect x="454.0" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="478.7" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="503.3" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="528.0" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="552.7" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="577.3" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="602.0" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="626.7" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="651.3" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="676.0" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="700.7" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="725.3" y="188.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="454.0" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="478.7" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="503.3" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="528.0" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="552.7" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="577.3" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="602.0" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="626.7" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="651.3" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="676.0" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="700.7" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/><rect x="725.3" y="211.0" width="20.7" height="19.0" fill="#76d5c1" opacity=".45"/>
+          <rect x="40" y="272" width="14" height="14" fill="#ff8059" opacity=".6"/><text x="62" y="285" fill="#f1eee8" font-size="16">arithmetic</text>
+          <rect x="210" y="272" width="14" height="14" fill="#76d5c1" opacity=".45"/><text x="232" y="285" fill="#f1eee8" font-size="16">memory</text>
+          <rect x="380" y="272" width="14" height="14" fill="#f5c76a" opacity=".45"/><text x="402" y="285" fill="#f1eee8" font-size="16">control</text>
+          <rect x="550" y="272" width="14" height="14" fill="#c3b8ff" opacity=".7"/><text x="572" y="285" fill="#f1eee8" font-size="16">connections</text>
+          <text x="40" y="318" fill="#73706a" font-size="14">SKETCH: AREAS SHOW THE BALANCE, NOT MEASUREMENTS</text>
+        </svg>
+      </figure>
       <p>The big difference between chips is the balance. A laptop’s main chip spends a lot of its space on control, so it can do complicated, unpredictable work quickly. An AI chip spends most of its space on arithmetic and fast memory, because AI work is the same simple sum, over and over. Parts 4 and 5 compare the two directly.</p>
     </section>
 
@@ -481,12 +521,17 @@
       <p class="kicker">Back to AI</p>
       <h2>How many sums does one answer take?</h2>
       <p>Now connect the two tracks. A model uses each of its learned numbers about twice per token: one multiply and one add <span class="tag">public</span>. So writing one token takes about two sums per learned number. Pick a model size and an answer length:</p>
-      <div class="box">
-        <div class="pick" id="mSize" role="group" aria-label="Learned numbers in the model"><span>LEARNED NUMBERS IN THE MODEL</span>
-          <button type="button" data-v="1e9">1 billion</button><button type="button" data-v="8e9" aria-pressed="true">8 billion</button><button type="button" data-v="7e10">70 billion</button><button type="button" data-v="2e11">200 billion</button><button type="button" data-v="1e12">1 trillion</button>
+      <div class="box lab">
+        <div class="pick" id="mSize" role="group" aria-label="Learned numbers in the model" data-vals="1e9,8e9,7e10,2e11,1e12" data-labels="1 billion|8 billion|70 billion|200 billion|1 trillion"><span>LEARNED NUMBERS IN THE MODEL</span>
+          <input id="mSizeIn" type="range" min="0" max="4" step="1" value="1" aria-label="Learned numbers in the model">
         </div>
-        <div class="pick" id="mLen" role="group" aria-label="Tokens in the answer"><span>TOKENS IN THE ANSWER</span>
-          <button type="button" data-v="100">100</button><button type="button" data-v="500" aria-pressed="true">500</button><button type="button" data-v="2000">2,000</button><button type="button" data-v="10000">10,000</button>
+        <div class="pick" id="mLen" role="group" aria-label="Tokens in the answer" data-vals="100,500,2000,10000" data-labels="100|500|2,000|10,000"><span>TOKENS IN THE ANSWER</span>
+          <input id="mLenIn" type="range" min="0" max="3" step="1" value="1" aria-label="Tokens in the answer">
+        </div>
+        <div class="presets">
+          <button type="button" class="secondary" data-p="0,0">Small model, short reply</button>
+          <button type="button" class="secondary" data-p="2,2">70 billion, long reply</button>
+          <button type="button" class="secondary" data-p="4,3">1 trillion, a report</button>
         </div>
         <div class="tiles">
           <div><b id="sTok"></b><span>sums for one token</span></div>
@@ -494,6 +539,8 @@
           <div><b id="sHuman"></b><span>for one person doing one sum per second, non-stop</span></div>
           <div><b id="sChip"></b><span>for a chip doing a thousand trillion sums per second <span class="tag">example</span></span></div>
         </div>
+        <div class="sx"><svg id="labChart" viewBox="0 0 800 224" role="img" aria-label="Two bars on one ten-times-per-step time scale, starting at one second: the time one person would need for the whole answer, far to the right, and the time the chip needs, near or below one second" style="display:block;width:100%;height:auto"></svg></div>
+        <div class="ledger" id="ledger"></div>
       </div>
       <p>A person would need far longer than recorded history; a modern AI chip needs a second or less. That gap, about a thousand trillion to one, is what all those switches buy. The chip track continues with how they are arranged to get there: part 4 (the CPU), part 5 (the GPU), part 8 (memory) and part 10 (AI chips).</p>
     </section>
@@ -503,7 +550,7 @@
       <p class="kicker">The whole picture</p>
       <h2>From one switch to a chip</h2>
       <figure>
-        <svg viewBox="0 0 800 230" role="img" aria-label="Six steps: a transistor, logic gates, an adder, a multiplier, billions of them with memory and a clock, and the finished chip">
+        <svg viewBox="0 0 800 180" role="img" aria-label="Six steps: a transistor, logic gates, an adder, a multiplier, billions of them with memory and a clock, and the finished chip">
           <defs><marker id="ar19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
           <g id="stack19"></g>
         </svg>
@@ -585,10 +632,12 @@
           bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',o===b?'true':'false'));cb();}));
           return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
         }
-        const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
-        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        // A group may ship its slider in the HTML (data-vals, data-labels); otherwise it is built from the buttons.
+        const pre=g.querySelector('input[type=range]');
+        const vals=pre?g.dataset.vals.split(',').map(Number):bs.map(b=>+b.dataset.v),labs=pre?g.dataset.labels.split('|'):bs.map(b=>b.textContent.trim()),n=vals.length;
+        const head=g.querySelector('span'),out=document.createElement('output'),r=pre||document.createElement('input'),ticks=document.createElement('div');
         head.append(out);
-        Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
+        if(!pre)Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
         r.setAttribute('aria-label',g.getAttribute('aria-label'));
         ticks.className='ticks';ticks.setAttribute('aria-hidden','true');
         const ts=labs.map((l,i)=>{const t=document.createElement('span');t.textContent=l;t.style.left=(i/(n-1)*100)+'%';
@@ -597,10 +646,13 @@
           r.style.setProperty('--fill',(i/(n-1)*100)+'%');ts.forEach((t,j)=>t.classList.toggle('on',j===i));}
         r.addEventListener('input',()=>{sync();cb();});
         g.classList.add('slide');g.replaceChildren(head,r,ticks);sync();
-        return ()=>vals[+r.value];
+        const get=()=>vals[+r.value];get.set=i=>{r.value=i;sync();};return get;
       }
-      function rows(el,items,max){$(el).innerHTML=items.map(it=>`<div class="row${it.hi?' hi':''}"><span class="w">${esc(it.w)}</span><span class="bar"><i style="width:${Math.min(100,it.p/max*100).toFixed(1)}%${it.c?';background:'+it.c:''}"></i></span><span class="v">${esc(it.label)}</span></div>`).join('');}
       const isOn=id=>$(id).getAttribute('aria-pressed')==='true';
+      // A horizontal gridline drawn behind the chart, broken where it would run through a label.
+      function gridH(svg,y,x1,x2,labels){const gaps=labels.map(t=>t.getBBox()).filter(b=>b.y-3<y&&b.y+b.height+3>y).map(b=>[b.x-6,b.x+b.width+6]).sort((a,b)=>a[0]-b[0]);
+        let x=x1;const segs=[];gaps.forEach(([a,b])=>{if(a>x)segs.push([x,Math.min(a,x2)]);x=Math.max(x,b);});if(x<x2)segs.push([x,x2]);
+        segs.forEach(([a,b])=>{const l=S(svg,'line',{x1:a,y1:y,x2:b,y2:y,stroke:'#2a2927'});svg.insertBefore(l,svg.firstChild);});}
 
       /* 1: die and switches */
       (()=>{const g=$('die');for(let y=0;y<8;y++)for(let x=0;x<8;x++){const c=(x+y)%3===0?C.coral:(x*y)%4===1?C.teal:C.purple;S(g,'rect',{x:310+x*18,y:66+y*18,width:15,height:15,fill:c,opacity:.25+((x*7+y*3)%5)/8});}
@@ -617,7 +669,16 @@
       const BV=[128,64,32,16,8,4,2,1];let bitVal=0;
       $('bits').innerHTML=BV.map((v,i)=>`<div class="bit"><button type="button" class="secondary" data-i="${i}" aria-pressed="false" aria-label="Switch worth ${v}">0</button><small>${v}</small></div>`).join('');
       function drawBits(){[...$('bits').querySelectorAll('button')].forEach((b,i)=>{const on=(bitVal&BV[i])>0;b.setAttribute('aria-pressed',on);b.textContent=on?'1':'0';});
-        $('bitsN').textContent=bitVal;const parts=BV.filter(v=>bitVal&v);$('bitsSum').textContent=parts.length>1?' = '+parts.join(' + '):parts.length?'':' (all off)';}
+        $('bitsN').textContent=bitVal;const parts=BV.filter(v=>bitVal&v);$('bitsSum').textContent=parts.length>1?' = '+parts.join(' + '):parts.length?'':' (all off)';
+        // the ruler: 2.5 px per unit, so 255 is 637.5 px; each on switch adds a segment as long as its value
+        const svg=$('bitsSvg'),K=2.5,X0=4;clear(svg);
+        T(svg,X0,22,'0 TO 255 · 10 UNITS = 25 PX',{fill:C.mut,'font-size':14});
+        S(svg,'rect',{x:X0,y:36,width:255*K,height:34,fill:'#202020',stroke:C.line});
+        let x=X0;parts.forEach(v=>{const w=v*K;S(svg,'rect',{x,y:36,width:Math.max(1.5,w-1),height:34,fill:C.teal});
+          if(w>=34)T(svg,x+w/2,59,String(v),{fill:C.dark,'font-size':16,'text-anchor':'middle'});x+=w;});
+        T(svg,X0+255*K+14,60,'= '+bitVal,{fill:C.teal,'font-size':20,'font-weight':600});
+        [0,64,128,192,255].forEach(v=>{S(svg,'line',{x1:X0+v*K,y1:74,x2:X0+v*K,y2:82,stroke:C.mut});
+          T(svg,X0+v*K,102,String(v),{fill:C.mut,'font-size':14,'text-anchor':v===0?'start':v===255?'end':'middle'});});}
       $('bits').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;bitVal^=BV[+b.dataset.i];drawBits();});
       $('bitsUp').onclick=()=>{bitVal=(bitVal+1)%256;drawBits();};$('bitsClear').onclick=()=>{bitVal=0;drawBits();};$('bits42').onclick=()=>{bitVal=42;drawBits();};drawBits();
 
@@ -631,8 +692,7 @@
         T(svg,130,100,'IN',{fill:C.mut,'font-size':14});T(svg,640,100,'OUT',{fill:C.mut,'font-size':14});
         if(on){for(let i=0;i<12;i++)S(svg,'circle',{cx:140+i*46,cy:135,r:5,fill:C.gold});S(svg,'path',{d:'M690 135 H760',stroke:C.gold,'stroke-width':4});T(svg,700,124,'flows',{fill:C.gold,'font-size':14});}
         else{for(let i=0;i<4;i++)S(svg,'circle',{cx:140+i*46,cy:135,r:5,fill:C.gold});T(svg,380,140,'blocked',{fill:C.mut,'font-size':14});}
-        T(svg,40,210,on?'Voltage on the control opens the channel: current flows from IN to OUT. The switch is on: 1.':'No voltage on the control: the channel is closed and nothing flows. The switch is off: 0.',{fill:C.fg,'font-size':16});
-        T(svg,40,240,'The OUT of one transistor can be the control of the next.',{fill:C.purple,'font-size':15});
+        $('trNote').textContent=(on?'Voltage on the control opens the channel: current flows from IN to OUT. The switch is on: 1.':'No voltage on the control: the channel is closed and nothing flows. The switch is off: 0.')+' The OUT of one transistor can be the control of the next.';
         $('trBtn').textContent=on?'Turn the control off':'Turn the control on';}
       $('trBtn').addEventListener('click',()=>{$('trBtn').setAttribute('aria-pressed',!isOn('trBtn'));drawTr();});drawTr();
 
@@ -680,6 +740,24 @@
           `<span class="al">+ ${b}</span>${cols.map(i=>i===4?'<span class="c ghost"></span>':cell(bit(b,i))).join('')}`+
           `<span class="al">= ${a+b}</span>${cols.map(i=>i===4?cell(carry[4],'sum'):cell(sum[i],'sum')).join('')}`+
           `<span class="al"></span>${cols.map(i=>`<span class="pl">${1<<i}</span>`).join('')}`;
+        // the chain: one adder per column, carries passed right to left
+        const svg=$('carrySvg'),cx=i=>640-i*130,Y=104;clear(svg);
+        S(svg,'defs',{}).innerHTML='<marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="'+C.coral+'"/></marker><marker id="arC0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="'+C.line+'"/></marker>';
+        T(svg,24,30,String(a),{fill:C.mut,'font-size':16});T(svg,24,56,'+ '+b,{fill:C.mut,'font-size':16});T(svg,24,166,'= '+(a+b),{fill:C.gold,'font-size':16});
+        for(let i=0;i<4;i++){const x=cx(i),ai=bit(a,i),bi=bit(b,i);
+          T(svg,x,30,String(ai),{fill:ai?C.teal:C.mut,'font-size':18,'font-family':'monospace','text-anchor':'middle'});
+          T(svg,x,56,String(bi),{fill:bi?C.teal:C.mut,'font-size':18,'font-family':'monospace','text-anchor':'middle'});
+          S(svg,'line',{x1:x,y1:64,x2:x,y2:Y-26,stroke:C.line,'stroke-width':2});
+          S(svg,'circle',{cx:x,cy:Y,r:24,fill:C.coral,'fill-opacity':.12,stroke:C.coral,'stroke-width':2});
+          T(svg,x,Y+7,'+',{fill:C.coral,'font-size':22,'text-anchor':'middle'});
+          S(svg,'line',{x1:x,y1:Y+24,x2:x,y2:142,stroke:C.line,'stroke-width':2});
+          T(svg,x,166,String(sum[i]),{fill:C.gold,'font-size':20,'font-family':'monospace','text-anchor':'middle'});
+          T(svg,x,194,String(1<<i),{fill:C.faint,'font-size':14,'text-anchor':'middle'});
+          const on=carry[i+1]===1,x2=i<3?cx(i+1)+28:130;
+          S(svg,'path',{d:`M${x-26} ${Y} H${x2}`+(i<3?'':' V142'),fill:'none',stroke:on?C.coral:C.line,'stroke-width':on?3:2,'marker-end':on?'url(#arC)':'url(#arC0)'});
+          T(svg,(x-26+x2)/2,Y-10,'carry '+carry[i+1],{fill:on?C.coral:C.mut,'font-size':14,'text-anchor':'middle'});}
+        T(svg,130,166,String(carry[4]),{fill:C.gold,'font-size':20,'font-family':'monospace','text-anchor':'middle'});
+        T(svg,130,194,'16',{fill:C.faint,'font-size':14,'text-anchor':'middle'});
         const n=carry.slice(1).filter(Boolean).length;
         $('addNote').textContent=`${a} + ${b} = ${a+b}. ${n?`${n} column${n>1?'s':''} overflowed and carried a 1 to the left (orange).`:'No column overflowed, so nothing was carried.'}${a+b>15?' The answer needs a fifth column, because it is bigger than 15.':''}`;}
       drawAdd();
@@ -688,7 +766,7 @@
       const ghz=pick('ghz',drawClk);
       function drawClk(){const f=ghz(),svg=$('clkSvg');clear(svg);const n=f*4,w=720/n;let d='M40 80';
         for(let i=0;i<n;i++){const x=40+i*w;d+=` L${x} 30 L${x+w/2} 30 L${x+w/2} 80 L${x+w} 80`;}
-        S(svg,'path',{d,fill:'none',stroke:C.gold,'stroke-width':2.5});T(svg,40,104,`${n} ticks shown = ${(n/f).toFixed(0)} nanoseconds`,{fill:C.mut,'font-size':13});
+        S(svg,'path',{d,fill:'none',stroke:C.gold,'stroke-width':2.5});T(svg,40,104,`${n} ticks shown = ${(n/f).toFixed(0)} nanoseconds`,{fill:C.mut,'font-size':14});
         $('cT').textContent=big(f*1e9);$('cN').textContent=(1/f).toFixed(2)+' ns';$('cL').textContent=(30/f).toFixed(f>=4?1:0)+' cm';}
       drawClk();
 
@@ -697,54 +775,69 @@
       const sc=pick('scale',drawScale);
       function drawScale(){const i=sc(),svg=$('scaleSvg');clear(svg);const lx=v=>40+(Math.log10(100000)-Math.log10(v))/(Math.log10(100000)-Math.log10(0.1))*720;
         S(svg,'line',{x1:40,y1:120,x2:760,y2:120,stroke:C.line,'stroke-width':2});
-        [100000,10000,1000,100,10,1,0.1].forEach(v=>{S(svg,'line',{x1:lx(v),y1:112,x2:lx(v),y2:128,stroke:C.mut});T(svg,lx(v),150,v>=1?fmt(v)+' nm':v+' nm',{fill:C.mut,'font-size':12,'text-anchor':'middle'});});
+        [100000,10000,1000,100,10,1,0.1].forEach(v=>{S(svg,'line',{x1:lx(v),y1:112,x2:lx(v),y2:128,stroke:C.mut});T(svg,lx(v),150,v>=1?fmt(v)+' nm':v+' nm',{fill:C.mut,'font-size':14,'text-anchor':'middle'});});
         SC.forEach(([n,v],j)=>{const x=lx(v),on=j===i;S(svg,'circle',{cx:x,cy:120,r:on?10:6,fill:j>=4?C.teal:C.gold,opacity:on?1:.45});
           if(on){T(svg,Math.min(Math.max(x,120),680),80,n,{fill:C.fg,'font-size':18,'text-anchor':'middle'});T(svg,Math.min(Math.max(x,120),680),102,fmt(v)+' nanometres',{fill:j>=4?C.teal:C.gold,'font-size':14,'text-anchor':'middle'});}});
-        T(svg,40,186,'each mark is ten times smaller than the one to its left',{fill:C.faint,'font-size':13});
         const r=70000/SC[i][1];$('scaleNote').textContent=i===0?'A hair is about 70,000 nanometres wide. A nanometre is a millionth of a millimetre.':`${SC[i][0][0].toUpperCase()+SC[i][0].slice(1)} is about ${fmt(SC[i][1])} nanometres: roughly ${fmt(Math.round(r))} times smaller than the width of a hair.`;}
       drawScale();
 
       /* 12: Moore's law */
       (()=>{const svg=$('mooreSvg'),D=[[1971,2300,'Intel 4004'],[1978,29000,'Intel 8086'],[1993,3.1e6,'Pentium'],[2000,4.2e7,'Pentium 4'],[2006,2.91e8,'Core 2 Duo'],[2020,1.6e10,'Apple M1'],[2022,8e10,'NVIDIA H100'],[2024,2.08e11,'NVIDIA B200']];
         const X=y=>80+(y-1970)/(2026-1970)*660,Y=v=>320-(Math.log10(v)-3)/(12-3)*280;
-        for(let p=3;p<=12;p++){S(svg,'line',{x1:80,y1:Y(10**p),x2:740,y2:Y(10**p),stroke:'#2a2927'});T(svg,72,Y(10**p)+4,['1k','10k','100k','1M','10M','100M','1B','10B','100B','1T'][p-3],{fill:C.faint,'font-size':12,'text-anchor':'end'});}
-        [1970,1980,1990,2000,2010,2020].forEach(y=>T(svg,X(y),344,String(y),{fill:C.faint,'font-size':12,'text-anchor':'middle'}));
+        for(let p=3;p<=12;p++)T(svg,72,Y(10**p)+5,['1k','10k','100k','1M','10M','100M','1B','10B','100B','1T'][p-3],{fill:C.faint,'font-size':14,'text-anchor':'end'});
+        [1970,1980,1990,2000,2010,2020].forEach(y=>T(svg,X(y),346,String(y),{fill:C.faint,'font-size':14,'text-anchor':'middle'}));
         S(svg,'path',{d:'M'+D.map(([y,v])=>`${X(y).toFixed(1)} ${Y(v).toFixed(1)}`).join(' L'),fill:'none',stroke:C.teal,'stroke-width':2,'stroke-opacity':.5});
-        const OFF={5:20,6:5,7:-10};D.forEach(([y,v,n],i)=>{S(svg,'circle',{cx:X(y),cy:Y(v),r:5,fill:C.teal});T(svg,X(y)+(i>=5?-10:10),Y(v)+(i>=5?OFF[i]:5),`${n} · ${v>=1e9?big(v):fmt(v)}`,{fill:C.fg,'font-size':13,'text-anchor':i>=5?'end':'start'});});
+        const OFF=[16,20,20,20,20,-6,-6,-14],labs=D.map(([y,v,n],i)=>{S(svg,'circle',{cx:X(y),cy:Y(v),r:5,fill:C.teal});return T(svg,X(y)+(i>=5?-12:10),Y(v)+OFF[i],`${n} · ${v>=1e9?big(v):fmt(v)}`,{fill:C.fg,'font-size':14,'text-anchor':i>=5?'end':'start'});});
+        for(let p=3;p<=12;p++)gridH(svg,Y(10**p),80,740,labs);
         T(svg,80,24,'TRANSISTORS ON ONE CHIP · each gridline = 10×',{fill:C.mut,'font-size':14});})();
 
       /* 14: wiring layers */
       (()=>{const svg=$('layersSvg');T(svg,40,26,'A SLICE THROUGH A CHIP (not to scale)',{fill:C.mut,'font-size':14});
         let y=50;[[22,60,'thick power wires'],[14,40,''],[10,26,'middle layers'],[8,18,''],[6,12,''],[5,9,'thin local wires'],[4,7,''],[4,6,'']].forEach(([h,pitch,lab],j)=>{
-          for(let x=120;x<700;x+=pitch)S(svg,'rect',{x,y,width:pitch*.55,height:h,fill:'#c7864e',opacity:.9-j*.05});if(lab)T(svg,712,y+h-2,lab,{fill:C.mut,'font-size':13});y+=h+8;});
-        T(svg,712,y+18,'transistors',{fill:C.teal,'font-size':13});
-        for(let x=120;x<700;x+=14){S(svg,'rect',{x,y:y+4,width:8,height:18,fill:C.teal});}
-        S(svg,'rect',{x:110,y:y+24,width:600,height:30,fill:'#3b3936'});T(svg,410,y+44,'silicon',{fill:C.mut,'font-size':13,'text-anchor':'middle'});
-        T(svg,40,292,'Copper wiring floors stacked above the switches, finest at the bottom.',{fill:C.fg,'font-size':15});})();
+          for(let x=60;x<600;x+=pitch)S(svg,'rect',{x,y,width:pitch*.55,height:h,fill:'#c7864e',opacity:.9-j*.05});if(lab)T(svg,616,y+h/2+5,lab,{fill:C.mut,'font-size':14});y+=h+8;});
+        T(svg,616,y+18,'transistors',{fill:C.teal,'font-size':14});
+        for(let x=60;x<600;x+=14){S(svg,'rect',{x,y:y+4,width:8,height:18,fill:C.teal});}
+        S(svg,'rect',{x:50,y:y+24,width:560,height:30,fill:'#3b3936'});T(svg,330,y+44,'silicon',{fill:C.mut,'font-size':14,'text-anchor':'middle'});
+})();
 
-      /* 15: power */
-      rows('wattRows',[{w:'phone chip',p:5,label:'about 5 W'},{w:'laptop chip',p:30,label:'about 30 W'},{w:'desktop chip',p:150,label:'about 150 W'},{w:'AI chip',p:1000,label:'about 1,000 W',hi:true},{w:'electric kettle',p:2000,label:'about 2,000 W',c:'#73706a'}],2000);
 
       /* 16: clock history */
       (()=>{const svg=$('clockHistSvg'),D=[[1971,0.00074],[1978,0.005],[1985,0.016],[1993,0.066],[1997,0.3],[2000,1.5],[2002,3.06],[2004,3.8],[2008,3.2],[2012,3.9],[2016,4.2],[2020,5.0],[2024,5.7]];
         const X=y=>80+(y-1970)/(2026-1970)*660,Y=v=>260-(Math.log10(v)+4)/(Math.log10(10)+4)*220;
-        [-3,-2,-1,0,1].forEach(p=>{S(svg,'line',{x1:80,y1:Y(10**p),x2:740,y2:Y(10**p),stroke:'#2a2927'});T(svg,72,Y(10**p)+4,['1 MHz','10 MHz','100 MHz','1 GHz','10 GHz'][p+3],{fill:C.faint,'font-size':12,'text-anchor':'end'});});
-        [1970,1980,1990,2000,2010,2020].forEach(y=>T(svg,X(y),284,String(y),{fill:C.faint,'font-size':12,'text-anchor':'middle'}));
+        [-3,-2,-1,0,1].forEach(p=>T(svg,72,Y(10**p)+5,['1 MHz','10 MHz','100 MHz','1 GHz','10 GHz'][p+3],{fill:C.faint,'font-size':14,'text-anchor':'end'}));
+        [1970,1980,1990,2000,2010,2020].forEach(y=>T(svg,X(y),286,String(y),{fill:C.faint,'font-size':14,'text-anchor':'middle'}));
         S(svg,'rect',{x:X(2005),y:30,width:X(2026)-X(2005),height:236,fill:C.rose,opacity:.06});
         S(svg,'path',{d:'M'+D.map(([y,v])=>`${X(y).toFixed(1)} ${Y(v).toFixed(1)}`).join(' L'),fill:'none',stroke:C.gold,'stroke-width':3});
-        T(svg,X(1984),Y(0.3),'climbing fast',{fill:C.gold,'font-size':14});T(svg,X(2007),46,'the heat wall: speeds level off',{fill:C.rose,'font-size':14});
+        const notes=[T(svg,X(1984),Y(0.3),'climbing fast',{fill:C.gold,'font-size':14}),T(svg,X(2007),46,'the heat wall: speeds level off',{fill:C.rose,'font-size':14})];
+        [-3,-2,-1,0,1].forEach(p=>gridH(svg,Y(10**p),80,740,notes));
         T(svg,80,22,'TYPICAL TOP CLOCK SPEED OF DESKTOP CHIPS · each gridline = 10×',{fill:C.mut,'font-size':14});})();
 
       /* 18: sums per answer */
       const mS=pick('mSize',drawSums),mL=pick('mLen',drawSums);
-      function drawSums(){const p=mS(),n=mL(),tok=2*p,ans=tok*n;$('sTok').textContent=big(tok);$('sAns').textContent=big(ans);$('sHuman').textContent=dur(ans);$('sChip').textContent=dur(ans/1e15);}
+      const CHIP=1e15;  // sums per second, the page's example chip
+      function drawSums(){const p=mS(),n=mL(),tok=2*p,ans=tok*n,person=ans,chip=ans/CHIP;
+        $('sTok').textContent=big(tok);$('sAns').textContent=big(ans);$('sHuman').textContent=dur(ans);$('sChip').textContent=dur(chip);
+        // one time axis, ten times per step: x is log10(seconds), zero (1 second) is where every bar starts
+        const svg=$('labChart'),lo=-6,hi=18,at=v=>70+(v-lo)/(hi-lo)*660,zero=at(0);clear(svg);
+        const TK={'-6':'1 µs','-3':'1 ms','0':'1 s','3':'17 min','6':'12 days','9':'32 yrs','12':'32k yrs','15':'32M yrs','18':'32B yrs'};
+        T(svg,70,18,'TIME, STARTING AT 1 SECOND · EACH STEP = 1,000×',{fill:C.mut,'font-size':14});
+        S(svg,'path',{d:`M${at(lo)} 184 H${at(hi)}`,stroke:C.line,'stroke-width':1.5});
+        for(let v=lo;v<=hi;v+=3){S(svg,'path',{d:`M${at(v)} 184 V192`,stroke:C.line,'stroke-width':1.5});
+          const t=T(svg,at(v),212,TK[v],{fill:v===0?C.fg:C.faint,'font-size':14,'text-anchor':'middle'});t.setAttribute('class','tick');t.dataset.v=v;}
+        [['one person, 1 sum a second',person,C.mut,40],['the chip, 10¹⁵ sums a second',chip,C.coral,110]].forEach(([name,sec,col,y])=>{
+          const v=Math.log10(sec),x=at(v);T(svg,70,y+14,name+': '+dur(sec),{fill:C.fg,'font-size':16});
+          const r=S(svg,'rect',{x:Math.min(x,zero),y:y+24,width:Math.max(2,Math.abs(x-zero)),height:26,fill:col,opacity:.85});r.dataset.v=v;});
+        const L=[['learned numbers',big(p)],['sums per token (2 each)',big(tok)],['tokens in the answer',fmt(n)],['sums for the answer',big(ans)],['person, 1 sum a second',dur(person)],['chip, 10¹⁵ sums a second',dur(chip)]];
+        $('ledger').innerHTML=L.map(([k,val])=>`<span>${esc(k)}</span><span>${esc(val)}</span>`).join('');
+        window.labResults={valid:Number.isFinite(ans),params:p,tokens:n,sumsPerToken:tok,sumsPerAnswer:ans,rows:[person,chip],tiles:['sTok','sAns','sHuman','sChip'].map(i=>$(i).textContent)};}
+      document.querySelectorAll('.lab .presets button').forEach(b=>b.addEventListener('click',()=>{const [i,j]=b.dataset.p.split(',').map(Number);mS.set(i);mL.set(j);drawSums();}));
       drawSums();
 
       /* 19: stack */
-      (()=>{const g=$('stack19').ownerSVGElement,st=[['transistor','a switch',C.teal],['logic gate','a few switches',C.purple],['adder','a few gates',C.coral],['multiplier','many adders',C.coral],['billions','+ memory + clock',C.gold],['a chip','on one die',C.fg]];
-        st.forEach(([a,b,c],i)=>{const x=40+i*124;S(g,'rect',{x,y:40,width:110,height:100,fill:c,opacity:.12,stroke:c});T(g,x+12,82,a,{fill:C.fg,'font-size':16});T(g,x+12,106,b,{fill:C.mut,'font-size':12});
+      (()=>{const g=$('stack19').ownerSVGElement,st=[['transistor',['a switch'],C.teal],['logic gate',['a few','switches'],C.purple],['adder',['a few gates'],C.coral],['multiplier',['many adders'],C.coral],['billions',['+ memory','+ clock'],C.gold],['a chip',['on one die'],C.fg]];
+        st.forEach(([a,b,c],i)=>{const x=40+i*124;S(g,'rect',{x,y:40,width:110,height:100,fill:c,opacity:.12,stroke:c});T(g,x+10,76,a,{fill:C.fg,'font-size':16});b.forEach((l,k)=>T(g,x+10,102+k*20,l,{fill:C.mut,'font-size':14}));
           if(i<5)S(g,'path',{d:`M${x+112} 90 H${x+122}`,stroke:C.mut,'stroke-width':2,'marker-end':'url(#ar19)'});});
-        T(g,40,190,'Each layer is simple. The chip is all of them, billions of times over.',{fill:C.fg,'font-size':16});})();
+})();
     })();
   </script>
   <script src="../series.js"></script>
