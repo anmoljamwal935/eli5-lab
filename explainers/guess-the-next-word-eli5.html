@@ -78,8 +78,9 @@
     .code span{font:12px/1.5 var(--font-mono);color:var(--teal)}
     .code em{font:normal 11px/1.4 var(--font-mono);color:var(--muted)}
     .tok-in{width:100%;min-height:72px;margin-top:14px;padding:12px 14px;font:15px/1.5 var(--font-mono);resize:vertical}
-    .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .presets button{min-height:34px;padding:5px 12px}
+    .presets,.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .presets button,.acts button{min-height:34px;padding:5px 12px}
+    .soft.ledger{gap:6px}
     .bpe-words{display:grid;gap:10px;margin-top:12px}
     .bpe-word{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
     .bpe-word>em{width:44px;font:normal 12px/1 var(--font-mono);color:var(--muted)}
@@ -164,6 +165,7 @@
     <section class="hero">
       <h1>The only job: guess the next word</h1>
       <p class="lede">An AI chatbot does exactly one thing. It looks at all the text so far and guesses which piece of text should come next. Then it adds that piece and guesses again. Every answer, poem and line of code it writes is that one step, repeated. This part shows how the guess is made, how one is picked, and why such a simple loop can write anything at all.</p>
+      <p class="source-note">A topic study built from the sources it cites: the 2019 study that named repetitive text and introduced top-p (Holtzman and others, “The Curious Case of Neural Text Degeneration”), OpenAI’s 2019 GPT-2 samples, Shannon’s 1948 paper on information theory, Anthropic’s 2025 research on planning inside Claude, and Anthropic’s and OpenAI’s API documentation; the scores, chances and timings are made-up examples · <a href="https://arxiv.org/abs/1904.09751">Read the main source ↗</a></p>
       <div class="series-strip" data-series="top" role="navigation" aria-label="Series"></div>
       <p>Part 1 showed how text becomes tokens: pieces of words, each with an ID number. This part starts where Part 1 ended, with the model holding one list of numbers per token. Facts carry a tag: <span class="tag">public</span> means a published paper or plain arithmetic, <span class="tag">example</span> means a made-up number used to show how something works, and <span class="tag np">not public</span> means the company has not said. <b>Go deeper</b> boxes are optional.</p>
       <div class="legend" aria-label="Colour key">
@@ -181,7 +183,7 @@
       <h2>Guess the next piece. Add it. Repeat.</h2>
       <p>Give the model “The cat sat on the” and it does not write a sentence. It produces one guess for the single next token, say “ mat”. That token is stuck onto the end of the text, and the whole, slightly longer text goes back in for the next guess. Round and round, one token per lap, until the answer is finished.</p>
       <figure>
-        <svg viewBox="0 0 800 300" role="img" aria-label="Text goes into the model, one next token comes out, it is added to the end of the text, and the longer text goes back in">
+        <svg viewBox="0 0 800 230" role="img" aria-label="Text goes into the model, one next token comes out, it is added to the end of the text, and the longer text goes back in">
           <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
           <text x="40" y="36" fill="#a5a29c" font-size="15">THE TEXT SO FAR</text>
           <g font-size="17" text-anchor="middle">
@@ -200,9 +202,9 @@
           <text x="695" y="122" text-anchor="middle" fill="#a5a29c" font-size="14">one token</text>
           <path d="M695 140 V190 H340 V108" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar1)"/>
           <text x="420" y="214" fill="#c3b8ff" font-size="15">stuck onto the end, and everything goes back in</text>
-          <text x="40" y="262" fill="#f1eee8" font-size="17">An answer of 300 tokens is this loop run 300 times, one lap after another.</text>
         </svg>
       </figure>
+      <p>An answer of 300 tokens is this loop run 300 times, one lap after another.</p>
       <p>That sounds far too simple to write an essay. The rest of this part is about why it is not: what goes into one guess, how the guess is turned into a choice, and what has to be going on inside for the guesses to be good.</p>
     </section>
 
@@ -242,6 +244,47 @@
         <div class="rows" id="scoreRows"></div>
         <p class="readout">Eight tokens are shown. The other 99,992 get scores too, nearly all of them very low.</p>
       </div>
+      <figure>
+        <svg viewBox="0 0 800 330" role="img" aria-label="Bars from a zero line for the example scores after The cat sat on the: mat 4.6 down to moon 0.2 above zero, and aardvark at minus 3.1 below it">
+          <text x="40" y="28" fill="#a5a29c" font-size="15">ONE SCORE PER TOKEN (EXAMPLE) · 30 PX = 1 POINT</text>
+          <text x="80" y="85" text-anchor="end" fill="#a5a29c" font-size="14">+4</text>
+          <path d="M88 80 H96" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="80" y="145" text-anchor="end" fill="#a5a29c" font-size="14">+2</text>
+          <path d="M88 140 H96" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="80" y="205" text-anchor="end" fill="#a5a29c" font-size="14">0</text>
+          <text x="80" y="265" text-anchor="end" fill="#a5a29c" font-size="14">−2</text>
+          <path d="M88 260 H96" stroke="#a5a29c" stroke-width="1.5"/>
+          <path d="M96 200 H770" stroke="#a5a29c" stroke-width="1.5"/>
+          <rect x="102" y="62" width="46" height="138" fill="#ff8059"/>
+          <text x="125" y="54" text-anchor="middle" fill="#ff8059" font-size="15">4.6</text>
+          <text x="125" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">mat</text>
+          <rect x="174" y="83" width="46" height="117" fill="#ff8059"/>
+          <text x="197" y="75" text-anchor="middle" fill="#ff8059" font-size="15">3.9</text>
+          <text x="197" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">floor</text>
+          <rect x="246" y="92" width="46" height="108" fill="#ff8059"/>
+          <text x="269" y="84" text-anchor="middle" fill="#ff8059" font-size="15">3.6</text>
+          <text x="269" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">couch</text>
+          <rect x="318" y="101" width="46" height="99" fill="#ff8059"/>
+          <text x="341" y="93" text-anchor="middle" fill="#ff8059" font-size="15">3.3</text>
+          <text x="341" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">bed</text>
+          <rect x="390" y="125" width="46" height="75" fill="#ff8059"/>
+          <text x="413" y="117" text-anchor="middle" fill="#ff8059" font-size="15">2.5</text>
+          <text x="413" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">roof</text>
+          <rect x="462" y="140" width="46" height="60" fill="#ff8059"/>
+          <text x="485" y="132" text-anchor="middle" fill="#ff8059" font-size="15">2.0</text>
+          <text x="485" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">keyboard</text>
+          <rect x="534" y="158" width="46" height="42" fill="#ff8059"/>
+          <text x="557" y="150" text-anchor="middle" fill="#ff8059" font-size="15">1.4</text>
+          <text x="557" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">table</text>
+          <rect x="606" y="194" width="46" height="6" fill="#ff8059"/>
+          <text x="629" y="186" text-anchor="middle" fill="#ff8059" font-size="15">0.2</text>
+          <text x="629" y="224" text-anchor="middle" fill="#f5c76a" font-size="16">moon</text>
+          <rect x="712" y="200" width="46" height="93" fill="#ff8059"/>
+          <text x="735" y="190" text-anchor="middle" fill="#f5c76a" font-size="16">aardvark</text>
+          <text x="735" y="313" text-anchor="middle" fill="#ff8059" font-size="15">−3.1</text>
+          <text x="700" y="250" text-anchor="end" fill="#a5a29c" font-size="14">+ 99,992 more</text>
+          </svg>
+      </figure>
       <details class="trace"><summary>Go deeper: where the scores come from</summary>
         <p><b>The last step.</b> After all its layers (parts 7 and 9), the model holds one long list of numbers for the newest position. It compares that list with every token’s row in a big table, the same multiply-and-add closeness score from Part 1, chapter 14. Tokens whose rows point the same way as the model’s list get high scores.</p>
         <p><b>The same table again.</b> That table has one row per token, like the lookup table at the start (Part 1, chapter 16). Some models reuse the exact same table at both ends.</p>
@@ -252,8 +295,42 @@
     <!-- 4 -->
     <section class="panel">
       <p class="kicker">Scores into chances</p>
-      <h2>Turn the scores into chances that add up to 100%</h2>
+      <h2>Turn scores into chances that total 100%</h2>
       <p>Scores are hard to use directly: some are negative, and they add up to nothing in particular. So they go through a fixed recipe that turns them into chances. First, every score is made positive by raising a special number, about 2.718, to the power of the score. That also stretches the gaps: a score 1 higher becomes about 2.7 times bigger. Then everything is divided by the total, so the results add up to 100%.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Two bars that each add up to 100 percent: with moon scoring 0.2, mat takes 42 percent and moon under 1 percent; with moon scoring 5, moon takes 39 percent and every other token shrinks">
+          <text x="40" y="30" fill="#a5a29c" font-size="15">CHANCES, ONE BAR = 100%</text>
+          <text x="40" y="64" fill="#f1eee8" font-size="16">“moon” scores 0.2</text>
+          <rect x="40.0" y="76" width="301.7" height="44" fill="#f5c76a"/>
+          <text x="190.8" y="104.0" text-anchor="middle" fill="#20140a" font-size="16">mat 42%</text>
+          <rect x="341.7" y="76" width="149.8" height="44" fill="#d9a94e"/>
+          <text x="416.6" y="104.0" text-anchor="middle" fill="#20140a" font-size="16">floor</text>
+          <rect x="491.5" y="76" width="111.0" height="44" fill="#f5c76a"/>
+          <text x="547.0" y="104.0" text-anchor="middle" fill="#20140a" font-size="16">couch</text>
+          <rect x="602.4" y="76" width="82.2" height="44" fill="#d9a94e"/>
+          <text x="643.5" y="104.0" text-anchor="middle" fill="#20140a" font-size="16">bed</text>
+          <rect x="684.7" y="76" width="36.9" height="44" fill="#f5c76a"/>
+          <rect x="721.6" y="76" width="22.4" height="44" fill="#d9a94e"/>
+          <rect x="744.0" y="76" width="12.3" height="44" fill="#f5c76a"/>
+          <rect x="756.3" y="76" width="3.7" height="44" fill="#d9a94e" stroke="#ff8059" stroke-width="3"/>
+          <path d="M758.1 124 V140" stroke="#ff8059" stroke-width="2"/>
+          <text x="760" y="158" text-anchor="end" fill="#ff8059" font-size="15">moon 0.5%</text>
+          <text x="40" y="198" fill="#f1eee8" font-size="16">“moon” scores 5</text>
+          <rect x="40.0" y="210" width="186.2" height="44" fill="#f5c76a"/>
+          <text x="133.1" y="238.0" text-anchor="middle" fill="#20140a" font-size="16">mat 26%</text>
+          <rect x="226.2" y="210" width="92.5" height="44" fill="#d9a94e"/>
+          <text x="272.5" y="238.0" text-anchor="middle" fill="#20140a" font-size="16">floor</text>
+          <rect x="318.7" y="210" width="68.5" height="44" fill="#f5c76a"/>
+          <text x="353.0" y="238.0" text-anchor="middle" fill="#20140a" font-size="16">couch</text>
+          <rect x="387.2" y="210" width="50.8" height="44" fill="#d9a94e"/>
+          <rect x="438.0" y="210" width="22.8" height="44" fill="#f5c76a"/>
+          <rect x="460.8" y="210" width="13.8" height="44" fill="#d9a94e"/>
+          <rect x="474.6" y="210" width="7.6" height="44" fill="#f5c76a"/>
+          <rect x="482.2" y="210" width="277.8" height="44" fill="#d9a94e" stroke="#ff8059" stroke-width="3"/>
+          <text x="621.1" y="238.0" text-anchor="middle" fill="#20140a" font-size="16">moon 39%</text>
+          <text x="40" y="280" fill="#a5a29c" font-size="15">same total; every other token shrinks</text>
+          </svg>
+      </figure>
       <p>Slide the score of “moon” and watch what happens to every chance, not just its own:</p>
       <div class="box">
         <div class="pick" id="moonPick" role="group" aria-label="Score for moon"><span>SCORE FOR “MOON”</span>
@@ -275,11 +352,131 @@
       <h2>Pick by rolling a weighted die</h2>
       <p>Now there is a chance for every token. The usual way to choose is to roll a weighted die: a token with a 42% chance comes up about 42 times in 100 rolls, one with 2% about twice. Most of the time the favourite wins, but not always. Roll it yourself:</p>
       <div class="box">
-        <div class="presets"><button type="button" class="secondary" id="roll1">Pick once</button><button type="button" class="secondary" id="roll100">Pick 100 times</button><button type="button" class="secondary" id="rollReset">Start over</button></div>
+        <div class="acts"><button type="button" class="secondary" id="roll1">Pick once</button><button type="button" class="secondary" id="roll100">Pick 100 times</button><button type="button" class="secondary" id="rollReset">Start over</button></div>
         <div class="soft wide" id="dieRows"></div>
         <p class="readout" id="dieNote"></p>
       </div>
       <p>The outline shows each token’s chance; the filled bar shows how often it has actually come up. After a few hundred picks the two match closely. This kind of picking is called <b>sampling</b>: each new token is a sample drawn from the chances.</p>
+      <figure>
+        <svg viewBox="0 0 800 255" role="img" aria-label="A strip of 100 cells, one per roll, shared out by chance: mat 42 cells, floor 21, couch 15, bed 11, roof 5, keyboard 3, table 2 and moon 1; one roll lands on a random cell">
+          <defs><marker id="ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#f1eee8"/></marker></defs>
+          <text x="40" y="30" fill="#a5a29c" font-size="15">100 ROLLS, EXPECTED · 1 CELL = 1 ROLL</text>
+          <rect x="50" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="57" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="64" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="71" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="78" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="85" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="92" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="99" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="106" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="113" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="120" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="127" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="134" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="141" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="148" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="155" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="162" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="169" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="176" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="183" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="190" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="197" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="204" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="211" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="218" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="225" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="232" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="239" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="246" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="253" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="260" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="267" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="274" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="281" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="288" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="295" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="302" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="309" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="316" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="323" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="330" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="337" y="70" width="6" height="44" fill="#f5c76a"/>
+          <text x="196.5" y="138" text-anchor="middle" fill="#f5c76a" font-size="16">mat 42</text>
+          <rect x="344" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="351" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="358" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="365" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="372" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="379" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="386" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="393" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="400" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="407" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="414" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="421" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="428" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="435" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="442" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="449" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="456" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="463" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="470" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="477" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="484" y="70" width="6" height="44" fill="#d9a94e"/>
+          <text x="417.0" y="138" text-anchor="middle" fill="#f5c76a" font-size="16">floor 21</text>
+          <rect x="491" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="498" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="505" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="512" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="519" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="526" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="533" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="540" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="547" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="554" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="561" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="568" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="575" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="582" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="589" y="70" width="6" height="44" fill="#f5c76a"/>
+          <text x="543.0" y="138" text-anchor="middle" fill="#f5c76a" font-size="16">couch 15</text>
+          <rect x="596" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="603" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="610" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="617" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="624" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="631" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="638" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="645" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="652" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="659" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="666" y="70" width="6" height="44" fill="#d9a94e"/>
+          <text x="634.0" y="138" text-anchor="middle" fill="#f5c76a" font-size="16">bed 11</text>
+          <rect x="673" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="680" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="687" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="694" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="701" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="708" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="715" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="722" y="70" width="6" height="44" fill="#d9a94e"/>
+          <rect x="729" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="736" y="70" width="6" height="44" fill="#f5c76a"/>
+          <rect x="743" y="70" width="6" height="44" fill="#d9a94e"/>
+          <path d="M690.0 118 V161" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="683.0" y="166" text-anchor="end" fill="#f5c76a" font-size="15">roof 5</text>
+          <path d="M718.0 118 V185" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="711.0" y="190" text-anchor="end" fill="#f5c76a" font-size="15">keyboard 3</text>
+          <path d="M735.5 118 V209" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="728.5" y="214" text-anchor="end" fill="#f5c76a" font-size="15">table 2</text>
+          <path d="M746.0 118 V233" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="739.0" y="238" text-anchor="end" fill="#f5c76a" font-size="15">moon 1</text>
+          <path d="M263 40 V66" stroke="#f1eee8" stroke-width="2" marker-end="url(#ar5)"/>
+          <text x="275" y="52" fill="#f1eee8" font-size="15">one roll lands here</text>
+          </svg>
+      </figure>
     </section>
 
     <!-- 6 -->
@@ -288,15 +485,20 @@
       <h2>Why not always take the favourite?</h2>
       <p>It seems wasteful to roll a die. Why not always take the token with the highest chance? That is a real option, called <b>greedy</b> picking, and it gives the same answer every time. But for writing, it tends to go wrong in a particular way: it gets stuck in loops.</p>
       <figure>
-        <svg viewBox="0 0 800 250" role="img" aria-label="Always picking the top token can fall into a repeating loop of the same phrase, while rolling the die keeps text varied">
-          <text x="40" y="36" fill="#ec6a94" font-size="16">ALWAYS THE FAVOURITE</text>
-          <text x="40" y="66" fill="#f5c76a" font-size="17">I think the answer is that the answer is that the answer is that the answer…</text>
-          <path d="M318 80 C340 104 470 104 492 80" fill="none" stroke="#ec6a94" stroke-width="2"/><text x="320" y="122" fill="#ec6a94" font-size="14">the same phrase keeps being the most likely next step</text>
-          <text x="40" y="172" fill="#76d5c1" font-size="16">ROLLING THE DIE</text>
-          <text x="40" y="202" fill="#f5c76a" font-size="17">I think the answer depends on what you mean by “fast”.</text>
-          <text x="40" y="236" fill="#a5a29c" font-size="14">Both lines are made-up examples of a common pattern.</text>
+        <svg viewBox="0 0 800 250" role="img" aria-label="From the shared start I think the answer, always picking the favourite loops back into the same phrase, while rolling the die branches into a varied sentence">
+          <defs><marker id="ar6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#ec6a94"/></marker></defs>
+          <text x="40" y="136" fill="#f5c76a" font-size="17">I think the answer</text>
+          <path d="M200 126 C230 126 232 76 262 76" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <path d="M200 142 C230 142 232 190 262 190" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="270" y="82" fill="#f5c76a" font-size="17">is that the answer</text>
+          <path d="M428 62 C450 18 300 12 286 56" fill="none" stroke="#ec6a94" stroke-width="2" marker-end="url(#ar6)"/>
+          <text x="456" y="82" fill="#ec6a94" font-size="15">… again, and again</text>
+          <text x="270" y="112" fill="#ec6a94" font-size="15">ALWAYS THE FAVOURITE</text>
+          <text x="270" y="196" fill="#f5c76a" font-size="17">depends on what you mean by “fast”.</text>
+          <text x="270" y="226" fill="#76d5c1" font-size="15">ROLLING THE DIE</text>
         </svg>
       </figure>
+      <p>Always taking the favourite, the same phrase keeps being the most likely next step. Both lines are made-up examples of a common pattern.</p>
       <p>Each step on its own is the most likely one, but a whole text made of only the most likely steps is not likely-looking text at all. Real human writing contains plenty of less-likely words. A 2019 study named this problem and showed that rolling the die, with the long tail trimmed (chapter 8), produces far more natural text <span class="tag">public</span>. Greedy picking is still useful when you want the same answer every time, for example when extracting a date from a document.</p>
     </section>
 
@@ -305,6 +507,49 @@
       <p class="kicker">The dial</p>
       <h2>Temperature: how adventurous the die is</h2>
       <p>Before the die is rolled, the scores can be stretched or squashed. Divide every score by a number called the <b>temperature</b>. A low temperature makes the gaps bigger, so the favourite wins almost every time. A high temperature shrinks the gaps, so unlikely tokens get a real chance. Temperature 0 means greedy: always the favourite.</p>
+      <figure>
+        <svg viewBox="0 0 800 300" role="img" aria-label="Three 100 percent bars for the same eight tokens: at temperature 0.3 mat takes 87 percent, at 1 it takes 42 percent, at 2 it takes 27 percent and the others grow">
+          <text x="40" y="30" fill="#a5a29c" font-size="15">THE SAME 8 TOKENS, ONE BAR = 100%</text>
+          <text x="40" y="78" fill="#f1eee8" font-size="16">T = 0.3</text>
+          <rect x="120.0" y="50" width="558.0" height="44" fill="#f5c76a"/>
+          <text x="399.0" y="78.0" text-anchor="middle" fill="#20140a" font-size="16">mat 87%</text>
+          <rect x="678.0" y="50" width="54.1" height="44" fill="#d9a94e"/>
+          <rect x="732.2" y="50" width="19.9" height="44" fill="#f5c76a"/>
+          <rect x="752.1" y="50" width="7.3" height="44" fill="#d9a94e"/>
+          <rect x="759.4" y="50" width="0.5" height="44" fill="#f5c76a"/>
+          <rect x="759.9" y="50" width="0.1" height="44" fill="#d9a94e"/>
+          <rect x="760.0" y="50" width="0.0" height="44" fill="#f5c76a"/>
+          <rect x="760.0" y="50" width="0.0" height="44" fill="#d9a94e"/>
+          <text x="40" y="148" fill="#f1eee8" font-size="16">T = 1</text>
+          <rect x="120.0" y="120" width="268.1" height="44" fill="#f5c76a"/>
+          <text x="254.1" y="148.0" text-anchor="middle" fill="#20140a" font-size="16">mat 42%</text>
+          <rect x="388.1" y="120" width="133.2" height="44" fill="#d9a94e"/>
+          <text x="454.7" y="148.0" text-anchor="middle" fill="#20140a" font-size="16">floor 21%</text>
+          <rect x="521.3" y="120" width="98.6" height="44" fill="#f5c76a"/>
+          <text x="570.6" y="148.0" text-anchor="middle" fill="#20140a" font-size="16">couch 15%</text>
+          <rect x="619.9" y="120" width="73.1" height="44" fill="#d9a94e"/>
+          <text x="656.5" y="148.0" text-anchor="middle" fill="#20140a" font-size="16">bed 11%</text>
+          <rect x="693.0" y="120" width="32.8" height="44" fill="#f5c76a"/>
+          <rect x="725.9" y="120" width="19.9" height="44" fill="#d9a94e"/>
+          <rect x="745.8" y="120" width="10.9" height="44" fill="#f5c76a"/>
+          <rect x="756.7" y="120" width="3.3" height="44" fill="#d9a94e"/>
+          <text x="40" y="218" fill="#f1eee8" font-size="16">T = 2</text>
+          <rect x="120.0" y="190" width="169.8" height="44" fill="#f5c76a"/>
+          <text x="204.9" y="218.0" text-anchor="middle" fill="#20140a" font-size="16">mat 27%</text>
+          <rect x="289.8" y="190" width="119.7" height="44" fill="#d9a94e"/>
+          <text x="349.7" y="218.0" text-anchor="middle" fill="#20140a" font-size="16">floor 19%</text>
+          <rect x="409.5" y="190" width="103.0" height="44" fill="#f5c76a"/>
+          <text x="461.0" y="218.0" text-anchor="middle" fill="#20140a" font-size="16">couch 16%</text>
+          <rect x="512.5" y="190" width="88.7" height="44" fill="#d9a94e"/>
+          <text x="556.8" y="218.0" text-anchor="middle" fill="#20140a" font-size="16">bed 14%</text>
+          <rect x="601.2" y="190" width="59.4" height="44" fill="#f5c76a"/>
+          <rect x="660.6" y="190" width="46.3" height="44" fill="#d9a94e"/>
+          <rect x="706.9" y="190" width="34.3" height="44" fill="#f5c76a"/>
+          <rect x="741.2" y="190" width="18.8" height="44" fill="#d9a94e"/>
+          <text x="120" y="282" fill="#a5a29c" font-size="15">low: the favourite takes almost all</text>
+          <text x="760" y="282" text-anchor="end" fill="#a5a29c" font-size="15">high: shares even out</text>
+          </svg>
+      </figure>
       <div class="box">
         <div class="pick" id="tPick" role="group" aria-label="Temperature"><span>TEMPERATURE</span>
           <button type="button" data-v="0" aria-pressed="false">0</button><button type="button" data-v="0.3" aria-pressed="false">0.3</button><button type="button" data-v="0.7" aria-pressed="false">0.7</button><button type="button" data-v="1" aria-pressed="true">1</button><button type="button" data-v="1.5" aria-pressed="false">1.5</button><button type="button" data-v="2" aria-pressed="false">2</button>
@@ -325,6 +570,36 @@
       <p class="kicker">Trimming the tail</p>
       <h2>Throw away the long tail before rolling</h2>
       <p>Even a tiny chance adds up when there are 100,000 tokens. If each of 99,000 unlikely tokens has a chance of one in a million, together they still come up about one roll in ten, and one bad token can derail a whole answer. So before rolling, servers usually keep only the most likely tokens.</p>
+      <figure>
+        <svg viewBox="0 0 800 270" role="img" aria-label="A 100 percent bar cut at 90 percent: the top five tokens reach 95 percent and are kept, the last three are thrown away, and the five kept are stretched back to fill 100 percent">
+          <text x="40" y="30" fill="#a5a29c" font-size="15">KEEP THE TOP TOKENS THAT REACH 90%</text>
+          <text x="40" y="92" fill="#f1eee8" font-size="16">before</text>
+          <rect x="120.0" y="70" width="268.1" height="44" fill="#f5c76a"/>
+          <text x="254.1" y="98.0" text-anchor="middle" fill="#20140a" font-size="16">mat 42%</text>
+          <rect x="388.1" y="70" width="133.2" height="44" fill="#d9a94e"/>
+          <text x="454.7" y="98.0" text-anchor="middle" fill="#20140a" font-size="16">floor 21%</text>
+          <rect x="521.3" y="70" width="98.6" height="44" fill="#f5c76a"/>
+          <text x="570.6" y="98.0" text-anchor="middle" fill="#20140a" font-size="16">couch 15%</text>
+          <rect x="619.9" y="70" width="73.1" height="44" fill="#d9a94e"/>
+          <text x="656.5" y="98.0" text-anchor="middle" fill="#20140a" font-size="16">bed 11%</text>
+          <rect x="693.0" y="70" width="32.8" height="44" fill="#f5c76a"/>
+          <rect x="725.9" y="70" width="34.1" height="44" fill="#3b3936"/>
+          <path d="M696.0 62 V122" stroke="#ff8059" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="696.0" y="54" text-anchor="middle" fill="#ff8059" font-size="15">90%</text>
+          <text x="760" y="140" text-anchor="end" fill="#a5a29c" font-size="15">3 thrown away</text>
+          <text x="40" y="202" fill="#f1eee8" font-size="16">after</text>
+          <rect x="120.0" y="180" width="283.3" height="44" fill="#f5c76a"/>
+          <text x="261.6" y="208.0" text-anchor="middle" fill="#20140a" font-size="16">mat 44%</text>
+          <rect x="403.3" y="180" width="140.7" height="44" fill="#d9a94e"/>
+          <text x="473.6" y="208.0" text-anchor="middle" fill="#20140a" font-size="16">floor 22%</text>
+          <rect x="543.9" y="180" width="104.2" height="44" fill="#f5c76a"/>
+          <text x="596.0" y="208.0" text-anchor="middle" fill="#20140a" font-size="16">couch 16%</text>
+          <rect x="648.1" y="180" width="77.2" height="44" fill="#d9a94e"/>
+          <text x="686.7" y="208.0" text-anchor="middle" fill="#20140a" font-size="16">bed 12%</text>
+          <rect x="725.3" y="180" width="34.7" height="44" fill="#f5c76a"/>
+          <text x="120" y="250" fill="#a5a29c" font-size="15">the 5 kept are scaled back up to 100%</text>
+          </svg>
+      </figure>
       <p>The most common rule keeps the smallest group of top tokens whose chances add up to some share, like 90%, and throws the rest away. Slide the share:</p>
       <div class="box">
         <div class="pick" id="pPick" role="group" aria-label="Share of chance to keep"><span>KEEP THE TOP TOKENS THAT ADD UP TO</span>
@@ -341,20 +616,48 @@
       <p class="kicker">Try it</p>
       <h2>A word guesser, trained on this page</h2>
       <p>When this page opened, your browser read its own text, <span id="corpusN">a few thousand</span> words, and counted which word follows which. That is a real next-word guesser, of the oldest and simplest kind. It cannot understand anything; it only knows what followed these exact words on this page. Pick how many words back it may look, set the temperature, and let it write.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="The words the cat sat on the, with brackets showing how far back the guesser looks when set to see 1, 2, 3 or 4 words before the next word">
+          <text x="40" y="24" fill="#a5a29c" font-size="15">WORDS IT CAN SEE</text>
+          <path d="M276 60 V52 H574 V60" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="40" y="60" fill="#c3b8ff" font-size="16">4 words</text>
+          <path d="M352 92 V84 H574 V92" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="40" y="92" fill="#c3b8ff" font-size="16">3 words</text>
+          <path d="M428 124 V116 H574 V124" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="40" y="124" fill="#c3b8ff" font-size="16">2 words</text>
+          <path d="M504 156 V148 H574 V156" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="40" y="156" fill="#c3b8ff" font-size="16">1 word</text>
+          <rect x="200" y="172" width="70" height="38" fill="#f5c76a"/>
+          <text x="235" y="197" text-anchor="middle" fill="#20140a" font-size="17">the</text>
+          <rect x="276" y="172" width="70" height="38" fill="#d9a94e"/>
+          <text x="311" y="197" text-anchor="middle" fill="#20140a" font-size="17">cat</text>
+          <rect x="352" y="172" width="70" height="38" fill="#f5c76a"/>
+          <text x="387" y="197" text-anchor="middle" fill="#20140a" font-size="17">sat</text>
+          <rect x="428" y="172" width="70" height="38" fill="#d9a94e"/>
+          <text x="463" y="197" text-anchor="middle" fill="#20140a" font-size="17">on</text>
+          <rect x="504" y="172" width="70" height="38" fill="#f5c76a"/>
+          <text x="539" y="197" text-anchor="middle" fill="#20140a" font-size="17">the</text>
+          <rect x="586" y="172" width="80" height="38" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="626" y="197" text-anchor="middle" fill="#ff8059" font-size="17">?</text>
+          <text x="626" y="236" text-anchor="middle" fill="#ff8059" font-size="15">next word</text>
+          </svg>
+      </figure>
       <div class="box">
         <div class="pick" id="gN" role="group" aria-label="Words it can see"><span>WORDS IT CAN SEE</span>
+          <input type="range" min="0" max="3" step="1" value="1" aria-label="Words it can see">
           <button type="button" data-v="1" aria-pressed="false">1</button><button type="button" data-v="2" aria-pressed="true">2</button><button type="button" data-v="3" aria-pressed="false">3</button><button type="button" data-v="4" aria-pressed="false">4</button>
         </div>
         <div class="pick" id="gT" role="group" aria-label="Temperature for the guesser"><span>TEMPERATURE</span>
+          <input type="range" min="0" max="3" step="1" value="2" aria-label="Temperature for the guesser">
           <button type="button" data-v="0" aria-pressed="false">0</button><button type="button" data-v="0.5" aria-pressed="false">0.5</button><button type="button" data-v="1" aria-pressed="true">1</button><button type="button" data-v="1.5" aria-pressed="false">1.5</button>
         </div>
         <span class="cap">Start with</span>
         <input class="start-in" id="gStart" value="the model" aria-label="Starting words">
         <div class="presets" id="gPre"><button type="button" class="secondary" data-t="the model">the model</button><button type="button" class="secondary" data-t="a token">a token</button><button type="button" class="secondary" data-t="every answer">every answer</button><button type="button" class="secondary" data-t="the cat sat on the">the cat sat on the</button></div>
-        <div class="presets"><button type="button" id="gStep">Guess one word</button><button type="button" id="gRun">Write 25 words</button><button type="button" class="secondary" id="gReset">Start over</button></div>
+        <div class="acts"><button type="button" id="gStep">Guess one word</button><button type="button" id="gRun">Write 25 words</button><button type="button" class="secondary" id="gReset">Start over</button></div>
         <div class="gen" id="gOut" aria-live="polite"></div>
         <span class="cap" id="gWhy">The last guess</span>
-        <div class="soft wide" id="gCand"></div>
+        <div class="soft wide ledger" id="gCand"></div>
         <div class="tiles">
           <div><b id="gLen">0</b><span>words written</span></div>
           <div><b id="gCopy">0</b><span>longest stretch copied word for word from this page</span></div>
@@ -374,14 +677,51 @@
       <h2>The clue is often far back</h2>
       <p>Try guessing the last word here: “I grew up in a small village in France, and moved to London when I was twenty, so today I speak fluent ___.” The words right before the gap, “speak fluent”, could end in any language. The clue that decides it, “France”, is sixteen words earlier.</p>
       <figure>
-        <svg viewBox="0 0 800 270" role="img" aria-label="A guesser that sees only the last two words cannot use the word France sixteen words earlier; a model that sees the whole sentence can">
-          <text x="40" y="44" fill="#f5c76a" font-size="16">I grew up in a small village in <tspan fill="#c3b8ff" font-weight="600">France</tspan>, and moved to London when I was twenty,</text>
-          <text x="40" y="72" fill="#f5c76a" font-size="16">so today I <tspan fill="#ec6a94" text-decoration="underline">speak fluent</tspan> <tspan fill="#ff8059">___</tspan></text>
-          <text x="40" y="122" fill="#ec6a94" font-size="16">SEES 2 WORDS</text><text x="190" y="122" fill="#a5a29c" font-size="15">“speak fluent” → English? Spanish? Hindi? any language at all</text>
-                    <text x="40" y="190" fill="#76d5c1" font-size="16">SEES IT ALL</text><text x="190" y="190" fill="#a5a29c" font-size="15">“France” sixteen words back → French, with a high chance</text>
-          <text x="40" y="244" fill="#f1eee8" font-size="17">Good guesses need the whole context, not just the last few words.</text>
-        </svg>
+        <svg viewBox="0 0 800 260" role="img" aria-label="The words from France to the gap as a row of tokens: a guesser that sees only speak fluent cannot tell the language, while one that sees back to France, 16 tokens earlier, can">
+          <defs><marker id="ar10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#c3b8ff"/></marker></defs>
+          <rect x="40.0" y="110" width="54.8" height="36" fill="#c3b8ff"/>
+          <text x="67.4" y="134" text-anchor="middle" fill="#20140a" font-size="15">France</text>
+          <rect x="98.8" y="110" width="18.0" height="36" fill="#d9a94e"/>
+          <text x="107.8" y="134" text-anchor="middle" fill="#20140a" font-size="15">,</text>
+          <rect x="120.8" y="110" width="31.4" height="36" fill="#f5c76a"/>
+          <text x="136.5" y="134" text-anchor="middle" fill="#20140a" font-size="15">and</text>
+          <rect x="156.2" y="110" width="47.0" height="36" fill="#d9a94e"/>
+          <text x="179.7" y="134" text-anchor="middle" fill="#20140a" font-size="15">moved</text>
+          <rect x="207.2" y="110" width="23.6" height="36" fill="#f5c76a"/>
+          <text x="219.0" y="134" text-anchor="middle" fill="#20140a" font-size="15">to</text>
+          <rect x="234.8" y="110" width="54.8" height="36" fill="#d9a94e"/>
+          <text x="262.2" y="134" text-anchor="middle" fill="#20140a" font-size="15">London</text>
+          <rect x="293.6" y="110" width="39.2" height="36" fill="#f5c76a"/>
+          <text x="313.2" y="134" text-anchor="middle" fill="#20140a" font-size="15">when</text>
+          <rect x="336.8" y="110" width="18.0" height="36" fill="#d9a94e"/>
+          <text x="345.8" y="134" text-anchor="middle" fill="#20140a" font-size="15">I</text>
+          <rect x="358.8" y="110" width="31.4" height="36" fill="#f5c76a"/>
+          <text x="374.5" y="134" text-anchor="middle" fill="#20140a" font-size="15">was</text>
+          <rect x="394.2" y="110" width="54.8" height="36" fill="#d9a94e"/>
+          <text x="421.6" y="134" text-anchor="middle" fill="#20140a" font-size="15">twenty</text>
+          <rect x="453.0" y="110" width="18.0" height="36" fill="#f5c76a"/>
+          <text x="462.0" y="134" text-anchor="middle" fill="#20140a" font-size="15">,</text>
+          <rect x="475.0" y="110" width="23.6" height="36" fill="#d9a94e"/>
+          <text x="486.8" y="134" text-anchor="middle" fill="#20140a" font-size="15">so</text>
+          <rect x="502.6" y="110" width="47.0" height="36" fill="#f5c76a"/>
+          <text x="526.1" y="134" text-anchor="middle" fill="#20140a" font-size="15">today</text>
+          <rect x="553.6" y="110" width="18.0" height="36" fill="#d9a94e"/>
+          <text x="562.6" y="134" text-anchor="middle" fill="#20140a" font-size="15">I</text>
+          <rect x="575.6" y="110" width="47.0" height="36" fill="#f5c76a" stroke="#ec6a94" stroke-width="3"/>
+          <text x="599.1" y="134" text-anchor="middle" fill="#20140a" font-size="15">speak</text>
+          <rect x="626.6" y="110" width="54.8" height="36" fill="#d9a94e" stroke="#ec6a94" stroke-width="3"/>
+          <text x="654.0" y="134" text-anchor="middle" fill="#20140a" font-size="15">fluent</text>
+          <rect x="685.4" y="110" width="54" height="36" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="712.4" y="134" text-anchor="middle" fill="#ff8059" font-size="16">?</text>
+          <path d="M67.4 106 C67.4 44 712.4 44 712.4 104" fill="none" stroke="#c3b8ff" stroke-width="2" marker-end="url(#ar10)"/>
+          <text x="389.9" y="40" text-anchor="middle" fill="#c3b8ff" font-size="15">the clue, 16 back</text>
+          <path d="M575.6 154 V164 H681.4 V154" fill="none" stroke="#ec6a94" stroke-width="2"/>
+          <text x="681.4" y="186" text-anchor="end" fill="#ec6a94" font-size="15">sees 2: any language?</text>
+          <path d="M40 204 V214 H739.4 V204" fill="none" stroke="#76d5c1" stroke-width="2"/>
+          <text x="40" y="238" fill="#76d5c1" font-size="15">sees it all: “France” → French, likely</text>
+          </svg>
       </figure>
+      <p>Good guesses need the whole context, not just the last few words.</p>
       <p>Real conversations are full of this: a name mentioned once at the start, a rule set three messages ago, a variable defined at the top of a file. So instead of a few words, modern models see the entire conversation at once, up to hundreds of thousands of tokens. The mechanism that lets every token look back at every earlier token is <b>attention</b>, the subject of part 7. How much a model can see at once, and what it costs, is part 14.</p>
     </section>
 
@@ -391,35 +731,37 @@
       <h2>Seeing more is not enough. Copying is easy.</h2>
       <p>Set the guesser in chapter 9 to four words and press “Write 25 words”. The text suddenly looks fluent, and the “copied” tile jumps. It is not being clever. With four words of view, almost every four-word run on this page was followed by exactly one thing, so it can only recite the page back.</p>
       <figure>
-        <svg viewBox="0 0 800 230" role="img" aria-label="A guesser with a short view writes nonsense; one with a long view but no understanding copies its training text; a real model must generalise in between">
+        <svg viewBox="0 0 800 185" role="img" aria-label="A guesser with a short view writes nonsense; one with a long view but no understanding copies its training text; a real model must generalise in between">
           <g font-size="16">
-            <rect x="40" y="40" width="220" height="120" fill="#ec6a94" opacity=".12" stroke="#ec6a94"/>
-            <text x="56" y="70" fill="#ec6a94" font-size="13">SHORT VIEW</text><text x="56" y="98" fill="#f1eee8">nonsense</text><text x="56" y="124" fill="#a5a29c" font-size="14">each word fits only its</text><text x="56" y="142" fill="#a5a29c" font-size="14">neighbour</text>
-            <rect x="290" y="40" width="220" height="120" fill="#ec6a94" opacity=".12" stroke="#ec6a94"/>
-            <text x="306" y="70" fill="#ec6a94" font-size="13">LONG VIEW, ONLY COUNTING</text><text x="306" y="98" fill="#f1eee8">copying</text><text x="306" y="124" fill="#a5a29c" font-size="14">every long run of words</text><text x="306" y="142" fill="#a5a29c" font-size="14">was seen only once</text>
-            <rect x="540" y="40" width="220" height="120" fill="#76d5c1" opacity=".12" stroke="#76d5c1"/>
-            <text x="556" y="70" fill="#76d5c1" font-size="13">WHAT A REAL MODEL DOES</text><text x="556" y="98" fill="#f1eee8">generalises</text><text x="556" y="124" fill="#a5a29c" font-size="14">new sentences built from</text><text x="556" y="142" fill="#a5a29c" font-size="14">learned patterns</text>
+            <rect x="40" y="40" width="236" height="124" fill="#ec6a94" opacity=".12" stroke="#ec6a94"/>
+            <text x="54" y="70" fill="#ec6a94" font-size="14">SHORT VIEW</text><text x="54" y="100" fill="#f1eee8">nonsense</text><text x="54" y="126" fill="#a5a29c" font-size="15">each word fits only its</text><text x="54" y="146" fill="#a5a29c" font-size="15">neighbour</text>
+            <rect x="282" y="40" width="236" height="124" fill="#ec6a94" opacity=".12" stroke="#ec6a94"/>
+            <text x="296" y="70" fill="#ec6a94" font-size="14">LONG VIEW, ONLY COUNTING</text><text x="296" y="100" fill="#f1eee8">copying</text><text x="296" y="126" fill="#a5a29c" font-size="15">every long run of words</text><text x="296" y="146" fill="#a5a29c" font-size="15">was seen only once</text>
+            <rect x="524" y="40" width="236" height="124" fill="#76d5c1" opacity=".12" stroke="#76d5c1"/>
+            <text x="538" y="70" fill="#76d5c1" font-size="14">WHAT A REAL MODEL DOES</text><text x="538" y="100" fill="#f1eee8">generalises</text><text x="538" y="126" fill="#a5a29c" font-size="15">new sentences built from</text><text x="538" y="146" fill="#a5a29c" font-size="15">learned patterns</text>
           </g>
-          <text x="40" y="206" fill="#f1eee8" font-size="17">The hard part is not seeing far back. It is making good guesses about text never seen before.</text>
         </svg>
       </figure>
+      <p>The hard part is not seeing far back. It is making good guesses about text never seen before.</p>
       <p>Most of what you will ever type to a chatbot has never been written before in exactly that form, so a table of counts would have nothing to look up. A real model has to turn the text into meaning, as Part 1’s map began to show, and reason from patterns it has learned. That is why it needs billions of learned numbers rather than a table. Real models can still memorise passages they saw many times, which is a known issue <span class="tag">public</span>, but that is the exception, not how they work.</p>
     </section>
 
     <!-- 12 -->
     <section class="panel">
       <p class="kicker">The cost of one token</p>
-      <h2>Every new token is a full run of the model</h2>
+      <h2>Every new token is a full model run</h2>
       <p>Each lap of the loop is a complete pass through the whole model: every layer, all its billions of numbers, just to produce one token. The laps cannot overlap, because lap 501 needs the token that lap 500 produced. So a 1,000-token answer is 1,000 full passes, one strictly after another.</p>
       <figure>
-        <svg viewBox="0 0 800 250" role="img" aria-label="A timeline of full passes through the model, one token each, which is why answers appear on screen one piece at a time">
-          <text x="40" y="36" fill="#a5a29c" font-size="15">ONE ANSWER, OVER TIME</text>
+        <svg viewBox="0 0 800 190" role="img" aria-label="A timeline of full passes through the model, one block per token, laid end to end because each pass needs the token before it">
+          <defs><marker id="ar12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
+          <text x="40" y="24" fill="#a5a29c" font-size="15">ONE ANSWER, OVER TIME</text>
           <g id="lapBars"></g>
-          <text x="40" y="150" fill="#f1eee8" font-size="16">each block: one full pass through the model, one token out</text>
-          <text x="40" y="180" fill="#a5a29c" font-size="15">a large model might take around 20 to 50 thousandths of a second per lap <tspan fill="#73706a">(example)</tspan></text>
-          <text x="40" y="226" fill="#f1eee8" font-size="17">This is why answers appear on screen piece by piece: each piece is sent the moment it exists.</text>
+          <path d="M40 152 H750" stroke="#a5a29c" stroke-width="1.5" marker-end="url(#ar12)"/>
+          <text x="40" y="178" fill="#f1eee8" font-size="16">1 block = 1 full pass = 1 token</text>
+          <text x="760" y="178" text-anchor="end" fill="#a5a29c" font-size="15">time</text>
         </svg>
       </figure>
+      <p>Each block is one full pass through the model, one token out. A large model might take around 20 to 50 thousandths of a second per lap <span class="tag">example</span>. This is why answers appear on screen piece by piece: each piece is sent the moment it exists.</p>
       <p>It is also why long answers cost more than long questions. A question can be read in one big go, because all of its tokens are already known. An answer can only be written lap by lap. The bonus study, <a href="inside-llm-serving-eli5.html" data-series-link="inside-llm-serving-eli5">Inside LLM serving</a>, is about exactly this cost and how companies cope with it.</p>
     </section>
 
@@ -429,7 +771,7 @@
       <h2>Once a token is written, it stays</h2>
       <p>The loop only ever adds to the end. There is no step that goes back and changes an earlier token. If an unlucky roll puts a wrong word in the middle of a sentence, every later guess has to build on top of it, because that wrong word is now part of the text the model reads.</p>
       <figure>
-        <svg viewBox="0 0 800 220" role="img" aria-label="An unlucky token early in a sentence cannot be undone, so the rest of the answer is built on top of it">
+        <svg viewBox="0 0 800 145" role="img" aria-label="An unlucky token early in a sentence cannot be undone, so the rest of the answer is built on top of it">
           <g font-size="17">
             <text x="40" y="50" fill="#f5c76a">The capital of Australia is</text>
             <rect x="262" y="30" width="78" height="30" fill="#ec6a94" opacity=".25" stroke="#ec6a94"/><text x="301" y="51" fill="#f1eee8" text-anchor="middle">Sydney</text>
@@ -438,10 +780,9 @@
           <text x="262" y="88" fill="#ec6a94" font-size="14">one unlucky pick</text>
           <path d="M350 62 C420 110 600 110 700 70" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="5 4"/>
           <text x="420" y="124" fill="#c3b8ff" font-size="14">later words stay consistent with the mistake</text>
-          <text x="40" y="170" fill="#f1eee8" font-size="17">The real capital is Canberra. The text after a bad pick tends to defend it.</text>
-          <text x="40" y="200" fill="#a5a29c" font-size="14">An example of a real failure pattern, not output from a particular model.</text>
         </svg>
       </figure>
+      <p>The real capital is Canberra. The text after a bad pick tends to defend it. An example of a real failure pattern, not output from a particular model.</p>
       <p>Newer “thinking” models soften this by writing a private draft first: they reason step by step, can notice a mistake and say “wait, that is wrong”, and only then write the answer you see. Even then, the draft itself is written one token at a time with no backspace. That is part 16.</p>
     </section>
 
@@ -451,18 +792,37 @@
       <h2>Simple job, hard to do well</h2>
       <p>“It just predicts the next word” is true about the job, and misleading about what the job takes. Think about what it would take to guess the next word well in every kind of text. In a maths textbook, the next token after “so x equals” is the answer to the problem. In a detective novel, the next word after “the murderer was” needs the whole plot. In code, the next line has to actually work.</p>
       <figure>
-        <svg viewBox="0 0 800 250" role="img" aria-label="Guessing the next word well in a maths book, a mystery novel and a program requires solving the sum, following the plot and writing working code">
-          <g font-size="16">
-            <rect x="40" y="30" width="230" height="140" fill="#202020" stroke="#57534f"/>
-            <text x="56" y="60" fill="#a5a29c" font-size="13">MATHS BOOK</text><text x="56" y="92" fill="#f5c76a">…so 17 × 23 equals</text><text x="56" y="130" fill="#ff8059">needs: doing the sum</text>
-            <rect x="285" y="30" width="230" height="140" fill="#202020" stroke="#57534f"/>
-            <text x="301" y="60" fill="#a5a29c" font-size="13">MYSTERY NOVEL</text><text x="301" y="92" fill="#f5c76a">…the murderer was</text><text x="301" y="130" fill="#ff8059">needs: following the plot</text>
-            <rect x="530" y="30" width="230" height="140" fill="#202020" stroke="#57534f"/>
-            <text x="546" y="60" fill="#a5a29c" font-size="13">A PROGRAM</text><text x="546" y="92" fill="#f5c76a">…return total /</text><text x="546" y="130" fill="#ff8059">needs: knowing the code</text>
-          </g>
-          <text x="40" y="214" fill="#f1eee8" font-size="17">To guess well everywhere, a model is pushed to learn how the world works.</text>
+        <svg viewBox="0 0 800 270" role="img" aria-label="Three next tokens and what each one takes: 391 after 17 times 23 needs the sum worked out, the murderer needs clues from chapters back, and the next piece of code needs what was defined earlier">
+          <path d="M273 24 V250" stroke="#57534f" stroke-width="1"/><path d="M527 24 V250" stroke="#57534f" stroke-width="1"/>
+          <text x="40" y="40" fill="#a5a29c" font-size="15">MATHS BOOK</text>
+          <text x="40" y="74" fill="#f5c76a" font-size="16">…so 17 × 23 equals</text>
+          <rect x="40" y="88" width="64" height="32" fill="#f5c76a"/><text x="72" y="110" text-anchor="middle" fill="#20140a" font-size="16">␣391</text>
+          <text x="40" y="154" fill="#ff8059" font-size="16">17 × 20 = 340</text>
+          <text x="40" y="178" fill="#ff8059" font-size="16">17 × 3 = 51</text>
+          <text x="40" y="202" fill="#ff8059" font-size="16">340 + 51 = 391</text>
+          <text x="40" y="244" fill="#ff8059" font-size="15">needs: doing the sum</text>
+          <text x="293" y="40" fill="#a5a29c" font-size="15">MYSTERY NOVEL</text>
+          <text x="293" y="74" fill="#f5c76a" font-size="16">…the murderer was</text>
+          <rect x="293" y="88" width="44" height="32" fill="#f5c76a"/><text x="315" y="110" text-anchor="middle" fill="#20140a" font-size="16">?</text>
+          <path d="M293 198 H507" stroke="#57534f" stroke-width="2"/>
+          <g fill="#57534f"><circle cx="300" cy="198" r="4"/><circle cx="350" cy="198" r="4"/><circle cx="375" cy="198" r="4"/><circle cx="425" cy="198" r="4"/><circle cx="450" cy="198" r="4"/><circle cx="500" cy="198" r="4"/></g>
+          <g fill="#c3b8ff"><circle cx="325" cy="198" r="6"/><circle cx="400" cy="198" r="6"/><circle cx="475" cy="198" r="6"/></g>
+          <path d="M325 191 C325 160 307 150 307 122" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <path d="M400 191 C400 150 315 160 315 122" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <path d="M475 191 C475 140 323 160 323 122" fill="none" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="293" y="224" fill="#c3b8ff" font-size="14">clues, chapters back</text>
+          <text x="293" y="248" fill="#ff8059" font-size="15">needs: following the plot</text>
+          <text x="547" y="40" fill="#a5a29c" font-size="15">A PROGRAM</text>
+          <text x="547" y="74" fill="#f5c76a" font-size="16">…return total /</text>
+          <rect x="547" y="88" width="104" height="32" fill="#f5c76a"/><text x="599" y="110" text-anchor="middle" fill="#20140a" font-size="16">␣len(items)</text>
+          <path d="M561 142 H553 V206 H561" fill="none" stroke="#c3b8ff" stroke-width="2"/><path d="M553 142 V122" stroke="#c3b8ff" stroke-width="2"/>
+          <text x="569" y="154" fill="#a5a29c" font-size="15">total = 0</text>
+          <text x="569" y="178" fill="#a5a29c" font-size="15">for x in items:</text>
+          <text x="585" y="202" fill="#a5a29c" font-size="15">total += x</text>
+          <text x="547" y="244" fill="#ff8059" font-size="15">needs: knowing the code</text>
         </svg>
       </figure>
+      <p>To guess well everywhere, a model is pushed to learn how the world works.</p>
       <p>So the simple job puts enormous pressure on what happens inside. And the model does more than look one token ahead. In 2025 Anthropic published research that looked inside a Claude model writing rhyming poetry: before writing a line, it had already picked the rhyming word it was heading for, and wrote the line to land on it <span class="tag">public</span>. The output is one token at a time; the calculation behind each token can plan further.</p>
     </section>
 
@@ -480,6 +840,33 @@
 <span class="m">[assistant]</span><span class="cur">▍</span></pre>
         <p class="readout">The markers are special tokens (Part 1, chapter 4). The model writes from the cursor until it decides the assistant’s turn is over.</p>
       </div>
+      <figure>
+        <svg viewBox="0 0 800 220" role="img" aria-label="The example chat drawn as one strip of text to scale, with a purple marker before each speaker turn, ending in an open assistant turn where the model starts writing">
+          <defs><marker id="ar15" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#ff8059"/></marker></defs>
+          <text x="40" y="28" fill="#a5a29c" font-size="15">THE WHOLE CHAT AS ONE DOCUMENT · 18 PX = 1 WORD</text>
+          <rect x="40" y="70" width="16" height="40" fill="#c3b8ff"/>
+          <text x="111.0" y="60" text-anchor="middle" fill="#c3b8ff" font-size="15">system</text>
+          <rect x="58" y="70" width="124" height="40" fill="#f5c76a"/>
+          <rect x="184" y="70" width="16" height="40" fill="#c3b8ff"/>
+          <text x="228.0" y="60" text-anchor="middle" fill="#c3b8ff" font-size="15">user</text>
+          <rect x="202" y="70" width="70" height="40" fill="#d9a94e"/>
+          <rect x="274" y="70" width="16" height="40" fill="#c3b8ff"/>
+          <text x="426.0" y="60" text-anchor="middle" fill="#c3b8ff" font-size="15">assistant</text>
+          <rect x="292" y="70" width="286" height="40" fill="#f5c76a"/>
+          <rect x="580" y="70" width="16" height="40" fill="#c3b8ff"/>
+          <text x="633.0" y="60" text-anchor="middle" fill="#c3b8ff" font-size="15">user</text>
+          <rect x="598" y="70" width="88" height="40" fill="#d9a94e"/>
+          <rect x="688" y="70" width="16" height="40" fill="#c3b8ff"/>
+          <text x="688" y="60" text-anchor="start" fill="#c3b8ff" font-size="15">assistant</text>
+          <rect x="706" y="70" width="4" height="40" fill="#ff8059"/>
+          <rect x="712" y="70" width="48" height="40" fill="none" stroke="#ff8059" stroke-width="2" stroke-dasharray="5 4"/>
+          <path d="M40 122 V132 H706 V122" fill="none" stroke="#a5a29c" stroke-width="2"/>
+          <text x="373" y="156" text-anchor="middle" fill="#a5a29c" font-size="15">what the model reads</text>
+          <path d="M736 176 V116" stroke="#ff8059" stroke-width="2" marker-end="url(#ar15)"/>
+          <text x="726" y="196" text-anchor="end" fill="#ff8059" font-size="15">it writes from here</text>
+          <text x="40" y="196" fill="#c3b8ff" font-size="15">purple: speaker markers</text>
+          </svg>
+      </figure>
       <p>A raw model trained only on internet text would continue this in odd ways: it might write the user’s next question too, or wander off into a forum thread. Making it reliably behave like a helpful assistant, and stop at the end of its turn, takes a second round of training. That is part 13.</p>
     </section>
 
@@ -488,6 +875,58 @@
       <p class="kicker">Knowing when to stop</p>
       <h2>Stopping is just another guess</h2>
       <p>The token list includes special tokens that are not text, such as one meaning “end of my turn”. The model is trained so that, when an answer is complete, that token gets the highest score. When it is picked, the loop stops. So stopping is not a separate decision; it is one more next-token guess.</p>
+      <figure>
+        <svg viewBox="0 0 800 240" role="img" aria-label="Three token rows: one ends when the purple end-of-turn token is picked, one is cut off mid-sentence by a length limit, and one ends at a named closing tag">
+          <text x="40" y="57" fill="#a5a29c" font-size="15">end token</text>
+          <rect x="170.0" y="34" width="23.0" height="34" fill="#f5c76a"/>
+          <text x="181.5" y="57" text-anchor="middle" fill="#20140a" font-size="16">A</text>
+          <rect x="196.0" y="34" width="67.8" height="34" fill="#d9a94e"/>
+          <text x="229.8" y="57" text-anchor="middle" fill="#20140a" font-size="16">␣token</text>
+          <rect x="266.7" y="34" width="40.9" height="34" fill="#f5c76a"/>
+          <text x="287.2" y="57" text-anchor="middle" fill="#20140a" font-size="16">␣is</text>
+          <rect x="310.6" y="34" width="31.9" height="34" fill="#d9a94e"/>
+          <text x="326.6" y="57" text-anchor="middle" fill="#20140a" font-size="16">␣a</text>
+          <rect x="345.5" y="34" width="67.8" height="34" fill="#f5c76a"/>
+          <text x="379.4" y="57" text-anchor="middle" fill="#20140a" font-size="16">␣piece</text>
+          <rect x="416.3" y="34" width="40.9" height="34" fill="#d9a94e"/>
+          <text x="436.7" y="57" text-anchor="middle" fill="#20140a" font-size="16">␣of</text>
+          <rect x="460.2" y="34" width="58.8" height="34" fill="#f5c76a"/>
+          <text x="489.6" y="57" text-anchor="middle" fill="#20140a" font-size="16">␣text</text>
+          <rect x="522.0" y="34" width="23.0" height="34" fill="#d9a94e"/>
+          <text x="533.4" y="57" text-anchor="middle" fill="#20140a" font-size="16">.</text>
+          <rect x="547.9" y="34" width="58.8" height="34" fill="#c3b8ff"/>
+          <text x="577.3" y="57" text-anchor="middle" fill="#20140a" font-size="16">[end]</text>
+          <text x="40" y="131" fill="#a5a29c" font-size="15">length limit</text>
+          <rect x="170.0" y="108" width="23.0" height="34" fill="#f5c76a"/>
+          <text x="181.5" y="131" text-anchor="middle" fill="#20140a" font-size="16">A</text>
+          <rect x="196.0" y="108" width="67.8" height="34" fill="#d9a94e"/>
+          <text x="229.8" y="131" text-anchor="middle" fill="#20140a" font-size="16">␣token</text>
+          <rect x="266.7" y="108" width="40.9" height="34" fill="#f5c76a"/>
+          <text x="287.2" y="131" text-anchor="middle" fill="#20140a" font-size="16">␣is</text>
+          <rect x="310.6" y="108" width="31.9" height="34" fill="#d9a94e"/>
+          <text x="326.6" y="131" text-anchor="middle" fill="#20140a" font-size="16">␣a</text>
+          <rect x="345.5" y="108" width="67.8" height="34" fill="#f5c76a"/>
+          <text x="379.4" y="131" text-anchor="middle" fill="#20140a" font-size="16">␣small</text>
+          <rect x="416.3" y="108" width="67.8" height="34" fill="#d9a94e"/>
+          <text x="450.2" y="131" text-anchor="middle" fill="#20140a" font-size="16">␣piece</text>
+          <rect x="487.0" y="108" width="40.9" height="34" fill="#f5c76a"/>
+          <text x="507.5" y="131" text-anchor="middle" fill="#20140a" font-size="16">␣of</text>
+          <text x="40" y="205" fill="#a5a29c" font-size="15">stop phrase</text>
+          <rect x="170.0" y="182" width="76.7" height="34" fill="#f5c76a"/>
+          <text x="208.4" y="205" text-anchor="middle" fill="#20140a" font-size="16">&lt;reply&gt;</text>
+          <rect x="249.7" y="182" width="40.9" height="34" fill="#d9a94e"/>
+          <text x="270.2" y="205" text-anchor="middle" fill="#20140a" font-size="16">Yes</text>
+          <rect x="293.6" y="182" width="23.0" height="34" fill="#f5c76a"/>
+          <text x="305.1" y="205" text-anchor="middle" fill="#20140a" font-size="16">.</text>
+          <rect x="319.6" y="182" width="85.7" height="34" fill="#d9a94e"/>
+          <text x="362.4" y="205" text-anchor="middle" fill="#20140a" font-size="16">&lt;/reply&gt;</text>
+          <text x="618" y="57" fill="#c3b8ff" font-size="15">picked: loop stops</text>
+          <path d="M535 98 V152" stroke="#ff8059" stroke-width="3"/>
+          <text x="545" y="131" fill="#ff8059" font-size="15">limit: cut off</text>
+          <rect x="316.6" y="179" width="91.7" height="40" fill="none" stroke="#ff8059" stroke-width="2"/>
+          <text x="419" y="205" fill="#ff8059" font-size="15">named stop text: ends</text>
+          </svg>
+      </figure>
       <div class="field-grid">
         <div><b>The end token wins</b><span>The usual way. The answer feels finished, so “end of turn” is the most likely next token.</span></div>
         <div><b>A length limit is reached</b><span>Apps set a maximum number of tokens per answer. Hit it and the answer is cut off, sometimes mid-sentence.</span></div>
@@ -501,8 +940,9 @@
       <h2>Why the same question gets different answers</h2>
       <p>Ask the same thing twice and you often get two different answers. Now you can see why. The die is rolled at every token, and an early difference sends everything after it down a different path, because each guess builds on what came before.</p>
       <figure>
-        <svg id="treeSvg" viewBox="0 0 800 330" role="img" aria-label="A tree of possible continuations: one early pick branches the answer into different directions, each with its own chance"></svg>
+        <svg id="treeSvg" viewBox="0 0 800 300" role="img" aria-label="A tree of possible continuations: one early pick branches the answer into different directions, each with its own chance"></svg>
       </figure>
+      <p>Each fork is one roll of the die. The chances shown are example values.</p>
       <p>Across a 500-token answer the number of possible paths is astronomically large, so two identical answers are rare unless the temperature is set to 0. That variety is usually a feature, not a bug: it is why “try again” gives you a fresh attempt.</p>
     </section>
 
@@ -511,6 +951,33 @@
       <p class="kicker">The honest limitation</p>
       <h2>Likely is not the same as true</h2>
       <p>A chance measures how well a token fits <b>text like this</b>, based on everything the model learned. It is not a measure of truth. Usually the two line up, because true statements are common in good text. But where a wrong answer is common, or the model learned too little about something, a false token can get a high chance and be written just as confidently as a true one.</p>
+      <figure>
+        <svg viewBox="0 0 800 250" role="img" aria-label="Chance bars sorted into true and false lanes: Canberra, the true answer, gets 45 percent, while the false Sydney gets 34 percent and Melbourne 11 percent, so chance alone does not separate them">
+          <text x="40" y="28" fill="#a5a29c" font-size="15">CHANCE AFTER “THE CAPITAL OF AUSTRALIA IS” (EXAMPLE)</text>
+          <text x="40" y="84" fill="#76d5c1" font-size="16">TRUE</text>
+          <text x="40" y="168" fill="#ec6a94" font-size="16">FALSE</text>
+          <rect x="150" y="62" width="451.8" height="30" fill="#ff8059"/>
+          <text x="611.8" y="83" fill="#f5c76a" font-size="16">Canberra 45%</text>
+          <rect x="150" y="128" width="334.7" height="30" fill="#ff8059"/>
+          <text x="494.7" y="149" fill="#f5c76a" font-size="16">Sydney 33%</text>
+          <rect x="150" y="166" width="111.4" height="30" fill="#ff8059"/>
+          <text x="271.4" y="187" fill="#f5c76a" font-size="16">Melbourne 11%</text>
+          <path d="M150 112 H650" stroke="#57534f" stroke-width="1" stroke-dasharray="4 4"/>
+          <path d="M150 210 H650" stroke="#a5a29c" stroke-width="1.5"/>
+          <path d="M150 210 V216" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="150" y="234" text-anchor="middle" fill="#a5a29c" font-size="14">0%</text>
+          <path d="M250 210 V216" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="250" y="234" text-anchor="middle" fill="#a5a29c" font-size="14">10%</text>
+          <path d="M350 210 V216" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="350" y="234" text-anchor="middle" fill="#a5a29c" font-size="14">20%</text>
+          <path d="M450 210 V216" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="450" y="234" text-anchor="middle" fill="#a5a29c" font-size="14">30%</text>
+          <path d="M550 210 V216" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="550" y="234" text-anchor="middle" fill="#a5a29c" font-size="14">40%</text>
+          <path d="M650 210 V216" stroke="#a5a29c" stroke-width="1.5"/>
+          <text x="650" y="234" text-anchor="middle" fill="#a5a29c" font-size="14">50%</text>
+          </svg>
+      </figure>
       <div class="box">
         <small>After “The capital of Australia is” (example chances from a weak model)</small>
         <div class="soft" id="ausRows"></div>
@@ -522,7 +989,7 @@
     <!-- 19 -->
     <section class="panel">
       <p class="kicker">How a guess is graded</p>
-      <h2>Good guessers give the real next word a high chance</h2>
+      <h2>Good guessers rate the real next word highly</h2>
       <p>How do you measure whether a guesser is any good? Take some real text, hide each next token, and look at the chance the model gave to the token that really came next. A high chance is good. A tiny chance means the model was badly surprised.</p>
       <div class="box">
         <div class="pick" id="lPick" role="group" aria-label="Chance given to the real next word"><span>CHANCE THE MODEL GAVE THE REAL NEXT WORD</span>
@@ -543,7 +1010,7 @@
         <svg viewBox="0 0 800 260" role="img" aria-label="Six steps per token: read the whole text, compute scores, turn them into chances, trim and adjust with temperature, roll the die, add the token and repeat">
           <defs><marker id="ar20" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#a5a29c"/></marker></defs>
           <g id="loopSteps"></g>
-          <path d="M700 150 V200 H100 V164" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar20)"/>
+          <path d="M700 162 V200 H100 V170" fill="none" stroke="#c3b8ff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar20)"/>
           <text x="300" y="228" fill="#c3b8ff" font-size="15">repeat until the end-of-turn token is picked</text>
         </svg>
       </figure>
@@ -623,7 +1090,7 @@
           return ()=>+bs.find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
         }
         const vals=bs.map(b=>+b.dataset.v),labs=bs.map(b=>b.textContent.trim()),n=vals.length;
-        const head=g.querySelector('span'),out=document.createElement('output'),r=document.createElement('input'),ticks=document.createElement('div');
+        const head=g.querySelector('span'),out=document.createElement('output'),r=g.querySelector('input[type=range]')||document.createElement('input'),ticks=document.createElement('div');
         head.append(out);
         Object.assign(r,{type:'range',min:0,max:n-1,step:1,value:Math.max(0,bs.findIndex(b=>b.getAttribute('aria-pressed')==='true'))});
         r.setAttribute('aria-label',g.getAttribute('aria-label'));
@@ -725,9 +1192,9 @@
       reset();
 
       /* 12: laps */
-      (()=>{const g=$('lapBars').ownerSVGElement;for(let i=0;i<24;i++){S(g,'rect',{x:40+i*30,y:56,width:26,height:40,fill:C.coral,opacity:.35+.65*((i%2)?.7:1)});}
-        T(g,40,120,'pass 1',{fill:C.mut,'font-size':13});T(g,760,120,'pass 24 …',{fill:C.mut,'font-size':13,'text-anchor':'end'});
-        ['The','␣cat','␣sat','␣on','␣the','␣mat'].forEach((w,i)=>T(g,53+i*30,50,w,{fill:C.gold,'font-size':11,'text-anchor':'middle'}));})();
+      (()=>{const g=$('lapBars').ownerSVGElement;for(let i=0;i<24;i++){S(g,'rect',{x:40+i*30,y:72,width:26,height:40,fill:C.coral,opacity:.35+.65*((i%2)?.7:1)});}
+        T(g,40,134,'pass 1',{fill:C.mut,'font-size':14});T(g,760,134,'pass 24 …',{fill:C.mut,'font-size':14,'text-anchor':'end'});
+        ['The','␣cat','␣sat','␣on','␣the','␣mat'].forEach((w,i)=>T(g,53+i*30,i%2?64:46,w,{fill:C.gold,'font-size':14,'text-anchor':'middle'}));})();
 
       /* 17: branching tree */
       (()=>{const svg=$('treeSvg');
@@ -735,10 +1202,10 @@
         const L2={mat:[['and watched the rain.','40%'],['. Then it slept.','25%']],floor:[['by the open door.','35%'],[', waiting for dinner.','30%']],couch:[['as if it owned it.','45%'],['and refused to move.','20%']]};
         T(svg,40,174,'The cat sat on the',{fill:C.gold,'font-size':17});
         L1.forEach(([w,p,y])=>{S(svg,'path',{d:`M190 168 C230 168 240 ${y} 280 ${y}`,fill:'none',stroke:C.purple,'stroke-width':2});
-          T(svg,288,y+6,w,{fill:C.gold,'font-size':17});T(svg,288,y+24,p,{fill:C.mut,'font-size':12});
+          T(svg,288,y+6,w,{fill:C.gold,'font-size':17});T(svg,288,y+24,p,{fill:C.mut,'font-size':14});
           L2[w].forEach(([t,q],j)=>{const y2=y-20+j*40;S(svg,'path',{d:`M350 ${y} C390 ${y} 400 ${y2} 440 ${y2}`,fill:'none',stroke:C.purple,'stroke-width':1.5,'stroke-opacity':.7});
-            T(svg,448,y2+5,t,{fill:C.fg,'font-size':15});T(svg,700,y2+5,q,{fill:C.mut,'font-size':12,'text-anchor':'end'});});});
-        T(svg,40,318,'Each fork is one roll of the die. The chances shown are example values.',{fill:C.mut,'font-size':14});})();
+            T(svg,448,y2+5,t,{fill:C.fg,'font-size':15});T(svg,700,y2+5,q,{fill:C.mut,'font-size':14,'text-anchor':'end'});});});
+      })();
 
       /* 18: Australia */
       (()=>{const sc=[['Canberra',3.0],['Sydney',2.7],['Melbourne',1.6],['a',1.0],['located',0.6]],p=soft(sc.map(s=>s[1]));
@@ -749,16 +1216,16 @@
       function drawL(){const p=lP(),pen=-Math.log2(p),svg=$('lSvg');while(svg.firstChild)svg.removeChild(svg.firstChild);
         T(svg,40,30,'PENALTY FOR THIS GUESS',{fill:C.mut,'font-size':14});
         S(svg,'rect',{x:40,y:46,width:700,height:30,fill:'#2a2927'});S(svg,'rect',{x:40,y:46,width:Math.max(2,pen/10*700),height:30,fill:C.coral});
-        [0,2,4,6,8,10].forEach(v=>T(svg,40+v*70,100,String(v),{fill:C.mut,'font-size':13,'text-anchor':'middle'}));
+        [0,2,4,6,8,10].forEach(v=>T(svg,40+v*70,100,String(v),{fill:C.mut,'font-size':14,'text-anchor':'middle'}));
         T(svg,40,136,`${pen.toFixed(2)} points: about ${pen<1?'less than one halving':Math.round(pen)+' halving'+(Math.round(pen)===1?'':'s')} of 100% to reach ${pct(p)}`,{fill:C.fg,'font-size':16});
         $('lNote').textContent=p>=.8?'A confident, correct guess costs almost nothing.':p>=.25?'A fair guess: the real word was a strong candidate.':p>=.05?'A so-so guess: the real word was in the running, but far from the favourite.':'A bad surprise: the model thought the real word very unlikely.';}
       drawL();
 
       /* 20: the loop */
-      (()=>{const g=$('loopSteps').ownerSVGElement,st=[['1','read all','the text so far',C.gold],['2','compute','a score per token',C.coral],['3','softmax','scores → chances',C.coral],['4','trim + temp','adjust chances',C.coral],['5','roll','pick one token',C.purple],['6','add it','to the end',C.gold]];
-        st.forEach(([n,a,b,c],i)=>{const x=40+i*122;S(g,'rect',{x,y:60,width:110,height:90,fill:c,opacity:.14,stroke:c});
-          T(g,x+12,84,n,{fill:c,'font-size':13,'font-family':'monospace'});T(g,x+12,110,a,{fill:C.fg,'font-size':16});T(g,x+12,132,b,{fill:C.mut,'font-size':12});
-          if(i<5)S(g,'path',{d:`M${x+112} 105 H${x+120}`,stroke:C.mut,'stroke-width':2});});
+      (()=>{const g=$('loopSteps').ownerSVGElement,st=[['1','read all','the text','so far',C.gold],['2','compute','a score','per token',C.coral],['3','softmax','scores →','chances',C.coral],['4','trim + temp','adjust','chances',C.coral],['5','roll','pick one','token',C.purple],['6','add it','to the','end',C.gold]];
+        st.forEach(([n,a,b,b2,c],i)=>{const x=40+i*122;S(g,'rect',{x,y:56,width:110,height:104,fill:c,opacity:.14,stroke:c});
+          T(g,x+12,78,n,{fill:c,'font-size':14,'font-family':'monospace'});T(g,x+12,102,a,{fill:C.fg,'font-size':16});T(g,x+12,124,b,{fill:C.mut,'font-size':14});T(g,x+12,144,b2,{fill:C.mut,'font-size':14});
+          if(i<5)S(g,'path',{d:`M${x+112} 108 H${x+120}`,stroke:C.mut,'stroke-width':2});});
         T(g,40,40,'EVERY TOKEN, EVERY TIME',{fill:C.mut,'font-size':14});})();
     })();
   </script>
